@@ -1,0 +1,33 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Terms of Service | {{ parent() }}{% endblock %}
+
+{% block breadcrumb %}
+    <!--=== Breadcrumbs ===-->
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">Terms of Service</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="{{ path('app_default_index') }}">Home</a></li>
+                <li class="active">Terms of Service</li>
+            </ul>
+        </div>
+    </div><!--/breadcrumbs-->
+    <!--=== End Breadcrumbs ===-->
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}
+    <!--=== Content Part  ===-->
+    <div class="container content">
+        <ol>
+            <li>We reserve the right to terminate your account if any offensive/phishing/plagiarized content is found.</li>
+            <li>We strive to keep website performance at its best, however if any service we provide experiences downtime due to technical issues, we are not liable for any loss of revenue during this period.</li>
+            <li>The API located at http://api.team-orbitron.com may be used for any purpose other than websites who are in competition with the services we provide.</li>
+            <li>The features we provide are marketed "as-is".</li>
+            <li>We reserve the right to change/revoke/limit features of the service at any point (unless they have been paid for).</li>
+        </ol>
+    </div><!--/container-->
+    <!--=== End Content Part  ===-->
+{% endblock %}

@@ -1,0 +1,3 @@
+app_wiki_index:
+    path:     /
+    defaults: { _controller: 'DefaultController::indexAction' }

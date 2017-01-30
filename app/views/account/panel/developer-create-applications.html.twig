@@ -1,0 +1,73 @@
+<style type="text/css">
+    .sky-changes-3.sky-form,
+    .sky-changes-3.sky-form footer {
+        border: none;
+    }
+
+    .sky-changes-3.sky-form footer,
+    .sky-changes-3.sky-form fieldset {
+        padding: 0;
+        background: none;
+    }
+</style>
+<section id="header">
+    <div class="col-lg-12">
+        <h1 class="page-header">{{ 'List Applications'|trans }}</h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('app_account_panel', {'page': 'developer-applications'}) }}">{{ 'Developer'|trans }}</a></li>
+            <li class="active">{{ 'Applications'|trans }}</li>
+        </ol><!-- /.breadcrumb -->
+        <hr />
+    </div><!-- /.col-lg-12 -->
+</section><!-- /#header -->
+<section id="page">
+    <div class="col-md-4">
+        {% if current_user.developer == 1 %}
+            {{ form_start(create_app_form, {'attr': {'class': 'sky-form sky-changes-3'}}) }}
+                {{ form_row(create_app_form._token) }}
+                <fieldset>
+                    {{ form_errors(create_app_form) }}
+                    <section>
+                        <div class="row">
+                            {{ form_label(create_app_form.client_name, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                            <div class="col col-8">
+                                <label class="input">
+                                    <i class="icon-append fa fa-user"></i>
+                                    {{ form_widget(create_app_form.client_name) }}
+                                </label>
+                                <div class="note note-error">{{ form_errors(create_app_form.client_name) }}</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div class="row">
+                            {{ form_label(create_app_form.redirect_uri, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                            <div class="col col-8">
+                                <label class="input">
+                                    <i class="icon-append fa fa-external-link"></i>
+                                    {{ form_widget(create_app_form.redirect_uri) }}
+                                </label>
+                                <div class="note note-error">{{ form_errors(create_app_form.redirect_uri) }}</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div class="row">
+                            {{ form_label(create_app_form.scopes, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                            <div class="col col-8">
+                                {{ form_widget(create_app_form.scopes) }}
+                            </div>
+                        </div>
+                    </section>
+                </fieldset>
+                <footer>
+                    {{ form_widget(create_app_form.send, {'attr': {'class': 'button'}}) }}
+                </footer>
+            {{ form_end(create_app_form) }}
+        {% else %}
+            <div class="alert alert-danger" role="alert">{{ 'You are not a developer'|trans }}</div>
+        {% endif %}
+    </div><!-- /.col-md-12 -->
+</section><!-- /#page -->

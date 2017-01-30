@@ -1,0 +1,14 @@
+parameters:
+    database_driver: mysql
+    database_host: localhost
+    database_port: 3306
+    database_name: DATABASE_NAME
+    database_user: DATABASE_USERNAME
+    database_password: DATABASE_USER_PASSWORD
+    mailer_transport: smtp
+    mailer_security: ssl
+    mailer_host: MAIL_SERVER
+    mailer_port: 465
+    mailer_user: MAIL_EMAIL
+    mailer_password: MAIL_PASSWORD
+    secret: SECRET

@@ -1,0 +1,93 @@
+header:
+  language:
+    base: "Language"
+    english:
+      short: "EN"
+      long: "English"
+    french:
+      short: "FR"
+      long: "French"
+    german:
+      short: "DE"
+      long: "German"
+    italian:
+      short: "IT"
+      long: "Italian"
+    spanish:
+      short: "ES"
+      long: "Spanish"
+  help: "Help"
+  account:
+    account: "Account"
+    profile: "Profile"
+  toggle_nav: "Toggle navigation"
+  home: "Home"
+  products:
+    title: "Products"
+    category:
+      pc:
+        title: "Computer"
+        content1: "PC"
+        content2: "Server"
+        content3: "Notebook"
+      peripherals:
+        title: "Computer Peripherals"
+        content1: "Headset"
+        content2: "Keyboard"
+        content3: "Mouse"
+        content4: "Mouse Pads"
+        content5: "Webcam"
+        content6: "Speakers"
+        content7: "Monitors"
+      mobile:
+        title: "Mobiles"
+        content1: "Smartphones"
+        content2: "Tablets"
+        content3: "Wearables"
+        content4: "Headphones"
+      printer:
+        title: "Printers"
+        content1: "Printer"
+        content2: "Laser Printer"
+        content3: "3D Printer"
+        content4: "Scanner"
+      tv:
+        title: "TV"
+        content1: "Televisions"
+        content2: "3D Glasses"
+        content3: "DVD & Blu-Ray Player & Recorders"
+        content4: "Projectors"
+      storage:
+        title: "Storage"
+        content1: "USB Memory Stick"
+        content2: "Memory Cards"
+        content3: "External Hard Drives"
+  services:
+    title: "Explore ..."
+    footer: "All our services"
+    blog: "Blog"
+    cloud: "Cloud"
+    forum: "Forum"
+    site: "Sites"
+    store: "Store"
+    wiki: "Wiki"
+  search: "Search"
+  go: "Go"
+footer:
+  description:
+    part1: "We are a small company to get every service on the web into one place. Everything we do will be done with perfection."
+    part2: "We also offer all products, like TVs, Smartphones and more, with perfect design and including all new technologies."
+  company:
+    title: "Company"
+    link1: "About us"
+    link2: "About our team"
+    link3: "Contact us"
+    link4: "Projects"
+  contact:
+    title: "Contact us"
+    text: "Please only use our email to contact us"
+    email: "Email:"
+  legal:
+    reserved: "© All rights Reserved"
+    tos: "Terms of Service"
+    privacy: "Privacy Policy"

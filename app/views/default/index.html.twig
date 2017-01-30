@@ -1,0 +1,236 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Home | {{ parent() }}{% endblock %}
+
+{% block stylesheets_implemeting_plugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/parallax-slider/css/parallax-slider.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/plugins/owl-carousel/owl-carousel/owl.carousel.css') }}">
+{% endblock %}
+
+{% block javascripts_implementing_plugins %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/plugins/parallax-slider/js/modernizr.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/parallax-slider/js/jquery.cslider.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/owl-carousel/owl-carousel/owl.carousel.js') }}"></script>
+{% endblock %}
+
+{% block javascripts_page_level %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/owl-carousel.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/style-switcher.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/parallax-slider.js') }}"></script>
+{% endblock %}
+
+{% block javascripts_code %}
+    {{ parent() }}
+    OwlCarousel.initOwlCarousel();
+    ParallaxSlider.initParallaxSlider();
+{% endblock %}
+
+{% block header %}
+    <!--=== Slider ===-->
+    <div class="slider-inner">
+        <div id="da-slider" class="da-slider">
+            <div class="da-slide">
+                <h2><i>BEAUTIFUL</i> <br /> <i>DESIGN</i></h2>
+                <p><i>Everything we do is perfect.</i> <br /> <i>See yourself!</i></p>
+                <div class="da-img"><img class="img-responsive" src="{{ asset('assets/plugins/parallax-slider/img/1.png') }}" alt=""></div>
+            </div>
+            <div class="da-slide">
+                <h2><i>LEARN ABOUT US</i> <br /> <i>IN A VIDEO</i></h2>
+                <p><i>Learn, in a video</i></p>
+                <div class="da-img">
+                    <iframe id="ytplayer" type="text/html" width="530" height="298.125"
+                            src="https://www.youtube.com/embed/8tPnX7OPo0Q"
+                            frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="da-arrows">
+                <span class="da-arrows-prev"></span>
+                <span class="da-arrows-next"></span>
+            </div>
+        </div>
+    </div><!--/slider-->
+    <!--=== End Slider ===-->
+{% endblock %}
+
+{% block body %}
+    <!--=== Purchase Block ===-->
+    <div class="purchase">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9 animated fadeInLeft">
+                    <span>One account, many services.</span>
+                    <p>With only one account you can have your unlimited large cloud, create blogs, forums, online shops, and many others. But we also offer simple tools like calculator.</p>
+                </div>
+                <div class="col-md-3 btn-buy animated fadeInRight">
+                    <a href="{# {{ path('fos_user_registration_register') }} #}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> Create an Account</a>
+                </div>
+            </div>
+        </div>
+    </div><!--/row-->
+    <!-- End Purchase Block -->
+
+    <!--=== Content Part ===-->
+    <div class="container content-sm">
+        <!-- Service Blocks -->
+        <div class="row margin-bottom-30">
+            <div class="col-md-4">
+                <div class="service">
+                    <i class="fa fa-compress service-icon"></i>
+                    <div class="desc">
+                        <h4>Small Apps, Many Functions</h4>
+                        <p>We keep all our projects and compact and simple as possible, so any newcomer understands it easily. If you still don't get it, then there are a lot more tutorials</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service">
+                    <i class="fa fa-cogs service-icon"></i>
+                    <div class="desc">
+                        <h4>Maximal customisation</h4>
+                        <p>Customise your apps until you like it. That works because we give you this option.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service">
+                    <i class="fa fa-rocket service-icon"></i>
+                    <div class="desc">
+                        <h4>Maximal Speed</h4>
+                        <p>The apps can use all the resources of your device because they aren't running on the internet. They are programs on the computer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Service Blokcs -->
+
+        <!-- Recent Works -->
+        <div class="headline"><h2>Recent Works</h2></div>
+        <div class="row margin-bottom-20">
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnails thumbnail-style thumbnail-kenburn">
+                    <div class="thumbnail-img">
+                        <div class="overflow-hidden">
+                            <img class="img-responsive" src="{{ asset('assets/img/projects/img27.jpg') }}" alt="">
+                        </div>
+                        <a class="btn-more hover-effect" href="http://service.orbitrondev.org">read more +</a>
+                    </div>
+                    <div class="caption">
+                        <h3><a class="hover-effect" href="http://service.orbitrondev.org">Web Service</a></h3>
+                        <p>All required web services on the web in one place. And everything can be used by creating only one account.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnails thumbnail-style thumbnail-kenburn">
+                    <div class="thumbnail-img">
+                        <div class="overflow-hidden">
+                            <img class="img-responsive" src="{{ asset('assets/img/projects/img28.jpg') }}" alt="">
+                        </div>
+                        <a class="btn-more hover-effect" href="http://appstore.orbitrondev.org">read more +</a>
+                    </div>
+                    <div class="caption">
+                        <h3><a class="hover-effect" href="http://appstore.orbitrondev.org">App Store</a></h3>
+                        <p>Do you hate to pay for something three times? Here is the solution. Here you pay one time and your desired application is available on every device. Well, it depends on the developer.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnails thumbnail-style thumbnail-kenburn">
+                    <div class="thumbnail-img">
+                        <div class="overflow-hidden">
+                            <img class="img-responsive" src="{{ asset('assets/img/projects/img36.jpg') }}" alt="">
+                        </div>
+                        <a class="btn-more hover-effect" href="http://jarvis.orbitrondev.org">read more +</a>
+                    </div>
+                    <div class="caption">
+                        <h3><a class="hover-effect" href="http://jarvis.orbitrondev.org">Jarvis</a></h3>
+                        <p>Bring Jarvis to real live. The best assistant for everyone, on any device!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnails thumbnail-style thumbnail-kenburn">
+                    <div class="thumbnail-img">
+                        <div class="overflow-hidden">
+                            <img class="img-responsive" src="{{ asset('assets/img/projects/img32.jpg') }}" alt="">
+                        </div>
+                        <a class="btn-more hover-effect" href="http://titanium.orbitrondev.org">read more +</a>
+                    </div>
+                    <div class="caption">
+                        <h3><a class="hover-effect" href="http://titanium.orbitrondev.org">Titanium</a></h3>
+                        <p>The most effective Operating System. It offers the security of Linux, the beautiness of OS X and the functionality of Windows. Sounds good, doesn't it?.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Recent Works -->
+
+        <!-- Info Blokcs -->
+        <div class="row margin-bottom-30">
+            <!-- Welcome Block -->
+            {#<div class="col-md-8 md-margin-bottom-40">#}
+            <div class="col-md-12 md-margin-bottom-40">
+                <div class="headline"><h2>Welcome To OrbitronDev</h2></div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <img class="img-responsive margin-bottom-20" src="{{ asset('assets/img/main/thumb-up.jpg') }}" alt="" style="width: 300px" />
+                    </div>
+                    <div class="col-sm-8">
+                        <p>OrbitronDev gives you everything you need on one place, so forget every other website, we are special!</p>
+                        <ul class="list-unstyled margin-bottom-20">
+                            <li><i class="fa fa-check color-green"></i> The price is lower than everything you have ever seen</li>
+                            <li><i class="fa fa-check color-green"></i> We work with perfection. So never expect a 1980 application from us</li>
+                            <li><i class="fa fa-check color-green"></i> We do things because we love what we do, and because we need it</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <blockquote class="hero-unify">
+                    <p>Everything we do, will be done with perfection. Everything we sell, will be sold low. That are our goals and those will stay, no matter what happens.</p>
+                    <small>CEO, Manuele Vaccari</small>
+                </blockquote>
+            </div><!--/col-md-8-->
+
+            {#<!-- Latest Shots -->
+            <div class="col-md-4">
+                <div class="headline"><h2>Latest Shots</h2></div>
+                <div id="myCarousel" class="carousel slide carousel-v1">
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img src="{{ asset('assets/img/main/img4.jpg') }}" alt="">
+                            <div class="carousel-caption">
+                                <p>Facilisis odio, dapibus ac justo acilisis gestinas.</p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="{{ asset('assets/img/main/img2.jpg') }}" alt="">
+                            <div class="carousel-caption">
+                                <p>Cras justo odio, dapibus ac facilisis into egestas.</p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="{{ asset('assets/img/main/img24.jpg') }}" alt="">
+                            <div class="carousel-caption">
+                                <p>Justo cras odio apibus ac afilisis lingestas de.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-arrow">
+                        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                            <i class="fa fa-angle-left"></i>
+                        </a>
+                        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div><!--/col-md-4-->#}
+        </div>
+        <!-- End Info Blokcs -->
+    </div><!--/container-->
+    <!-- End Content Part -->
+{% endblock %}

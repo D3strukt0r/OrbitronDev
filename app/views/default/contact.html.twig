@@ -1,0 +1,170 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Contact us | {{ parent() }}{% endblock %}
+
+{% block stylesheets_implemeting_plugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/owl-carousel/owl-carousel/owl.carousel.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
+    <!--[if lt IE 9]><link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms-ie8.css') }}" /><![endif]-->
+{% endblock %}
+
+{% block stylesheets_page_style %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/pages/page_contact.css') }}" />
+{% endblock %}
+
+{% block javascripts_implementing_plugins %}
+    {{ parent() }}
+    <script type="text/javascript" src="//maps.google.com/maps/api/js"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/gmap/gmap.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/owl-carousel/owl-carousel/owl.carousel.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
+{% endblock %}
+
+{% block javascripts_page_level %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/js/forms/contact.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/pages/page_contacts.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/owl-carousel.js') }}"></script>
+{% endblock %}
+
+{% block javascripts_code %}
+    ContactPage.initMap();
+    //ContactForm.initContactForm();
+    OwlCarousel.initOwlCarousel();
+{% endblock %}
+
+{% block breadcrumb %}
+    <!--=== Breadcrumbs ===-->
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">Our Contacts</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="{{ path('app_default_index') }}">Home</a></li>
+                <li class="active">Contacts</li>
+            </ul>
+        </div>
+    </div><!--/breadcrumbs-->
+    <!--=== End Breadcrumbs ===-->
+{% endblock %}
+
+{% block header %}
+<!-- Google Map -->
+<div id="map" class="map">
+</div><!---/map-->
+<!-- End Google Map -->
+{% endblock %}
+
+{% block body %}
+    <!--=== Content Part  ===-->
+    <div class="container content">
+        <div class="row margin-bottom-30">
+            <div class="col-md-9 mb-margin-bottom-30">
+                <div class="headline"><h2>Contact Form</h2></div>
+                <p>Contact us if you have any questions to us, e.g. Information about a project or you need help for one of our services or you want to improve our website or services. Simply everything you want.</p>
+                <p>If you want to contact us with your email client (e.g. Hotmail) you can use this E-mail: <b>team-orbitron@hotmail.com</b></p><br />
+
+                {{ form_start(contact_form, {'action': path('app_default_contact'), 'attr': {'class': 'sky-form sky-changes-3', 'id': 'contact-form'}}) }}
+                    {{ form_row(contact_form._token) }}
+                    <fieldset>
+                        {{ form_errors(contact_form) }}
+                        <div class="row">
+                            <section class="col col-6">
+                                {{ form_label(contact_form.name, null, {'label_attr': {'class': 'label'}}) }}
+                                <label class="input">
+                                    <i class="icon-append fa fa-user"></i>
+                                    {{ form_widget(contact_form.name) }}
+                                </label>
+                                <div class="note note-error">{{ form_errors(contact_form.name) }}</div>
+                            </section>
+                            <section class="col col-6">
+                               {{ form_label(contact_form.email, null, {'label_attr': {'class': 'label'}}) }}
+                                <label class="input">
+                                    <i class="icon-append fa fa-envelope-o"></i>
+                                    {{ form_widget(contact_form.email) }}
+                                </label>
+                                <div class="note note-error">{{ form_errors(contact_form.email) }}</div>
+                            </section>
+                        </div>
+
+                        <section>
+                            {{ form_label(contact_form.subject, null, {'label_attr': {'class': 'label'}}) }}
+                            <label class="input">
+                                <i class="icon-append fa fa-tag"></i>
+                                {{ form_widget(contact_form.subject) }}
+                            </label>
+                            <div class="note note-error">{{ form_errors(contact_form.subject) }}</div>
+                        </section>
+
+                        <section>
+                            {{ form_label(contact_form.message, null, {'label_attr': {'class': 'label'}}) }}
+                            <label class="textarea">
+                                <i class="icon-append fa fa-comment"></i>
+                                {{ form_widget(contact_form.message) }}
+                            </label>
+                            <div class="note note-error">{{ form_errors(contact_form.message) }}</div>
+                        </section>
+
+                        <section> <!-- TODO: Add Recaptcha -->
+                            <label class="input input-captcha">
+                                {{ form_widget(contact_form.recaptcha) }}
+                            </label>
+                        </section>
+
+                        <section>
+                            <label class="checkbox">{{ form_widget(contact_form.send_to_own) }}<i></i>Send a copy to my e-mail address</label>
+                        </section>
+                    </fieldset>
+
+                    <footer>
+                        {{ form_widget(contact_form.send, {'attr': {'class': 'btn-u'}}) }}
+                    </footer>
+
+                    <div class="message">
+                        <i class="rounded-x fa fa-check"></i>
+                        <p>Your message was successfully sent!</p>
+                    </div>
+                {{ form_end(contact_form) }}
+            </div><!--/col-md-9-->
+
+            <div class="col-md-3">
+                <!-- Contacts -->
+                <div class="headline"><h2>Contacts</h2></div>
+                {#
+                <ul class="list-unstyled who margin-bottom-30">
+                    <li><a href="#"><i class="fa fa-home"></i>Salzstrasse 50, CH-4313 Möhlin</a></li>
+                    <li><a href="mailto:team-orbitron@hotmail.com"><i class="fa fa-envelope"></i>team-orbitron@hotmail.com</a></li>
+                    <li><a href="#"><i class="fa fa-phone"></i>+41 (0)76 804 43 34</a></li>
+                    <li><a href="#"><i class="fa fa-globe"></i>https://orbitrondev.org</a></li>
+                </ul>
+                #}
+                <ul class="list-unstyled who margin-bottom-30">
+                    <li>Please only use our email or the contact form to contact us </li>
+                    <li><a href="mailto:team-orbitron@hotmail.com"><i class="fa fa-envelope"></i>team-orbitron@hotmail.com</a></li>
+                    <li><a href="#"><i class="fa fa-globe"></i>https://orbitrondev.org</a></li>
+                </ul>
+
+                {#<!-- Business Hours -->
+                <div class="headline"><h2>Business Hours</h2></div>
+                <ul class="list-unstyled margin-bottom-30">
+                    <li><strong>Monday-Friday:</strong> 10:00 to 20:00</li>
+                    <li><strong>Saturday:</strong> 11:00 to 15:00</li>
+                    <li><strong>Sunday:</strong> Closed</li>
+                </ul>#}
+
+                {#<!-- Why we are? -->
+                <div class="headline"><h2>Why we are?</h2></div>
+                <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum.</p>
+                <ul class="list-unstyled">
+                    <li><i class="fa fa-check color-green"></i> Odio dignissimos ducimus</li>
+                    <li><i class="fa fa-check color-green"></i> Blanditiis praesentium volup</li>
+                    <li><i class="fa fa-check color-green"></i> Eos et accusamus</li>
+                </ul>#}
+            </div><!--/col-md-3-->
+        </div><!--/row-->
+    </div><!--/container-->
+    <!--=== End Content Part  ===-->
+{% endblock %}

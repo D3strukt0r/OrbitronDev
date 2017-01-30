@@ -1,0 +1,65 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Privacy Policy | {{ parent() }}{% endblock %}
+
+{% block breadcrumb %}
+	<!--=== Breadcrumbs ===-->
+	<div class="breadcrumbs">
+		<div class="container">
+			<h1 class="pull-left">Privacy Policy</h1>
+			<ul class="pull-right breadcrumb">
+				<li><a href="{{ path('app_default_index') }}">Home</a></li>
+				<li class="active">Privacy Policy</li>
+			</ul>
+		</div>
+	</div><!--/breadcrumbs-->
+	<!--=== End Breadcrumbs ===-->
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}
+	<!--=== Content Part  ===-->
+	<div class="container content">
+		<h3>The information we collect about you</h3>
+		<p>We collect and store only the information that you specifically enter into the website, apart from your IP address which is automatically logged.</p>
+
+		<h3>How we use your information</h3>
+		<p>We only use your personal information to enable you to use the services that we offer. We do not use your email address for spam purposes, and we will only contact you when an important notification from us is required.</p>
+
+		<h3>Cookies</h3>
+		<p>We only stores cookie data that is essentially required for site operation, such as login data, and also the webstore basket contents.</p>
+
+		<h3>Protecting your data</h3>
+		<p>All personal information stored on our servers is encrypted, and the data has restricted access only to our highly trained system administrators.</p>
+
+		<h3>Disclosing your data</h3>
+		<p>
+			Your personal information is never disclosed to the outer public, and is only viewable by our support team when you have opened a support ticket using our support panel. We never disclose or sell your personal information to third
+			party companies, however the management of us may request to view your account data under circumstances that we feel appropriate.
+		</p>
+		<!-------------------------------------------------------------->
+		<h1>Refund policy</h1>
+		<p>
+			All payments have a 7 day refund policy from the original date of purchase. Opening a chargeback or other dispute gives us full permission to disable and delete your account without prior notification. If our website does not correctly
+			function for you, due to an error on our behalf, then you will be liable for a 100% refund within 7 days of the original purchase date after a clear and valid description of the error you are having.
+		</p>
+		<br />
+		<b>The information on this page was last updated on the 25th July 2014.</b>
+		<!-------------------------------------------------------------->
+		<h1>Company details</h1>
+		<p>We aren't an company :I</p>
+		<!--
+			Company details
+			Tebex Limited
+			49 High Street,
+			Hucknall,
+			Nottingham
+			NG15 7AW
+
+			Company No: 08129184
+			VAT No: 167189962
+			-->
+	</div><!--/container-->
+	<!--=== End Content Part  ===-->
+{% endblock %}

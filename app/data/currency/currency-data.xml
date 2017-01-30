@@ -1,0 +1,39 @@
+<?xml version="1.0" standalone="yes" ?>
+<currency>
+	<info>
+		<downloaded>2015-04-01</downloaded>
+	</info>
+	<data>
+		<currency currency="USD" rate="1.0755" />
+		<currency currency="JPY" rate="129.29" />
+		<currency currency="BGN" rate="1.9558" />
+		<currency currency="CZK" rate="27.543" />
+		<currency currency="DKK" rate="7.4708" />
+		<currency currency="GBP" rate="0.72850" />
+		<currency currency="HUF" rate="298.52" />
+		<currency currency="PLN" rate="4.0608" />
+		<currency currency="RON" rate="4.4130" />
+		<currency currency="SEK" rate="9.2541" />
+		<currency currency="CHF" rate="1.0426" />
+		<currency currency="NOK" rate="8.6695" />
+		<currency currency="HRK" rate="7.6483" />
+		<currency currency="RUB" rate="62.4363" />
+		<currency currency="TRY" rate="2.8064" />
+		<currency currency="AUD" rate="1.4153" />
+		<currency currency="BRL" rate="3.3994" />
+		<currency currency="CAD" rate="1.3632" />
+		<currency currency="CNY" rate="6.6662" />
+		<currency currency="HKD" rate="8.3382" />
+		<currency currency="IDR" rate="14021.81" />
+		<currency currency="ILS" rate="4.2811" />
+		<currency currency="INR" rate="67.2161" />
+		<currency currency="KRW" rate="1187.67" />
+		<currency currency="MXN" rate="16.3847" />
+		<currency currency="MYR" rate="3.9785" />
+		<currency currency="NZD" rate="1.4472" />
+		<currency currency="PHP" rate="47.917" />
+		<currency currency="SGD" rate="1.4696" />
+		<currency currency="THB" rate="34.965" />
+		<currency currency="ZAR" rate="13.0011" />
+	</data>
+</currency>

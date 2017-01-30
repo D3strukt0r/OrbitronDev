@@ -1,0 +1,13 @@
+.breadcrumb {
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    list-style: none;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+}
+.breadcrumb>.active {
+    color: #777;
+}
+.breadcrumb>li {
+    display: inline-block;
+}

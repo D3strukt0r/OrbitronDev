@@ -1,0 +1,41 @@
+app_default_robot:
+    path:     /robots.txt
+    defaults: { _controller: 'DefaultController::indexAction' }
+app_default_sitemap:
+    path:     /sitemap.xml
+    defaults: { _controller: 'DefaultController::indexAction' }
+app_default_index:
+    path:     /
+    defaults: { _controller: 'DefaultController::indexAction' }
+app_default_about:
+    path:     /about
+    defaults: { _controller: 'DefaultController::aboutAction' }
+app_default_aboutteam:
+    path:     /about-team
+    defaults: { _controller: 'DefaultController::aboutTeamAction' }
+app_default_contact:
+    path:     /contact
+    defaults: { _controller: 'DefaultController::contactAction' }
+app_default_terms:
+    path:     /terms-of-service
+    defaults: { _controller: 'DefaultController::termsAction' }
+app_default_privacy:
+    path:     /privacy-policy
+    defaults: { _controller: 'DefaultController::privacyAction' }
+app_default_faq:
+    path:     /faq
+    defaults: { _controller: 'DefaultController::faqAction' }
+app_default_search:
+    path:     /search
+    defaults: { _controller: 'DefaultController::searchAction' }
+
+app_project_index:
+    path:     /projects
+    defaults: { _controller: 'ProjectController::indexAction' }
+
+app_product_index:
+    path:     /products
+    defaults: { _controller: 'ProductController::indexAction' }
+app_product_product:
+    path:     /products/{type}
+    defaults: { _controller: 'ProductController::indexAction' }

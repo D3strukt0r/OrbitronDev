@@ -1,0 +1,22 @@
+app_blog_index:
+    path:     /
+    defaults: { _controller: 'BlogController::indexAction' }
+app_blog_new:
+    path:     /new-blog
+    defaults: { _controller: 'BlogController::newBlogAction' }
+
+app_blog_blog_index:
+    path:     /{blog}
+    defaults: { _controller: 'BlogController::blogIndexAction' }
+app_blog_blog_writepost:
+    path:     /{blog}/write-post
+    defaults: { _controller: 'BlogController::blogWritePostAction' }
+app_blog_blog_writecomment:
+    path:     /{blog}/write-comment
+    defaults: { _controller: 'BlogController::blogWriteCommentAction' }
+app_blog_blog_rss:
+    path:     /{blog}/rss
+    defaults: { _controller: 'BlogController::blogRssAction' }
+app_blog_blog_admin:
+    path:     /{blog}/admin/{page}
+    defaults: { _controller: 'BlogController::blogAdminAction' }

@@ -1,0 +1,69 @@
+{% extends 'forum/theme1/layout.html.twig' %}
+
+{% set service_page_links %}
+    {% for text,link in current_forum.page_links %}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+    {% endfor %}
+{% endset %}
+{% set service = {
+'page_name': current_forum.name,
+'page_logo_link': '/' ~ current_forum.url,
+'page_author': current_forum.owner_username,
+'page_description': current_forum.page_description,
+'page_keywords': current_forum.page_keywords,
+'page_links': service_page_links
+} %}
+
+{% block title %}{{ 'Index'|trans }} | {{ service.page_name }}{% endblock %}
+
+{% block header %}
+    <div class="container">
+        <h1 class="page-header">{{ current_forum.name }}</h1>
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="active">{{ 'Home'|trans }}</li>
+        </ol><!-- /.breadcrumb -->
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% if board_tree|length == 0 %}
+            <hr />
+            <div class="alert alert-danger" role="alert">
+                {{ 'There is no forum where someone can post. If you are the admin, create a new forum!'|trans }}
+            </div>
+        {% else %}
+            {% for board in board_tree %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th class="text-center" width="56%">{{ board.title }}</th>
+                            <th class="text-center" width="7%" >{{ 'Topics'|trans }}</th>
+                            <th class="text-center" width="7%">{{ 'Posts'|trans }}</th>
+                            <th class="text-center" width="30%">{{ 'Last post'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if board.subboards|length > 0 %}
+                            {% for subboard in board.subboards %}
+                                <tr>
+                                    <td class="forum-category"><p><a href="/{{ current_forum.url }}/board/{{ subboard.id }}">{{ subboard.title }}</a></p><p>{{ subboard.description }}</p></td>
+                                    <td class="text-center"><br /><span class="badge">{{ subboard.threads }}</span></td>
+                                    <td class="text-center"><br /><span class="badge">{{ subboard.posts }}</span></td>
+                                    <td><p><i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }} {{ subboard.last_post_username|raw }}</p><p>{{ subboard.last_post_time|date('d/m/Y H:i') }}</p></td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table><!-- /.table -->
+            </div><!-- /.table-responsive -->
+            {% endfor %}
+        {% endif %}
+    </div><!-- /.container -->
+{% endblock %}

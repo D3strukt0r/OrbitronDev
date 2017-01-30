@@ -1,0 +1,132 @@
+{% extends 'layout.html.twig' %}
+
+{% block body %}
+    {% if not user_exists %}
+        <div class="container content">
+            <div class="heading heading-v1 margin-bottom-40">
+                <h1>{{ 'This user doesn\'t exist.'|trans }}</h1>
+            </div>
+        </div>
+    {% else %}
+        <div class="container content">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="thumbnail">
+                        <img src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.user_id, 'height': 280, 'width': 280}) }}" alt="" width="100%">
+                        <div class="caption">
+                            <h3>{{ current_user.username }}</h3>
+                            <hr />
+                            {% if current_user_profile.first_name|length == 0 and current_user_profile.last_name|length == 0 %}
+                                <p>{{ 'No name set'|trans }}</p>
+                            {% else %}
+                            <p>{{ current_user_profile.first_name }} {{ current_user_profile.last_name }}</p>
+                            {% endif %}
+                            <p>{% if current_user_profile.gender == 0 %}{{ 'No gender set'|trans }}
+                                {% elseif current_user_profile.gender == 1 %}{{ 'Male'|trans }}
+                                {% elseif current_user_profile.gender == 2 %}{{ 'Female'|trans }}
+                                {% endif %}</p>
+                            <p>{{ current_user_profile.birthdate }}</p>
+                        </div>
+                    </div>
+                </div><!-- /.col-lg-3 -->
+                <div class="col-lg-9">
+                    {% if service_allowed %}
+                        <div id="service-blog" class="panel panel-default">
+                            <div class="panel-heading">
+                                {{ 'Blog'|trans }}
+                                {% if logged_in_user_id == current_user.user_id %}
+                                <span class="pull-right">
+                                    <a href="{{ path('app_blog_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
+                                    <a href="{{ path('app_blog_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new blog'|trans }}</a>
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% if blogs|length > 0 %}
+                                <div class="panel-body">
+                                    {% for blog in blogs %}
+                                        <div class="well well-sm">
+                                            {{ blog.name }}
+                                            {% if logged_in_user_id == current_user.user_id %}
+                                            <div class="pull-right">
+                                                <a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
+                                                <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div id="service-cloud" class="panel panel-default">
+                            <div class="panel-heading">
+                                {{ 'Cloud'|trans }}
+                            </div>
+                        </div>
+                        <div id="service-forum" class="panel panel-default">
+                            <div class="panel-heading">
+                                {{ 'Forum'|trans }}
+                                {% if logged_in_user_id == current_user.user_id %}
+                                <span class="pull-right">
+                                    <a href="{{ path('app_forum_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
+                                    <a href="{{ path('app_forum_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new forum'|trans }}</a>
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% if forums|length > 0 %}
+                                <div class="panel-body">
+                                    {% for forum in forums %}
+                                        <div class="well well-sm">
+                                            {{ forum.name }}
+                                            {% if logged_in_user_id == current_user.user_id %}
+                                            <div class="pull-right">
+                                                <a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
+                                                <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div id="service-pages" class="panel panel-default">
+                            <div class="panel-heading">
+                                {{ 'Pages'|trans }}
+                            </div>
+                        </div>
+                        <div id="service-store" class="panel panel-default">
+                            <div class="panel-heading">
+                                {{ 'Store'|trans }}
+                                {% if logged_in_user_id == current_user.user_id %}
+                                <span class="pull-right">
+                                    <a href="{{ path('app_store_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
+                                    <a href="{{ path('app_store_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new store'|trans }}</a>
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% if stores|length > 0 %}
+                                <div class="panel-body">
+                                    {% for store in stores %}
+                                        <div class="well well-sm">
+                                            {{ store.name }}
+                                            {% if logged_in_user_id == current_user.user_id %}
+                                            <div class="pull-right">
+                                                <a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
+                                                <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div id="service-wiki" class="panel panel-default">
+                            <div class="panel-heading">
+                                {{ 'Wiki'|trans }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{
+  "name":              "orbitrondev/service",
+  "description":       "OrbitronDev Online Services",
+  "minimum-stability": "stable",
+  "license":           "proprietary",
+  "type": "project",
+  "authors":           [
+    {
+      "name":  "Manuele Vaccari",
+      "email": "manuele.vaccari@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+},
+  "require": {
+    "php": ">=7",
+    "twig/twig": "^1.24",
+    "symfony/routing": "v3.1.4",
+    "symfony/translation": "v3.1.4",
+    "symfony/twig-bridge": "v3.1.4",
+    "symfony/templating": "v3.1.4",
+    "symfony/asset": "v3.1.4",
+    "symfony/yaml": "v3.1.4",
+    "symfony/http-foundation": "v3.1.4",
+    "symfony/config": "v3.1.4",
+    "symfony/finder": "v3.1.4",
+    "symfony/http-kernel": "v3.1.4",
+    "symfony/security": "v3.1.4",
+    "symfony/form": "v3.1.4",
+    "symfony/security-csrf": "v3.1.4",
+    "symfony/validator": "v3.1.4",
+    "monolog/monolog": "1.21.0",
+    "gargron/fileupload": "v1.1.2",
+    "google/recaptcha": "1.1.2",
+    "swiftmailer/swiftmailer": "v5.4.3",
+    "bshaffer/oauth2-server-php": "2.x-dev",
+    "guzzlehttp/guzzle": "6.2.2"
+  }
+}

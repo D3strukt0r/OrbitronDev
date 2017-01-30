@@ -1,0 +1,70 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Discover all forums | {{ parent() }}{% endblock %}
+
+{% block breadcrumb %}
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">{{ 'Discover all forums'|trans }}</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="{{ path('app_forum_index') }}" class="active">{{ 'Forums'|trans }}</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="container content">
+        {% if current_user.user_id != -1  %}
+            <section id="admin">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        {{ 'Administrate your forums'|trans }}
+                        <div class="pull-right">
+                            <a href="{{ path('app_forum_new') }}" class="btn btn-success btn-xs" role="button">{{ 'Create new forum'|trans }}</a>
+                        </div>
+                    </div><!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover">
+                                <tbody>
+                                    {% for forum in forums_list %}
+                                        {% if current_user.user_id == forum.owner_id %}
+                                            <tr>
+                                                <td><a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}">{{ forum.name }}</a></td>
+                                                <td><a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a></td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table><!-- /.table -->
+                        </div><!-- /.table-responsive -->
+                    </div><!-- /.panel-body -->
+                </div><!-- /.panel -->
+            </section><!-- /#admin -->
+        {% endif %}
+        <section id="forum-list">
+            <h2 class="page-header">{{ 'Forum list'|trans }}</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>{{ 'Name'|trans }}</th>
+                            <th>{{ 'Owner'|trans }}</th>
+                            <th>{{ 'Tools'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for forum in forums_list %}
+                            <tr>
+                                <td><a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}">{{ forum.name }}</a></td>
+                                <td>{{ forum.username }}</td>
+                                <td>{% if current_user.user_id == forum.owner_id %}<a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table><!-- /.table -->
+            </div><!-- /.table-responsive -->
+        </section><!-- /#forum-list -->
+    </div>
+{% endblock %}

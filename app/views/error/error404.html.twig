@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html lang="en" class="ie8"><![endif]-->
+<!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
+<!--[if !IE]><!--><html lang="en"><!--<![endif]-->
+    <head>
+        <title>404 Not Found | OrbitronDev</title>
+
+        <!-- Meta -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="The official site of OrbitronDev. Containing all projects and everything about us." />
+        <meta name="author" content="OrbitronDev" />
+        <meta name="publisher" content="OrbitronDev" />
+        <meta name="copyright" content="OrbitronDev &copy; 2013-2015" />
+        <meta name="keywords" content="orbitron, orbitrondev" />
+        <meta name="audience" content="Alle" />
+        <meta name="robots" content="INDEX,FOLLOW" />
+        <meta http-equiv="X-Frame-Options" content="deny" />
+
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="57x57" href="{{ asset('assets/apple-touch-icon-57x57.png?v=5AAOmMRx7k') }}" />
+        <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('assets/apple-touch-icon-60x60.png?v=5AAOmMRx7k') }}" />
+        <link rel="apple-touch-icon" sizes="72x72" href="{{ asset('assets/apple-touch-icon-72x72.png?v=5AAOmMRx7k') }}" />
+        <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/apple-touch-icon-76x76.png?v=5AAOmMRx7k') }}" />
+        <link rel="apple-touch-icon" sizes="114x114" href="{{ asset('assets/apple-touch-icon-114x114.png?v=5AAOmMRx7k') }}" />
+        <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('assets/apple-touch-icon-120x120.png?v=5AAOmMRx7k') }}" />
+        <link rel="apple-touch-icon" sizes="144x144" href="{{ asset('assets/apple-touch-icon-144x144.png?v=5AAOmMRx7k') }}" />
+        <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('assets/apple-touch-icon-152x152.png?v=5AAOmMRx7k') }}" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/apple-touch-icon-180x180.png?v=5AAOmMRx7k') }}" />
+        <link rel="icon" type="image/png" href="{{ asset('assets/favicon-32x32.png?v=5AAOmMRx7k') }}" sizes="32x32" />
+        <link rel="icon" type="image/png" href="{{ asset('assets/favicon-194x194.png?v=5AAOmMRx7k') }}" sizes="194x194" />
+        <link rel="icon" type="image/png" href="{{ asset('assets/favicon-96x96.png?v=5AAOmMRx7k') }}" sizes="96x96" />
+        <link rel="icon" type="image/png" href="{{ asset('assets/android-chrome-192x192.png?v=5AAOmMRx7k') }}" sizes="192x192" />
+        <link rel="icon" type="image/png" href="{{ asset('assets/favicon-16x16.png?v=5AAOmMRx7k') }}" sizes="16x16" />
+        <link rel="manifest" href="{{ asset('assets/manifest.json?v=5AAOmMRx7k') }}" />
+        <link rel="mask-icon" href="{{ asset('assets/safari-pinned-tab.svg?v=5AAOmMRx7k') }}" color="#5bbad5" />
+        <link rel="shortcut icon" href="{{ asset('assets/favicon.ico?v=5AAOmMRx7k') }}" />
+        <meta name="msapplication-TileColor" content="#00aba9" />
+        <meta name="msapplication-TileImage" content="{{ asset('assets/mstile-144x144.png?v=5AAOmMRx7k') }}" />
+        <meta name="msapplication-config" content="{{ asset('assets/browserconfig.xml?v=5AAOmMRx7k') }}" />
+        <meta name="theme-color" content="#ffffff" />
+        
+        <!-- Web Fonts -->
+        <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin" />
+
+        <!-- CSS Global Compulsory -->
+        <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
+
+        <!-- CSS Header and Footer -->
+        <link rel="stylesheet" href="{{ asset('assets/css/headers/header-default.css') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/css/footers/footer-v1.css') }}" />
+
+        <!-- CSS Implementing Plugins -->
+        <link rel="stylesheet" href="{{ asset('assets/plugins/animate.css') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/plugins/line-icons/line-icons.css') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/plugins/font-awesome/css/font-awesome.min.css') }}" />
+
+        <!-- CSS Page Style -->
+        <link rel="stylesheet" href="{{ asset('assets/css/pages/page_error4_404.css') }}" />
+
+        <!-- CSS Theme -->
+        <link rel="stylesheet" href="{{ asset('assets/css/theme-colors/default.css') }}" id="style_color" />
+        <link rel="stylesheet" href="{{ asset('assets/css/theme-skins/dark.css') }}" />
+
+        <!-- CSS Customization -->
+        <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" />
+    </head>
+    <body>
+        <!--=== Error V4 ===-->
+        <div class="container content">
+            <!--Error Block-->
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="error-v4">
+                        <a href="{{ path('app_default_index') }}">
+                            <img src="{{ asset('assets/logo-long.png') }}" alt="OrbitronDev" height="30px" />
+                        </a>
+                        <h1>404</h1>
+                        <span class="sorry">Sorry, the page you were looking for could not be found!</span>
+                        <p style="color:white;margin-top:-30px;">Server message: [Code: {{ status_code }}] {{ status_text }}</p>
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3">
+                                <a class="btn-u btn-brd btn-u-light" href="{{ path('app_default_index') }}">Go Back to Main Page</a>
+                                <a class="btn-u btn-brd btn-u-light" href="javascript:window.history.back();">Go Back</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--/container-->
+        <!--End Error Block-->
+
+        <!--=== Sticky Footer ===-->
+        <div class="container sticky-footer">
+            <p class="copyright-space">
+                2013-2015 &copy; OrbitronDev. All Rights Reserved.
+            </p>
+        </div>
+        <!--=== End Sticky Footer ===-->
+
+        <!-- JS Global Compulsory -->
+        <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery-migrate.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+        
+        <!-- JS Implementing Plugins -->
+        <script type="text/javascript" src="{{ asset('assets/plugins/back-to-top.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('assets/plugins/backstretch/jquery.backstretch.min.js') }}"></script>
+        
+        <!-- JS Customization -->
+        <script type="text/javascript" src="{{ asset('assets/js/custom.js') }}"></script>
+        
+        <!-- JS Page Level -->
+        <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+                App.init();
+            });
+        </script>
+        <script type="text/javascript">
+            $.backstretch([
+                "{{ asset('assets/img/blur/img2.jpg') }}"
+            ]);
+        </script>
+        <!--[if lt IE 9]>
+            <script src="{{ asset('assets/plugins/respond.js') }}"></script>
+            <script src="{{ asset('assets/plugins/html5shiv.js') }}"></script>
+            <script src="{{ asset('assets/plugins/placeholder-IE-fixes.js') }}"></script>
+        <![endif]-->
+    </body>
+</html>

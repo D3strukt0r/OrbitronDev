@@ -1,0 +1,232 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}About us | {{ parent() }}{% endblock %}
+
+{% block stylesheets_implemeting_plugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/fancybox/source/jquery.fancybox.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/owl-carousel/owl-carousel/owl.carousel.css') }}" />
+{% endblock %}
+
+{% block javascripts_implementing_plugins %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/plugins/jquery-appear.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/fancybox/source/jquery.fancybox.pack.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/owl-carousel/owl-carousel/owl.carousel.js') }}"></script>
+{% endblock %}
+
+{% block javascripts_page_level %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/fancy-box.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/progress-bar.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/owl-carousel.js') }}"></script>
+{% endblock %}
+
+{% block javascripts_code %}
+    FancyBox.initFancybox();
+    OwlCarousel.initOwlCarousel();
+    ProgressBar.initProgressBarHorizontal();
+{% endblock %}
+
+{% block breadcrumb %}
+    <!--=== Breadcrumbs v3 ===-->
+    <div class="breadcrumbs-v3 img-v3 text-center">
+        <div class="container">
+            <h1>OrbitronDev will always give the best</h1>
+            <p>Discover more about us</p>
+        </div><!--/end container-->
+    </div>
+    <!--=== End Breadcrumbs v3 ===-->
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}
+    <!--=== Container Part ===-->
+    <div class="container content-sm">
+        <div class="headline-center margin-bottom-60">
+            <h2>WE ARE ORBITRONDEV</h2>
+            <p>
+                We are a little organisation which aims to give all services known in the web. in one page <br />
+                In general we only do website and software programming, but we also have a much bigger. So get surprised :)
+            </p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 md-margin-bottom-50">
+                <img class="img-responsive" src="{{ asset('assets/img/mockup/4.png') }}" alt="">
+            </div>
+            <div class="col-md-6">
+                <p>What do we offer?</p><br>
+                <div class="row">
+                    <ul class="col-xs-6 list-unstyled lists-v1">
+                        <li><i class="fa fa-angle-right"></i>We code with a style that everybody understands</li>
+                        <li><i class="fa fa-angle-right"></i>We try to make it as fast as possible</li>
+                        <li><i class="fa fa-angle-right"></i>Our support know everything</li>
+                    </ul>
+                    <ul class="col-xs-6 list-unstyled lists-v1">
+                        <li><i class="fa fa-angle-right"></i>Everything we sell will be kept inexpensive</li>
+                        <li><i class="fa fa-angle-right"></i>We also give much effort for the look</li>
+                        <li><i class="fa fa-angle-right"></i>We try to offer everything</li>
+                    </ul>
+                </div>
+            </div>
+        </div><!--/end row-->
+    </div>
+    <!--=== End Container Part ===-->
+
+    <!--=== Service Block v5 ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row equal-height-columns">
+                <div class="col-md-4 service-inner equal-height-column">
+                    <i class="icon-custom icon-md rounded-x icon-bg-u icon-diamond"></i>
+                    <span>Creative Design</span>
+                    <p>We don't only code, we also give everything a beautiful design, so it's even easier for you</p>
+                </div>
+                <div class="col-md-4 service-inner equal-height-column service-border">
+                    <i class="icon-custom icon-md rounded-x icon-bg-u icon-rocket"></i>
+                    <span>Development</span>
+                    <p>We code, with love, and perfection. So always expect the best from us</p>
+                </div>
+                <div class="col-md-4 service-inner equal-height-column">
+                    <i class="icon-custom icon-md rounded-x icon-bg-u icon-support"></i>
+                    <span>Support</span>
+                    <p>We offer a 24/7 support center in the languages: English, French, German, Italian and Spanish</p>
+                </div>
+            </div><!--/end row-->
+        </div><!--/end container-->
+    </div>
+    <!--=== End Service Block v5 ===-->
+
+    <!--=== Container Part ===-->
+    <div class="container content-sm">
+        <div class="headline-center margin-bottom-60">
+            <h2>VIDEO INTRO</h2>
+            <p>
+                Don't have time to learn about us by reading? Well, simply watch the videos below. <br />
+                We hope we could impress you.
+            </p>
+        </div>
+
+        <div class="owl-video">
+            <div class="item">
+                <a class="fbox-modal fancybox.iframe" href="//player.vimeo.com/video/72343553">
+                    <img class="img-responsive" width="800" src="{{ asset('assets/img/main/img12.jpg') }}" alt="">
+                    <img class="video-play" src="{{ asset('assets/img/icons/video-play.png') }}" alt="">
+                </a>
+            </div>
+            <div class="item">
+                <a class="fbox-modal fancybox.iframe" href="https://www.youtube.com/embed/C9thrGPyN-k?rel=0&amp;showinfo=0">
+                    <img class="img-responsive" width="800" src="{{ asset('assets/img/main/img20.jpg') }}" alt="">
+                    <img class="video-play" src="{{ asset('assets/img/icons/video-play.png') }}" alt="">
+                </a>
+            </div>
+        </div><!--/end owl video-->
+    </div>
+    <!--=== End Container Part ===-->
+
+    <!--=== Container Part ===-->
+    <div class="bg-color-light">
+        <div class="container content-sm">
+            <div class="headline-center margin-bottom-60">
+                <h2>WHY WE ARE GOOD</h2>
+                <p>
+                    Because we are developers with good knowledge.
+                </p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 md-margin-bottom-50">
+                    <p>On the web you will always find the service you need, <strong>but</strong> every site has its pros and contras. We are different there! We gather information of something (let's say "How to host Blogs") and but them together.</p>
+                    <p>But not only this is what we aim. Instead of using twenty different websites, you can simply use everything on one, on <strong>our</strong>! Here you can find everything you need.</p><br>
+                    <a href="#" class="btn-u btn-brd btn-brd-hover btn-u-dark">Read More</a>
+                    <a href="#" class="btn-u">Create an Account</a>
+                </div>
+
+                <!-- Smallest Progress Bar -->
+                <div class="col-md-6 progress-box">
+                    <h3 class="heading-xs">HTML/CSS/JavaScript/PHP/Web Design <span class="pull-right">90%</span></h3>
+                    <div class="progress progress-u progress-xxs">
+                        <div class="progress-bar progress-bar-u" role="progressbar" data-width="90">
+                        </div>
+                    </div>
+
+                    <h3 class="heading-xs">Game Developement <span class="pull-right">10%</span></h3>
+                    <div class="progress progress-u progress-xxs">
+                        <div class="progress-bar progress-bar-u" role="progressbar" data-width="10">
+                        </div>
+                    </div>
+
+                    <h3 class="heading-xs">Graphical Design <span class="pull-right">10%</span></h3>
+                    <div class="progress progress-u progress-xxs">
+                        <div class="progress-bar progress-bar-u" role="progressbar" data-width="10">
+                        </div>
+                    </div>
+                </div>
+                <!-- End Smallest Progress Bar -->
+            </div><!--/end row-->
+        </div><!--/end container-->
+    </div>
+    <!--=== End Container Part ===-->
+
+    <!--=== Team v4 ===-->
+    <div class="container content-sm">
+        <div class="headline-center margin-bottom-60">
+            <h2>MEET OUR TEAM</h2>
+            <p>
+                Learn more about us. Below you can see the <strong>most important</strong> peoples. <br />
+                Click on the Link-button to learn more about a person, view <strong><a href="#">here</a></strong> for a list of all employees
+            </p>
+        </div>
+
+        <div class="row team-v4">
+            <div class="col-md-3 col-sm-6 md-margin-bottom-50">
+                <img class="img-responsive" src="{{ asset('assets/img/team/img15-md.jpg') }}" alt="">
+                <span>Manuele Vaccari</span>
+                <small>- CEO, Developer and Supporter -</small>
+                <p>Lorem ipsum dolor sit amet, consect etur adipiscing elit, sed a nulla non</p>
+                <ul class="list-inline team-social-v4">
+                    <li><a href="https://www.facebook.com/manuele.vaccari2"><i class="rounded-x fa fa-facebook"></i></a></li>
+                    <li><a href="https://twitter.com/ManueleVaccari"><i class="rounded-x fa fa-twitter"></i></a></li>
+                    <li><a href="https://www.linkedin.com/in/manuele-vaccari-827386105"><i class="rounded-x fa fa-linkedin"></i></a></li>
+                    <li><a href="https://www.instagram.com/manueele98/"><i class="rounded-x fa fa-instagram"></i></a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6 md-margin-bottom-50">
+                <img class="img-responsive" src="{{ asset('assets/img/team/img31-md.jpg') }}" alt="">
+                <span>Joël Lüscher</span>
+                <small>- Developer, Hacker and Supporter -</small>
+                <p>Lorem ipsum dolor sit amet, consect etur adipiscing elit, sed a nulla non</p>
+                <ul class="list-inline team-social-v4">
+                    <li><a href="#"><i class="rounded-x fa fa-facebook"></i></a></li>
+                    <li><a href="#"><i class="rounded-x fa fa-twitter"></i></a></li>
+                    <li><a href="#"><i class="rounded-x fa fa-linkedin"></i></a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6 sm-margin-bottom-50">
+                <img class="img-responsive" src="{{ asset('assets/img/team/img18-md.jpg') }}" alt="">
+                <span>Noel Pineiro</span>
+                <small>- Developer and Supporter -</small>
+                <p>Lorem ipsum dolor sit amet, consect etur adipiscing elit, sed a nulla non</p>
+                <ul class="list-inline team-social-v4">
+                    <li><a href="#"><i class="rounded-x fa fa-facebook"></i></a></li>
+                    <li><a href="#"><i class="rounded-x fa fa-twitter"></i></a></li>
+                    <li><a href="#"><i class="rounded-x fa fa-linkedin"></i></a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <img class="img-responsive" src="{{ asset('assets/img/team/img37-md.jpg') }}" alt="">
+                <span>NO PERSON</span>
+                <small>- Designer -</small>
+                <p>Lorem ipsum dolor sit amet, consect etur adipiscing elit, sed a nulla non</p>
+                <ul class="list-inline team-social-v4">
+                    <li><a href="#"><i class="rounded-x fa fa-facebook"></i></a></li>
+                    <li><a href="#"><i class="rounded-x fa fa-twitter"></i></a></li>
+                    <li><a href="#"><i class="rounded-x fa fa-linkedin"></i></a></li>
+                </ul>
+            </div>
+        </div><!--/end row-->
+    </div>
+    <!--=== End Team v4 ===-->
+{% endblock %}

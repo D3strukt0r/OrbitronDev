@@ -1,0 +1,28 @@
+app_forum_index:
+    path:     /
+    defaults: { _controller: 'ForumController::indexAction' }
+app_forum_new:
+    path:     /new-forum
+    defaults: { _controller: 'ForumController::newForumAction' }
+
+app_forum_forum_index:
+    path:     /{forum}
+    defaults: { _controller: 'ForumController::forumIndexAction' }
+app_forum_forum_board:
+    path:     /{forum}/board/{board}
+    defaults: { _controller: 'ForumController::forumBoardAction' }
+app_forum_forum_thread:
+    path:     /{forum}/thread/{thread)
+    defaults: { _controller: 'ForumController::forumThreadAction' }
+app_forum_forum_create_thread:
+    path:     /{forum}/create-thread
+    defaults: { _controller: 'ForumController::forumCreateThreadAction' }
+app_forum_forum_create_post:
+    path:     /{forum}/create-post
+    defaults: { _controller: 'ForumController::forumCreatePostAction' }
+app_forum_forum_search:
+    path:     /{forum}/search
+    defaults: { _controller: 'ForumController::forumSearchAction' }
+app_forum_forum_admin:
+    path:     /{forum}/admin/{page}
+    defaults: { _controller: 'ForumController::forumAdminAction' }

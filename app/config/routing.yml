@@ -1,0 +1,26 @@
+default:
+    resource: 'default/routing.yml'
+    host:     www.orbitrondev.org
+#    schemes:  [https]
+#    prefix:   /{_locale} # TODO: Prefix lets the Framework not find route on request!
+#    requirements:
+#        _locale: "|en|fr|de|it|es" # put a pipe "|" first
+
+account:
+    resource: 'account/routing.yml'
+    host:     account.orbitrondev.org
+blog:
+    resource: 'blog/routing.yml'
+    host:     blog.orbitrondev.org
+cloud:
+    resource: 'cloud/routing.yml'
+    host:     cloud.orbitrondev.org
+forum:
+    resource: 'forum/routing.yml'
+    host:     forum.orbitrondev.org
+store:
+    resource: 'store/routing.yml'
+    host:     store.orbitrondev.org
+wiki:
+    resource: 'wiki/routing.yml'
+    host:     wiki.orbitrondev.org

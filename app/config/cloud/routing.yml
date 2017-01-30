@@ -1,0 +1,3 @@
+app_cloud_index:
+    path:     /
+    defaults: { _controller: 'DefaultController::indexAction' }

@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register | {{ parent() }}{% endblock %}
+
+{% block stylesheets_implemeting_plugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/owl-carousel/owl-carousel/owl.carousel.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
+    <!--[if lt IE 9]>
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms-ie8.css') }}" />
+    <![endif]-->
+{% endblock %}
+
+{% block javascripts_implementing_plugins %}
+    {{ parent() }}
+    <script type="text/javascript"
+            src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
+{% endblock %}
+
+{% block stylesheets_code %}
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background: url(/assets/img/background/bg-cyan.jpg) fixed 50% 50%;
+            background-size: cover;
+        }
+
+        .sky-form {
+            border: none;
+            margin: 0 auto;
+            padding: 40px;
+            box-sizing: content-box;
+            max-width: 400px;
+        }
+    </style>
+{% endblock %}
+{% block javascript %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(function () {
+                // Validation for login form
+                $("#register-form").validate({
+                    // Rules for form validation
+                    rules: {
+                        'form[username]': {
+                            required: true
+                        },
+                        'form[email]': {
+                            required: true,
+                            email: true
+                        },
+                        'form[password]': {
+                            required: true,
+                            minlength: 8
+                        },
+                        'form[password_verify]': {
+                            required: true,
+                            minlength: 8,
+                            equalTo : "#form_password"
+                        }
+                    },
+
+                    // Messages for form validation
+                    messages: {
+                        'form[username]': {
+                            required: 'Please enter your username'
+                        },
+                        'form[email]': {
+                            required: 'Please enter your email address',
+                            email: 'Please enter a VALID email address'
+                        },
+                        'form[password]': {
+                            required: 'Please enter your password'
+                        },
+                        'form[password_verify]': {
+                            required: 'Please enter your password',
+                            equalTo: 'Your password doesn\'t matches the first one'
+                        }
+                    },
+
+                    // Do not change code below
+                    errorPlacement: function (error, element) {
+                        error.insertAfter(element.parent());
+                    }
+                });
+            });
+
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <form action="{{ path('app_account_register') }}" method="post" id="register-form" class="sky-form sky-changes-3"
+          novalidate="novalidate">
+        {{ form_row(register_form._token) }}
+
+        <header>Register</header>
+        <fieldset>
+            {{ form_errors(register_form) }}
+            <section>
+                <div class="row">
+                    {{ form_label(register_form.username, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                    <div class="col col-8">
+                        <label class="input">
+                            <i class="icon-append fa fa-user"></i>
+                            {{ form_widget(register_form.username) }}
+                        </label>
+                        <div class="note note-error">{{ form_errors(register_form.username) }}</div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="row">
+                    {{ form_label(register_form.email, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                    <div class="col col-8">
+                        <label class="input">
+                            <i class="icon-append fa fa-envelope"></i>
+                            {{ form_widget(register_form.email) }}
+                        </label>
+                        <div class="note note-error">{{ form_errors(register_form.email) }}</div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="row">
+                    {{ form_label(register_form.password, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                    <div class="col col-8">
+                        <label class="input">
+                            <i class="icon-append fa fa-lock"></i>
+                            {{ form_widget(register_form.password) }}
+                        </label>
+                        <div class="note note-error">{{ form_errors(register_form.password) }}</div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="row">
+                    {{ form_label(register_form.password_verify, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                    <div class="col col-8">
+                        <label class="input">
+                            <i class="icon-append fa fa-lock"></i>
+                            {{ form_widget(register_form.password_verify) }}
+                        </label>
+                        <div class="note note-error">{{ form_errors(register_form.password_verify) }}</div>
+                    </div>
+                </div>
+            </section>
+        </fieldset>
+        <fieldset>
+            <section>
+                {{ form_widget(register_form.recaptcha) }}
+                <div class="note note-error">{{ form_errors(register_form.recaptcha) }}</div>
+            </section>
+        </fieldset>
+        <fieldset>
+            <small>
+                By registering you agree to our <a href="https://www.orbitrondev.org/en/terms-of-service" target="_blank">Terms and Conditions <i class="fa fa-external-link"></i></a>
+                and the <a href="https://www.orbitrondev.org/en/privacy-policy" target="_blank">Privacy Policy <i class="fa fa-external-link"></i></a>
+            </small>
+        </fieldset>
+        <footer>
+            {{ form_widget(register_form.send, {'attr': {'class': 'button'}}) }}
+            <a href="{{ path('app_account_login') }}" class="button button-secondary">Log in</a>
+        </footer>
+    </form>
+{% endblock %}

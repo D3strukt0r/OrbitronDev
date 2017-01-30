@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Authorize access | {{ parent() }}{% endblock %}
+
+{% block stylesheets_implemeting_plugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/owl-carousel/owl-carousel/owl.carousel.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
+    <!--[if lt IE 9]>
+    <link rel="stylesheet"
+          href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms-ie8.css') }}" /><![endif]-->
+{% endblock %}
+
+{% block javascripts_implementing_plugins %}
+    {{ parent() }}
+    <script type="text/javascript"
+            src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
+{% endblock %}
+
+{% block stylesheets_code %}
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background: url(/assets/img/background/bg-cyan.jpg) fixed 50% 50%;
+            background-size: cover;
+        }
+
+        .sky-form {
+            border: none;
+            margin: 0 auto;
+            padding: 40px;
+            box-sizing: content-box;
+            max-width: 400px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <form method="post" class="sky-form">
+        <header>Do You Authorize <b>{{ client_info.client_name }}</b>?</header>
+        <fieldset>
+            <section>
+                <h3><b>{{ client_info.client_name }}</b> wants access to:</h3>
+                <ul>
+                    {#{% for scope in client_info.scope|split(' ') %}
+                        <li>{{ scope }}</li>
+                    {% endfor %}#}
+                    {% for scope in scopes %}
+                        <li>{{ scope }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </fieldset>
+        <footer>
+            <input type="submit" name="authorized" value="No" class="button button-secondary" />
+            <input type="submit" name="authorized" value="Yes" class="button" />
+        </footer>
+    </form>
+{% endblock %}

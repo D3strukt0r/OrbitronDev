@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html lang="en" class="ie8"><![endif]-->
+<!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
+<!--[if !IE]><!--><html lang="{{ app.request.getLocale() }}"><!--<![endif]-->
+    <head>
+        <title>{% block title %}OrbitronDev{% endblock %}</title>
+
+        <!-- Meta -->
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta name="description" content="{% block description %}The official site of OrbitronDev. Containing all projects and everything about us.{% endblock %}" />
+        <meta name="author" content="OrbitronDev" />
+        <meta name="publisher" content="OrbitronDev" />
+        <meta name="copyright" content="OrbitronDev &copy; 2013-2015" />
+        <meta name="keywords" content="" />
+        <meta name="audience" content="Alle" />
+        <meta name="robots" content="INDEX,FOLLOW" />
+
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png?v=QE5RNE7RE9') }}">
+        <link rel="icon" type="image/png" href="{{ asset('favicon-32x32.png?v=QE5RNE7RE9') }}" sizes="32x32">
+        <link rel="icon" type="image/png" href="{{ asset('favicon-16x16.png?v=QE5RNE7RE9') }}" sizes="16x16">
+        <link rel="manifest" href="{{ asset('manifest.json?v=QE5RNE7RE9') }}">
+        <link rel="mask-icon" href="{{ asset('safari-pinned-tab.svg?v=QE5RNE7RE9') }}" color="#336699">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico?v=QE5RNE7RE9') }}">
+        <meta name="msapplication-TileColor" content="#2b5797">
+        <meta name="msapplication-TileImage" content="{{ asset('mstile-144x144.png?v=QE5RNE7RE9') }}">
+        <meta name="theme-color" content="#2980b9">
+
+        <!-- Web Fonts -->
+        <link rel="stylesheet" type="text/css" href="{{ asset('https://fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin') }}" />
+
+        <!-- CSS Global Compulsory -->
+        <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
+
+        <!-- CSS Header and Footer -->
+        {% block stylesheets_head_foot %}
+            <link rel="stylesheet" href="{{ asset('assets/css/headers/header-default.css') }}" />
+            <link rel="stylesheet" href="{{ asset('assets/css/footers/footer-v1.css') }}" />
+        {% endblock %}
+
+        <!-- CSS Implementing Plugins -->
+        {% block stylesheets_implemeting_plugins %}
+            <link rel="stylesheet" href="{{ asset('assets/plugins/animate.css') }}" />
+            <link rel="stylesheet" href="{{ asset('assets/plugins/line-icons/line-icons.css') }}" />
+            <link rel="stylesheet" href="{{ asset('assets/plugins/font-awesome/css/font-awesome.min.css') }}" />
+        {% endblock %}
+
+        <!-- CSS Page Style -->
+        {% block stylesheets_page_style %}{% endblock %}
+
+        <!-- CSS Theme -->
+        {% block stylesheets_theme %}
+            <link rel="stylesheet" href="{{ asset('assets/css/theme-colors/blue.css') }}" id="style_color" />
+            <link rel="stylesheet" href="{{ asset('assets/css/theme-skins/dark.css') }}" />
+        {% endblock %}
+
+        <!-- CSS Customization -->
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" />
+        {% endblock %}
+
+        {% block stylesheets_code %}{% endblock %}
+
+        <!-- JS Global Compulsory -->
+        <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery-migrate.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+    </head>
+    <body {#class="dark"#}>
+        {% block content %}{% endblock %}
+
+        <!-- JS Google Analytics -->
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-69484706-1', 'auto');
+            ga('send', 'pageview');
+        </script>
+
+        <!-- JS Implementing Plugins -->
+        {% block javascripts_implementing_plugins %}
+            <script type="text/javascript" src="{{ asset('assets/plugins/back-to-top.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('assets/plugins/smoothScroll.js') }}"></script>
+        {% endblock %}
+
+        <!-- JS Customization -->
+        <script type="text/javascript" src="{{ asset('assets/js/custom.js') }}"></script>
+
+        <!-- JS Page Level -->
+        {% block javascripts_page_level %}
+            <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
+        {% endblock %}
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+                App.init();
+                {% block javascripts_code %}{% endblock %}
+            });
+        </script>
+        {% block javascript %}{% endblock %}
+
+        <!--[if lt IE 9]>
+        <script type="text/javascript" src="{{ asset('assets/plugins/respond.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('assets/plugins/html5shiv.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('assets/plugins/placeholder-IE-fixes.js') }}"></script>
+        <![endif]-->
+
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

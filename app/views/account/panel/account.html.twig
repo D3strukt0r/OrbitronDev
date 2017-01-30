@@ -1,0 +1,122 @@
+<section id="header">
+    <div class="col-lg-12">
+        <h1 class="page-header">{{ 'User Info'|trans }}</h1>
+        <ol class="breadcrumb">
+            <li class="active">{{ 'Account'|trans }}</li>
+        </ol><!-- /.breadcrumb -->
+        <hr />
+    </div><!-- /.col-lg-12 -->
+</section><!-- /#header -->
+<section id="page">
+    <div class="col-lg-6">
+        <form method="post" id="change-account-information-form" class="sky-form" style="border-color: #337ab7;">
+            <header>{{ 'Account information'|trans }}</header>
+            <fieldset>
+                <section>
+                    <div class="row">
+                        <label class="label col col-4">{{ 'User ID'|trans }}</label>
+                        <div class="col col-8">
+                            <p>{{ current_user.user_id }}</p>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="row">
+                        {{ form_label(edit_account_form.new_username, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                        <div class="col col-8">
+                            <label class="input">
+                                <i class="icon-append fa fa-user"></i>
+                                {{ form_widget(edit_account_form.new_username) }}
+                            </label>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="row">
+                        {{ form_label(edit_account_form.new_password, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                        <div class="col col-8">
+                            <label class="input">
+                                <i class="icon-append fa fa-lock"></i>
+                                {{ form_widget(edit_account_form.new_password) }}
+                            </label>
+                            <label class="input">
+                                <i class="icon-append fa fa-lock"></i>
+                                {{ form_widget(edit_account_form.new_password_verify) }}
+                            </label>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="row">
+                        {{ form_label(edit_account_form.new_email, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                        <div class="col col-8">
+                            <label class="input">
+                                <i class="icon-append fa fa-envelope"></i>
+                                {{ form_widget(edit_account_form.new_email) }}
+                            </label>
+                            {% if current_user.email_verified %}
+                                <span class="pull-right">
+                                    <span class="text-success">{{ 'Verified'|trans }}</span>&nbsp;&nbsp;
+                                </span>
+                            {% else %}
+                                <span class="pull-right">
+                                    <span class="text-danger">{{ 'Not Verified'|trans }}</span>&nbsp;&nbsp;
+                                    <a href="{{ path('app_account_confirm') }}" class="btn-u btn-u-orange btn-u-xs" role="button">{{ 'Activate'|trans }}</a>
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+            </fieldset>
+            <footer>
+                <div class="col col-4"></div>
+                <div class="col col-6">
+                    <label class="input">{{ form_widget(edit_account_form.password_verify) }}</label>
+                </div>
+                {{ form_widget(edit_account_form.send, {'attr': {'class': 'btn-u'}}) }}
+            </footer>
+        </form>
+    </div><!-- /.col-lg-6 -->
+    <div class="col-lg-6">
+        <div class="sky-form" style="border-color: #337ab7;">
+            <header>{{ 'Financial information'|trans }}</header>
+            <fieldset>
+                <section>
+                    <div class="row">
+                        <label class="label col col-4">{{ 'Credits'|trans }}</label>
+                        <div class="label col col-4">
+                            <span>{{ current_user.credits }}</span>
+                        </div>
+                        <div class="col col-4">
+                            <span class="pull-right"><a href="{{ path('app_account_panel', {'page': 'buy-credits'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Buy credits'|trans }}</a></span>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="row">
+                        <label class="label col col-4">{{ 'Payment methods'|trans }}</label>
+                        <div class="label col col-8">
+                            <span>{{ 'Methods (Coming Soon)'|trans }}</span>
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <div class="row">
+                        <label class="label col col-4">{{ 'Subscription'|trans }}</label>
+                        <div class="label col col-4">
+                            <span>
+                                {% if current_user_sub.subscription_id == 1 %}{{ 'Normal'|trans }}
+                                {% elseif current_user_sub.subscription_id == 2 %}{{ 'Premium'|trans }}
+                                {% elseif current_user_sub.subscription_id == 3 %}{{ 'Enterprise'|trans }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col col-4">
+                            <span class="pull-right"><a href="{{ path('app_account_panel', {'page': 'plans'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Change plan'|trans }}</a></span>
+                        </div>
+                    </div>
+                </section>
+            </fieldset>
+        </div>
+    </div><!-- /.col-lg-6 -->
+</section><!-- /#page -->
