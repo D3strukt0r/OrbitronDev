@@ -1,9 +1,4 @@
 #################
-## Project
-#################
-/app/config/parameters.yml
-
-#################
 ## Composer
 #################
 composer.phar
@@ -283,3 +278,9 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+#################
+## Project
+#################
+/app/config/parameters.yml
+!/bin/
