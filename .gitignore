@@ -74,7 +74,7 @@ fabric.properties
 *.pydevproject
 .project
 .metadata
-bin/
+#bin/
 tmp/
 *.tmp
 *.bak
