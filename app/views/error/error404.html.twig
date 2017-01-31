@@ -77,12 +77,12 @@
                             <img src="{{ asset('assets/logo-long.png') }}" alt="OrbitronDev" height="30px" />
                         </a>
                         <h1>404</h1>
-                        <span class="sorry">Sorry, the page you were looking for could not be found!</span>
+                        <span class="sorry">{{ 'Sorry, the page you were looking for could not be found!'|trans }}</span>
                         <p style="color:white;margin-top:-30px;">Server message: [Code: {{ status_code }}] {{ status_text }}</p>
                         <div class="row">
                             <div class="col-md-6 col-md-offset-3">
-                                <a class="btn-u btn-brd btn-u-light" href="{{ path('app_default_index') }}">Go Back to Main Page</a>
-                                <a class="btn-u btn-brd btn-u-light" href="javascript:window.history.back();">Go Back</a>
+                                <a class="btn-u btn-brd btn-u-light" href="{{ path('app_default_index') }}">{{ 'Go Back to Main Page'|trans }}</a>
+                                <a class="btn-u btn-brd btn-u-light" href="javascript:window.history.back();">{{ 'Go Back'|trans }}</a>
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
         <!--=== Sticky Footer ===-->
         <div class="container sticky-footer">
             <p class="copyright-space">
-                2013-2015 &copy; OrbitronDev. All Rights Reserved.
+                {{ '2013-2017 © OrbitronDev. All Rights Reserved.'|trans }}
             </p>
         </div>
         <!--=== End Sticky Footer ===-->
