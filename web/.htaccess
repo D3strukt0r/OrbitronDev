@@ -58,9 +58,15 @@ DirectoryIndex index.php
     ## Remember ##
     # RewriteRule ^about/([^/]+)(|/)$ /index.php?page=about&pp=$1 [QSA,L]
 
-    # Redirects the user to HTTPS if not used
+    # Own code: Redirects the user to HTTPS if not used
     RewriteCond %{HTTPS} !=on
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Own code: add "www." if not entered. ##### NOT NEEDED IN ORBITRONDEV SERVICES ######
+    #RewriteCond %{HTTP_HOST} !^$
+    #RewriteCond %{HTTP_HOST} !^www\. [NC]
+    #RewriteCond %{HTTPS}s ^on(s)|
+    #RewriteRule ^ http%1://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
     # Determine the RewriteBase automatically and set it as environment variable.
     # If you are using Apache aliases to do mass virtual hosting or installed the

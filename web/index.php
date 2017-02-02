@@ -4,7 +4,9 @@
  * Force https if not accessing over localhost
  */
 //if ($_SERVER['HTTP_HOST'] != 'localhost') {
-    if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
+use Symfony\Component\Debug\Debug;
+
+if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
         header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         exit;
     }
@@ -32,7 +34,7 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['RE
 
 define('EXEC_START', microtime(true));
 define('MAINTENANCE', false);
-define('APPLICATION_ENV', 'development');
+define('APPLICATION_ENV', 'development'); // Use: 'dev' or 'prod'
 
 if (MAINTENANCE) {
     ?>
@@ -88,7 +90,8 @@ if (MAINTENANCE) {
 /**
  * Display all errors when APPLICATION_ENV is development.
  */
-if (APPLICATION_ENV == 'development') {
+if (APPLICATION_ENV == 'development' || APPLICATION_ENV == 'dev') {
+    //Debug::enable(); // TODO: Use debug by Symfony instead of own code & Check if better
     ini_set('display_errors', '1');
     ini_set('display_startup_errors', '1');
     ini_set('error_reporting', E_ALL);

@@ -12,6 +12,12 @@ use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 class SessionContainer
 {
     /**
+     * TODO: Use PDO as Session handler
+     * See: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+     * Arguments: mysql:host=%database_host%;port=%database_port%;dbname=%database_name%
+     */
+
+    /**
      * Templating constructor.
      *
      * @param \Kernel $kernel

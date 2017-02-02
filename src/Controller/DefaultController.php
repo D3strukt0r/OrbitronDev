@@ -137,36 +137,42 @@ class DefaultController extends Controller
         */
 
         $request = Request::createFromGlobals();
-        $contactForm->handleRequest($request);
-        if ($contactForm->isValid()) {
-            $formData = $contactForm->getData();
-            $userRequest = Request::createFromGlobals();
 
-            if ($contactForm->get('send_to_own')->getData()) {
-                $message = Swift_Message::newInstance()
-                    ->setSubject(trim($formData['subject']))
-                    ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
-                    ->setTo(array('info@orbitrondev.org'))
-                    ->setCc(array(trim($formData['email']) => trim($formData['name'])))
-                    ->setBody($this->renderView('default/mail/contact.html.twig', array(
-                        'ip'      => $userRequest->getClientIp(),
-                        'name'    => $formData['name'],
-                        'message' => $formData['message'],
-                    )), 'text/html');
-            } else {
-                $message = Swift_Message::newInstance()
-                    ->setSubject(trim($formData['subject']))
-                    ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
-                    ->setTo(array('info@orbitrondev.org'))
-                    ->setBody($this->renderView('mail/contact.html.twig', array(
-                        'ip'      => $userRequest->getClientIp(),
-                        'name'    => $formData['name'],
-                        'message' => $formData['message'],
-                    )), 'text/html');
+        if($request->isMethod('POST')) {
+            $contactForm->handleRequest($request);
+
+            if ($contactForm->isSubmitted() && $contactForm->isValid()) {
+                $formData = $contactForm->getData();
+
+                if ($contactForm->get('send_to_own')->getData()) {
+                    $message = Swift_Message::newInstance()
+                        ->setSubject(trim($formData['subject']))
+                        ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
+                        ->setTo(array('info@orbitrondev.org'))
+                        ->setCc(array(trim($formData['email']) => trim($formData['name'])))
+                        ->setBody($this->renderView('default/mail/contact.html.twig', array(
+                            'ip'      => $request->getClientIp(),
+                            'name'    => $formData['name'],
+                            'message' => $formData['message'],
+                        )), 'text/html');
+                } else {
+                    $message = Swift_Message::newInstance()
+                        ->setSubject(trim($formData['subject']))
+                        ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
+                        ->setTo(array('info@orbitrondev.org'))
+                        ->setBody($this->renderView('mail/contact.html.twig', array(
+                            'ip'      => $request->getClientIp(),
+                            'name'    => $formData['name'],
+                            'message' => $formData['message'],
+                        )), 'text/html');
+                }
+                $this->get('mailer')->send($message);
+
+                // TODO: Send message to UI as soon as email is sent
+                //$request->getSession()->getFlashBag()->add('success', 'Your email has been sent! Thanks!');
+
+                return $this->redirectToRoute('app_default_contact', array('success'));
             }
-            $this->get('mailer')->send($message);
-
-            return $this->redirectToRoute('app_default_contact', array('success'));
         }
 
         return $this->render('default/contact.html.twig', array(
@@ -191,7 +197,40 @@ class DefaultController extends Controller
 
     public function searchAction()
     {
-        // TODO: Handle form submission
+        $response = $this->searchHandler();
+        if ($response !== null) {
+            return $response;
+        }
+
+        // TODO: Handle form submission or use Google search
         return $this->render('default/search.html.twig');
+    }
+
+    private function searchHandler()
+    {
+        $searchForm = $this->createFormBuilder()
+            ->setMethod('GET')
+            ->add('search', TextType::class, array(
+                'label'       => 'Search',
+                'required'    => true,
+                'attr'        => array(
+                    'pattern'     => '.{1,}',
+                    'placeholder' => 'Search',
+                ),
+            ))
+            ->add('send', SubmitType::class, array(
+                'label' => 'Go',
+            ))
+            ->getForm();
+
+        $request = Request::createFromGlobals();
+        if($request->isMethod('POST')) {
+            $searchForm->handleRequest($request);
+
+            if($searchForm->isSubmitted() && $searchForm->isValid()) {
+                return $this->redirect($this->generateUrl('app_default_search', array('q' => $searchForm->get('search')->getData())));
+            }
+        }
+        return null;
     }
 }

@@ -19,6 +19,12 @@ use Symfony\Component\Translation\MessageSelector;
 
 class TranslatingContainer
 {
+    /**
+     * TODO: Should get locale if somewhere defined
+     *
+     */
+
+
     /** @var \Symfony\Component\Translation\Translator $translator */
     public static $translator = null;
 

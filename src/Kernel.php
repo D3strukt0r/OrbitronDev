@@ -210,17 +210,17 @@ class Kernel
 
     public function getRootDir()
     {
-        return __DIR__;
+        return realpath(dirname(__DIR__));
     }
 
     public function getCacheDir()
     {
-        return dirname(__DIR__) . '/var/cache/';
+        return realpath(dirname(__DIR__) . '/var/cache/');
     }
 
     public function getLogDir()
     {
-        return dirname(__DIR__) . '/var/logs';
+        return realpath(dirname(__DIR__) . '/var/logs');
     }
 
     /**

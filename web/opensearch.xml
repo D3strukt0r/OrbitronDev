@@ -4,7 +4,7 @@
     <LongName>OrbitronDev Web Search</LongName>
     <Description>Find content on all sites by us.</Description>
     <Tags>orbitrondev web</Tags>
-    <Contact>team-orbitron@hotmail.com</Contact>
+    <Contact>info@orbitrondev.org</Contact>
     <Url type="application/atom+xml"
          template="https://orbitrondev.org/search?q={searchTerms}&amp;pw={startPage?}&amp;format=atom"/>
     <Url type="application/rss+xml"
@@ -16,7 +16,7 @@
     <Query role="example" searchTerms="cat" />
     <Developer>OrbitronDev.org Development Team</Developer>
     <Attribution>
-        Search data Copyright 2016, OrbitronDev, All Rights Reserved
+        Search data Copyright 2017, OrbitronDev, All Rights Reserved
     </Attribution>
     <SyndicationRight>open</SyndicationRight>
     <AdultContent>false</AdultContent>
