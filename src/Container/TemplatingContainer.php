@@ -67,7 +67,7 @@ class TemplatingContainer
         $globalVariable->setEnvironment(APPLICATION_ENV);
         $globalVariable->setDebug(true);
         $requestStack = new RequestStack();
-        $requestStack->push(Request::createFromGlobals());
+        $requestStack->push($kernel->getRequest());
         $globalVariable->setRequestStack($requestStack);
 
         if($kernel->environment == 'development' || $kernel->environment == 'dev') {
@@ -108,8 +108,10 @@ class TemplatingContainer
         $csrfGenerator = new UriSafeTokenGenerator();
         $csrfStorage = new SessionTokenStorage($session);
         $csrfManager = new CsrfTokenManager($csrfGenerator, $csrfStorage);
+
         // Validator
         $validator = Validation::createValidator();
+
         // Twig
         //$defaultFormTheme = 'form_div_layout.html.twig';
         //$defaultFormTheme = 'bootstrap_3_layout.html.twig';

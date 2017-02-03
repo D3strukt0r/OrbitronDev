@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 
+{#{% trans_default_domain "base" %}#}
+
 {% block content %}
     <div class="wrapper">
         {% block navigation %}
@@ -17,15 +19,10 @@
                         <ul class="loginbar pull-right">
                             <li class="hoverSelector">
                                 <i class="fa fa-globe"></i>
-                                <a href="javascript:void(0);">{{ 'header.language.base'|trans }}{# ({{ app.request.getLocale()|upper }})#}</a>
+                                <a href="javascript:void(0);">{{ 'header.language.base'|trans }} ({{ app.request.getLocale()|upper }})</a>
                                 <ul class="languages hoverSelectorBlock">
-                                    <li><a href="#">English</a></li>
-                                    <li><a href="#">French</a></li>
-                                    <li><a href="#">German</a></li>
-                                    <li><a href="#">Italian</a></li>
-                                    <li><a href="#">Spanish</a></li>
-                                    {#{% if app.request.getLocale() == "en" %} TODO: "merge"-filter doesn't work (as no languages is set up)
-                                        <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">English <i class="fa fa-check"></i></a></li>
+                                    {% if app.request.getLocale() == "en" %}
+                                         <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">English <i class="fa fa-check"></i></a></li>
                                     {% else %}
                                         <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">English</a></li>
                                     {% endif %}
@@ -52,7 +49,7 @@
                                         <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}">Spanish <i class="fa fa-check"></i></a></li>
                                     {% else %}
                                         <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}">Spanish</a></li>
-                                    {% endif %}#}
+                                    {% endif %}
                                 </ul>
                             </li>
                             <li class="topbar-devider"></li>
@@ -265,7 +262,7 @@
                                 <div class="headline"><h2>{{ 'footer.contact.title'|trans }}</h2></div>
                                 <address class="md-margin-bottom-40">
                                     {{ 'footer.contact.text'|trans }}
-                                    {{ 'footer.contact.email'|trans }} <a href="mailto:team-orbitron@hotmail.com" class="">officialorbitron@gmail.com</a>
+                                    {{ 'footer.contact.email'|trans }} <a href="mailto:info@orbitrondev.org" class="">info@orbitrondev.org</a>
                                 </address>
                             </div>
                             <!-- End Address -->

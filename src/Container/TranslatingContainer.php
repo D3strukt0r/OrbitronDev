@@ -30,6 +30,9 @@ class TranslatingContainer
 
     private $defaultLocale = 'en';
 
+    /** @var \Kernel $kernel */
+    private $kernel = null;
+
     /**
      * RoutingContainer constructor.
      *
@@ -37,6 +40,8 @@ class TranslatingContainer
      */
     function __construct($kernel)
     {
+        $this->kernel = $kernel;
+
         $this->initLocaleListener(); // TODO: This is doing an error
 
         $translator = new Translator('en_US', new MessageSelector());
@@ -68,7 +73,7 @@ class TranslatingContainer
     }
     function initLocaleListener()
     {
-        $request = new Request();
+        $request = $this->kernel->getRequest();
         if (!$request->hasPreviousSession()) {
             return;
         }

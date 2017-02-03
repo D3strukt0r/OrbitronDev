@@ -17,13 +17,18 @@ use Symfony\Component\Yaml\Yaml;
 class Kernel
 {
     public $components = array();
+
     public $environment = null;
+
     public $rootDir = null;
     public static $rootDir2 = null;
     /** @var Kernel $kernel */
+
     public static $kernel = null;
 
-    public function __construct($env)
+    private $request = null;
+
+    function __construct($env)
     {
         $this->components['kernel'] = $this;
         Kernel::$kernel = $this; // For external access
@@ -37,6 +42,8 @@ class Kernel
 
         $this->rootDir = realpath(dirname(__DIR__));
         Kernel::$rootDir2 = realpath(dirname(__DIR__));
+
+        $this->request = Request::createFromGlobals();
 
         try {
             $config = Yaml::parse(file_get_contents($this->rootDir.'/app/config/parameters.yml'));
@@ -59,7 +66,7 @@ class Kernel
             $error = $this->get('routing.error');
             $response = new Response($this->get('twig')->render('error/error404.html.twig', array('status_code' => $error->getCode(), 'status_text' => $error->getMessage())));
             //$response = new NotFoundHttpException('Not found', $this->get('routing.error'));
-            $response->prepare(Request::createFromGlobals());
+            $response->prepare($this->getRequest());
             $response->send();
         } else {
             $controller = explode('::', $this->components['routing']['_controller']); // Split in Class and Function
@@ -73,7 +80,7 @@ class Kernel
             /** @var Response $response */
             $response = $class->$functionName($this);       // Execute Controller
             if(is_object($response)) {
-                $response->prepare(Request::createFromGlobals());
+                $response->prepare($this->getRequest());
                 $response->send();
                 //echo $response->getContent();
             }
@@ -81,17 +88,17 @@ class Kernel
     }
 
 
-    public function has(string $component)
+    function has(string $component)
     {
         return isset($this->components[$component]);
     }
 
-    public function get(string $component)
+    function get(string $component)
     {
         return $this->components[$component];
     }
 
-    public function set(string $component, $value)
+    function set(string $component, $value)
     {
         return $this->components[$component] = $value;
     }
@@ -100,7 +107,7 @@ class Kernel
     /**
      * Cron Job
      */
-    public function runCronJob()
+    function runCronJob()
     {
         \App\Core\CronJob::execute();
     }
@@ -108,7 +115,7 @@ class Kernel
     /**
      * Database
      */
-    public function loadMailer()
+    function loadMailer()
     {
         new SwiftMailerContainer($this);
     }
@@ -116,7 +123,7 @@ class Kernel
     /**
      * Database
      */
-    public function loadDatabase()
+    function loadDatabase()
     {
         new DatabaseContainer($this);
     }
@@ -124,7 +131,7 @@ class Kernel
     /**
      * Logger
      */
-    public function loadLogger()
+    function loadLogger()
     {
         $log = new Logger('Root');
         $log->pushHandler(new StreamHandler($this->rootDir . '/var/debug.log', Logger::DEBUG));
@@ -134,7 +141,7 @@ class Kernel
     /**
      * Session
      */
-    public function loadSession()
+    function loadSession()
     {
         new SessionContainer($this);
     }
@@ -142,7 +149,7 @@ class Kernel
     /**
      * Templating
      */
-    public function loadTemplating()
+    function loadTemplating()
     {
         // Symfony Templating
         new TemplatingContainer($this);
@@ -186,7 +193,7 @@ class Kernel
     /**
      * Translation
      */
-    public function loadRouting()
+    function loadRouting()
     {
         new RoutingContainer($this);
     }
@@ -194,7 +201,7 @@ class Kernel
     /**
      * Translation
      */
-    public function loadTranslation()
+    function loadTranslation()
     {
         // Symfony Translator
         new TranslatingContainer($this);
@@ -208,19 +215,27 @@ class Kernel
         \App\Template\Language::setupCookie($default_cookie);
     }
 
-    public function getRootDir()
+    function getRootDir()
     {
         return realpath(dirname(__DIR__));
     }
 
-    public function getCacheDir()
+    function getCacheDir()
     {
         return realpath(dirname(__DIR__) . '/var/cache/');
     }
 
-    public function getLogDir()
+    function getLogDir()
     {
         return realpath(dirname(__DIR__) . '/var/logs');
+    }
+
+    /**
+     * @return null|Request
+     */
+    function getRequest()
+    {
+        return $this->request;
     }
 
     /**

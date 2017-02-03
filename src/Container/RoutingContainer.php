@@ -31,14 +31,19 @@ class RoutingContainer
         $kernel->set('routing.routes', $routes);
 
         $context = new RequestContext();
-        $context->fromRequest(Request::createFromGlobals());
+        $context->fromRequest($kernel->getRequest());
         $kernel->set('routing.context', $context);
 
         $matcher = new UrlMatcher($routes, $context);
 
         try {
-            $parameters = $matcher->match(strtok($_SERVER["REQUEST_URI"],'?')); // "strtok" is here to only get everything before the "?"
+            $parameters = $matcher->match($kernel->getRequest()->getPathInfo());
+            //$parameters = $matcher->match(strtok($_SERVER["REQUEST_URI"],'?')); // "strtok" is here to only get everything before the "?"
             $kernel->set('routing', $parameters);
+
+            $kernel->getRequest()->attributes->add($parameters);
+            unset($parameters['_route'], $parameters['_controller']);
+            $kernel->getRequest()->attributes->set('_route_params', $parameters);
 
             $generator = new UrlGenerator($routes, $context);
             $kernel->set('router', $generator);
