@@ -242,18 +242,18 @@ class ForumController extends Controller
 
         // Pagination
         /** @var \PDOStatement $getBoardCount */
-        $getBoardCount = $this->get('database')->prepare('SELECT NULL FROM `forum_threads` WHERE `forum_id`=:forum_id');
-        $getBoardCount->execute(array(
-            ':forum_id' => $forum->getVar('id'),
+        $getThreadCount = $this->get('database')->prepare('SELECT NULL FROM `forum_threads` WHERE `board_id`=:board_id');
+        $getThreadCount->execute(array(
+            ':board_id' => $board->getVar('id'),
         ));
-        $pagination['total_items'] = $getBoardCount->rowCount();
+        //echo '<pre>'; var_dump($getThreadCount->rowCount()); echo '</pre>'; // TODO: Continue developing here
+        $pagination['total_items'] = $getThreadCount->rowCount();
         $pagination['adjacents'] = 1;
 
         $pagination['next_page'] = $pagination['current_page'] + 1;
         $pagination['previous_page'] = $pagination['current_page'] - 1;
         $pagination['pages_count'] = ceil($pagination['total_items'] / $pagination['item_limit']);
         $pagination['last_page_m1'] = $pagination['pages_count'] - 1;
-
 
         return $this->render('forum/theme1/board.html.twig', array(
             'current_user'  => $currentUser->aUser,
