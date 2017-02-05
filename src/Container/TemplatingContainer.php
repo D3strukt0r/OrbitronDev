@@ -113,13 +113,12 @@ class TemplatingContainer
         $validator = Validation::createValidator();
 
         // Twig
-        //$defaultFormTheme = 'form_div_layout.html.twig';
-        //$defaultFormTheme = 'bootstrap_3_layout.html.twig';
-        $defaultFormTheme = 'form_layout.html.twig';
-        $formEngine = new TwigRendererEngine(array(
-            $defaultFormTheme, // the Twig file that holds all the default markup for rendering forms. This file comes with TwigBridge
-            'form_widget.html.twig',
-        ));
+        $defaultThemes = array();
+        $defaultThemes[] = 'form_layout.html.twig'; // the Twig file that holds all the default markup for rendering forms. This file comes with TwigBridge
+        //$defaultThemes[] = 'form_div_layout.html.twig'; // TODO: Use this (<---) one, so forms are displayed correctly
+        //$defaultThemes[] = 'bootstrap_3_layout.html.twig';
+        $defaultThemes[] = 'form_widget.html.twig';
+        $formEngine = new TwigRendererEngine($defaultThemes);
         $formEngine->setEnvironment($this->twig);
         $this->twig->addExtension(new FormExtension(new TwigRenderer($formEngine, $csrfManager)));
 

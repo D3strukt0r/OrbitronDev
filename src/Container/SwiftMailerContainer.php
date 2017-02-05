@@ -19,11 +19,7 @@ class SwiftMailerContainer
      */
     function __construct($kernel)
     {
-        try {
-            $config = Yaml::parse(file_get_contents($kernel->rootDir.'/app/config/parameters.yml'));
-        } catch (ParseException $e) {
-            throw new Exception("Unable to load Parameters. Unable to parse the YAML string: %s", $e->getMessage());
-        }
+        $config = $kernel->get('config');
 
         $transport = Swift_SmtpTransport::newInstance($config['parameters']['mailer_host'], $config['parameters']['mailer_port'], $config['parameters']['mailer_security'])
             ->setUsername($config['parameters']['mailer_user'])

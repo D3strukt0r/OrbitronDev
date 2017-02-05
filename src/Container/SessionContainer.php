@@ -37,7 +37,7 @@ class SessionContainer
         ), $kernel->get('session.handler'), $kernel->get('session.storage.metadata_bag'));
         $kernel->set('session.storage.native', $sessionStorage);
 
-        $session = new Session($kernel->get('session.storage.native'));
+        $session = new Session($kernel->get('session.storage.native'), new AttributeBag(), new FlashBag());
         $session->setName('_session');
         $session->start();
         $kernel->set('session', $session);

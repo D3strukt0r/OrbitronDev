@@ -22,8 +22,8 @@ class Kernel
 
     public $rootDir = null;
     public static $rootDir2 = null;
-    /** @var Kernel $kernel */
 
+    /** @var Kernel $kernel */
     public static $kernel = null;
 
     private $request = null;
