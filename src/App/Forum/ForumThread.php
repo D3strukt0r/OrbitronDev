@@ -72,7 +72,7 @@ class ForumThread
 
         $iThreadId = (int)$thread_id;
 
-        $oThreadExists = $database->prepare('SELECT null FROM `forum_threads` WHERE `id`=:thread_id');
+        $oThreadExists = $database->prepare('SELECT NULL FROM `forum_threads` WHERE `id`=:thread_id');
         $oThreadExists->execute(array(
             ':thread_id' => $iThreadId,
         ));

@@ -109,7 +109,7 @@ class AccountController extends Controller
                 return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
             } else {
                 $errorMessage = explode(':', $loginResult);
-                $loginErrorMessage = $resultCodes[ $errorMessage[1] ];
+                $loginErrorMessage = $resultCodes[$errorMessage[1]];
                 if ($errorMessage[0] == 'form') {
                     $loginForm->addError(new FormError($loginErrorMessage));
                 } else {
@@ -240,7 +240,7 @@ class AccountController extends Controller
                 $_SESSION['RegisterError']['Message'] = $this->container->get('translator')->trans('Unknown error');
             } else {
                 $errorMessage = explode(':', $registerResult);
-                $registerErrorMessage = $resultCodes[ $errorMessage[1] ];
+                $registerErrorMessage = $resultCodes[$errorMessage[1]];
                 if ($errorMessage[0] == 'form') {
                     $registerForm->addError(new FormError($registerErrorMessage));
                 } else {
@@ -334,7 +334,7 @@ class AccountController extends Controller
             $parameters = array();
             foreach ($rawParameters as $value) {
                 $pair = explode('=', $value);
-                $parameters[ $pair[0] ] = $pair[1];
+                $parameters[$pair[0]] = $pair[1];
             }
         } else {
             $request = Request::createFromGlobals();
@@ -597,8 +597,12 @@ class AccountController extends Controller
         $config = $this->get('config');
 
         // $dsn is the Data Source Name for your database, for exmaple "mysql:dbname=my_oauth2_db;host=localhost"
-        $dsn = 'mysql:dbname='.$config['parameters']['database_name'].';host='.$config['parameters']['database_host'];
-        $this->oauthStorage = new \OAuth2\Storage\Pdo(array('dsn' => $dsn, 'username' => $config['parameters']['database_user'], 'password' => $config['parameters']['database_password']));
+        $dsn = 'mysql:dbname=' . $config['parameters']['database_name'] . ';host=' . $config['parameters']['database_host'];
+        $this->oauthStorage = new \OAuth2\Storage\Pdo(array(
+            'dsn'      => $dsn,
+            'username' => $config['parameters']['database_user'],
+            'password' => $config['parameters']['database_password'],
+        ));
 
         // Pass a storage object or array of storage objects to the OAuth2 server class
         $this->oauthServer = new \OAuth2\Server($this->oauthStorage, array(
@@ -613,14 +617,14 @@ class AccountController extends Controller
         $supportedScopes = array();
 
         foreach ($scopesList as $scope) {
-            if($scope['is_default']) {
+            if ($scope['is_default']) {
                 $defaultScope = $scope['scope'];
             }
             $supportedScopes[] = $scope['scope'];
         }
         $memory = new \OAuth2\Storage\Memory(array(
-            'default_scope' => $defaultScope,
-            'supported_scopes' => $supportedScopes
+            'default_scope'    => $defaultScope,
+            'supported_scopes' => $supportedScopes,
         ));
         $scopeUtil = new \OAuth2\Scope($memory);
         $this->oauthServer->setScopeUtil($scopeUtil);
@@ -630,7 +634,7 @@ class AccountController extends Controller
 
         // Add the "Refresh Token" grant type
         $this->oauthServer->addGrantType(new RefreshToken($this->oauthStorage, array(
-            'always_issue_new_refresh_token' => true
+            'always_issue_new_refresh_token' => true,
         )));
 
         // Add the "Authorization Code" grant type (this is where the oauth magic happens)
@@ -659,7 +663,7 @@ class AccountController extends Controller
             throw new Exception('A database connection is required');
         }
         $scopes = array();
-        foreach(explode(' ', trim($clientInfo['scope'])) as $scope) {
+        foreach (explode(' ', trim($clientInfo['scope'])) as $scope) {
             $getScope = $database->prepare('SELECT * FROM `oauth_scopes` WHERE `scope`=:scope LIMIT 1');
             $getScope->execute(array(
                 ':scope' => $scope,
@@ -711,6 +715,10 @@ class AccountController extends Controller
 
         $token = $this->oauthServer->getAccessTokenData(\OAuth2\Request::createFromGlobals());
 
-        echo json_encode(array('success' => true, 'message' => 'You accessed my APIs!', 'user_id' => $token['user_id']));
+        echo json_encode(array(
+            'success' => true,
+            'message' => 'You accessed my APIs!',
+            'user_id' => $token['user_id'],
+        ));
     }
 }

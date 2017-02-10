@@ -61,9 +61,9 @@ class TranslatingContainer
         $directory = __DIR__ . '/../../app/translation';
         $files = scandir($directory);
         foreach ($files as $file) {
-            if(!in_array($file, array('.', '..'))) {
+            if (!in_array($file, array('.', '..'))) {
                 $fileParts = explode('.', $file); // "0" is the name, "1" is the locale, "2" is the type (php ect.)
-                $translator->addResource($fileParts[2], $directory.'/'.$file, $fileParts[1], $fileParts[0]);
+                $translator->addResource($fileParts[2], $directory . '/' . $file, $fileParts[1], $fileParts[0]);
             }
         }
         $translator->setFallbackLocales(array('en_US'));
@@ -71,6 +71,7 @@ class TranslatingContainer
         TranslatingContainer::$translator = $translator;
         $kernel->set('translator', $translator);
     }
+
     function initLocaleListener()
     {
         $request = $this->kernel->getRequest();

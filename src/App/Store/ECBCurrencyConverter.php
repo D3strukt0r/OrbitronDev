@@ -41,6 +41,8 @@
 
 namespace App\Store;
 
+use Kernel;
+
 class ECBCurrencyConverter
 {
     private static $sXmlFile = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
@@ -48,7 +50,7 @@ class ECBCurrencyConverter
 
     private static function setupDir()
     {
-        self::$sCachedFile = \Kernel::$rootDir2.'/app/data/currency/euro.xml';
+        self::$sCachedFile = Kernel::$kernel->getRootDir() . '/app/data/currency/euro.xml';
     }
 
     public static function update()

@@ -58,7 +58,8 @@ class RedirectController extends Controller
             }
         }
 
-        return new RedirectResponse($this->container->get('router')->generate($route, $attributes, UrlGeneratorInterface::ABSOLUTE_URL), $permanent ? 301 : 302);
+        return new RedirectResponse($this->container->get('router')->generate($route, $attributes,
+            UrlGeneratorInterface::ABSOLUTE_URL), $permanent ? 301 : 302);
     }
 
     /**
@@ -74,15 +75,23 @@ class RedirectController extends Controller
      * @param string      $path      The absolute path or URL to redirect to
      * @param bool        $permanent Whether the redirect is permanent or not
      * @param string|null $scheme    The URL scheme (null to keep the current one)
-     * @param int|null    $httpPort  The HTTP port (null to keep the current one for the same scheme or the configured port in the container)
-     * @param int|null    $httpsPort The HTTPS port (null to keep the current one for the same scheme or the configured port in the container)
+     * @param int|null    $httpPort  The HTTP port (null to keep the current one for the same scheme or the configured
+     *                               port in the container)
+     * @param int|null    $httpsPort The HTTPS port (null to keep the current one for the same scheme or the configured
+     *                               port in the container)
      *
      * @return Response A Response instance
      *
      * @throws HttpException In case the path is empty
      */
-    public function urlRedirectAction(Request $request, $path, $permanent = false, $scheme = null, $httpPort = null, $httpsPort = null)
-    {
+    public function urlRedirectAction(
+        Request $request,
+        $path,
+        $permanent = false,
+        $scheme = null,
+        $httpPort = null,
+        $httpsPort = null
+    ) {
         if ('' == $path) {
             throw new HttpException($permanent ? 410 : 404);
         }
@@ -101,9 +110,9 @@ class RedirectController extends Controller
         $qs = $request->getQueryString();
         if ($qs) {
             if (strpos($path, '?') === false) {
-                $qs = '?'.$qs;
+                $qs = '?' . $qs;
             } else {
-                $qs = '&'.$qs;
+                $qs = '&' . $qs;
             }
         }
 
@@ -134,7 +143,7 @@ class RedirectController extends Controller
             }
         }
 
-        $url = $scheme.'://'.$request->getHost().$port.$request->getBaseUrl().$path.$qs;
+        $url = $scheme . '://' . $request->getHost() . $port . $request->getBaseUrl() . $path . $qs;
 
         return new RedirectResponse($url, $statusCode);
     }

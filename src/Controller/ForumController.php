@@ -30,7 +30,7 @@ class ForumController extends Controller
         $forumList = Forum::getForumList();
         foreach ($forumList as $key => $forum) {
             $user = new UserInfo($forum['owner_id']);
-            $forumList[ $key ]['username'] = $user->getFromUser('username');
+            $forumList[$key]['username'] = $user->getFromUser('username');
         }
 
         return $this->render('forum/list-forums.html.twig', array(
@@ -173,9 +173,9 @@ class ForumController extends Controller
             // Get all subboards
             $subboards = $getSubBoards->fetchAll(PDO::FETCH_ASSOC);
             foreach ($subboards as $index2 => $subboard) {
-                $subboards[ $index2 ]['last_post_username'] = AccountTools::formatUsername($subboard['last_post_user_id']);
+                $subboards[$index2]['last_post_username'] = AccountTools::formatUsername($subboard['last_post_user_id']);
             }
-            $boardTree[ $index ]['subboards'] = $subboards;
+            $boardTree[$index]['subboards'] = $subboards;
         }
 
         return $this->render('forum/theme1/index.html.twig', array(
@@ -234,10 +234,10 @@ class ForumController extends Controller
         ));
         $threads = $getThreads->fetchAll(PDO::FETCH_ASSOC);
         foreach ($threads as $index => $thread) {
-            $threads[ $index ]['username'] = AccountTools::formatUsername($thread['user_id']);
+            $threads[$index]['username'] = AccountTools::formatUsername($thread['user_id']);
         }
         foreach ($threads as $index => $thread) {
-            $threads[ $index ]['last_post_username'] = AccountTools::formatUsername($thread['last_post_user_id']);
+            $threads[$index]['last_post_username'] = AccountTools::formatUsername($thread['last_post_user_id']);
         }
 
         // Pagination

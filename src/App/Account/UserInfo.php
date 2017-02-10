@@ -29,7 +29,7 @@ class UserInfo
         // Save user id
         $this->userId = $fUserId;
 
-        if($this->userId == -1) {
+        if ($this->userId == -1) {
             $this->aUser['user_id'] = $this->userId;
             return;
         }
@@ -152,6 +152,7 @@ class UserInfo
             ':value' => 0,
         ));
     }
+
     /**
      * @param bool $state
      */
@@ -179,6 +180,7 @@ class UserInfo
             ':value' => $pictureName,
         ));
     }
+
     /**
      * @param string $name
      */
@@ -192,6 +194,7 @@ class UserInfo
             ':value' => $name,
         ));
     }
+
     /**
      * @param string $name
      */
@@ -205,6 +208,7 @@ class UserInfo
             ':value' => $name,
         ));
     }
+
     /**
      * @param int $gender
      */
@@ -218,6 +222,7 @@ class UserInfo
             ':value' => $gender,
         ));
     }
+
     /**
      * @param int $birthday
      */
@@ -231,6 +236,7 @@ class UserInfo
             ':value' => $birthday,
         ));
     }
+
     /**
      * @param string $website
      */
@@ -244,6 +250,7 @@ class UserInfo
             ':value' => $website,
         ));
     }
+
     /**
      * @param int $usage
      */
@@ -257,6 +264,7 @@ class UserInfo
             ':value' => $usage,
         ));
     }
+
     /**
      * @param string $street
      */
@@ -270,6 +278,7 @@ class UserInfo
             ':value' => $street,
         ));
     }
+
     /**
      * @param string $streetnumber
      */
@@ -283,6 +292,7 @@ class UserInfo
             ':value' => $streetnumber,
         ));
     }
+
     /**
      * @param int $postalcode
      */
@@ -296,6 +306,7 @@ class UserInfo
             ':value' => $postalcode,
         ));
     }
+
     /**
      * @param string $city
      */
@@ -309,6 +320,7 @@ class UserInfo
             ':value' => $city,
         ));
     }
+
     /**
      * @param string $country
      */

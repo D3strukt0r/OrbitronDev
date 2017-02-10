@@ -34,6 +34,7 @@ class RecaptchaValidator extends ConstraintValidator
     protected $requestStack;
     /**
      * HTTP Proxy informations
+     *
      * @var Array
      */
     protected $httpProxy;
@@ -50,12 +51,16 @@ class RecaptchaValidator extends ConstraintValidator
      * @param RequestStack $requestStack
      * @param array        $httpProxy
      */
-    public function __construct($enabled = null, $privateKey = null, RequestStack $requestStack = null, array $httpProxy = null)
-    {
-        $this->enabled      = $enabled;
-        $this->privateKey   = $privateKey;
+    public function __construct(
+        $enabled = null,
+        $privateKey = null,
+        RequestStack $requestStack = null,
+        array $httpProxy = null
+    ) {
+        $this->enabled = $enabled;
+        $this->privateKey = $privateKey;
         $this->requestStack = $requestStack;
-        $this->httpProxy    = $httpProxy;
+        $this->httpProxy = $httpProxy;
     }
 
     /**
@@ -65,7 +70,7 @@ class RecaptchaValidator extends ConstraintValidator
     {
         $this->enabled = $constraint->additional['enabled'];
         $this->privateKey = $constraint->additional['privateKey'];
-        /** @var \Symfony\Component\HttpFoundation\RequestStack $this->requestStack */
+        /** @var \Symfony\Component\HttpFoundation\RequestStack $this ->requestStack */
         $this->requestStack = $constraint->additional['requestStack'];
         $this->httpProxy = $constraint->additional['httpProxy'];
 
@@ -105,7 +110,7 @@ class RecaptchaValidator extends ConstraintValidator
         $response = $this->httpGet(self::RECAPTCHA_VERIFY_SERVER, '/recaptcha/api/siteverify', array(
             'secret'   => $privateKey,
             'remoteip' => $remoteip,
-            'response' => $response
+            'response' => $response,
         ));
         $response = json_decode($response, true);
         if ($response['success'] == true) {
@@ -129,6 +134,7 @@ class RecaptchaValidator extends ConstraintValidator
         $context = $this->getResourceContext();
         return file_get_contents($host, false, $context);
     }
+
     private function getResourceContext()
     {
         if (null === $this->httpProxy['host'] || null === $this->httpProxy['port']) {
@@ -137,12 +143,13 @@ class RecaptchaValidator extends ConstraintValidator
         $options = array();
         foreach (array('http', 'https') as $protocol) {
             $options[$protocol] = array(
-                'method' => 'GET',
-                'proxy' => sprintf('tcp://%s:%s', $this->httpProxy['host'], $this->httpProxy['port']),
+                'method'          => 'GET',
+                'proxy'           => sprintf('tcp://%s:%s', $this->httpProxy['host'], $this->httpProxy['port']),
                 'request_fulluri' => true,
             );
             if (null !== $this->httpProxy['auth']) {
-                $options[$protocol]['header'] = sprintf('Proxy-Authorization: Basic %s', base64_encode($this->httpProxy['auth']));
+                $options[$protocol]['header'] = sprintf('Proxy-Authorization: Basic %s',
+                    base64_encode($this->httpProxy['auth']));
             }
         }
         return stream_context_create($options);

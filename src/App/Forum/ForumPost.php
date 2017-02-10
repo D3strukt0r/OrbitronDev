@@ -66,7 +66,7 @@ class ForumPost
 
         $iPostId = (int)$post_id;
 
-        $oPostExists = $database->prepare('SELECT null FROM `forum_posts` WHERE `id`=:post_id');
+        $oPostExists = $database->prepare('SELECT NULL FROM `forum_posts` WHERE `id`=:post_id');
         $oPostExists->execute(array(
             ':post_id' => $iPostId,
         ));

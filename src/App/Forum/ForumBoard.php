@@ -24,7 +24,7 @@ class ForumBoard
         $iForumId = (int)$forum_id;
         $iBoardId = (int)$board_id;
 
-        $oGetSubBoardCount = $database->prepare('SELECT null FROM `forum_boards` WHERE `forum_id`=:forum_id AND `parent_id`=:parent_id');
+        $oGetSubBoardCount = $database->prepare('SELECT NULL FROM `forum_boards` WHERE `forum_id`=:forum_id AND `parent_id`=:parent_id');
         $oGetSubBoardCount->execute(array(
             ':forum_id'  => $iForumId,
             ':parent_id' => $iBoardId,
@@ -171,7 +171,7 @@ class ForumBoard
             throw new \Exception('A database connection is required');
         }
 
-        $oForumExists = $database->prepare('SELECT null FROM `forum_boards` WHERE `id`=:board_id LIMIT 1');
+        $oForumExists = $database->prepare('SELECT NULL FROM `forum_boards` WHERE `id`=:board_id LIMIT 1');
         $oForumExists->execute(array(
             ':board_id' => $board_id,
         ));
@@ -297,7 +297,7 @@ class ForumBoard
         if (!$getData->execute(array(':board_id' => $this->boardId))) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            if($getData->rowCount() > 0) {
+            if ($getData->rowCount() > 0) {
                 $data = $getData->fetchAll();
                 $this->boardData = $data[0];
             } else {

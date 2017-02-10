@@ -1,3 +1,8 @@
+<style type="text/css">
+    .blue-border {
+        border-color: #337ab7;
+    }
+</style>
 <section id="header">
     <div class="col-lg-12">
         <h1 class="page-header">{{ 'User Info'|trans }}</h1>
@@ -9,7 +14,7 @@
 </section><!-- /#header -->
 <section id="page">
     <div class="col-lg-6">
-        <form method="post" id="change-account-information-form" class="sky-form" style="border-color: #337ab7;">
+        {{ form_start(edit_account_form, {'action': path('app_default_contact'), 'attr': {'class': 'sky-form blue-border', 'id': 'change-account-information-form'}}) }}
             <header>{{ 'Account information'|trans }}</header>
             <fieldset>
                 <section>
@@ -75,7 +80,7 @@
                 </div>
                 {{ form_widget(edit_account_form.send, {'attr': {'class': 'btn-u'}}) }}
             </footer>
-        </form>
+        {{ form_end(edit_account_form) }}
     </div><!-- /.col-lg-6 -->
     <div class="col-lg-6">
         <div class="sky-form" style="border-color: #337ab7;">

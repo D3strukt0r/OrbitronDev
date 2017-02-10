@@ -24,7 +24,7 @@ class Token
      */
     public function __construct($token = null)
     {
-        if(!is_null($token) && is_string($token)) {
+        if (!is_null($token) && is_string($token)) {
             $this->isGenerated = true;
             $this->token = $token;
         }
@@ -47,7 +47,7 @@ class Token
      */
     public function generateToken($job, $validUntil = null, $information = array())
     {
-        if(!$this->isGenerated) {
+        if (!$this->isGenerated) {
             $database = DatabaseContainer::$database;
             $token = rtrim(strtr(base64_encode($this->getRandomNumber()), '+/', '-_'), '=');
 
@@ -87,7 +87,7 @@ class Token
         );
         $options = array_merge($defaultOptions, $options);
 
-        if($options['use_openssl']) {
+        if ($options['use_openssl']) {
             $nbBytes = 32;
             $bytes = openssl_random_pseudo_bytes($nbBytes, $strong);
             if (false !== $bytes && true === $strong) {
@@ -101,7 +101,7 @@ class Token
 
     public function getJob()
     {
-        if($this->isGenerated) {
+        if ($this->isGenerated) {
             $database = DatabaseContainer::$database;
 
             $getJob = $database->prepare('SELECT * FROM `app_token` WHERE `token`=:token LIMIT 1');
@@ -109,12 +109,12 @@ class Token
                 ':token' => $this->token,
             ));
 
-            if($getJob->rowCount() == 0) {
+            if ($getJob->rowCount() == 0) {
                 return false;
             } else {
                 $tokenData = $getJob->fetchAll(PDO::FETCH_ASSOC);
 
-                if($tokenData[0]['expires'] < time()) {
+                if ($tokenData[0]['expires'] < time()) {
                     return 'expired';
                 }
 
@@ -129,7 +129,7 @@ class Token
      */
     public function getInformation()
     {
-        if($this->isGenerated) {
+        if ($this->isGenerated) {
             $database = DatabaseContainer::$database;
 
             $getJob = $database->prepare('SELECT * FROM `app_token` WHERE `token`=:token LIMIT 1');
@@ -137,12 +137,12 @@ class Token
                 ':token' => $this->token,
             ));
 
-            if($getJob->rowCount() == 0) {
+            if ($getJob->rowCount() == 0) {
                 return false;
             } else {
                 $tokenData = $getJob->fetchAll(PDO::FETCH_ASSOC);
 
-                if($tokenData[0]['expires'] < time()) {
+                if ($tokenData[0]['expires'] < time()) {
                     return 'expired';
                 }
 
@@ -157,7 +157,7 @@ class Token
      */
     public function remove()
     {
-        if($this->isGenerated) {
+        if ($this->isGenerated) {
             $database = DatabaseContainer::$database;
 
             $getJob = $database->prepare('DELETE FROM `app_token` WHERE `token`=:token LIMIT 1');

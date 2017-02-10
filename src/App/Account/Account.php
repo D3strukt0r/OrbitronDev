@@ -4,6 +4,7 @@ namespace App\Account;
 
 use Container\DatabaseContainer;
 use Exception;
+use Kernel;
 use PDO;
 
 class Account
@@ -14,11 +15,12 @@ class Account
 
     public static function buildPaths()
     {
-        self::$publicDir = \Kernel::$rootDir2.'/web/app/account';
-        self::$srcDir = \Kernel::$rootDir2.'/src/App/Account';
-        self::$twigDir = \Kernel::$rootDir2.'/app/views/account';
+        self::$publicDir = Kernel::$kernel->getRootDir() . '/web/app/account';
+        self::$srcDir = Kernel::$kernel->getRootDir() . '/src/App/Account';
+        self::$twigDir = Kernel::$kernel->getRootDir() . '/app/views/account';
 
     }
+
     /**
      * @param $username
      * @param $email
@@ -31,7 +33,7 @@ class Account
     public static function register($username, $email, $password, $confirm_password)
     {
         $database = DatabaseContainer::$database;
-        if(is_null($database)) {
+        if (is_null($database)) {
             throw new Exception('A database connection is required');
         }
 
@@ -126,7 +128,7 @@ class Account
     public static function validateUser($username, $password)
     {
         $database = DatabaseContainer::$database;
-        if(is_null($database)) {
+        if (is_null($database)) {
             throw new Exception('A database connection is required');
         }
 
@@ -136,7 +138,7 @@ class Account
         ));
         $rows = $validate->rowCount();
         $data = $validate->fetchAll(PDO::FETCH_ASSOC);
-        if($rows > 0 && password_verify($password, $data[0]['password'])) {
+        if ($rows > 0 && password_verify($password, $data[0]['password'])) {
             return $rows;
         } else {
             return 0;
@@ -153,17 +155,17 @@ class Account
     public static function validateUserByEmail($email, $password)
     {
         $database = DatabaseContainer::$database;
-        if(is_null($database)) {
+        if (is_null($database)) {
             throw new Exception('A database connection is required');
         }
 
-        $validate = $database->prepare('SELECT `password` from `users` WHERE `email`=:email');
+        $validate = $database->prepare('SELECT `password` FROM `users` WHERE `email`=:email');
         $validate->execute(array(
-            ':email'    => $email,
+            ':email' => $email,
         ));
         $data = $validate->fetchAll(PDO::FETCH_ASSOC);
         $rows = $validate->rowCount();
-        if($rows > 0 && password_verify($password, $data[0]['password'])) {
+        if ($rows > 0 && password_verify($password, $data[0]['password'])) {
         } else {
             $rows = 0;
         }
@@ -193,24 +195,25 @@ class Account
     {
         $accountData = array(
             'remember' => false,
-            'email' => $_SESSION['USER_EM'],
+            'email'    => $_SESSION['USER_EM'],
             'password' => $_SESSION['USER_PW'],
         );
 
-        if(!is_null($email)) {
+        if (!is_null($email)) {
             $accountData['email'] = $email;
         }
-        if(!is_null($password)) {
+        if (!is_null($password)) {
             $accountData['password'] = $password;
         }
-        if(!is_null($remember) && $remember) {
+        if (!is_null($remember) && $remember) {
             $accountData['remember'] = true;
         }
 
         $_SESSION['USER_EM'] = $accountData['email'];
         $_SESSION['USER_PW'] = $accountData['password'];
-        if($accountData['remember']) {
-            setcookie('account', base64_encode(json_encode($accountData)), strtotime('+1 month'), '/', 'orbitrondev.org');
+        if ($accountData['remember']) {
+            setcookie('account', base64_encode(json_encode($accountData)), strtotime('+1 month'), '/',
+                'orbitrondev.org');
         }
     }
 
@@ -240,7 +243,7 @@ class Account
                     $plus_one_month = strtotime('+1 month');
                     $account_data = array(
                         'remember' => true,
-                        'email' => $_SESSION['USER_EM'],
+                        'email'    => $_SESSION['USER_EM'],
                         'password' => $_SESSION['USER_PW'],
                     );
                     $remember = base64_encode(json_encode($account_data));

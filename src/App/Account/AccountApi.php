@@ -26,7 +26,7 @@ class AccountApi
     {
         $userId = (int)$_GET['user_id'];
         $selectedUser = new UserInfo($userId);
-        $rootPictureDir = Kernel::$rootDir2.'/web/app/account/profile_pictures/';
+        $rootPictureDir = Kernel::$rootDir2 . '/web/app/account/profile_pictures/';
 
         if (file_exists($filename = $rootPictureDir . $selectedUser->getFromProfile('profile_picture'))) {
             $oImage = new SimpleImage($filename);
@@ -35,7 +35,7 @@ class AccountApi
             $oImage->output();
             exit;
         } else {
-            $oImage = new SimpleImage(Kernel::$rootDir2.'/web/assets/img/user.jpg');
+            $oImage = new SimpleImage(Kernel::$rootDir2 . '/web/assets/img/user.jpg');
             $oImage->resize((isset($_GET['width']) ? $_GET['width'] : 1000),
                 (isset($_GET['height']) ? $_GET['height'] : 1000));
             $oImage->output();
@@ -54,7 +54,7 @@ class AccountApi
 
         // Simple path resolver, where uploads will be put
         Account::buildPaths();
-        $pathresolver = new \FileUpload\PathResolver\Simple(Account::$publicDir.'/profile_pictures');
+        $pathresolver = new \FileUpload\PathResolver\Simple(Account::$publicDir . '/profile_pictures');
 
         // The machine's filesystem
         $filesystem = new \FileUpload\FileSystem\Simple();
@@ -76,7 +76,7 @@ class AccountApi
             header($header . ': ' . $value);
         }
 
-        if(isset($files[0]->error) && !is_string($files[0]->error)) {
+        if (isset($files[0]->error) && !is_string($files[0]->error)) {
             $current_user->updateProfilePicture($files[0]->name);
         }
 
@@ -87,11 +87,11 @@ class AccountApi
     {
         // Assuming default values for session.upload_progress.prefix
         // and session.upload_progress.name:
-        $s = $_SESSION['upload_progress_'.intval($_GET['PHP_SESSION_UPLOAD_PROGRESS'])];
+        $s = $_SESSION['upload_progress_' . intval($_GET['PHP_SESSION_UPLOAD_PROGRESS'])];
         $progress = array(
             'lengthComputable' => true,
-            'loaded' => $s['bytes_processed'],
-            'total' => $s['content_length']
+            'loaded'           => $s['bytes_processed'],
+            'total'            => $s['content_length'],
         );
         return $progress;
     }

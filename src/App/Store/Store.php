@@ -98,7 +98,7 @@ class Store
             throw new \Exception('A database connection is required');
         }
 
-        $oStoreExists = $database->prepare('SELECT null FROM `stores` WHERE `id`=:store_id LIMIT 1');
+        $oStoreExists = $database->prepare('SELECT NULL FROM `stores` WHERE `id`=:store_id LIMIT 1');
         $bStoreExistsQuerySuccessful = $oStoreExists->execute(array(
             ':store_id' => $store_id,
         ));

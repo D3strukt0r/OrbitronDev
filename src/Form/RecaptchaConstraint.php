@@ -26,11 +26,12 @@ class RecaptchaConstraint extends Constraint
     {
         return Constraint::PROPERTY_CONSTRAINT;
     }
+
     /**
      * {@inheritdoc}
      */
     public function validatedBy()
     {
-        return __NAMESPACE__.'\RecaptchaValidator';
+        return __NAMESPACE__ . '\RecaptchaValidator';
     }
 }

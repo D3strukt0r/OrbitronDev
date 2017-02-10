@@ -67,7 +67,7 @@ class TemplateLoad
     public function setHtml($html)
     {
         $templateData = $html;
-        if(is_callable($html)) {
+        if (is_callable($html)) {
             ob_start();
             $html($this->template_name);
             $templateData = ob_get_contents();

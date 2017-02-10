@@ -97,7 +97,7 @@ class Blog
             throw new \Exception('A database connection is required');
         }
 
-        $oBlogExists = $database->prepare('SELECT null FROM `blogs` WHERE `id`=:blog_id LIMIT 1');
+        $oBlogExists = $database->prepare('SELECT NULL FROM `blogs` WHERE `id`=:blog_id LIMIT 1');
         if (!$oBlogExists->execute(array(':blog_id' => $blog_id))) {
             throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
         } else {

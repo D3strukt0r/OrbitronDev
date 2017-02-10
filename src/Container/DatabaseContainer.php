@@ -12,6 +12,7 @@ class DatabaseContainer
 {
     /** @var \PDO $database */
     public static $database = null;
+
     /**
      * Database constructor.
      *

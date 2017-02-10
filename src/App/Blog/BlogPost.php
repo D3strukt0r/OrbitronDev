@@ -49,7 +49,7 @@ class BlogPost
         }
         $fPostId = (float)$post_id;
 
-        $oPostExists = $database->prepare('SELECT null FROM `blog_posts` WHERE `post_id`=:post_id LIMIT 1');
+        $oPostExists = $database->prepare('SELECT NULL FROM `blog_posts` WHERE `post_id`=:post_id LIMIT 1');
         if (!$oPostExists->execute(array(':post_id' => $fPostId))) {
             throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
         } else {

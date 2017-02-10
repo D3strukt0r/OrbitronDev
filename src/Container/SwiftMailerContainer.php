@@ -21,7 +21,8 @@ class SwiftMailerContainer
     {
         $config = $kernel->get('config');
 
-        $transport = Swift_SmtpTransport::newInstance($config['parameters']['mailer_host'], $config['parameters']['mailer_port'], $config['parameters']['mailer_security'])
+        $transport = Swift_SmtpTransport::newInstance($config['parameters']['mailer_host'],
+            $config['parameters']['mailer_port'], $config['parameters']['mailer_security'])
             ->setUsername($config['parameters']['mailer_user'])
             ->setPassword($config['parameters']['mailer_password']);
         $kernel->set('mailer', new Swift_Mailer($transport));

@@ -101,7 +101,7 @@ class Router
 
 
         $_ACCESS['urlarray'] = explode('/', $template['target']);
-        unset($_ACCESS['urlarray'][ count($_ACCESS['urlarray']) - 1 ]);
+        unset($_ACCESS['urlarray'][count($_ACCESS['urlarray']) - 1]);
         $_ACCESS['basedir'] = implode('', $_ACCESS['urlarray']);
         if (substr($_ACCESS['basedir'], 0, 1) != '/') {
             $return['server']['basedir'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'] . '/' . $_ACCESS['basedir'];

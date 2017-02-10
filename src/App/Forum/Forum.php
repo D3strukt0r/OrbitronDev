@@ -42,9 +42,9 @@ class Forum
 
         $getUrl = $database->prepare('SELECT NULL FROM `forums` WHERE `url`=:url');
         $getUrl->execute(array(
-            ':url' => $url
+            ':url' => $url,
         ));
-        if($getUrl->rowCount()) {
+        if ($getUrl->rowCount()) {
             return true;
         }
         return false;
@@ -114,7 +114,7 @@ class Forum
             throw new \Exception('A database connection is required');
         }
 
-        $oForumExists = $database->prepare('SELECT null FROM `forums` WHERE `id`=:forum_id LIMIT 1');
+        $oForumExists = $database->prepare('SELECT NULL FROM `forums` WHERE `id`=:forum_id LIMIT 1');
         if (!$oForumExists->execute(array(':forum_id' => $forum_id))) {
             throw new \RuntimeException('Could not execute sql');
         } else {
@@ -150,7 +150,7 @@ class Forum
         if (!$getData->execute(array(':forum_id' => $forum_id))) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            if($getData->rowCount() > 0) {
+            if ($getData->rowCount() > 0) {
                 $data = $getData->fetchAll();
                 $this->forumData = $data[0];
             } else {

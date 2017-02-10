@@ -36,7 +36,7 @@ class Kernel
         $this->environment = $env;
         if ($this->environment == 'development' || $this->environment == 'dev') {
             set_exception_handler('\\Kernel::exception');
-        } elseif($this->environment == 'production' || $this->environment == 'prod') {
+        } elseif ($this->environment == 'production' || $this->environment == 'prod') {
             error_reporting(0);
         }
 
@@ -46,7 +46,7 @@ class Kernel
         $this->request = Request::createFromGlobals();
 
         try {
-            $config = Yaml::parse(file_get_contents($this->rootDir.'/app/config/parameters.yml'));
+            $config = Yaml::parse(file_get_contents($this->rootDir . '/app/config/parameters.yml'));
             $this->set('config', $config);
         } catch (ParseException $e) {
             throw new Exception("Unable to load Parameters. Unable to parse the YAML string: %s", $e->getMessage());
@@ -62,9 +62,10 @@ class Kernel
         $this->loadMailer();
         //$this->runCronJob(); // TODO: Add Cron Job
 
-        if($this->has('routing.error')) {
+        if ($this->has('routing.error')) {
             $error = $this->get('routing.error');
-            $response = new Response($this->get('twig')->render('error/error404.html.twig', array('status_code' => $error->getCode(), 'status_text' => $error->getMessage())));
+            $response = new Response($this->get('twig')->render('error/error404.html.twig',
+                array('status_code' => $error->getCode(), 'status_text' => $error->getMessage())));
             //$response = new NotFoundHttpException('Not found', $this->get('routing.error'));
             $response->prepare($this->getRequest());
             $response->send();
@@ -79,7 +80,7 @@ class Kernel
             $class->setParameters($this->components['routing']);
             /** @var Response $response */
             $response = $class->$functionName($this);       // Execute Controller
-            if(is_object($response)) {
+            if (is_object($response)) {
                 $response->prepare($this->getRequest());
                 $response->send();
                 //echo $response->getContent();
@@ -175,11 +176,12 @@ class Kernel
                 'gfooter' => false,
             ),
         );
-        $request_data = \App\Core\Router::init($config, parse_url(\App\Core\BrowserInfo::fullUrl(), PHP_URL_PATH), parse_url(\App\Core\BrowserInfo::fullUrl(), PHP_URL_HOST));
+        $request_data = \App\Core\Router::init($config, parse_url(\App\Core\BrowserInfo::fullUrl(), PHP_URL_PATH),
+            parse_url(\App\Core\BrowserInfo::fullUrl(), PHP_URL_HOST));
 
         $request = $server = array();
         $request['branch'] = $request_data['request']['branch'];
-        $request['var']    = (isset($request_data['request']['var']) ? $request_data['request']['var'] : array());
+        $request['var'] = (isset($request_data['request']['var']) ? $request_data['request']['var'] : array());
         $server['basedir'] = $request_data['server']['basedir'];
 
         define('SERVER_KEY', 'website_request_data'); // DO NOT CHANGE
@@ -209,8 +211,8 @@ class Kernel
 
         // Translator by Manuele Vaccari
         $default_cookie = array(
-            'path' => '/',
-            'domain' => 'orbitrondev.org'
+            'path'   => '/',
+            'domain' => 'orbitrondev.org',
         );
         \App\Template\Language::setupCookie($default_cookie);
     }

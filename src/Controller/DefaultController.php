@@ -138,7 +138,7 @@ class DefaultController extends Controller
 
         $request = Request::createFromGlobals();
 
-        if($request->isMethod('POST')) {
+        if ($request->isMethod('POST')) {
             $contactForm->handleRequest($request);
 
             if ($contactForm->isSubmitted() && $contactForm->isValid()) {
@@ -211,9 +211,9 @@ class DefaultController extends Controller
         $searchForm = $this->createFormBuilder()
             ->setMethod('GET')
             ->add('search', TextType::class, array(
-                'label'       => 'Search',
-                'required'    => true,
-                'attr'        => array(
+                'label'    => 'Search',
+                'required' => true,
+                'attr'     => array(
                     'pattern'     => '.{1,}',
                     'placeholder' => 'Search',
                 ),
@@ -224,11 +224,12 @@ class DefaultController extends Controller
             ->getForm();
 
         $request = Request::createFromGlobals();
-        if($request->isMethod('POST')) {
+        if ($request->isMethod('POST')) {
             $searchForm->handleRequest($request);
 
-            if($searchForm->isSubmitted() && $searchForm->isValid()) {
-                return $this->redirect($this->generateUrl('app_default_search', array('q' => $searchForm->get('search')->getData())));
+            if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+                return $this->redirect($this->generateUrl('app_default_search',
+                    array('q' => $searchForm->get('search')->getData())));
             }
         }
         return null;

@@ -60,7 +60,7 @@ class ECBCurrencyConverterAlternative
         $sCurrencyData = file_get_contents($this->sInfoFileLoc);
         $oCurrencyData = new \SimpleXMLElement($sCurrencyData);
 
-        foreach($oCurrencyData->data[0]->currency as $aCurrency) {
+        foreach ($oCurrencyData->data[0]->currency as $aCurrency) {
             $this->exchange_rates[$aCurrency['currency']] = $aCurrency['rate'];
         }
     }
@@ -91,7 +91,7 @@ class ECBCurrencyConverterAlternative
         $oCurrencyData = new \SimpleXMLElement($sCurrencyData);
 
         $iDownloadTime = $oCurrencyData->info[0]->downloaded;
-        if(time() > (strtotime($iDownloadTime) + ( 12 * 60 * 60))) {
+        if (time() > (strtotime($iDownloadTime) + (12 * 60 * 60))) {
             $this->downloadExchangeRates();
         }
     }
@@ -105,8 +105,7 @@ class ECBCurrencyConverterAlternative
         $sCurrencyFile = substr($this->xml_file, strpos($this->xml_file, '/'));
 
         $oCurrencySocket = @fsockopen($sCurrencyDataDomain, 80, $errno, $errstr, 10);
-        if($oCurrencySocket)
-        {
+        if ($oCurrencySocket) {
             $out = 'GET ' . $sCurrencyFile . ' HTTP/1.1' . "\r\n";
             $out .= 'Host: ' . $sCurrencyDataDomain . "\r\n";
             $out .= 'User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8) Gecko/20051111 Firefox/1.5' . "\r\n";
@@ -115,7 +114,7 @@ class ECBCurrencyConverterAlternative
 
             // Get currency data
             $sFileBuffer = '';
-            while(!feof($oCurrencySocket)) {
+            while (!feof($oCurrencySocket)) {
                 $sFileBuffer .= fgets($oCurrencySocket, 128);
             }
             fclose($oCurrencySocket);
@@ -125,14 +124,14 @@ class ECBCurrencyConverterAlternative
             array_shift($sXmlCurrencyData);
 
             // Save currency data
-            for($i=0; $i < count($sXmlCurrencyData[0]); $i++) {
+            for ($i = 0; $i < count($sXmlCurrencyData[0]); $i++) {
                 $exchange_rate[$sXmlCurrencyData[0][$i]] = $sXmlCurrencyData[1][$i];
             }
 
             // Add data content
             $oNewCurrencyInfoFIle = new \SimpleXMLElement('<root />');
             $oInfoFileDataChild = $oNewCurrencyInfoFIle->addChild('data');
-            foreach($exchange_rate as $sCurrency => $iRate) {
+            foreach ($exchange_rate as $sCurrency => $iRate) {
                 $oInfoFileCurrencyChild = $oInfoFileDataChild->addChild('currency');
                 $oInfoFileCurrencyChild->addAttribute('currency', $sCurrency);
                 $oInfoFileCurrencyChild->addAttribute('rate', $iRate);

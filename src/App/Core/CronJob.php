@@ -71,7 +71,7 @@ class CronJob
         ));
         if ($oGetCronJobInfoQuerySuccessful) {
             $aJobInfo = $oGetCronJobInfo->fetchAll();
-            $sFileDir = \Kernel::$rootDir2.'/src/App/Core/cron_job/'. $aJobInfo[0]['scriptfile'];
+            $sFileDir = \Kernel::$rootDir2 . '/src/App/Core/cron_job/' . $aJobInfo[0]['scriptfile'];
 
             if (file_exists($sFileDir)) {
                 include $sFileDir;

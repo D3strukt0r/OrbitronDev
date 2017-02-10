@@ -53,7 +53,7 @@ class AccountTools
         }
         $sUsername = (string)$username;
 
-        $oIsTaken = $database->prepare('SELECT null FROM `users` WHERE `username`=:username');
+        $oIsTaken = $database->prepare('SELECT NULL FROM `users` WHERE `username`=:username');
         if (!$oIsTaken->execute(array(':username' => $sUsername))) {
             throw new \RuntimeException('[Database]: Cannot execute sql (' . $oIsTaken->queryString . ')');
         }
@@ -74,7 +74,7 @@ class AccountTools
         }
         $fUserId = (float)$user_id;
 
-        $oIdExists = $database->prepare('SELECT null FROM `users` WHERE `user_id`=:id LIMIT 1');
+        $oIdExists = $database->prepare('SELECT NULL FROM `users` WHERE `user_id`=:id LIMIT 1');
         if (!$oIdExists->execute(array(':id' => $fUserId))) {
             throw new \RuntimeException('[Database]: Cannot execute sql (' . $oIdExists->queryString . ')');
         }
@@ -118,12 +118,12 @@ class AccountTools
         }
         $sUsernameOrEmail = (string)$user_email;
 
-        $oUserExists = $database->prepare('SELECT null FROM `users` WHERE `username`=:username LIMIT 1');
+        $oUserExists = $database->prepare('SELECT NULL FROM `users` WHERE `username`=:username LIMIT 1');
         $oUserExists->execute(array(':username' => $sUsernameOrEmail));
         if ($oUserExists->rowCount()) {
             return true;
         } else {
-            $oUserExists = $database->prepare('SELECT null FROM `users` WHERE `email`=:email LIMIT 1');
+            $oUserExists = $database->prepare('SELECT NULL FROM `users` WHERE `email`=:email LIMIT 1');
             $oUserExists->execute(array(':email' => $sUsernameOrEmail));
             if ($oUserExists->rowCount()) {
                 return true;
@@ -145,7 +145,7 @@ class AccountTools
 
     /**
      * @param UserInfo $user
-     * @param $password
+     * @param          $password
      *
      * @return string
      * @internal param $input
@@ -196,7 +196,7 @@ class AccountTools
         if (!$oGetId->execute(array(':email' => $email))) {
             throw new \RuntimeException('[Database]: Cannot execute sql (' . $oGetId->queryString . ')');
         }
-        if($oGetId->rowCount() == 0) {
+        if ($oGetId->rowCount() == 0) {
             return 0;
         }
         $aUserData = $oGetId->fetchAll();
@@ -234,7 +234,8 @@ class AccountTools
 
         if ($link) {
             $user = new UserInfo($fUserId);
-            $sPrefix .= '<a href="'.Kernel::$kernel->get('router')->generate('app_account_user', array('username' => $user->getFromUser('username'))).'">';
+            $sPrefix .= '<a href="' . Kernel::$kernel->get('router')->generate('app_account_user',
+                    array('username' => $user->getFromUser('username'))) . '">';
             $sSuffix .= '</a>';
         }
 

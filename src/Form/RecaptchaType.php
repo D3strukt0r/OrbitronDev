@@ -35,14 +35,14 @@ class RecaptchaType extends AbstractType
         if (!$options['recaptcha_ajax']) {
             $view->vars = array_replace($view->vars, array(
                 'recaptcha_ajax' => false,
-                'url_challenge' => sprintf('%s?hl=%s', self::RECAPTCHA_API_SERVER, $options['language']),
-                'public_key'    => $options['public_key'],
+                'url_challenge'  => sprintf('%s?hl=%s', self::RECAPTCHA_API_SERVER, $options['language']),
+                'public_key'     => $options['public_key'],
             ));
         } else {
             $view->vars = array_replace($view->vars, array(
                 'recaptcha_ajax' => true,
-                'url_api'    => self::RECAPTCHA_API_JS_SERVER,
-                'public_key' => $options['public_key'],
+                'url_api'        => self::RECAPTCHA_API_JS_SERVER,
+                'public_key'     => $options['public_key'],
             ));
         }
     }
