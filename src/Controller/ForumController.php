@@ -10,6 +10,7 @@ use App\Forum\ForumBoard;
 use App\Forum\ForumThread;
 use Container\DatabaseContainer;
 use Controller;
+use Decoda\Decoda;
 use Form\RecaptchaType;
 use PDO;
 use ReCaptcha\ReCaptcha;
@@ -224,8 +225,10 @@ class ForumController extends Controller
         $boardTree = $getBoards->fetchAll(PDO::FETCH_ASSOC);
 
         // Get all threads
-        $pagination['item_limit'] = isset($this->parameters['show']) ? (int)$this->parameters['show'] : ForumThread::DefaultShowThreadAmount;
-        $pagination['current_page'] = isset($this->parameters['page']) ? (int)$this->parameters['page'] : 1;
+        /** @var Request $request */
+        $request = $this->get('kernel')->getRequest();
+        $pagination['item_limit'] = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
+        $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
         /** @var \PDOStatement $getThreads */
         $getThreads = $this->get('database')->prepare('SELECT * FROM `forum_threads` WHERE `board_id`=:board_id ORDER BY `last_post_time` DESC LIMIT ' . ($pagination['current_page'] - 1) * $pagination['item_limit'] . ',' . $pagination['item_limit']);
@@ -241,12 +244,11 @@ class ForumController extends Controller
         }
 
         // Pagination
-        /** @var \PDOStatement $getBoardCount */
+        /** @var \PDOStatement $getThreadCount */
         $getThreadCount = $this->get('database')->prepare('SELECT NULL FROM `forum_threads` WHERE `board_id`=:board_id');
         $getThreadCount->execute(array(
             ':board_id' => $board->getVar('id'),
         ));
-        //echo '<pre>'; var_dump($getThreadCount->rowCount()); echo '</pre>'; // TODO: Continue developing here
         $pagination['total_items'] = $getThreadCount->rowCount();
         $pagination['adjacents'] = 1;
 
@@ -263,6 +265,83 @@ class ForumController extends Controller
             'board_tree'    => $boardTree,
             'threads'       => $threads,
             'pagination'    => $pagination,
+        ));
+    }
+
+    public function forumThreadAction()
+    {
+        // Does the forum even exist?
+        if (!Forum::urlExists($this->parameters['forum'])) {
+            return $this->render('error/error404.html.twig');
+        }
+        // Does the thread even exist?
+        if (!ForumThread::threadExists($this->parameters['thread'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        $forumId = Forum::url2Id($this->parameters['forum']);
+        $forum = new Forum($forumId);
+        $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
+        $forum->forumData['page_links'] = json_decode($forum->getVar('page_links'), true);
+
+        $thread = new ForumThread($this->parameters['thread']);
+        $board = new ForumBoard($thread->getVar('board_id'));
+
+        // Breadcrumb
+        $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
+        foreach ($breadcrumb as $key => $value) {
+            $boardData = new ForumBoard($value);
+            $breadcrumb{$key} = $boardData->boardData;
+        }
+
+        // Get all posts
+        /** @var Request $request */
+        $request = $this->get('kernel')->getRequest();
+        $pagination['item_limit'] = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
+        $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
+
+        /** @var \PDOStatement $getPosts */
+        $getPosts = $this->get('database')->prepare('SELECT * FROM `forum_posts` WHERE `thread_id`=:thread_id ORDER BY `id` DESC LIMIT :offset,:row_count');
+        $getPosts->bindValue(':thread_id', $thread->getVar('id'), PDO::PARAM_INT);
+        $getPosts->bindValue(':offset', ($pagination['current_page'] - 1) * $pagination['item_limit'], PDO::PARAM_INT);
+        $getPosts->bindValue(':row_count', $pagination['item_limit'], PDO::PARAM_INT);
+        $getPosts->execute();
+        $posts = $getPosts->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($posts as $index => $post) {
+            $posts[$index]['formatted_username'] = AccountTools::formatUsername($post['user_id']);
+        }
+        foreach ($posts as $index => $post) {
+            $bbParser = new Decoda($post['message']);
+            $bbParser->defaults();
+            $posts[$index]['formatted_message'] = nl2br($bbParser->parse());
+        }
+
+        // Pagination
+        /** @var \PDOStatement $getThreadCount */
+        $getThreadCount = $this->get('database')->prepare('SELECT NULL FROM `forum_posts` WHERE `thread_id`=:thread_id');
+        $getThreadCount->execute(array(
+            ':thread_id' => $thread->getVar('id'),
+        ));
+        $pagination['total_items'] = $getThreadCount->rowCount();
+        $pagination['adjacents'] = 1;
+
+        $pagination['next_page'] = $pagination['current_page'] + 1;
+        $pagination['previous_page'] = $pagination['current_page'] - 1;
+        $pagination['pages_count'] = ceil($pagination['total_items'] / $pagination['item_limit']);
+        $pagination['last_page_m1'] = $pagination['pages_count'] - 1;
+
+        return $this->render('forum/theme1/thread.html.twig', array(
+            'current_user'   => $currentUser->aUser,
+            'current_forum'  => $forum->forumData,
+            'current_board'  => $board->boardData,
+            'current_thread' => $thread->threadData,
+            'posts'          => $posts,
+            'breadcrumb'     => $breadcrumb,
+            'pagination'     => $pagination,
         ));
     }
 }

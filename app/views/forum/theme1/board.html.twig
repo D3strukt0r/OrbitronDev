@@ -25,10 +25,10 @@
 {% block breadcrumb %}
     <div class="container">
         <ol class="breadcrumb">
-            <li><a href="{{ path('app_forum_forum_index', {'forum': current_forum.name}) }}">{{ 'Home'|trans }}</a></li>
+            <li><a href="{{ path('app_forum_forum_index', {'forum': current_forum.url}) }}">{{ 'Home'|trans }}</a></li>
             {% for key,level in breadcrumb %}
                 {% if level.type == 1 %}
-                    <li><a href="{{ path('app_forum_forum_board', {'forum': current_forum.name, 'board': level.id}) }}">{{ level.title }}</a></li>
+                    <li><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': level.id}) }}">{{ level.title }}</a></li>
                 {% endif %}
             {% endfor %}
             <li class="active">{{ current_board.title }}</li>
@@ -68,7 +68,7 @@
                 <table class="table table-striped table-bordered table-hover table-condensed">
                     <thead>
                         <tr>
-                            <th class="text-center" width="56%">{{ 'Topics'|trans }}'</th>
+                            <th class="text-center" width="56%">{{ 'Topics'|trans }}</th>
                             <th class="text-center" width="7%" >{{ 'Replies'|trans }}</th>
                             <th class="text-center" width="7%">{{ 'Views'|trans }}</th>
                             <th class="text-center" width="30%">{{ 'Last post'|trans }}</th>

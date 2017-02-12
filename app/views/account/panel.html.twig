@@ -21,6 +21,15 @@
     <script type="text/javascript" src="{{ asset('assets/js/plugins/validation.js') }}"></script>
 {% endblock %}
 
+{% block stylesheets_code %}
+    {{ parent() }}
+    <style type="text/css">
+        .blue-border {
+            border-color: #337ab7;
+        }
+    </style>
+{% endblock %}
+
 {% block javascripts_code %}
     {{ parent() }}
     Masking.initMasking();

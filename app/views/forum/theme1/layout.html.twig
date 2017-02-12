@@ -41,6 +41,22 @@
                     padding-bottom: 20px;
                     border: 0; border-top: 1px solid #eee;
                 }
+                .admin-link {
+                    border: 0;
+                    color: #fff !important;
+                    font-size: 14px;
+                    cursor: pointer;
+                    font-weight: 400;
+                    padding: 6px 13px;
+                    position: relative;
+                    background: rgb(231, 76, 60);
+                    white-space: nowrap;
+                    display: inline-block;
+                    text-decoration: none;
+                }
+                .admin-link:hover {
+                    background: rgb(198, 67, 53) !important;
+                }
             </style>
         {% endblock %}
 
@@ -69,7 +85,7 @@
                     <ul class="nav navbar-nav navbar-right">
                         {{ service.page_links }}
                         {% if current_user.user_id == current_forum.owner_id %}
-                            <li><a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'home'}) }}" class="bg-danger">{{ 'Admin Panel'|trans }}</a></li>
+                            <li><a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'home'}) }}" class="admin-link">{{ 'Admin Panel'|trans }}</a></li>
                         {% endif %}
                         {% if current_user.user_id > -1 %}
                             <li class="dropdown">
@@ -107,8 +123,8 @@
                 <div class="container">
                     <div class="col-lg-6 col-md-6 hidden-sm hidden-xs"><div class="text-left">{{ 'Copyright © 2013-2017 OrbitronDev' }}</div></div>
                     <div class="hidden-lg hidden-md col-sm-12 col-xs-12"><div class="text-center">{{ 'Copyright © 2013-2017 OrbitronDev' }}</div></div>
-                    <div class="col-lg-6 col-md-6 hidden-sm hidden-xs"><div class="text-right">{{ 'This service page has been created by OrbitronDev' }}</div></div>
-                    <div class="hidden-lg hidden-md col-sm-12 col-xs-12"><div class="text-center">{{ 'This service page has been created by OrbitronDev' }}</div></div>
+                    <div class="col-lg-6 col-md-6 hidden-sm hidden-xs"><div class="text-right">{{ 'This page has been created with services by OrbitronDev' }}</div></div>
+                    <div class="hidden-lg hidden-md col-sm-12 col-xs-12"><div class="text-center">{{ 'This page has been created with services by OrbitronDev' }}</div></div>
                 </div><!-- /.container -->
             </footer>
             <!--=== End Footer ===-->

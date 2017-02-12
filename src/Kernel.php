@@ -64,8 +64,7 @@ class Kernel
 
         if ($this->has('routing.error')) {
             $error = $this->get('routing.error');
-            $response = new Response($this->get('twig')->render('error/error404.html.twig',
-                array('status_code' => $error->getCode(), 'status_text' => $error->getMessage())));
+            $response = new Response($this->get('twig')->render('error/error404.html.twig', array('status_code' => $error->getCode(), 'status_text' => $error->getMessage())), 404);
             //$response = new NotFoundHttpException('Not found', $this->get('routing.error'));
             $response->prepare($this->getRequest());
             $response->send();

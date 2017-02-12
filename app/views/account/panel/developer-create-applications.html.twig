@@ -32,7 +32,7 @@
                             {{ form_label(create_app_form.client_name, null, {'label_attr': {'class': 'label col col-4'}}) }}
                             <div class="col col-8">
                                 <label class="input">
-                                    <i class="icon-append fa fa-user"></i>
+                                    <i class="icon-prepend fa fa-user"></i>
                                     {{ form_widget(create_app_form.client_name) }}
                                 </label>
                                 <div class="note note-error">{{ form_errors(create_app_form.client_name) }}</div>
@@ -45,7 +45,7 @@
                             {{ form_label(create_app_form.redirect_uri, null, {'label_attr': {'class': 'label col col-4'}}) }}
                             <div class="col col-8">
                                 <label class="input">
-                                    <i class="icon-append fa fa-external-link"></i>
+                                    <i class="icon-prepend fa fa-external-link"></i>
                                     {{ form_widget(create_app_form.redirect_uri) }}
                                 </label>
                                 <div class="note note-error">{{ form_errors(create_app_form.redirect_uri) }}</div>

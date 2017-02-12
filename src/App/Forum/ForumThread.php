@@ -3,6 +3,7 @@
 namespace App\Forum;
 
 use App\Core\DatabaseConnection;
+use Container\DatabaseContainer;
 
 class ForumThread
 {
@@ -19,8 +20,7 @@ class ForumThread
      */
     static function createThread($board_id, $thread_name, $message, $user_id)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
+        $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
@@ -64,8 +64,7 @@ class ForumThread
      */
     public static function threadExists($thread_id)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
+        $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
@@ -153,10 +152,9 @@ class ForumThread
      * @return string
      * @throws \Exception
      */
-    public static function getVar($thread_id, $key)
+    public static function getVarStatic($thread_id, $key)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
+        $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
@@ -186,8 +184,7 @@ class ForumThread
      */
     public static function setVar($thread_id, $key, $value)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
+        $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
@@ -202,5 +199,50 @@ class ForumThread
             ':value'     => $sValue,
             ':thread_id' => $iThreadId,
         ));
+    }
+
+    /******************************************************************************/
+
+    private $threadId;
+    public $threadData;
+
+    /**
+     * Forum constructor.
+     *
+     * @param $thread_id
+     *
+     * @throws \Exception
+     */
+    public function __construct($thread_id)
+    {
+        $this->threadId = (int)$thread_id;
+
+        $database = DatabaseContainer::$database;
+        if (is_null($database)) {
+            throw new \Exception('A database connection is required');
+        }
+
+        $getData = $database->prepare('SELECT * FROM `forum_threads` WHERE `id`=:thread_id LIMIT 1');
+        if (!$getData->execute(array(':thread_id' => $this->threadId))) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            if ($getData->rowCount() > 0) {
+                $data = $getData->fetchAll();
+                $this->threadData = $data[0];
+            } else {
+                $this->threadData = null;
+            }
+        }
+    }
+
+    /**
+     * @param $key
+     *
+     * @return mixed
+     */
+    public function getVar($key)
+    {
+        $value = $this->threadData[$key];
+        return $value;
     }
 }

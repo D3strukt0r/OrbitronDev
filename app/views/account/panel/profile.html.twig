@@ -20,7 +20,7 @@
 </section><!-- /#header -->
 <section id="page">
     <div class="col-lg-6">
-        <form method="post" id="change-account-information-form" class="sky-form" style="border-color: #337ab7;">
+        {{ form_start(edit_profile_form, {'attr': {'class': 'sky-form blue-border', 'id': 'change-account-information-form'}}) }}
             <header>{{ 'Profile information'|trans }}</header>
             <fieldset>
                 <section>
@@ -148,10 +148,10 @@
                     {{ form_widget(edit_profile_form.send, {'attr': {'class': 'btn-u'}}) }}
                 </div>
             </footer>
-        </form>
+        {{ form_end(edit_profile_form) }}
     </div>
     <div class="col-lg-6">
-        <form method="post" id="change-profile-picture-form" class="sky-form" style="border-color: #337ab7;">
+        <form method="post" id="change-profile-picture-form" class="sky-form blue-border">
             <header>{{ 'Profile picture'|trans }}</header>
             <fieldset>
                 <section>
@@ -171,7 +171,7 @@
                             <label class="input">
                                 <span class="btn-u fileinput-button">
                                     <i class="glyphicon glyphicon-plus"></i>
-                                    <span>Upload file...</span>
+                                    <span>{{ 'Upload file...'|trans }}</span>
                                     {# TODO: Add functionality to edit uploaded images #}
                                     <input id="fileupload" type="file" name="files[]" />
                                 </span>
