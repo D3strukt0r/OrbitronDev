@@ -75,10 +75,10 @@ class Kernel
 
             /** @var Controller $class */
             $class = new $className;
-            $class->setContainer($this);                   // Save this class in Controller
+            $class->setContainer($this); // Save this class in Controller
             $class->setParameters($this->components['routing']);
             /** @var Response $response */
-            $response = $class->$functionName($this);       // Execute Controller
+            $response = $class->$functionName($this); // Execute Controller
             if (is_object($response)) {
                 $response->prepare($this->getRequest());
                 $response->send();
@@ -236,7 +236,7 @@ class Kernel
      */
     function getRequest()
     {
-        return $this->request;
+        return is_null($this->request) ? Request::createFromGlobals() : $this->request;
     }
 
     /**

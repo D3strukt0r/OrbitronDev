@@ -35,7 +35,7 @@ class RecaptchaValidator extends ConstraintValidator
     /**
      * HTTP Proxy informations
      *
-     * @var Array
+     * @var array
      */
     protected $httpProxy;
     /**
@@ -126,7 +126,7 @@ class RecaptchaValidator extends ConstraintValidator
      * @param string $path
      * @param array  $data
      *
-     * @return array response
+     * @return string response
      */
     private function httpGet($host, $path, $data)
     {

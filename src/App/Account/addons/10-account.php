@@ -2,18 +2,13 @@
 
 use App\Account\Account;
 use App\Account\AccountAcp;
-use App\Account\AccountAdmin;
 use App\Account\AccountTools;
 use App\Account\UserInfo;
-use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -55,29 +50,29 @@ function acp_html_account($twig, $controller)
 
     $editAccountForm = $controller->createFormBuilder()
         ->add('new_username', TextType::class, array(
-            'label' => 'Username',
+            'label'    => 'Username',
             'required' => false,
-            'attr'  => array(
+            'attr'     => array(
                 'placeholder' => 'Current username: ' . $currentUser->getFromUser('username'),
             ),
         ))
         ->add('new_password', PasswordType::class, array(
-            'label' => 'Password',
+            'label'    => 'Password',
             'required' => false,
-            'attr'  => array(
+            'attr'     => array(
                 'placeholder' => 'Enter your new password',
             ),
         ))
         ->add('new_password_verify', PasswordType::class, array(
-            'label' => 'Repeat Password',
+            'label'    => 'Repeat Password',
             'required' => false,
-            'attr'  => array(
+            'attr'     => array(
                 'placeholder' => 'Confirm new password',
             ),
         ))
         ->add('new_email', EmailType::class, array(
             'label'       => 'Email',
-            'required' => false,
+            'required'    => false,
             'attr'        => array(
                 'placeholder' => 'Current Email: ' . $currentUser->getFromUser('email'),
             ),
@@ -99,7 +94,7 @@ function acp_html_account($twig, $controller)
         ))
         ->getForm();
 
-    $request = Request::createFromGlobals();
+    $request = Kernel::$kernel->getRequest();
     $editAccountForm->handleRequest($request);
     if ($editAccountForm->isSubmitted()) {
         if (strlen($newUsername = $editAccountForm->get('new_username')->getData()) > 0) {
@@ -179,7 +174,7 @@ function acp_html_account($twig, $controller)
     }
 
     return $twig->render('account/panel/account.html.twig', array(
-        'edit_account_form' => $editAccountForm->createView(),
+        'edit_account_form'    => $editAccountForm->createView(),
         'current_user'         => $currentUser->aUser,
         'current_user_profile' => $currentUser->aProfile,
         'current_user_sub'     => $currentUser->aSubscription,
@@ -203,14 +198,14 @@ function acp_html_profile($twig, $controller)
             'label' => 'First name',
             'attr'  => array(
                 'placeholder' => $currentUser->getFromProfile('firstname'),
-                'value' => $currentUser->getFromProfile('firstname'),
+                'value'       => $currentUser->getFromProfile('firstname'),
             ),
         ))
         ->add('last_name', TextType::class, array(
             'label' => 'Last name',
             'attr'  => array(
                 'placeholder' => $currentUser->getFromProfile('lastname'),
-                'value' => $currentUser->getFromProfile('lastname'),
+                'value'       => $currentUser->getFromProfile('lastname'),
             ),
         ))
         ->add('gender', ChoiceType::class, array(
@@ -220,7 +215,7 @@ function acp_html_profile($twig, $controller)
                 'Male'   => 1,
                 'Female' => 2,
             ),
-            'data' => $currentUser->getFromProfile('gender'),
+            'data'    => $currentUser->getFromProfile('gender'),
         ))
         ->add('birthday', TextType::class, array(
             'label' => 'Birthday',
@@ -231,35 +226,35 @@ function acp_html_profile($twig, $controller)
         ->add('location_street', TextType::class, array(
             'label' => 'Location',
             'attr'  => array(
-                'placeholder' => 'Street ('.$currentUser->getFromProfile('location_country').')',
+                'placeholder' => 'Street (' . $currentUser->getFromProfile('location_country') . ')',
                 'value'       => $currentUser->getFromProfile('location_street'),
             ),
         ))
         ->add('location_street_number', TextType::class, array(
             'label' => 'Location',
             'attr'  => array(
-                'placeholder' => 'Street Number ('.$currentUser->getFromProfile('location_country').')',
+                'placeholder' => 'Street Number (' . $currentUser->getFromProfile('location_country') . ')',
                 'value'       => $currentUser->getFromProfile('location_street_number'),
             ),
         ))
         ->add('location_postal_code', TextType::class, array(
             'label' => 'Location',
             'attr'  => array(
-                'placeholder' => 'Post Code ('.$currentUser->getFromProfile('location_country').')',
+                'placeholder' => 'Post Code (' . $currentUser->getFromProfile('location_country') . ')',
                 'value'       => $currentUser->getFromProfile('location_zip'),
             ),
         ))
         ->add('location_city', TextType::class, array(
             'label' => 'Location',
             'attr'  => array(
-                'placeholder' => 'City ('.$currentUser->getFromProfile('location_country').')',
+                'placeholder' => 'City (' . $currentUser->getFromProfile('location_country') . ')',
                 'value'       => $currentUser->getFromProfile('location_city'),
             ),
         ))
         ->add('location_country', TextType::class, array(
             'label' => 'Location',
             'attr'  => array(
-                'placeholder' => 'Country ('.$currentUser->getFromProfile('location_country').')',
+                'placeholder' => 'Country (' . $currentUser->getFromProfile('location_country') . ')',
                 'value'       => $currentUser->getFromProfile('location_country'),
             ),
         ))
@@ -277,7 +272,7 @@ function acp_html_profile($twig, $controller)
                 'Work'   => 2,
                 'School' => 3,
             ),
-            'data' => $currentUser->getFromProfile('usages'),
+            'data'    => $currentUser->getFromProfile('usages'),
         ))
         ->add('password_verify', PasswordType::class, array(
             'label'       => 'Current Password',

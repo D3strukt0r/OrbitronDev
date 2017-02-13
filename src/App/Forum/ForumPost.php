@@ -78,7 +78,7 @@ class ForumPost
     }
 
     /**
-     * @param $thread_id
+     * @param int $thread_id
      */
     public static function updateRepliesCountInThread($thread_id)
     {
@@ -90,9 +90,9 @@ class ForumPost
     }
 
     /**
-     * @param $thread_id
-     * @param $user_id
-     * @param $last_post_time
+     * @param int $thread_id
+     * @param int $user_id
+     * @param int $last_post_time
      */
     public static function updatePostsCountInForum($thread_id, $user_id, $last_post_time)
     {

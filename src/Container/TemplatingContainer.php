@@ -8,16 +8,13 @@ use Symfony\Bridge\Twig\Extension\FormExtension;
 use Symfony\Bridge\Twig\Extension\RoutingExtension;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Bridge\Twig\Extension\YamlExtension;
-
 use Symfony\Bridge\Twig\Form\TwigRenderer;
 use Symfony\Bridge\Twig\Form\TwigRendererEngine;
 use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Forms;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGenerator;
-
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
@@ -35,6 +32,7 @@ class TemplatingContainer
 {
     /** @var \Twig_Environment $defaultFormTheme */
     private $twig = null;
+
     /**
      * Templating constructor.
      *
@@ -51,15 +49,15 @@ class TemplatingContainer
 
         ///////// Init ///////////
         $twigVariables = array();
-        if($cache) {
-            $twigVariables['cache'] = __DIR__.'/../var/cache/templating';
+        if ($cache) {
+            $twigVariables['cache'] = __DIR__ . '/../var/cache/templating';
         }
-        if($kernel->environment == 'development' || $kernel->environment == 'dev') {
+        if ($kernel->environment == 'development' || $kernel->environment == 'dev') {
             $twigVariables['debug'] = true;
         }
         $loader = new Twig_Loader_Filesystem(array(
             __DIR__ . '/../../app/views',
-            $vendorTwigBridgeDir.'/Resources/views/Form',
+            $vendorTwigBridgeDir . '/Resources/views/Form',
         ));
         $this->twig = new Twig_Environment($loader, $twigVariables);
 
@@ -70,7 +68,7 @@ class TemplatingContainer
         $requestStack->push($kernel->getRequest());
         $globalVariable->setRequestStack($requestStack);
 
-        if($kernel->environment == 'development' || $kernel->environment == 'dev') {
+        if ($kernel->environment == 'development' || $kernel->environment == 'dev') {
             $this->twig->addExtension(new Twig_Extension_Debug());
         }
         $this->yamlExtension();

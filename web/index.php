@@ -7,24 +7,24 @@
 use Symfony\Component\Debug\Debug;
 
 if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
-        header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-        exit;
-    }
-    if(strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
-        if (count(explode('.', $_SERVER['HTTP_HOST'])) < 2) {
-            header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-            exit;
-        }
-    } else {
-        if (count(explode('.', $_SERVER['HTTP_HOST'])) < 3) {
-            header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-            exit;
-        }
-    }
-    /*if (strpos($_SERVER['HTTP_HOST'], 'www.') === false) {
+    header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+    exit;
+}
+if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
+    if (count(explode('.', $_SERVER['HTTP_HOST'])) < 2) {
         header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
         exit;
-    }*/
+    }
+} else {
+    if (count(explode('.', $_SERVER['HTTP_HOST'])) < 3) {
+        header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+        exit;
+    }
+}
+/*if (strpos($_SERVER['HTTP_HOST'], 'www.') === false) {
+    header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+    exit;
+}*/
 //}
 
 // Decline static file requests back to the PHP built-in webserver

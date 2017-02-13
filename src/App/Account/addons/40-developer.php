@@ -1,8 +1,6 @@
 <?php
 
-use App\Account\Account;
 use App\Account\AccountAcp;
-use App\Account\AccountAdmin;
 use App\Account\AccountDeveloper;
 use App\Account\UserInfo;
 use App\Core\Token;
@@ -71,7 +69,7 @@ function acp_html_developer_create_application($twig, $controller)
 
     $scope_choices = array();
     foreach (AccountDeveloper::getAllScopes() as $scope) {
-        $scope_choices[ $scope['name'] ] = $scope['scope'];
+        $scope_choices[$scope['name']] = $scope['scope'];
     }
     $createAppForm = $controller->createFormBuilder()
         ->add('client_name', TextType::class, array(
@@ -96,7 +94,7 @@ function acp_html_developer_create_application($twig, $controller)
         ))
         ->getForm();
 
-    $request = Request::createFromGlobals();
+    $request = Kernel::$kernel->getRequest();
     $createAppForm->handleRequest($request);
     if ($createAppForm->isValid()) {
 
@@ -108,13 +106,13 @@ function acp_html_developer_create_application($twig, $controller)
             USER_ID
         );
 
-        header('Location: '.$controller->generateUrl('app_account_panel', array('page' => 'developer-applications')));
+        header('Location: ' . $controller->generateUrl('app_account_panel', array('page' => 'developer-applications')));
         exit;
     }
 
     return $twig->render('account/panel/developer-create-applications.html.twig', array(
         'create_app_form' => $createAppForm->createView(),
-        'current_user'   => $currentUser->aUser,
+        'current_user'    => $currentUser->aUser,
     ));
 }
 
@@ -144,7 +142,7 @@ function acp_html_developer_show_applications($twig, $controller)
 {
     // TODO: Send message when user is not a developer
     if (!isset($_GET['app'])) {
-        header('Location: '.$controller->generateUrl('app_account_panel', array('p' => 'developer-applications')));
+        header('Location: ' . $controller->generateUrl('app_account_panel', array('p' => 'developer-applications')));
         exit;
     }
     $database = DatabaseContainer::$database;
@@ -186,7 +184,7 @@ function acp_html_developer_register($twig, $controller)
     $developerForm->handleRequest($request);
     if ($developerForm->isSubmitted()) {
         $currentUser->updateUserDeveloper(true);
-        header('Location: '.$controller->generateUrl('app_account_panel', array('page' => 'developer-applications')));
+        header('Location: ' . $controller->generateUrl('app_account_panel', array('page' => 'developer-applications')));
         exit;
     }
 

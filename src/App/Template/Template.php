@@ -17,7 +17,7 @@ class Template
     }
 
     /**
-     * @param $template_name
+     * @param string $template_name
      */
     public function addGeneric($template_name)
     {
@@ -26,7 +26,7 @@ class Template
     }
 
     /**
-     * @param \Template\TemplateLoad $template
+     * @param \App\Template\TemplateLoad $template
      */
     public function addTemplate($template)
     {
@@ -34,7 +34,7 @@ class Template
     }
 
     /**
-     * @param $template_name
+     * @param string $template_name
      *
      * @return bool
      */
@@ -49,7 +49,7 @@ class Template
     }
 
     /**
-     * @param $include_set
+     * @param string $include_set
      */
     function addIncludeSet($include_set)
     {
@@ -65,19 +65,16 @@ class Template
     }
 
     /**
-     * @param        $type
-     * @param        $src
-     * @param string $rel
-     * @param string $name
+     * @param   string  $type
+     * @param    string $src
+     * @param string    $rel
+     * @param string    $name
      */
     function addIncludeFile($type, $src, $rel = '', $name = '')
     {
         $this->include_files[] = array('type' => $type, 'src' => $src, 'rel' => $rel, 'name' => $name);
     }
 
-    /**
-     *
-     */
     function writeIncludeFiles()
     {
         foreach ($this->include_files as $inc) {
@@ -106,8 +103,8 @@ class Template
     }
 
     /**
-     * @param $param
-     * @param $value
+     * @param string $param
+     * @param string $value
      */
     function setParam($param, $value)
     {
@@ -115,7 +112,7 @@ class Template
     }
 
     /**
-     * @param $param
+     * @param string $param
      */
     function unsetParam($param)
     {
@@ -123,7 +120,7 @@ class Template
     }
 
     /**
-     * @param $string
+     * @param string $string
      */
     function write($string)
     {
@@ -131,7 +128,7 @@ class Template
     }
 
     /**
-     * @param $string
+     * @param string $string
      *
      * @return mixed
      */

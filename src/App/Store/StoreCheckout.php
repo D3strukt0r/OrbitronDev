@@ -3,6 +3,7 @@
 namespace App\Store;
 
 
+use App\Account\UserInfo;
 use App\Core\DatabaseConnection;
 
 class StoreCheckout
@@ -14,9 +15,9 @@ class StoreCheckout
     /**
      * StoreCheckout constructor.
      *
-     * @param float             $cartId
-     * @param bool              $isRegisteredUser
-     * @param \Account\UserInfo $user
+     * @param float         $cartId
+     * @param bool|null     $isRegisteredUser
+     * @param UserInfo|null $user
      *
      * @throws \Exception
      */

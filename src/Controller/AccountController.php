@@ -16,6 +16,7 @@ use Controller;
 use App\Account\Account;
 use Exception;
 use Form\RecaptchaType;
+use Kernel;
 use OAuth2\GrantType\AuthorizationCode;
 use OAuth2\GrantType\ClientCredentials;
 use OAuth2\GrantType\RefreshToken;
@@ -63,7 +64,7 @@ class AccountController extends Controller
             return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
         }
 
-        $request = Request::createFromGlobals();
+        $request = Kernel::$kernel->getRequest();
 
         $loginForm = $this->createFormBuilder()
             ->add('redirect', HiddenType::class, array(

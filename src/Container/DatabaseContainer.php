@@ -5,8 +5,6 @@ namespace Container;
 use PDO;
 use PDOException;
 use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
 class DatabaseContainer
 {

@@ -191,6 +191,11 @@ class Account
 
     /**************************************************************************************************/
 
+    /**
+     * @param null $email
+     * @param string|null $password
+     * @param bool|null $remember
+     */
     public static function changeSession($email = null, $password = null, $remember = null)
     {
         $accountData = array(

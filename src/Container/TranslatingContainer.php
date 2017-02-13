@@ -2,7 +2,6 @@
 
 namespace Container;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\Loader\CsvFileLoader;
 use Symfony\Component\Translation\Loader\IcuDatFileLoader;
 use Symfony\Component\Translation\Loader\IcuResFileLoader;

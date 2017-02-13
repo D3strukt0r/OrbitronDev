@@ -45,7 +45,7 @@ class StoreProduct
     /**
      * StoreProduct constructor.
      *
-     * @param $product_id
+     * @param int $product_id
      *
      * @throws \Exception
      */
@@ -72,7 +72,7 @@ class StoreProduct
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return mixed
      */
@@ -83,8 +83,8 @@ class StoreProduct
     }
 
     /**
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param string $value
      *
      * @throws \Exception
      */

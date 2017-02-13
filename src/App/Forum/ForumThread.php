@@ -2,7 +2,6 @@
 
 namespace App\Forum;
 
-use App\Core\DatabaseConnection;
 use Container\DatabaseContainer;
 
 class ForumThread
@@ -83,7 +82,7 @@ class ForumThread
     }
 
     /**
-     * @param $board_id
+     * @param int $board_id
      */
     private static function addThreadCount($board_id)
     {
@@ -106,9 +105,9 @@ class ForumThread
     }
 
     /**
-     * @param $board_id
-     * @param $user_id
-     * @param $time
+     * @param int $board_id
+     * @param int $user_id
+     * @param int $time
      */
     public static function updatePost($board_id, $user_id, $time)
     {
@@ -176,9 +175,9 @@ class ForumThread
     }
 
     /**
-     * @param $thread_id
-     * @param $key
-     * @param $value
+     * @param int $thread_id
+     * @param string $key
+     * @param string $value
      *
      * @throws \Exception
      */

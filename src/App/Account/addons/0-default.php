@@ -3,10 +3,10 @@
 use App\Account\AccountAcp;
 
 AccountAcp::addGroup(array(
-	'parent'  => 'root',
-	'id'      => 'null',
-	'title'   => null,
-	'display' => null,
+    'parent'  => 'root',
+    'id'      => 'null',
+    'title'   => null,
+    'display' => null,
 ));
 
 /**

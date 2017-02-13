@@ -1,6 +1,5 @@
 filter:
     excluded_paths:
-#        - 'app/*'
         - '*.min.js'
         - 'web/assets/plugins/*'
         - 'web/vendor/*'
@@ -8,9 +7,4 @@ filter:
 checks:
     php: true
     javascript: true
-coding_style:
-    php:
-        spaces:
-            around_operators:
-                concatenation: true
 build: true

@@ -6,8 +6,6 @@ use Container\DatabaseContainer;
 use Container\TranslatingContainer;
 use Exception;
 use Kernel;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
 class AccountTools
 {

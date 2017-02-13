@@ -100,11 +100,11 @@ class AccountApi
     {
         $page = $_GET['p'];
 
-        $view = new \Template\Template();
+        $view = new \App\Template\Template();
 
-        $template = new \Template\TemplateLoad($page);
-        $template->setHtml(function ($page) {
-            \Account\AccountAcp::includeLibs();
+        $template = new \App\Template\TemplateLoad($page);
+        $template->setHtml(function($page) {
+            \App\Account\AccountAcp::includeLibs();
             $functionForPage = str_replace('-', '_', $page);
             $functionName = 'acp_html_' . $functionForPage;
             call_user_func($functionName);

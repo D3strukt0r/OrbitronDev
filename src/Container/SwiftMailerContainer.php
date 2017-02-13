@@ -5,8 +5,6 @@ namespace Container;
 use Exception;
 use Swift_Mailer;
 use Swift_SmtpTransport;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Yaml;
 
 class SwiftMailerContainer
 {

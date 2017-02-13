@@ -7,8 +7,8 @@ class AppCaller
     private static $init_called_apps = array();
 
     /**
-     * @param $app
-     * @param $call
+     * @param string $app
+     * @param string $call
      *
      * @return bool
      */

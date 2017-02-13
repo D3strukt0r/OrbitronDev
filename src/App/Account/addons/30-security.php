@@ -2,11 +2,11 @@
 
 use App\Account\AccountAcp;
 
-if(!isset($indirectly)) {
+if (!isset($indirectly)) {
     AccountAcp::addGroup(array(
         'parent' => 'root',
         'id'     => 'security',
-        'title'  => _('Security')
+        'title'  => _('Security'),
     ));
 
     AccountAcp::addMenu(array(
@@ -36,12 +36,12 @@ if(!isset($indirectly)) {
 
 function acp_html_inactivity()
 {
-	
+
 }
 
 function acp_html_login_log()
 {
-	
+
 }
 
 /**
@@ -53,5 +53,5 @@ function acp_html_login_log()
  */
 function acp_html_delete_account($twig, $controller)
 {
-	return $twig->render('account/panel/delete-account.html.twig');
+    return $twig->render('account/panel/delete-account.html.twig');
 }
