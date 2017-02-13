@@ -4,13 +4,12 @@ namespace Controller;
 
 use Controller;
 use Form\RecaptchaType;
+use Kernel;
 use Swift_Message;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
@@ -136,7 +135,7 @@ class DefaultController extends Controller
                 }
         */
 
-        $request = Request::createFromGlobals();
+        $request = Kernel::$kernel->getRequest();
 
         if ($request->isMethod('POST')) {
             $contactForm->handleRequest($request);
@@ -223,7 +222,7 @@ class DefaultController extends Controller
             ))
             ->getForm();
 
-        $request = Request::createFromGlobals();
+        $request = Kernel::$kernel->getRequest();
         if ($request->isMethod('POST')) {
             $searchForm->handleRequest($request);
 

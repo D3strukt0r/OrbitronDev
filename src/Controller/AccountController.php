@@ -338,7 +338,7 @@ class AccountController extends Controller
                 $parameters[$pair[0]] = $pair[1];
             }
         } else {
-            $request = Request::createFromGlobals();
+            $request = $this->getRequest();
             $parameters = $request->request->all();
         }
         $result = AccountApi::$function($parameters);

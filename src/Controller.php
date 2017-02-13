@@ -31,7 +31,10 @@ abstract class Controller
 
     public function getRequest()
     {
-        return Request::createFromGlobals();
+
+        /** @var Kernel $kernel */
+        $kernel = $this->get('kernel');
+        return $kernel->getRequest();
     }
 
     /**

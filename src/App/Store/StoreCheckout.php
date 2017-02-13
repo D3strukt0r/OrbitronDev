@@ -68,7 +68,7 @@ class StoreCheckout
     /**
      * Creates a new cart in the database
      *
-     * @param \Account\UserInfo $user
+     * @param UserInfo $user
      *
      * @return string
      * @throws \Exception
@@ -93,8 +93,8 @@ class StoreCheckout
     /**
      * Add a product to the cart
      *
-     * @param \Store\Store        $store   Required to get the ID
-     * @param \Store\StoreProduct $product Required to know which product
+     * @param Store        $store   Required to get the ID
+     * @param StoreProduct $product Required to know which product
      * @param int                 $count   Amount to be added
      */
     public function addToCart($store, $product, $count = 1)
@@ -169,7 +169,7 @@ class StoreCheckout
     /**
      * Does there already exist a cart for the user?
      *
-     * @param \Account\UserInfo $user
+     * @param UserInfo $user
      *
      * @return bool
      * @throws \Exception

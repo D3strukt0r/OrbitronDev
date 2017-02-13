@@ -62,7 +62,7 @@ class TemplateLoad
     }
 
     /**
-     * @return mixed
+     * @param string $html
      */
     public function setHtml($html)
     {
