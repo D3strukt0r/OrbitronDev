@@ -342,7 +342,13 @@ class AccountController extends Controller
             $parameters = $request->request->all();
         }
         $result = AccountApi::$function($parameters);
-        return $this->json($result);
+        if (is_array($result)) {
+            return $this->json($result);
+        } elseif (is_null($result)) {
+            return '';
+        } else {
+            return $result;
+        }
     }
 
     public function usersAction()

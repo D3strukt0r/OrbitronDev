@@ -3,6 +3,7 @@
 namespace App\Forum;
 
 use Container\DatabaseContainer;
+use PDO;
 
 class ForumThread
 {
@@ -130,17 +131,6 @@ class ForumThread
         }
     }
 
-    /**
-     * @param $thread_id
-     */
-    public static function addThreadView($thread_id)
-    {
-        $iThreadId = (int)$thread_id;
-
-        $iViews = ForumThread::getVar($iThreadId, 'views');
-        $iNewViews = $iViews + 1;
-        ForumThread::setVar($iThreadId, 'views', $iNewViews);
-    }
 
     /*****************************************************************************************/
 
@@ -175,13 +165,13 @@ class ForumThread
     }
 
     /**
-     * @param int $thread_id
+     * @param int    $thread_id
      * @param string $key
      * @param string $value
      *
      * @throws \Exception
      */
-    public static function setVar($thread_id, $key, $value)
+    public static function setVarStatic($thread_id, $key, $value)
     {
         $database = DatabaseContainer::$database;
         if (is_null($database)) {
@@ -208,7 +198,7 @@ class ForumThread
     /**
      * Forum constructor.
      *
-     * @param $thread_id
+     * @param int $thread_id
      *
      * @throws \Exception
      */
@@ -237,11 +227,40 @@ class ForumThread
     /**
      * @param $key
      *
-     * @return mixed
+     * @return string
      */
     public function getVar($key)
     {
         $value = $this->threadData[$key];
         return $value;
+    }
+
+    public function addThreadView()
+    {
+        $views = (int)$this->getVar('views');
+        $newViews = ++$views;
+
+        $this->updateViews($newViews);
+    }
+    /**
+     * @param int $count
+     *
+     * @throws \Exception
+     */
+    public function updateViews($count)
+    {
+        $database = DatabaseContainer::$database;
+        if (is_null($database)) {
+            throw new \Exception('A database connection is required');
+        }
+
+        $setData = $database->prepare('UPDATE `forum_threads` SET `views`=:count WHERE `id`=:thread_id');
+        $setData->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+        $setData->bindValue(':count', $count, PDO::PARAM_INT);
+        $result = $setData->execute();
+
+        if ($result) {
+            $this->threadData['views'] = $count;
+        }
     }
 }

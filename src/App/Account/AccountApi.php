@@ -3,9 +3,6 @@
 namespace App\Account;
 
 use Kernel;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AccountApi
 {
@@ -24,23 +21,31 @@ class AccountApi
 
     public static function get_img()
     {
-        $userId = (int)$_GET['user_id'];
-        $selectedUser = new UserInfo($userId);
-        $rootPictureDir = Kernel::$rootDir2 . '/web/app/account/profile_pictures/';
+        $request = Kernel::$kernel->getRequest();
 
-        if (file_exists($filename = $rootPictureDir . $selectedUser->getFromProfile('profile_picture'))) {
-            $oImage = new SimpleImage($filename);
-            $oImage->resize((isset($_GET['width']) ? $_GET['width'] : 1000),
-                (isset($_GET['height']) ? $_GET['height'] : 1000));
-            $oImage->output();
-            exit;
+        $userId = (int)$request->query->get('user_id');
+        $selectedUser = new UserInfo($userId);
+
+        $width = !is_null($request->query->get('width')) ? (int)$request->query->get('width') : 1000;
+        $height = !is_null($request->query->get('height')) ? (int)$request->query->get('height') : 1000;
+
+        $rootPictureDir = Kernel::$kernel->getRootDir() . '/web/app/account/profile_pictures/';
+
+        if (AccountTools::idExists($userId)) {
+            if (file_exists($filename = $rootPictureDir . $selectedUser->getFromProfile('profile_picture'))) {
+                $oImage = new SimpleImage($filename);
+                $oImage->resize($width, $height);
+                $oImage->output();
+            } else {
+                $oImage = new SimpleImage(Kernel::$kernel->getRootDir() . '/web/assets/img/user.jpg');
+                $oImage->resize($width, $height);
+                $oImage->output();
+            }
         } else {
-            $oImage = new SimpleImage(Kernel::$rootDir2 . '/web/assets/img/user.jpg');
-            $oImage->resize((isset($_GET['width']) ? $_GET['width'] : 1000),
-                (isset($_GET['height']) ? $_GET['height'] : 1000));
-            $oImage->output();
-            exit;
+            return self::__send_error_message('User not found');
         }
+
+        return null;
     }
 
     public static function update_profile_pic($parameters)

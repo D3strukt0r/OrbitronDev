@@ -24,6 +24,7 @@ class AccountAdmin
         $sUsername = (string)$username;
         $sHashedPassword = (string)$hashed_password;
         $sEmail = (string)$email;
+        $request = \Kernel::$kernel->getRequest();
 
         // Insert to table "users"
         $oAddUser = $database->prepare('INSERT INTO `users`(`username`,`password`,`email`,`created`,`last_online`,`last_ip`,`registration_ip`) VALUES (:username,:password,:email,:created,:lastOnline,:lastIp,:registrationIp)');
@@ -33,8 +34,8 @@ class AccountAdmin
             ':email'          => $sEmail,
             ':created'        => time(),
             ':lastOnline'     => time(),
-            ':lastIp'         => $_SERVER['REMOTE_ADDR'],
-            ':registrationIp' => $_SERVER['REMOTE_ADDR'],
+            ':lastIp'         => $request->server->get('REMOTE_ADDR'),
+            ':registrationIp' => $request->server->get('REMOTE_ADDR'),
         ));
 
         // Get "user_id"

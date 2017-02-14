@@ -97,7 +97,7 @@ class TemplateLoad
     /**
      * @param $text
      *
-     * @return mixed
+     * @return string
      */
     public function translate($text)
     {

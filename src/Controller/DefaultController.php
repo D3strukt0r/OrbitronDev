@@ -22,6 +22,13 @@ class DefaultController extends Controller
         return $this->redirectToRoute('homepage');
     }
 
+    public function testAction()
+    {
+        $request = Kernel::$kernel->getRequest();
+        echo $request->server->get('REMOTE_ADDR');
+        return '';
+    }
+
     public function indexAction()
     {
         return $this->render('default/index.html.twig');

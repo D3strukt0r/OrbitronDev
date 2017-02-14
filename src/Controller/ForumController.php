@@ -12,9 +12,11 @@ use Container\DatabaseContainer;
 use Controller;
 use Decoda\Decoda;
 use Form\RecaptchaType;
+use Kernel;
 use PDO;
 use ReCaptcha\ReCaptcha;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -77,7 +79,8 @@ class ForumController extends Controller
             ->getForm();
 
 
-        $request = Request::createFromGlobals();
+        /** @var Request $request */
+        $request = $this->get('kernel')->getRequest();
         $createForumForm->handleRequest($request);
         if ($createForumForm->isValid()) {
             $errorMessages = array();
@@ -287,6 +290,10 @@ class ForumController extends Controller
         $forum->forumData['page_links'] = json_decode($forum->getVar('page_links'), true);
 
         $thread = new ForumThread($this->parameters['thread']);
+        $views = (int)$thread->getVar('views');
+        $thread->updateViews($views + 1); // Todo: This adds 2 Views!!. If there is an output (echo) withing this function, then it only adds 1 view!!
+        //$thread->addThreadView();
+
         $board = new ForumBoard($thread->getVar('board_id'));
 
         // Breadcrumb
@@ -341,6 +348,67 @@ class ForumController extends Controller
             'posts'          => $posts,
             'breadcrumb'     => $breadcrumb,
             'pagination'     => $pagination,
+        ));
+    }
+
+    public function forumCreatePostAction()
+    {
+        // Does the forum even exist?
+        if (!Forum::urlExists($this->parameters['forum'])) {
+            return $this->render('error/error404.html.twig');
+        }
+        // Does the thread even exist?
+        if (!ForumThread::threadExists($this->parameters['thread'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        $forumId = Forum::url2Id($this->parameters['forum']);
+        $forum = new Forum($forumId);
+        $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
+        $forum->forumData['page_links'] = json_decode($forum->getVar('page_links'), true);
+
+        $thread = new ForumThread($this->parameters['thread']);
+        $board = new ForumBoard($thread->getVar('board_id'));
+
+        // Breadcrumb
+        $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
+        foreach ($breadcrumb as $key => $value) {
+            $boardData = new ForumBoard($value);
+            $breadcrumb{$key} = $boardData->boardData;
+        }
+
+        $createPostForm = $this->createFormBuilder()
+            ->add('title', TextType::class, array(
+                'label'       => 'Post title',
+                'placeholder' => 'RE:' . $thread->getVar('topic'),
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter a title')),
+                ),
+            ))
+            ->add('message', TextareaType::class, array(
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter a url')),
+                ),
+            ))
+            ->add('send', SubmitType::class, array(
+                'label' => 'Post reply',
+            ))
+            ->getForm();
+
+        if ($createPostForm->isSubmitted() && $createPostForm->isValid()) {
+
+        }
+
+        return $this->render('forum/theme1/thread.html.twig', array(
+            'current_user'   => $currentUser->aUser,
+            'current_forum'  => $forum->forumData,
+            'current_board'  => $board->boardData,
+            'current_thread' => $thread->threadData,
+            'breadcrumb'     => $breadcrumb,
+            'create_post_form' => $createPostForm->createView(),
         ));
     }
 }

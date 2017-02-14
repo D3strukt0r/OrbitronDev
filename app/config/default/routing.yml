@@ -29,6 +29,10 @@ app_default_search:
     path:     /search
     defaults: { _controller: 'DefaultController::searchAction' }
 
+app_default_test:
+    path:     /test-page
+    defaults: { _controller: 'DefaultController::testAction' }
+
 app_project_index:
     path:     /projects
     defaults: { _controller: 'ProjectController::indexAction' }
