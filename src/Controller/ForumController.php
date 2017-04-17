@@ -31,7 +31,7 @@ class ForumController extends Controller
 
         $forumList = Forum::getForumList();
         foreach ($forumList as $key => $forum) {
-            $user = new UserInfo($forum['owner_id']);
+            $user                        = new UserInfo($forum['owner_id']);
             $forumList[$key]['username'] = $user->getFromUser('username');
         }
 
@@ -83,8 +83,8 @@ class ForumController extends Controller
         $request = $this->get('kernel')->getRequest();
         $createForumForm->handleRequest($request);
         if ($createForumForm->isValid()) {
-            $errorMessages = array();
-            $captcha = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
+            $errorMessages   = array();
+            $captcha         = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
             $captchaResponse = $captcha->verify($_POST['g-recaptcha-response'], $request->getClientIp());
             if (!$captchaResponse->isSuccess()) {
                 $createForumForm->get('recaptcha')->addError(new FormError('The Captcha is not correct'));
@@ -152,10 +152,10 @@ class ForumController extends Controller
         Account::updateSession();
         $currentUser = new UserInfo(USER_ID);
 
-        $forumId = Forum::url2Id($this->parameters['forum']);
-        $forum = new Forum($forumId);
+        $forumId                            = Forum::url2Id($this->parameters['forum']);
+        $forum                              = new Forum($forumId);
         $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
-        $forum->forumData['page_links'] = json_decode($forum->getVar('page_links'), true);
+        $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         // Get all boards
         /** @var \PDOStatement $getBoards */
@@ -203,40 +203,41 @@ class ForumController extends Controller
         Account::updateSession();
         $currentUser = new UserInfo(USER_ID);
 
-        $forumId = Forum::url2Id($this->parameters['forum']);
-        $forum = new Forum($forumId);
+        $forumId                            = Forum::url2Id($this->parameters['forum']);
+        $forum                              = new Forum($forumId);
         $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
-        $forum->forumData['page_links'] = json_decode($forum->getVar('page_links'), true);
+        $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         $board = new ForumBoard($this->parameters['board']);
 
         // Breadcrumb
         $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
         foreach ($breadcrumb as $key => $value) {
-            $boardData = new ForumBoard($value);
+            $boardData        = new ForumBoard($value);
             $breadcrumb{$key} = $boardData->boardData;
         }
 
         // Get all boards
         /** @var \PDOStatement $getBoards */
         $getBoards = $this->get('database')->prepare('SELECT * FROM `forum_boards` WHERE `forum_id`=:forum_id AND `type`=1 AND `parent_id`=:board_id');
-        $getBoards->execute(array(
-            ':forum_id' => $forum->getVar('id'),
-            ':board_id' => $board->getVar('id'),
-        ));
+        $getBoards->bindValue(':forum_id', $forum->getVar('id'), PDO::PARAM_INT);
+        $getBoards->bindValue(':board_id', $board->getVar('id'), PDO::PARAM_INT);
+        $getBoards->execute();
         $boardTree = $getBoards->fetchAll(PDO::FETCH_ASSOC);
 
         // Get all threads
         /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
-        $pagination['item_limit'] = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
+        $request                    = $this->get('kernel')->getRequest();
+        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
         /** @var \PDOStatement $getThreads */
-        $getThreads = $this->get('database')->prepare('SELECT * FROM `forum_threads` WHERE `board_id`=:board_id ORDER BY `last_post_time` DESC LIMIT ' . ($pagination['current_page'] - 1) * $pagination['item_limit'] . ',' . $pagination['item_limit']);
-        $getThreads->execute(array(
-            ':board_id' => $board->getVar('id'),
-        ));
+        $getThreads = $this->get('database')->prepare('SELECT * FROM `forum_threads` WHERE `board_id`=:board_id ORDER BY `last_post_time` DESC LIMIT :offset,:row_count');
+        $getThreads->bindValue(':board_id', $board->getVar('id'), PDO::PARAM_INT);
+        $getThreads->bindValue(':offset', ($pagination['current_page'] - 1) * $pagination['item_limit'],
+            PDO::PARAM_INT);
+        $getThreads->bindValue(':row_count', $pagination['item_limit'], PDO::PARAM_INT);
+        $getThreads->execute();
         $threads = $getThreads->fetchAll(PDO::FETCH_ASSOC);
         foreach ($threads as $index => $thread) {
             $threads[$index]['username'] = AccountTools::formatUsername($thread['user_id']);
@@ -248,16 +249,15 @@ class ForumController extends Controller
         // Pagination
         /** @var \PDOStatement $getThreadCount */
         $getThreadCount = $this->get('database')->prepare('SELECT NULL FROM `forum_threads` WHERE `board_id`=:board_id');
-        $getThreadCount->execute(array(
-            ':board_id' => $board->getVar('id'),
-        ));
+        $getThreadCount->bindValue(':board_id', $board->getVar('id'), PDO::PARAM_INT);
+        $getThreadCount->execute();
         $pagination['total_items'] = $getThreadCount->rowCount();
-        $pagination['adjacents'] = 1;
+        $pagination['adjacents']   = 1;
 
-        $pagination['next_page'] = $pagination['current_page'] + 1;
+        $pagination['next_page']     = $pagination['current_page'] + 1;
         $pagination['previous_page'] = $pagination['current_page'] - 1;
-        $pagination['pages_count'] = ceil($pagination['total_items'] / $pagination['item_limit']);
-        $pagination['last_page_m1'] = $pagination['pages_count'] - 1;
+        $pagination['pages_count']   = ceil($pagination['total_items'] / $pagination['item_limit']);
+        $pagination['last_page_m1']  = $pagination['pages_count'] - 1;
 
         return $this->render('forum/theme1/board.html.twig', array(
             'current_user'  => $currentUser->aUser,
@@ -284,29 +284,27 @@ class ForumController extends Controller
         Account::updateSession();
         $currentUser = new UserInfo(USER_ID);
 
-        $forumId = Forum::url2Id($this->parameters['forum']);
-        $forum = new Forum($forumId);
+        $forumId                            = Forum::url2Id($this->parameters['forum']);
+        $forum                              = new Forum($forumId);
         $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
-        $forum->forumData['page_links'] = json_decode($forum->getVar('page_links'), true);
+        $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         $thread = new ForumThread($this->parameters['thread']);
-        $views = (int)$thread->getVar('views');
-        $thread->updateViews($views + 1); // Todo: This adds 2 Views!!. If there is an output (echo) withing this function, then it only adds 1 view!!
-        //$thread->addThreadView();
+        $thread->addView();
 
         $board = new ForumBoard($thread->getVar('board_id'));
 
         // Breadcrumb
         $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
         foreach ($breadcrumb as $key => $value) {
-            $boardData = new ForumBoard($value);
+            $boardData        = new ForumBoard($value);
             $breadcrumb{$key} = $boardData->boardData;
         }
 
         // Get all posts
         /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
-        $pagination['item_limit'] = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
+        $request                    = $this->get('kernel')->getRequest();
+        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
         /** @var \PDOStatement $getPosts */
@@ -333,12 +331,12 @@ class ForumController extends Controller
             ':thread_id' => $thread->getVar('id'),
         ));
         $pagination['total_items'] = $getThreadCount->rowCount();
-        $pagination['adjacents'] = 1;
+        $pagination['adjacents']   = 1;
 
-        $pagination['next_page'] = $pagination['current_page'] + 1;
+        $pagination['next_page']     = $pagination['current_page'] + 1;
         $pagination['previous_page'] = $pagination['current_page'] - 1;
-        $pagination['pages_count'] = ceil($pagination['total_items'] / $pagination['item_limit']);
-        $pagination['last_page_m1'] = $pagination['pages_count'] - 1;
+        $pagination['pages_count']   = ceil($pagination['total_items'] / $pagination['item_limit']);
+        $pagination['last_page_m1']  = $pagination['pages_count'] - 1;
 
         return $this->render('forum/theme1/thread.html.twig', array(
             'current_user'   => $currentUser->aUser,
@@ -365,25 +363,25 @@ class ForumController extends Controller
         Account::updateSession();
         $currentUser = new UserInfo(USER_ID);
 
-        $forumId = Forum::url2Id($this->parameters['forum']);
-        $forum = new Forum($forumId);
+        $forumId                            = Forum::url2Id($this->parameters['forum']);
+        $forum                              = new Forum($forumId);
         $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
-        $forum->forumData['page_links'] = json_decode($forum->getVar('page_links'), true);
+        $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         $thread = new ForumThread($this->parameters['thread']);
-        $board = new ForumBoard($thread->getVar('board_id'));
+        $board  = new ForumBoard($thread->getVar('board_id'));
 
         // Breadcrumb
         $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
         foreach ($breadcrumb as $key => $value) {
-            $boardData = new ForumBoard($value);
+            $boardData        = new ForumBoard($value);
             $breadcrumb{$key} = $boardData->boardData;
         }
 
         $createPostForm = $this->createFormBuilder()
             ->add('title', TextType::class, array(
                 'label'       => 'Post title',
-                'placeholder' => 'RE:' . $thread->getVar('topic'),
+                'placeholder' => 'RE:'.$thread->getVar('topic'),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter a title')),
                 ),
@@ -402,13 +400,73 @@ class ForumController extends Controller
 
         }
 
-        return $this->render('forum/theme1/thread.html.twig', array(
-            'current_user'   => $currentUser->aUser,
-            'current_forum'  => $forum->forumData,
-            'current_board'  => $board->boardData,
-            'current_thread' => $thread->threadData,
-            'breadcrumb'     => $breadcrumb,
+        return $this->render('forum/theme1/create-post.html.twig', array(
+            'current_user'     => $currentUser->aUser,
+            'current_forum'    => $forum->forumData,
+            'current_board'    => $board->boardData,
+            'current_thread'   => $thread->threadData,
+            'breadcrumb'       => $breadcrumb,
             'create_post_form' => $createPostForm->createView(),
+        ));
+    }
+
+    public function forumCreateThreadAction()
+    {
+        // Does the forum even exist?
+        if (!Forum::urlExists($this->parameters['forum'])) {
+            return $this->render('error/error404.html.twig');
+        }
+        // Does the board even exist?
+        if (!ForumBoard::boardExists($this->parameters['board'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        $forumId                            = Forum::url2Id($this->parameters['forum']);
+        $forum                              = new Forum($forumId);
+        $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
+        $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
+
+        $thread = new ForumThread($this->parameters['thread']);
+        $board  = new ForumBoard($thread->getVar('board_id'));
+
+        // Breadcrumb
+        $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
+        foreach ($breadcrumb as $key => $value) {
+            $boardData        = new ForumBoard($value);
+            $breadcrumb{$key} = $boardData->boardData;
+        }
+
+        $createThreadForm = $this->createFormBuilder()
+            ->add('title', TextType::class, array(
+                'label'       => 'Thread name',
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter a title')),
+                ),
+            ))
+            ->add('message', TextareaType::class, array(
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter a url')),
+                ),
+            ))
+            ->add('send', SubmitType::class, array(
+                'label' => 'Create thread',
+            ))
+            ->getForm();
+
+        if ($createThreadForm->isSubmitted() && $createThreadForm->isValid()) {
+
+        }
+
+        return $this->render('forum/theme1/create-post.html.twig', array(
+            'current_user'     => $currentUser->aUser,
+            'current_forum'    => $forum->forumData,
+            'current_board'    => $board->boardData,
+            'current_thread'   => $thread->threadData,
+            'breadcrumb'       => $breadcrumb,
+            'create_post_form' => $createThreadForm->createView(),
         ));
     }
 }

@@ -25,10 +25,10 @@ class ForumThread
             throw new \Exception('A database connection is required');
         }
 
-        $iBoardId = (int)$board_id;
+        $iBoardId    = (int)$board_id;
         $sThreadName = (string)$thread_name;
-        $sMessage = (string)$message; // TODO: This should bypass the BBCode parser
-        $iUserId = (int)$user_id;
+        $sMessage    = (string)$message; // TODO: This should bypass the BBCode parser
+        $iUserId     = (int)$user_id;
 
         $oAddThread = $database->prepare('INSERT INTO `forum_threads`(`user_id`,`board_id`,`topic`,`time`,`last_post_user_id`,`last_post_time`) VALUES (:user_id,:board_id,:topic,:time,:user_id,:time)');
         $oAddThread->execute(array(
@@ -53,6 +53,7 @@ class ForumThread
         self::updatePost($iBoardId, $iUserId, time());
 
         $new_thread_id = (float)$iNewThreadId;
+
         return $new_thread_id;
     }
 
@@ -79,6 +80,7 @@ class ForumThread
         if ($oThreadExists->rowCount() > 0) {
             return true;
         }
+
         return false;
     }
 
@@ -88,10 +90,10 @@ class ForumThread
     private static function addThreadCount($board_id)
     {
         $iBoardId = (int)$board_id;
-        $aBoards = array();
+        $aBoards  = array();
 
         array_push($aBoards, $iBoardId);
-        while ($iParentId = intval(ForumBoard::getVar($iBoardId, 'parent_id')) != 0) {
+        while ($iParentId = intval(ForumBoard::getVarStatic($iBoardId, 'parent_id')) != 0) {
             $iNext = $iParentId;
             array_push($aBoards, $iNext);
             $iBoardId = $iNext;
@@ -99,9 +101,10 @@ class ForumThread
 
         foreach ($aBoards as $iBoard) {
             // Update threads count in boards
-            $iThreads = ForumBoard::getVar($iBoard, 'threads');
+            $board       = new ForumBoard($iBoard);
+            $iThreads    = $board->getVar('threads');
             $iNewThreads = $iThreads + 1;
-            ForumBoard::setVar($iBoard, 'threads', $iNewThreads);
+            $board->setThreads($iNewThreads);
         }
     }
 
@@ -113,12 +116,12 @@ class ForumThread
     public static function updatePost($board_id, $user_id, $time)
     {
         $iBoardId = (int)$board_id;
-        $iUserId = (int)$user_id;
-        $iTime = (int)$time;
-        $aBoards = array();
+        $iUserId  = (int)$user_id;
+        $iTime    = (int)$time;
+        $aBoards  = array();
 
         array_push($aBoards, $iBoardId);
-        while ($iParentId = intval(ForumBoard::getVar($iBoardId, 'parent_id')) != 0) {
+        while ($iParentId = intval(ForumBoard::getVarStatic($iBoardId, 'parent_id')) != 0) {
             $iNext = $iParentId;
             array_push($aBoards, $iNext);
             $iBoardId = $iNext;
@@ -126,74 +129,17 @@ class ForumThread
 
         foreach ($aBoards as $iBoard) {
             // Update last post
-            ForumBoard::setVar($iBoard, 'last_post_user_id', $iUserId);
-            ForumBoard::setVar($iBoard, 'last_post_time', $iTime);
+            $board = new ForumBoard($iBoard);
+            $board->setLastPostUserId($iUserId);
+            $board->setLastPostTime($iTime);
         }
-    }
-
-
-    /*****************************************************************************************/
-
-    /**
-     * @param $thread_id
-     * @param $key
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public static function getVarStatic($thread_id, $key)
-    {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
-
-        $iThreadId = (int)$thread_id;
-        $sKey = (string)$key;
-
-        $oGetThreadInfo = $database->prepare('SELECT * FROM `forum_threads` WHERE `id`=:thread_id LIMIT 1');
-        $oGetThreadInfo->execute(array(
-            ':thread_id' => $iThreadId,
-        ));
-
-        if (@$oGetThreadInfo->rowCount() == 0) {
-            return '';
-        } else {
-            $aThreadInfo = $oGetThreadInfo->fetchAll(\PDO::FETCH_ASSOC);
-            return $aThreadInfo[0][$sKey];
-        }
-    }
-
-    /**
-     * @param int    $thread_id
-     * @param string $key
-     * @param string $value
-     *
-     * @throws \Exception
-     */
-    public static function setVarStatic($thread_id, $key, $value)
-    {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
-
-        $iThreadId = (int)$thread_id;
-        $sKey = $key;
-        $sValue = $value;
-
-        $oSetBoardInfo = $database->prepare('UPDATE `forum_threads` SET :key=:value WHERE `id`=:thread_id');
-        $oSetBoardInfo->execute(array(
-            ':key'       => $sKey,
-            ':value'     => $sValue,
-            ':thread_id' => $iThreadId,
-        ));
     }
 
     /******************************************************************************/
 
     private $threadId;
-    public $threadData;
+    private $notFound = false;
+    public  $threadData;
 
     /**
      * Forum constructor.
@@ -205,23 +151,37 @@ class ForumThread
     public function __construct($thread_id)
     {
         $this->threadId = (int)$thread_id;
+        $this->sync();
+    }
 
+    public function sync()
+    {
         $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
 
-        $getData = $database->prepare('SELECT * FROM `forum_threads` WHERE `id`=:thread_id LIMIT 1');
-        if (!$getData->execute(array(':thread_id' => $this->threadId))) {
+        $dbSync = $database->prepare('SELECT * FROM `forum_threads` WHERE `id`=:thread_id LIMIT 1');
+        $dbSync->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+        if (!$dbSync->execute()) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            if ($getData->rowCount() > 0) {
-                $data = $getData->fetchAll();
+            if ($dbSync->rowCount() > 0) {
+                $data             = $dbSync->fetchAll(PDO::FETCH_ASSOC);
                 $this->threadData = $data[0];
             } else {
                 $this->threadData = null;
+                $this->notFound   = true;
             }
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function exists()
+    {
+        return !$this->notFound;
     }
 
     /**
@@ -231,36 +191,79 @@ class ForumThread
      */
     public function getVar($key)
     {
-        $value = $this->threadData[$key];
-        return $value;
+        if ($this->exists()) {
+            $value = $this->threadData[$key];
+
+            return $value;
+        } else {
+            return null;
+        }
     }
 
-    public function addThreadView()
+    public static function getVarStatic($thread_id, $key)
     {
-        $views = (int)$this->getVar('views');
-        $newViews = ++$views;
+        $thread = new ForumThread($thread_id);
 
-        $this->updateViews($newViews);
+        return $thread->getVar($key);
     }
+
     /**
-     * @param int $count
+     * @param string $key
+     * @param string $value
      *
+     * @return bool|null
+     * @throws \Exception
+     *
+     * TODO: Variable Key is not possible to be set in PDO sql
+     */
+    //public function setVar($key, $value)
+    private function setVar($key, $value)
+    {
+        if ($this->exists()) {
+            $database = DatabaseContainer::$database;
+            if (is_null($database)) {
+                throw new \Exception('A database connection is required');
+            }
+
+            $update = $database->prepare('UPDATE `forum_threads` SET :key=:value WHERE `id`=:thread_id');
+            $update->bindValue(':key', $key, PDO::PARAM_STR);
+            $update->bindValue(':value', $value, PDO::PARAM_STR);
+            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+
+            if ($update->execute()) {
+                $this->threadData[$key] = $value;
+                $this->sync();
+
+                return true;
+            }
+
+            return false;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @throws \Exception
      */
-    public function updateViews($count)
+    public function addView()
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        if ($this->exists()) {
+            $currentViews = (int)$this->getVar('views');
+            $newViews     = $currentViews + 1;
 
-        $setData = $database->prepare('UPDATE `forum_threads` SET `views`=:count WHERE `id`=:thread_id');
-        $setData->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
-        $setData->bindValue(':count', $count, PDO::PARAM_INT);
-        $result = $setData->execute();
-
-        if ($result) {
-            $this->threadData['views'] = $count;
+            $database = DatabaseContainer::$database;
+            if (is_null($database)) {
+                throw new \Exception('A database connection is required');
+            }
+            $update = $database->prepare('UPDATE `forum_threads` SET `views`=:views WHERE `id`=:thread_id');
+            $update->bindValue(':views', $newViews, PDO::PARAM_INT);
+            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+            if ($update->execute()) {
+                $this->sync();
+            } else {
+                // TODO: Send a message to an admin that views are not being updated
+            }
         }
     }
 }

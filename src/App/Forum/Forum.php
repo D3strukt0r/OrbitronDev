@@ -47,6 +47,7 @@ class Forum
         if ($getUrl->rowCount()) {
             return true;
         }
+
         return false;
     }
 
@@ -70,11 +71,12 @@ class Forum
         if (!$oGetForumList->execute(array(':user_id' => $fUserId))) {
             throw new \Exception('Cannot get list with all forums you own');
         } else {
-            $aForums = array();
+            $aForums    = array();
             $aForumData = $oGetForumList->fetchAll();
             foreach ($aForumData as $aForumData) {
                 array_push($aForums, $aForumData);
             }
+
             return $aForums;
         }
     }
@@ -97,6 +99,7 @@ class Forum
             throw new \RuntimeException('Could not execute sql');
         } else {
             $aForumData = $oGetForumId->fetchAll();
+
             return $aForumData[0]['id'];
         }
     }
@@ -121,6 +124,7 @@ class Forum
             if ($oForumExists->rowCount() > 0) {
                 return true;
             }
+
             return false;
         }
     }
@@ -128,7 +132,7 @@ class Forum
     /******************************************************************************/
 
     private $fForumId;
-    public $forumData;
+    public  $forumData;
 
     /**
      * Forum constructor.
@@ -151,7 +155,7 @@ class Forum
             throw new \RuntimeException('Could not execute sql');
         } else {
             if ($getData->rowCount() > 0) {
-                $data = $getData->fetchAll();
+                $data            = $getData->fetchAll();
                 $this->forumData = $data[0];
             } else {
                 $this->forumData = null;
@@ -167,6 +171,7 @@ class Forum
     public function getVar($key)
     {
         $value = $this->forumData[$key];
+
         return $value;
     }
 
@@ -183,7 +188,7 @@ class Forum
             throw new \Exception('A database connection is required');
         }
 
-        $oUpdateTable = $database->prepare('UPDATE `forums` SET :key=:value WHERE `id`=:forum_id');
+        $oUpdateTable                = $database->prepare('UPDATE `forums` SET :key=:value WHERE `id`=:forum_id');
         $bUpdateTableQuerySuccessful = $oUpdateTable->execute(array(
             ':key'      => $key,
             ':value'    => $value,
@@ -205,7 +210,7 @@ class Forum
     {
         $aBoards = array();
 
-        while ($iParentId = intval(ForumBoard::getVar2($board_id, 'parent_id')) != 0) {
+        while ($iParentId = intval(ForumBoard::getVarStatic($board_id, 'parent_id')) != 0) {
             $iNext = (int)$iParentId;
             array_push($aBoards, $iNext);
             $board_id = $iNext;
