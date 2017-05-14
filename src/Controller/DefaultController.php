@@ -2,6 +2,8 @@
 
 namespace Controller;
 
+use App\Account\Account;
+use App\Account\UserInfo;
 use Controller;
 use Form\RecaptchaType;
 use Kernel;
@@ -26,12 +28,18 @@ class DefaultController extends Controller
     {
         $request = Kernel::$kernel->getRequest();
         echo $request->server->get('REMOTE_ADDR');
+
         return '';
     }
 
     public function indexAction()
     {
-        return $this->render('default/index.html.twig');
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        return $this->render('default/index.html.twig', array(
+            'current_user' => $currentUser->aUser,
+        ));
     }
 
     public function aboutAction()
@@ -46,8 +54,6 @@ class DefaultController extends Controller
 
     public function contactAction()
     {
-        //    $requestStack = new RequestStack();
-        //    $requestStack->push(new Request());
         $contactForm = $this->createFormBuilder()
             ->add('name', TextType::class, array(
                 'label'       => 'Name',
@@ -111,21 +117,10 @@ class DefaultController extends Controller
                     )),
                 ),
                 */
-                'mapped'         => false,
             ))
             ->add('send_to_own', CheckboxType::class, array(
-                'label'    => 'Sende eine Kopie an meine Email Addresse',
+                'label'    => 'Send a copy to my e-mail address',
                 'required' => false,
-                'attr'     => array(
-                    'options' => array(
-                        'theme' => 'light',
-                        'type'  => 'image',
-                        'size'  => 'normal',
-                        'defer' => true,
-                        'async' => true,
-                    ),
-                ),
-                'mapped'   => false,
             ))
             ->add('send', SubmitType::class, array(
                 'label' => 'Send message',
@@ -142,42 +137,45 @@ class DefaultController extends Controller
                 }
         */
 
-        $request = Kernel::$kernel->getRequest();
+        $request = $this->getRequest();
+        $contactForm->handleRequest($request);
 
-        if ($request->isMethod('POST')) {
-            $contactForm->handleRequest($request);
+        if ($contactForm->isSubmitted() && $contactForm->isValid()) {
+            $formData = $contactForm->getData();
 
-            if ($contactForm->isSubmitted() && $contactForm->isValid()) {
-                $formData = $contactForm->getData();
+            if ($contactForm->get('send_to_own')->getData()) {
+                $message = Swift_Message::newInstance()
+                    ->setSubject(trim($formData['subject']))
+                    ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
+                    ->setTo(array('info@orbitrondev.org'))
+                    ->setCc(array(trim($formData['email']) => trim($formData['name'])))
+                    ->setBody($this->renderView('default/mail/contact.html.twig', array(
+                        'ip'      => $request->getClientIp(),
+                        'name'    => $formData['name'],
+                        'message' => $formData['message'],
+                    )), 'text/html');
+            } else {
+                $message = Swift_Message::newInstance()
+                    ->setSubject(trim($formData['subject']))
+                    ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
+                    ->setTo(array('info@orbitrondev.org'))
+                    ->setBody($this->renderView('mail/contact.html.twig', array(
+                        'ip'      => $request->getClientIp(),
+                        'name'    => $formData['name'],
+                        'message' => $formData['message'],
+                    )), 'text/html');
+            }
+            /** @var \Swift_Mailer $mailer */
+            $mailer = $this->get('mailer');
+            $mailSent = $mailer->send($message);
 
-                if ($contactForm->get('send_to_own')->getData()) {
-                    $message = Swift_Message::newInstance()
-                        ->setSubject(trim($formData['subject']))
-                        ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
-                        ->setTo(array('info@orbitrondev.org'))
-                        ->setCc(array(trim($formData['email']) => trim($formData['name'])))
-                        ->setBody($this->renderView('default/mail/contact.html.twig', array(
-                            'ip'      => $request->getClientIp(),
-                            'name'    => $formData['name'],
-                            'message' => $formData['message'],
-                        )), 'text/html');
-                } else {
-                    $message = Swift_Message::newInstance()
-                        ->setSubject(trim($formData['subject']))
-                        ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
-                        ->setTo(array('info@orbitrondev.org'))
-                        ->setBody($this->renderView('mail/contact.html.twig', array(
-                            'ip'      => $request->getClientIp(),
-                            'name'    => $formData['name'],
-                            'message' => $formData['message'],
-                        )), 'text/html');
-                }
-                $this->get('mailer')->send($message);
+            // TODO: Send message to UI as soon as email is sent
+            //$request->getSession()->getFlashBag()->add('success', 'Your email has been sent! Thanks!');
 
-                // TODO: Send message to UI as soon as email is sent
-                //$request->getSession()->getFlashBag()->add('success', 'Your email has been sent! Thanks!');
-
-                return $this->redirectToRoute('app_default_contact', array('success'));
+            if($mailSent) {
+                return $this->redirectToRoute('app_default_contact', array('sent' => 1));
+            } else {
+                return $this->redirectToRoute('app_default_contact', array('sent' => 0));
             }
         }
 
@@ -238,6 +236,7 @@ class DefaultController extends Controller
                     array('q' => $searchForm->get('search')->getData())));
             }
         }
+
         return null;
     }
 }

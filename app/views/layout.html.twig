@@ -55,7 +55,17 @@
                             <li class="topbar-devider"></li>
                             <li><a href="{{ path('app_default_faq') }}">{{ 'header.help'|trans }}</a></li>
 							<li class="topbar-devider"></li>
-                            <li><a href="{{ path('app_account_index') }}">{{ 'header.account.account'|trans }}</a></li>
+                            {% if current_user is empty %}
+                                <li><a href="{{ path('app_account_index') }}">{{ 'header.account.account'|trans }}</a></li>
+                            {% else %}
+                                {% if current_user.user_id > -1 %}
+                                    <li><a href="{{ path('app_account_index') }}">{{ 'header.account.account'|trans }}</a></li>
+                                {% else %}
+                                    <li><a href="{{ path('app_account_login', {'redir': app.request.uri}) }}">{{ 'header.account.login'|trans }}</a></li>
+                                    <li class="topbar-devider"></li>
+                                    <li><a href="{{ path('app_account_register') }}">{{ 'header.account.register'|trans }}</a></li>
+                                {% endif %}
+                            {% endif %}
                             {#
                             {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                                 <li>{{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }}</li>

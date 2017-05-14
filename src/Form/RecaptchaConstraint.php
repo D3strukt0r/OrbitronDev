@@ -32,6 +32,6 @@ class RecaptchaConstraint extends Constraint
      */
     public function validatedBy()
     {
-        return __NAMESPACE__ . '\RecaptchaValidator';
+        return __NAMESPACE__.'\RecaptchaValidator';
     }
 }

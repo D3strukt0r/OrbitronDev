@@ -1,6 +1,9 @@
 <?php
 
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormFactoryBuilder;
+use Symfony\Component\Form\Forms;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +34,6 @@ abstract class Controller
 
     public function getRequest()
     {
-
         /** @var Kernel $kernel */
         $kernel = $this->get('kernel');
         return $kernel->getRequest();
@@ -229,7 +231,12 @@ abstract class Controller
      */
     public function createFormBuilder($data = null, array $options = array())
     {
-        return $this->container->get('form.factory')->createBuilder(FormType::class, $data, $options);
+        ///** @var FormFactory $formFactoryBuilder */
+        $formFactoryBuilder = $this->container->get('form.factory');
+
+        $builder = $formFactoryBuilder->createBuilder(FormType::class, $data, $options);
+
+        return $builder;
     }
 
     /**

@@ -1,0 +1,44 @@
+{% extends 'forum/theme1/layout.html.twig' %}
+
+{% set service_page_links %}
+    {% for text,link in current_forum.page_links %}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+    {% endfor %}
+{% endset %}
+{% set service = {
+'page_name': current_forum.name,
+'page_logo_link': '/' ~ current_forum.url,
+'page_author': current_forum.owner_username,
+'page_description': current_forum.page_description,
+'page_keywords': current_forum.page_keywords,
+'page_links': service_page_links
+} %}
+
+{% block title %}{{ current_thread.topic }} | {{ service.page_name }}{% endblock %}
+
+{% block header %}
+    <div class="container">
+        <h1 class="page-header">{{ current_thread.topic }}</h1>
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container">
+        <ol class="breadcrumb">
+            <li><a href="{{ path('app_forum_forum_index', {'forum': current_forum.url}) }}">{{ 'Home'|trans }}</a></li>
+            {% for key,level in breadcrumb %}
+                {% if level.type == 1 %}
+                    <li><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': level.id}) }}">{{ level.title }}</a></li>
+                {% endif %}
+            {% endfor %}
+            <li><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': current_board.id}) }}">{{ current_board.title }}</a></li>
+            <li class="active">{{ current_thread.topic }}</li>
+        </ol><!-- /.breadcrumb -->
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+
+    </div><!-- /.container -->
+{% endblock %}

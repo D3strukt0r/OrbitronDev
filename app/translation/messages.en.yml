@@ -20,6 +20,8 @@ header:
   account:
     account: "Account"
     profile: "Profile"
+    login: "Login"
+    register: "Register"
   toggle_nav: "Toggle navigation"
   home: "Home"
   products:

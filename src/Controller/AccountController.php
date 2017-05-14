@@ -107,7 +107,8 @@ class AccountController extends Controller
                 $loginForm->get('remember')->getData());
 
             if ($loginResult === true) {
-                return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
+
+                return $this->redirect($loginForm->get('redirect')->getData());
             } else {
                 $errorMessage = explode(':', $loginResult);
                 $loginErrorMessage = $resultCodes[$errorMessage[1]];

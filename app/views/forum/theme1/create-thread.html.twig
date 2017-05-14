@@ -1,0 +1,78 @@
+{% extends 'forum/theme1/layout.html.twig' %}
+
+{% set service_page_links %}
+    {% for text,link in current_forum.page_links %}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+    {% endfor %}
+{% endset %}
+{% set service = {
+'page_name': current_forum.name,
+'page_logo_link': '/' ~ current_forum.url,
+'page_author': current_forum.owner_username,
+'page_description': current_forum.page_description,
+'page_keywords': current_forum.page_keywords,
+'page_links': service_page_links
+} %}
+
+{% block title %}{{ 'Create new board'|trans }} | {{ service.page_name }}{% endblock %}
+
+{% block header %}
+    <div class="container">
+        <h1 class="page-header">{{ current_board.title }}</h1>
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('vendor/jqjquery-wysibb/theme/default/wbbtheme.css') }}" />
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('vendor/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            //$(".create-thread-form-message").wysibb();
+        })
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container">
+        <ol class="breadcrumb">
+            <li><a href="{{ path('app_forum_forum_index', {'forum': current_forum.url}) }}">{{ 'Home'|trans }}</a></li>
+            {% for key,level in breadcrumb %}
+                {% if level.type == 1 %}
+                    <li><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': level.id}) }}">{{ level.title }}</a></li>
+                {% endif %}
+            {% endfor %}
+            <li class="active"><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': current_board.id}) }}">{{ current_board.title }}</a></li>
+        </ol><!-- /.breadcrumb -->
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {{ form_start(create_thread_form, {'action': path('app_forum_forum_create_thread', {'forum': current_forum.url, 'board': current_board.id}) }) }}
+            {{ form_row(create_thread_form._token) }}
+            {{ form_row(create_thread_form.parent) }}
+            {{ form_errors(create_thread_form) }}
+            <div class="form-horizontal">
+                <div class="form-group">
+                    {{ form_label(create_thread_form.title, null, {'label_attr': {'class': 'col-md-2 control-label'}}) }}
+                    <div class="col-md-10">
+                        {{ form_widget(create_thread_form.title, {'attr': {'class': 'form-control input-md'}}) }}
+                        <span class="help-block text-danger">{{ form_errors(create_thread_form.title) }}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        {{ form_widget(create_thread_form.message, {'attr': {'class': 'form-control create-thread-form-message', 'rows': 10}}) }}
+                        <span class="help-block text-danger">{{ form_errors(create_thread_form.message) }}</span>
+                    </div>
+                </div>
+            </div><!-- /.form-horizontal -->
+        {{ form_widget(create_thread_form.send, {'attr': {'class': 'btn btn-primary btn-block'}}) }}
+        {{ form_end(create_thread_form) }}
+    </div><!-- /.container -->
+{% endblock %}

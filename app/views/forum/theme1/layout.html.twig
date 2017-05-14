@@ -102,8 +102,8 @@
                                 </ul>
                             </li>
                         {% else %}
-                            <li><a href="{{ path('app_account_login') }}">{{ 'Login'|trans }}</a></li>
-                            <li><a href="{{ path('app_account_register') }}">{{ 'Register'|trans }}</a></li>
+                            <li><a href="{{ path('app_account_login', {'redir': app.request.uri}) }}">{{ 'header.account.login'|trans }}</a></li>
+                            <li><a href="{{ path('app_account_register') }}">{{ 'header.account.register'|trans }}</a></li>
                         {% endif %}
                     </ul>
                 </div><!-- /.navbar-collapse -->

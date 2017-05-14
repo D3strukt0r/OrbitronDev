@@ -15,6 +15,7 @@ use Form\RecaptchaType;
 use Kernel;
 use PDO;
 use ReCaptcha\ReCaptcha;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -381,7 +382,9 @@ class ForumController extends Controller
         $createPostForm = $this->createFormBuilder()
             ->add('title', TextType::class, array(
                 'label'       => 'Post title',
-                'placeholder' => 'RE:'.$thread->getVar('topic'),
+                'attr'        => array(
+                    'placeholder' => 'RE:'.$thread->getVar('topic'),
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter a title')),
                 ),
@@ -429,8 +432,7 @@ class ForumController extends Controller
         $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
         $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
-        $thread = new ForumThread($this->parameters['thread']);
-        $board  = new ForumBoard($thread->getVar('board_id'));
+        $board  = new ForumBoard($this->parameters['board']);
 
         // Breadcrumb
         $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
@@ -440,8 +442,14 @@ class ForumController extends Controller
         }
 
         $createThreadForm = $this->createFormBuilder()
+            ->add('parent', HiddenType::class, array(
+                'data' => $board->getVar('id'),
+            ))
             ->add('title', TextType::class, array(
                 'label'       => 'Thread name',
+                'attr'        => array(
+                    'placeholder' => 'e.g. I need help',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter a title')),
                 ),
@@ -456,17 +464,41 @@ class ForumController extends Controller
             ))
             ->getForm();
 
-        if ($createThreadForm->isSubmitted() && $createThreadForm->isValid()) {
+        $request = $this->getRequest();
+        if ($request->isMethod('POST')) {
+            $createThreadForm->handleRequest($request);
 
+            if ($createThreadForm->isSubmitted() && $createThreadForm->isValid()) {
+                $formData = $createThreadForm->getData();
+                $threadId = ForumThread::createThread($formData['parent'], $formData['title'], $formData['message'], USER_ID);
+
+                if(ForumThread::threadExists($threadId)) {
+                    return $this->render('forum/theme1/create-thread.html.twig', array(
+                        'current_user'     => $currentUser->aUser,
+                        'current_forum'    => $forum->forumData,
+                        'current_board'    => $board->boardData,
+                        'breadcrumb'       => $breadcrumb,
+                        'thread_created'   => true,
+                    ));
+                } else {
+                    return $this->render('forum/theme1/create-thread.html.twig', array(
+                        'current_user'     => $currentUser->aUser,
+                        'current_forum'    => $forum->forumData,
+                        'current_board'    => $board->boardData,
+                        'breadcrumb'       => $breadcrumb,
+                        'thread_created'   => false,
+                        'create_thread_form' => $createThreadForm->createView(),
+                    ));
+                }
+            }
         }
 
-        return $this->render('forum/theme1/create-post.html.twig', array(
+        return $this->render('forum/theme1/create-thread.html.twig', array(
             'current_user'     => $currentUser->aUser,
             'current_forum'    => $forum->forumData,
             'current_board'    => $board->boardData,
-            'current_thread'   => $thread->threadData,
             'breadcrumb'       => $breadcrumb,
-            'create_post_form' => $createThreadForm->createView(),
+            'create_thread_form' => $createThreadForm->createView(),
         ));
     }
 }

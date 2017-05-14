@@ -17,13 +17,13 @@ class RecaptchaValidator extends ConstraintValidator
     /**
      * Enable recaptcha?
      *
-     * @var Boolean
+     * @var bool
      */
     protected $enabled;
     /**
      * Recaptcha Private Key
      *
-     * @var Boolean
+     * @var string
      */
     protected $privateKey;
     /**
@@ -46,17 +46,13 @@ class RecaptchaValidator extends ConstraintValidator
     /**
      * Construct.
      *
-     * @param Boolean      $enabled
+     * @param bool         $enabled
      * @param string       $privateKey
      * @param RequestStack $requestStack
      * @param array        $httpProxy
      */
-    public function __construct(
-        $enabled = null,
-        $privateKey = null,
-        RequestStack $requestStack = null,
-        array $httpProxy = null
-    ) {
+    public function __construct($enabled = null, $privateKey = null, RequestStack $requestStack = null, array $httpProxy = array())
+    {
         $this->enabled = $enabled;
         $this->privateKey = $privateKey;
         $this->requestStack = $requestStack;
@@ -116,6 +112,7 @@ class RecaptchaValidator extends ConstraintValidator
         if ($response['success'] == true) {
             return true;
         }
+
         return false;
     }
 
@@ -126,12 +123,13 @@ class RecaptchaValidator extends ConstraintValidator
      * @param string $path
      * @param array  $data
      *
-     * @return string response
+     * @return array response
      */
     private function httpGet($host, $path, $data)
     {
         $host = sprintf('%s%s?%s', $host, $path, http_build_query($data));
         $context = $this->getResourceContext();
+
         return file_get_contents($host, false, $context);
     }
 
@@ -148,10 +146,10 @@ class RecaptchaValidator extends ConstraintValidator
                 'request_fulluri' => true,
             );
             if (null !== $this->httpProxy['auth']) {
-                $options[$protocol]['header'] = sprintf('Proxy-Authorization: Basic %s',
-                    base64_encode($this->httpProxy['auth']));
+                $options[$protocol]['header'] = sprintf('Proxy-Authorization: Basic %s', base64_encode($this->httpProxy['auth']));
             }
         }
+
         return stream_context_create($options);
     }
 }

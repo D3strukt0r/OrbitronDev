@@ -11,12 +11,12 @@ app_forum_forum_index:
 app_forum_forum_board:
     path:     /{forum}/board/{board}
     defaults: { _controller: 'ForumController::forumBoardAction' }
+app_forum_forum_create_thread:
+    path:     /{forum}/board/{board}/create-thread
+    defaults: { _controller: 'ForumController::forumCreateThreadAction' }
 app_forum_forum_thread:
     path:     /{forum}/thread/{thread}
     defaults: { _controller: 'ForumController::forumThreadAction' }
-app_forum_forum_create_thread:
-    path:     /{forum}/create-thread
-    defaults: { _controller: 'ForumController::forumCreateThreadAction' }
 app_forum_forum_create_post:
     path:     /{forum}/thread/{thread}/create-post
     defaults: { _controller: 'ForumController::forumCreatePostAction' }
