@@ -32,7 +32,7 @@
     <script type="text/javascript" src="{{ asset('vendor/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            //$(".create-thread-form-message").wysibb();
+            $("#form_message").wysibb();
         })
     </script>
 {% endblock %}
@@ -47,13 +47,29 @@
                 {% endif %}
             {% endfor %}
             <li class="active"><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': current_board.id}) }}">{{ current_board.title }}</a></li>
+            {# TODO: Add JS Code to get typed header #}
+            <li class="new-theme">...</li>
         </ol><!-- /.breadcrumb -->
     </div><!-- /.container -->
 {% endblock %}
 
 {% block content %}
     <div class="container">
-        {{ form_start(create_thread_form, {'action': path('app_forum_forum_create_thread', {'forum': current_forum.url, 'board': current_board.id}) }) }}
+
+        {% if thread_created|length > 0 and thread_created == 1 %}
+        <div class="alert alert-success fade in alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            {{ 'Thread created!'|trans }} <a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': new_thread_id}) }}">{{ 'View!'|trans }}</a>
+        </div>
+        {% elseif thread_created|length > 0 and thread_created == 0 %}
+            <div class="alert alert-danger fade in alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                {{ 'Thread not created! Try again'|trans }}
+            </div>
+        {% endif %}
+
+        {# TODO: Remove the "novalidate"! Problem is, WysiBB doesn't seem to work without it. #}
+        {{ form_start(create_thread_form, {'action': path('app_forum_forum_create_thread', {'forum': current_forum.url, 'board': current_board.id}), 'attr': {'novalidate': 'novalidate'} }) }}
             {{ form_row(create_thread_form._token) }}
             {{ form_row(create_thread_form.parent) }}
             {{ form_errors(create_thread_form) }}
@@ -72,7 +88,7 @@
                     </div>
                 </div>
             </div><!-- /.form-horizontal -->
-        {{ form_widget(create_thread_form.send, {'attr': {'class': 'btn btn-primary btn-block'}}) }}
+            {{ form_widget(create_thread_form.send, {'attr': {'class': 'btn btn-primary btn-block'}}) }}
         {{ form_end(create_thread_form) }}
     </div><!-- /.container -->
 {% endblock %}

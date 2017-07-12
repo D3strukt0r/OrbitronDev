@@ -246,6 +246,12 @@ class ForumBoard
         $this->sync();
     }
 
+    public static function intent($board_id)
+    {
+        $class = new self($board_id);
+        return $class;
+    }
+
     public function sync()
     {
         $database = DatabaseContainer::$database;
@@ -329,7 +335,7 @@ class ForumBoard
             }
 
             $update = $database->prepare('UPDATE `forum_boards` SET `last_post_user_id`=:value WHERE `id`=:board_id');
-            $update->bindValue(':value', $value, PDO::PARAM_STR);
+            $update->bindValue(':value', $value, PDO::PARAM_INT);
             $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
             if ($update->execute()) {
                 $this->sync();
@@ -352,7 +358,7 @@ class ForumBoard
             }
 
             $update = $database->prepare('UPDATE `forum_boards` SET `last_post_time`=:value WHERE `id`=:board_id');
-            $update->bindValue(':value', $value, PDO::PARAM_STR);
+            $update->bindValue(':value', $value, PDO::PARAM_INT);
             $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
             if ($update->execute()) {
                 $this->sync();
@@ -375,7 +381,30 @@ class ForumBoard
             }
 
             $update = $database->prepare('UPDATE `forum_boards` SET `threads`=:value WHERE `id`=:board_id');
-            $update->bindValue(':value', $value, PDO::PARAM_STR);
+            $update->bindValue(':value', $value, PDO::PARAM_INT);
+            $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
+            if ($update->execute()) {
+                $this->sync();
+
+                return true;
+            }
+
+            return false;
+        } else {
+            return null;
+        }
+    }
+
+    public function setPosts($value)
+    {
+        if ($this->exists()) {
+            $database = DatabaseContainer::$database;
+            if (is_null($database)) {
+                throw new \Exception('A database connection is required');
+            }
+
+            $update = $database->prepare('UPDATE `forum_boards` SET `posts`=:value WHERE `id`=:board_id');
+            $update->bindValue(':value', $value, PDO::PARAM_INT);
             $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
             if ($update->execute()) {
                 $this->sync();

@@ -154,6 +154,12 @@ class ForumThread
         $this->sync();
     }
 
+    public static function intent($thread_id)
+    {
+        $class = new self($thread_id);
+        return $class;
+    }
+
     public function sync()
     {
         $database = DatabaseContainer::$database;
@@ -214,10 +220,10 @@ class ForumThread
      * @return bool|null
      * @throws \Exception
      *
-     * TODO: Variable Key is not possible to be set in PDO sql
+     * TODO: Variable Key is not possible to be set in PDO sql // Test if there is still a way to use "setVar"
      */
-    //public function setVar($key, $value)
-    private function setVar($key, $value)
+    public function setVar($key, $value)
+    //private function setVar($key, $value)
     {
         if ($this->exists()) {
             $database = DatabaseContainer::$database;
@@ -264,6 +270,75 @@ class ForumThread
             } else {
                 // TODO: Send a message to an admin that views are not being updated
             }
+        }
+    }
+
+    public function setReplies($value)
+    {
+        if ($this->exists()) {
+            $database = DatabaseContainer::$database;
+            if (is_null($database)) {
+                throw new \Exception('A database connection is required');
+            }
+
+            $update = $database->prepare('UPDATE `forum_threads` SET `replies`=:value WHERE `id`=:thread_id');
+            $update->bindValue(':value', $value, PDO::PARAM_INT);
+            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+            if ($update->execute()) {
+                $this->sync();
+
+                return true;
+            }
+
+            return false;
+        } else {
+            return null;
+        }
+    }
+
+    public function setLastPostUserId($value)
+    {
+        if ($this->exists()) {
+            $database = DatabaseContainer::$database;
+            if (is_null($database)) {
+                throw new \Exception('A database connection is required');
+            }
+
+            $update = $database->prepare('UPDATE `forum_threads` SET `last_post_user_id`=:value WHERE `id`=:thread_id');
+            $update->bindValue(':value', $value, PDO::PARAM_INT);
+            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+            if ($update->execute()) {
+                $this->sync();
+
+                return true;
+            }
+
+            return false;
+        } else {
+            return null;
+        }
+    }
+
+    public function setLastPostTime($value)
+    {
+        if ($this->exists()) {
+            $database = DatabaseContainer::$database;
+            if (is_null($database)) {
+                throw new \Exception('A database connection is required');
+            }
+
+            $update = $database->prepare('UPDATE `forum_threads` SET `last_post_time`=:value WHERE `id`=:thread_id');
+            $update->bindValue(':value', $value, PDO::PARAM_INT);
+            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+            if ($update->execute()) {
+                $this->sync();
+
+                return true;
+            }
+
+            return false;
+        } else {
+            return null;
         }
     }
 }

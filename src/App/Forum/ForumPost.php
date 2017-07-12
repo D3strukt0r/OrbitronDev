@@ -3,6 +3,7 @@
 namespace App\Forum;
 
 use App\Core\DatabaseConnection;
+use Container\DatabaseContainer;
 
 class ForumPost
 {
@@ -18,17 +19,16 @@ class ForumPost
      */
     static function createPost($thread_id, $parent_post_id, $user_id, $subject, $message)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
+        $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
 
-        $iThreadId = (int)$thread_id;
+        $iThreadId     = (int)$thread_id;
         $iParentPostId = (int)$parent_post_id;
-        $iUserId = (int)$user_id;
-        $sSubject = (string)$subject;
-        $sMessage = (string)$message; // TODO: This should bypass the BBCode parser
+        $iUserId       = (int)$user_id;
+        $sSubject      = (string)$subject;
+        $sMessage      = (string)$message; // TODO: This should bypass the BBCode parser
 
         $oAddPost = $database->prepare('INSERT INTO `forum_posts`(`thread_id`,`parent_post_id`,`user_id`,`subject`,`message`,`time`) VALUES (:thread_id,:parent_post_id,:user_id,:subject,:message,:time)');
         $oAddPost->execute(array(
@@ -41,7 +41,8 @@ class ForumPost
         ));
 
         $iNewPostId = $database->lastInsertId();
-        $iThreadInBoardId = ForumThread::getVar($iThreadId, 'board_id');
+        $thread = new ForumThread($iThreadId);
+        $iThreadInBoardId = $thread->getVar('board_id');
 
         ForumThread::updatePost($iThreadInBoardId, USER_ID, time());
         self::updateRepliesCountInThread($iThreadId);
@@ -58,8 +59,7 @@ class ForumPost
      */
     public static function postExists($post_id)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
+        $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
@@ -84,9 +84,12 @@ class ForumPost
     {
         $iThreadId = (int)$thread_id;
 
-        $iActualRepliesCount = ForumThread::getVar($iThreadId, 'replies');
+        $thread = new ForumThread($iThreadId);
+
+        $iActualRepliesCount = (int)$thread->getVar('replies');
         $iNewRepliesCount = $iActualRepliesCount + 1;
-        ForumThread::setVar($iThreadId, 'replies', $iNewRepliesCount);
+
+        $thread->setReplies($iNewRepliesCount);
     }
 
     /**
@@ -97,13 +100,14 @@ class ForumPost
     public static function updatePostsCountInForum($thread_id, $user_id, $last_post_time)
     {
         $iThreadId = (int)$thread_id;
+        $thread = new ForumThread($iThreadId);
         $iUserId = (int)$user_id;
         $iLastPostTime = (int)$last_post_time;
         $aBoards = array();
-        $iBoardId = ForumThread::getVar($iThreadId, 'board_id');
+        $iBoardId = $thread->getVar('board_id');
 
         array_push($aBoards, $iBoardId);
-        while ($iParentId = intval(ForumBoard::getVar($iBoardId, 'parent_id')) != 0) {
+        while ($iParentId = intval(ForumBoard::intent($iBoardId)->getVar('parent_id')) != 0) {
             $iNext = $iParentId;
             array_push($aBoards, $iNext);
             $iBoardId = $iNext;
@@ -111,13 +115,14 @@ class ForumPost
 
         foreach ($aBoards as $iBoard) {
             // Update last post
-            $iActualPostsCount = ForumBoard::getVar($iBoard, 'posts');
+            $board = new ForumBoard($iBoard);
+            $iActualPostsCount = $board->getVar('posts');
             $iNewPostsCount = $iActualPostsCount + 1;
-            ForumBoard::setVar($iBoard, 'posts', $iNewPostsCount);
-            ForumThread::setVar($iThreadId, 'last_post_user_id', $iUserId);
-            ForumThread::setVar($iThreadId, 'last_post_time', $iLastPostTime);
-            ForumBoard::setVar($iBoard, 'last_post_user_id', $iUserId);
-            ForumBoard::setVar($iBoard, 'last_post_time', $iLastPostTime);
+            ForumBoard::intent($iBoard)->setPosts($iNewPostsCount);
+            ForumThread::intent($iThreadId)->setLastPostUserId($iUserId);
+            ForumThread::intent($iThreadId)->setLastPostTime($iLastPostTime);
+            ForumBoard::intent($iBoard)->setLastPostUserId($iUserId);
+            ForumBoard::intent($iBoard)->setLastPostTime($iLastPostTime);
         }
     }
 
@@ -132,8 +137,7 @@ class ForumPost
      */
     public static function getVar($post_id, $key)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
+        $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
@@ -163,8 +167,7 @@ class ForumPost
      */
     public static function setVar($post_id, $key, $value)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
+        $database = DatabaseContainer::$database;
         if (is_null($database)) {
             throw new \Exception('A database connection is required');
         }
@@ -180,4 +183,5 @@ class ForumPost
             ':post_id' => $iPostId,
         ));
     }
+
 }

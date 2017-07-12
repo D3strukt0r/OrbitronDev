@@ -7,6 +7,7 @@ use App\Account\AccountTools;
 use App\Account\UserInfo;
 use App\Forum\Forum;
 use App\Forum\ForumBoard;
+use App\Forum\ForumPost;
 use App\Forum\ForumThread;
 use Container\DatabaseContainer;
 use Controller;
@@ -399,8 +400,36 @@ class ForumController extends Controller
             ))
             ->getForm();
 
-        if ($createPostForm->isSubmitted() && $createPostForm->isValid()) {
+        $request = $this->getRequest();
+        if ($request->isMethod('POST')) {
+            $createPostForm->handleRequest($request);
 
+            if ($createPostForm->isSubmitted() && $createPostForm->isValid()) {
+                $formData = $createPostForm->getData();
+                $postId = ForumPost::createPost($thread->getVar('id'), (1 + (int)$thread->getVar('replies')), USER_ID, $formData['title'], $formData['message']);
+
+                if(ForumPost::postExists($postId)) {
+                    return $this->render('forum/theme1/create-post.html.twig', array(
+                        'current_user'     => $currentUser->aUser,
+                        'current_forum'    => $forum->forumData,
+                        'current_board'    => $board->boardData,
+                        'current_thread'   => $thread->threadData,
+                        'breadcrumb'       => $breadcrumb,
+                        'post_created'     => true,
+                        'create_post_form' => $createPostForm->createView(),
+                    ));
+                } else {
+                    return $this->render('forum/theme1/create-post.html.twig', array(
+                        'current_user'     => $currentUser->aUser,
+                        'current_forum'    => $forum->forumData,
+                        'current_board'    => $board->boardData,
+                        'current_thread'   => $thread->threadData,
+                        'breadcrumb'       => $breadcrumb,
+                        'post_created'     => false,
+                        'create_post_form' => $createPostForm->createView(),
+                    ));
+                }
+            }
         }
 
         return $this->render('forum/theme1/create-post.html.twig', array(
@@ -456,7 +485,7 @@ class ForumController extends Controller
             ))
             ->add('message', TextareaType::class, array(
                 'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a url')),
+                    new NotBlank(array('message' => 'Please enter a message')),
                 ),
             ))
             ->add('send', SubmitType::class, array(
@@ -479,6 +508,8 @@ class ForumController extends Controller
                         'current_board'    => $board->boardData,
                         'breadcrumb'       => $breadcrumb,
                         'thread_created'   => true,
+                        'new_thread_id'    => $threadId,
+                        'create_thread_form' => $createThreadForm->createView(),
                     ));
                 } else {
                     return $this->render('forum/theme1/create-thread.html.twig', array(
