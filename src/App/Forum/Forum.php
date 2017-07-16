@@ -202,20 +202,21 @@ class Forum
     /******************************************************************************/
 
     /**
-     * @param $board_id
+     * @param int $board_id
      *
      * @return array
      */
     public static function getBreadcrumb($board_id)
     {
         $aBoards = array();
+        $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
 
-        while ($iParentId = intval(ForumBoard::getVarStatic($board_id, 'parent_id')) != 0) {
+        while ($iParentId != 0) {
             $iNext = (int)$iParentId;
-            array_push($aBoards, $iNext);
+            array_unshift($aBoards, $iNext);
             $board_id = $iNext;
+            $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
-
         return $aBoards;
     }
 }

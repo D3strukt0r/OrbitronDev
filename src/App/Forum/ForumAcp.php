@@ -2,6 +2,8 @@
 
 namespace App\Forum;
 
+use Kernel;
+
 class ForumAcp
 {
     private static $aAcpGroupElements = array();
@@ -47,7 +49,8 @@ class ForumAcp
      */
     public static function includeLibs()
     {
-        $sLibDir = './app/data/forum/addons';
+
+        $sLibDir = Kernel::$kernel->getRootDir().'/src/App/Forum/addons';
 
         $aGetLibs = scandir($sLibDir);
         foreach ($aGetLibs as $ACPLibrary) {

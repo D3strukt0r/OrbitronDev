@@ -73,21 +73,24 @@ class ForumBoard
     /**
      * @param $forum_id
      * @param $board_id
+     *
+     * @return string
      */
-    public static function listBoards($forum_id, $board_id)
+    public static function listBoardsTree($forum_id, $board_id)
     {
         $iForumId = (float)$forum_id;
         $iBoardId = (float)$board_id;
         $aForums  = self::scanForum($iForumId, $iBoardId);
 
         if (is_null($aForums)) {
-            echo _('There is no board');
-
-            return;
+            return 'error:no_board';
         }
 
         foreach ($aForums as $iCurrentBoardId) {
-            echo '
+            $text = '';
+            $board = new ForumBoard($iCurrentBoardId);
+
+            $text .= '
 				<div class="media">
 					<div class="media-left">
 						<a href="#">
@@ -96,48 +99,61 @@ class ForumBoard
 					</div>
 					<div class="media-body">
 						<h4 class="media-heading" id="media-heading">
-                            '.self::id2Board($iCurrentBoardId).' (ID: '.$iCurrentBoardId.')
+                            '.$board->getVar('title').' (ID: '.$board->getVar('id').')
                             <a class="anchorjs-link" href="#media-heading"><span class="anchorjs-icon"></span></a>
 						</h4>
-						{{BoardDescription}}';
+						'.$board->getVar('description');
 
             if (self::hasSubboards($iForumId, $iCurrentBoardId)) {
-                self::listBoards($iForumId, $iCurrentBoardId);
+                $text .= self::listBoardsTree($iForumId, $iCurrentBoardId);
             }
 
-            echo '
+            $text .= '
 					</div>
 				</div>';
+
+            return $text;
         }
     }
 
     /**
-     * @param     $forum_id
-     * @param     $board_id
-     * @param int $level
+     * @param      $forum_id
+     * @param      $board_id
+     * @param int  $level
+     * @param null $list
+     *
+     * @return array
      */
-    public static function listBoards2($forum_id, $board_id, $level = 1)
+    public static function listBoardsFormSelect($forum_id, $board_id, $level = 1, &$list = null)
     {
         $iForumId = (int)$forum_id;
         $iBoardId = (int)$board_id;
         $aForums  = self::scanForum($iForumId, $iBoardId);
         if (is_null($aForums)) {
-            echo 'IS NULL';
-
-            return;
+            return array('error:no_entry');
         }
+
+        if(is_null($list)) {
+            $list = array();
+            $list['- Main (ID: 0)'] = 0;
+        }
+
         foreach ($aForums as $iCurrentBoardId) {
-            $sLine = '—';
-            for ($i = strlen($sLine); $i < $level; $i++) {
-                $sLine .= ' —';
+            $sLine = '-';
+            for ($i = strlen($sLine)-1; $i < $level; $i++) {
+                $sLine .= '-';
             }
-            echo '<option value="'.$iCurrentBoardId.'" selected>'.$sLine.' '.self::id2Board($iCurrentBoardId).' (ID: '.$iCurrentBoardId.')</option>'.PHP_EOL;
+
+            $title = $sLine.' '.self::id2Board($iCurrentBoardId).' (ID: '.$iCurrentBoardId.')';
+            $list[$title] = $iCurrentBoardId;
 
             if (self::hasSubboards($iForumId, $iCurrentBoardId)) {
                 $iNextLevel = $level + 1;
-                self::listBoards2($iForumId, $iCurrentBoardId, $iNextLevel);
+                self::listBoardsFormSelect($iForumId, $iCurrentBoardId, $iNextLevel, $list);
             }
         }
+
+        return $list;
     }
 
     /**

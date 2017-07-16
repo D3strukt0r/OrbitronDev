@@ -6,6 +6,7 @@ use App\Account\Account;
 use App\Account\AccountTools;
 use App\Account\UserInfo;
 use App\Forum\Forum;
+use App\Forum\ForumAcp;
 use App\Forum\ForumBoard;
 use App\Forum\ForumPost;
 use App\Forum\ForumThread;
@@ -210,10 +211,10 @@ class ForumController extends Controller
         $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
         $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
-        $board = new ForumBoard($this->parameters['board']);
+        $board = new ForumBoard((int)$this->parameters['board']);
 
         // Breadcrumb
-        $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
+        $breadcrumb = Forum::getBreadcrumb((int)$board->getVar('id'));
         foreach ($breadcrumb as $key => $value) {
             $boardData        = new ForumBoard($value);
             $breadcrumb{$key} = $boardData->boardData;
@@ -221,11 +222,27 @@ class ForumController extends Controller
 
         // Get all boards
         /** @var \PDOStatement $getBoards */
-        $getBoards = $this->get('database')->prepare('SELECT * FROM `forum_boards` WHERE `forum_id`=:forum_id AND `type`=1 AND `parent_id`=:board_id');
+        $getBoards = $this->get('database')->prepare('SELECT * FROM `forum_boards` WHERE `forum_id`=:forum_id AND `parent_id`=:board_id');
         $getBoards->bindValue(':forum_id', $forum->getVar('id'), PDO::PARAM_INT);
         $getBoards->bindValue(':board_id', $board->getVar('id'), PDO::PARAM_INT);
         $getBoards->execute();
         $boardTree = $getBoards->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($boardTree as $index => $boardInList) {
+            /** @var \PDOStatement $getSubBoards */
+            $getSubBoards = $this->get('database')->prepare('SELECT * FROM `forum_boards` WHERE `forum_id`=:forum_id AND `type`=1 AND `parent_id`=:board_id');
+            $getSubBoards->execute(array(
+                ':forum_id' => $forum->getVar('id'),
+                ':board_id' => $boardInList['id'],
+            ));
+
+            // Get all subboards
+            $subboards = $getSubBoards->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($subboards as $index2 => $subboard) {
+                $subboards[$index2]['last_post_username'] = AccountTools::formatUsername($subboard['last_post_user_id']);
+            }
+            $boardTree[$index]['subboards'] = $subboards;
+        }
 
         // Get all threads
         /** @var Request $request */
@@ -531,5 +548,85 @@ class ForumController extends Controller
             'breadcrumb'       => $breadcrumb,
             'create_thread_form' => $createThreadForm->createView(),
         ));
+    }
+
+    public function forumAdminAction()
+    {
+        $params = array();
+        Account::updateSession();
+        $request = $this->getRequest();
+        $params['user_id'] = USER_ID;
+        $currentUser = new UserInfo(USER_ID);
+        $params['current_user'] = $currentUser->aUser;
+        $forumId = Forum::url2Id($this->parameters['forum']);
+        $forum   = new Forum($forumId);
+        $params['current_forum'] = $forum->forumData;
+        $params['view_navigation'] = '';
+
+        if (!LOGGED_IN) {
+            return $this->redirectToRoute('app_account_login', array('redir' => $request->getUri()));
+        }
+        if (USER_ID != (int)$forum->getVar('owner_id')) {
+            // TODO: Add a missing permission page
+            return;
+        }
+
+        ForumAcp::includeLibs();
+
+        $view = 'acp_not_found';
+
+        foreach (ForumAcp::getAllMenus('root') as $sMenu => $aMenuInfo) {
+            $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
+            $params['view_navigation'] .= '<li><a href="' . $this->generateUrl('app_forum_forum_admin',
+                    array('forum' => $forum->getVar('url'), 'page' => $aMenuInfo['href'])) . '" ' . $selected . '>' . $aMenuInfo['title'] . '</a></li>';
+
+            if (strlen($selected) > 0) {
+                if (is_callable($aMenuInfo['screen'])) {
+                    $view = $aMenuInfo['screen'];
+                } else {
+                    $view = 'acp_function_error';
+                }
+            }
+        }
+
+        foreach (ForumAcp::getAllGroups() as $sGroup => $aGroupInfo) {
+            if (is_null($aGroupInfo['display']) || strlen($aGroupInfo['display']) == 0) {
+                foreach (ForumAcp::getAllMenus($aGroupInfo['id']) as $sMenu => $aMenuInfo) {
+                    $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? ' class="active"' : '');
+                    if (strlen($selected) > 0) {
+                        if (is_callable($aMenuInfo['screen'])) {
+                            $view = $aMenuInfo['screen'];
+                        } else {
+                            $view = 'acp_function_error';
+                        }
+                    }
+                }
+                continue;
+            }
+            $params['view_navigation'] .= '<li><a href="#">' . $aGroupInfo['title'] . '<span class="fa arrow"></span></a><ul class="nav nav-second-level collapse">';
+
+            foreach (ForumAcp::getAllMenus($aGroupInfo['id']) as $sMenu => $aMenuInfo) {
+                $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
+                $params['view_navigation'] .= '<li><a href="' . $this->generateUrl('app_forum_forum_admin',
+                        array('forum' => $forum->getVar('url'), 'page' => $aMenuInfo['href'])) . '" ' . $selected . '>' . $aMenuInfo['title'] . '</a></li>';
+                if (strlen($selected) > 0) {
+                    if (is_callable($aMenuInfo['screen'])) {
+                        $view = $aMenuInfo['screen'];
+                    } else {
+                        $view = 'acp_function_error';
+                    }
+                }
+            }
+
+            $params['view_navigation'] .= '</ul></li>';
+        }
+
+
+        $response = call_user_func($view, $this->container->get('twig'), $this);
+        if (is_string($response)) {
+            $params['view_body'] = $response;
+        }
+
+        return $this->render('forum/theme_admin1/panel.html.twig', $params);
     }
 }
