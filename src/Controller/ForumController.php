@@ -134,7 +134,7 @@ class ForumController extends Controller
                         ':url' => $forumUrl,
                     ));
                     $forumData = $getForum->fetchAll(PDO::FETCH_ASSOC);
-                    $this->redirectToRoute('app_forum_forum_index', array('forum' => $forumData[0]['url']));
+                    return $this->redirectToRoute('app_forum_forum_index', array('forum' => $forumData[0]['url']));
                 }
             }
         }

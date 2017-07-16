@@ -35,7 +35,7 @@
         {% if board_tree|length == 0 %}
             <hr />
             <div class="alert alert-danger" role="alert">
-                {{ 'There is no forum where someone can post. If you are the admin, create a new forum!'|trans }}
+                {{ 'There is no board where someone can post. If you are the admin, create a new board!'|trans }}
             </div>
         {% else %}
             {% for board in board_tree %}

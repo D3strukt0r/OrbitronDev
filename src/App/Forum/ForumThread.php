@@ -92,11 +92,14 @@ class ForumThread
         $iBoardId = (int)$board_id;
         $aBoards  = array();
 
+        $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
+
         array_push($aBoards, $iBoardId);
-        while ($iParentId = intval(ForumBoard::getVarStatic($iBoardId, 'parent_id')) != 0) {
-            $iNext = $iParentId;
+        while ($iParentId != 0) {
+            $iNext = (int)$iParentId;
             array_push($aBoards, $iNext);
-            $iBoardId = $iNext;
+            $board_id = $iNext;
+            $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
 
         foreach ($aBoards as $iBoard) {
@@ -120,11 +123,14 @@ class ForumThread
         $iTime    = (int)$time;
         $aBoards  = array();
 
+        $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
+
         array_push($aBoards, $iBoardId);
-        while ($iParentId = intval(ForumBoard::getVarStatic($iBoardId, 'parent_id')) != 0) {
-            $iNext = $iParentId;
+        while ($iParentId != 0) {
+            $iNext = (int)$iParentId;
             array_push($aBoards, $iNext);
-            $iBoardId = $iNext;
+            $board_id = $iNext;
+            $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
 
         foreach ($aBoards as $iBoard) {

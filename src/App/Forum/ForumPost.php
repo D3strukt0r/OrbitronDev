@@ -106,11 +106,14 @@ class ForumPost
         $aBoards = array();
         $iBoardId = $thread->getVar('board_id');
 
+        $iParentId = (int)ForumBoard::intent($iBoardId)->getVar('parent_id');
+
         array_push($aBoards, $iBoardId);
-        while ($iParentId = intval(ForumBoard::intent($iBoardId)->getVar('parent_id')) != 0) {
-            $iNext = $iParentId;
+        while ($iParentId != 0) {
+            $iNext = (int)$iParentId;
             array_push($aBoards, $iNext);
-            $iBoardId = $iNext;
+            $board_id = $iNext;
+            $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
 
         foreach ($aBoards as $iBoard) {
