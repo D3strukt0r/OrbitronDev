@@ -3,11 +3,11 @@
 use App\Forum\ForumAcp;
 
 ForumAcp::addMenu(array(
-	'parent' => 'root',
-	'id'     => 'home',
-	'title'  => _('Dashboard'),
-	'href'   => 'home',
-	'screen' => 'acp_html_home',
+    'parent' => 'root',
+    'id'     => 'home',
+    'title'  => 'Dashboard',
+    'href'   => 'home',
+    'screen' => 'acp_html_home',
 ));
 
 /**

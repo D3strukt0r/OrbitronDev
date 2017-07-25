@@ -53,7 +53,7 @@
                         {% if board.subboards|length > 0 %}
                             {% for subboard in board.subboards %}
                                 <tr>
-                                    <td class="forum-category"><p><a href="/{{ current_forum.url }}/board/{{ subboard.id }}">{{ subboard.title }}</a></p><p>{{ subboard.description }}</p></td>
+                                    <td class="forum-category"><p><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': subboard.id}) }}">{{ subboard.title }}</a></p><p>{{ subboard.description }}</p></td>
                                     <td class="text-center"><br /><span class="badge">{{ subboard.threads }}</span></td>
                                     <td class="text-center"><br /><span class="badge">{{ subboard.posts }}</span></td>
                                     <td><p><i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }} {{ subboard.last_post_username|raw }}</p><p>{{ subboard.last_post_time|date('d/m/Y H:i') }}</p></td>

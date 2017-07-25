@@ -209,7 +209,7 @@ class AccountController extends Controller
                 );
             }
 
-            if (is_int($registerResult)) {
+            if (is_int($registerResult) || is_float($registerResult)) {
 
                 $message = Swift_Message::newInstance()
                     ->setSubject('[Account] Email activation')

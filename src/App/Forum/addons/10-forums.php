@@ -9,30 +9,29 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 ForumAcp::addGroup(array(
-	'parent' => 'root',
-	'id'     => 'boards',
-	'title'  => _('Boards'),
+    'parent' => 'root',
+    'id'     => 'boards',
+    'title'  => 'Boards',
 ));
 
 ForumAcp::addMenu(array(
-	'parent' => 'boards',
-	'id'     => 'list',
-	'title'  => _('Manage Boards'),
-	'href'   => 'board-list',
-	'screen' => 'acp_html_board_list',
+    'parent' => 'boards',
+    'id'     => 'list',
+    'title'  => 'Manage Boards',
+    'href'   => 'board-list',
+    'screen' => 'acp_html_board_list',
 ));
 
 ForumAcp::addMenu(array(
-	'parent' => 'null',
-	'id'     => 'new_board',
-	'title'  => _('New Board'),
-	'href'   => 'new-board',
-	'screen' => 'acp_html_new_board',
+    'parent' => 'null',
+    'id'     => 'new_board',
+    'title'  => 'New Board',
+    'href'   => 'new-board',
+    'screen' => 'acp_html_new_board',
 ));
 
 /**
- * @param \Twig_Environment $twig
- *
+ * @param \Twig_Environment           $twig
  * @param \Controller\ForumController $controller
  *
  * @return string
@@ -46,7 +45,7 @@ function acp_html_board_list($twig, $controller)
     }
 
     $forumId = Forum::url2Id($controller->parameters['forum']);
-    $forum = new Forum($forumId);
+    $forum   = new Forum($forumId);
 
     $boardList = ForumBoard::listBoardsTree($forum->getVar('id'), 0);
 
@@ -57,8 +56,7 @@ function acp_html_board_list($twig, $controller)
 }
 
 /**
- * @param \Twig_Environment $twig
- *
+ * @param \Twig_Environment           $twig
  * @param \Controller\ForumController $controller
  *
  * @return string
@@ -72,7 +70,7 @@ function acp_html_new_board($twig, $controller)
     }
 
     $forumId = Forum::url2Id($controller->parameters['forum']);
-    $forum = new Forum($forumId);
+    $forum   = new Forum($forumId);
 
     $createBoardForm = $controller->createFormBuilder()
         ->add('name', TextType::class, array(
@@ -93,13 +91,13 @@ function acp_html_new_board($twig, $controller)
         ->add('type', ChoiceType::class, array(
             'label'       => 'Type',
             'required'    => false,
-            'choices'  => array(
+            'choices'     => array(
                 'Board'    => 1,
                 'Category' => 2,
             ),
             'placeholder' => false,
-            'expanded' => true, // radio buttons
-            'multiple' => false,
+            'expanded'    => true, // radio buttons
+            'multiple'    => false,
 
         ))
         ->add('send', SubmitType::class, array(

@@ -3,10 +3,10 @@
 use App\Forum\ForumAcp;
 
 ForumAcp::addGroup(array(
-	'parent'  => 'root',
-	'id'      => 'null',
-	'title'  => _('THIS SHOULD NOT BE HERE'),
-	'display' => false,
+    'parent'  => 'root',
+    'id'      => 'null',
+    'title'   => 'THIS SHOULD NOT BE HERE',
+    'display' => false,
 ));
 
 /**

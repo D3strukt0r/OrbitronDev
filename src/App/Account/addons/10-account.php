@@ -191,7 +191,13 @@ function acp_html_account($twig, $controller)
 function acp_html_profile($twig, $controller)
 {
     $currentUser = new UserInfo(USER_ID);
-    $dtBirthday = \DateTime::createFromFormat('Y-m-d', $currentUser->getFromProfile('birthday'));
+
+    if(!is_null($currentUser->getFromProfile('birthday'))) {
+        $dtBirthday = \DateTime::createFromFormat('Y-m-d', $currentUser->getFromProfile('birthday'));
+    } else {
+        $dtBirthday = null;
+    }
+
 
     $editProfileForm = $controller->createFormBuilder()
         ->add('first_name', TextType::class, array(
@@ -220,7 +226,7 @@ function acp_html_profile($twig, $controller)
         ->add('birthday', TextType::class, array(
             'label' => 'Birthday',
             'attr'  => array(
-                'value' => $dtBirthday->format('d.m.Y'),
+                'value' => !is_null($dtBirthday) ? $dtBirthday->format('d.m.Y') : null,
             ),
         ))
         ->add('location_street', TextType::class, array(

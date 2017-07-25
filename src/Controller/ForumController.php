@@ -110,7 +110,7 @@ class ForumController extends Controller
                     $createForumForm->get('url')->addError(new FormError('Only use a-z, A-Z, 0-9, _, -'));
                 } elseif (in_array($forumUrl, array('new-forum', 'admin'))) {
                     $errorMessages[] = '';
-                    $createForumForm->get('url')->addError(new FormError('It\'s permitted to use this url'));
+                    $createForumForm->get('url')->addError(new FormError('It\'s prohibited to use this url'));
                 } elseif (Forum::urlExists($forumUrl)) {
                     $errorMessages[] = '';
                     $createForumForm->get('url')->addError(new FormError('This url is already in use'));
@@ -122,19 +122,25 @@ class ForumController extends Controller
                         throw new \Exception('A database connection is required');
                     }
 
-                    $addForum = $database->prepare('INSERT INTO `forums`(`name`,`url`,`owner_id`) VALUES (:name,:url,:user_id)');
-                    $addForum->execute(array(
+                    $addForum   = $database->prepare('INSERT INTO `forums`(`name`,`url`,`owner_id`) VALUES (:name,:url,:user_id)');
+                    $forumAdded = $addForum->execute(array(
                         ':name'    => $forumName,
                         ':url'     => $forumUrl,
                         ':user_id' => USER_ID,
                     ));
 
-                    $getForum = $database->prepare('SELECT `url` FROM `forums` WHERE `url`=:url LIMIT 1');
-                    $getForum->execute(array(
-                        ':url' => $forumUrl,
-                    ));
-                    $forumData = $getForum->fetchAll(PDO::FETCH_ASSOC);
-                    return $this->redirectToRoute('app_forum_forum_index', array('forum' => $forumData[0]['url']));
+                    if ($forumAdded) {
+                        $getForum = $database->prepare('SELECT `url` FROM `forums` WHERE `url`=:url LIMIT 1');
+                        $getForum->execute(array(
+                            ':url' => $forumUrl,
+                        ));
+                        $forumData = $getForum->fetchAll(PDO::FETCH_ASSOC);
+
+                        return $this->redirectToRoute('app_forum_forum_index', array('forum' => $forumData[0]['url']));
+                    } else {
+                        $errorMessage = $addForum->errorInfo();
+                        $createForumForm->addError(new FormError('We could not create your forum. (ERROR: '.$errorMessage[2].')'));
+                    }
                 }
             }
         }
@@ -183,6 +189,8 @@ class ForumController extends Controller
             }
             $boardTree[$index]['subboards'] = $subboards;
         }
+
+        // TODO: Show also boards which aren't in a category
 
         return $this->render('forum/theme1/index.html.twig', array(
             'current_user'  => $currentUser->aUser,
@@ -336,6 +344,8 @@ class ForumController extends Controller
 
         foreach ($posts as $index => $post) {
             $posts[$index]['formatted_username'] = AccountTools::formatUsername($post['user_id']);
+            // TODO: Remove this as soon as Usernames are added automatically in the database
+            $posts[$index]['username'] = AccountTools::formatUsername($post['user_id'], false, false);
         }
         foreach ($posts as $index => $post) {
             $bbParser = new Decoda($post['message']);
@@ -423,9 +433,9 @@ class ForumController extends Controller
 
             if ($createPostForm->isSubmitted() && $createPostForm->isValid()) {
                 $formData = $createPostForm->getData();
-                $postId = ForumPost::createPost($thread->getVar('id'), (1 + (int)$thread->getVar('replies')), USER_ID, $formData['title'], $formData['message']);
+                $postId   = ForumPost::createPost($thread->getVar('id'), (1 + (int)$thread->getVar('replies')), USER_ID, $formData['title'], $formData['message']);
 
-                if(ForumPost::postExists($postId)) {
+                if (ForumPost::postExists($postId)) {
                     return $this->render('forum/theme1/create-post.html.twig', array(
                         'current_user'     => $currentUser->aUser,
                         'current_forum'    => $forum->forumData,
@@ -478,7 +488,7 @@ class ForumController extends Controller
         $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
         $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
-        $board  = new ForumBoard($this->parameters['board']);
+        $board = new ForumBoard($this->parameters['board']);
 
         // Breadcrumb
         $breadcrumb = Forum::getBreadcrumb($board->getVar('id'));
@@ -518,23 +528,23 @@ class ForumController extends Controller
                 $formData = $createThreadForm->getData();
                 $threadId = ForumThread::createThread($formData['parent'], $formData['title'], $formData['message'], USER_ID);
 
-                if(ForumThread::threadExists($threadId)) {
+                if (ForumThread::threadExists($threadId)) {
                     return $this->render('forum/theme1/create-thread.html.twig', array(
-                        'current_user'     => $currentUser->aUser,
-                        'current_forum'    => $forum->forumData,
-                        'current_board'    => $board->boardData,
-                        'breadcrumb'       => $breadcrumb,
-                        'thread_created'   => true,
-                        'new_thread_id'    => $threadId,
+                        'current_user'       => $currentUser->aUser,
+                        'current_forum'      => $forum->forumData,
+                        'current_board'      => $board->boardData,
+                        'breadcrumb'         => $breadcrumb,
+                        'thread_created'     => true,
+                        'new_thread_id'      => $threadId,
                         'create_thread_form' => $createThreadForm->createView(),
                     ));
                 } else {
                     return $this->render('forum/theme1/create-thread.html.twig', array(
-                        'current_user'     => $currentUser->aUser,
-                        'current_forum'    => $forum->forumData,
-                        'current_board'    => $board->boardData,
-                        'breadcrumb'       => $breadcrumb,
-                        'thread_created'   => false,
+                        'current_user'       => $currentUser->aUser,
+                        'current_forum'      => $forum->forumData,
+                        'current_board'      => $board->boardData,
+                        'breadcrumb'         => $breadcrumb,
+                        'thread_created'     => false,
                         'create_thread_form' => $createThreadForm->createView(),
                     ));
                 }
@@ -542,10 +552,10 @@ class ForumController extends Controller
         }
 
         return $this->render('forum/theme1/create-thread.html.twig', array(
-            'current_user'     => $currentUser->aUser,
-            'current_forum'    => $forum->forumData,
-            'current_board'    => $board->boardData,
-            'breadcrumb'       => $breadcrumb,
+            'current_user'       => $currentUser->aUser,
+            'current_forum'      => $forum->forumData,
+            'current_board'      => $board->boardData,
+            'breadcrumb'         => $breadcrumb,
             'create_thread_form' => $createThreadForm->createView(),
         ));
     }
@@ -554,21 +564,20 @@ class ForumController extends Controller
     {
         $params = array();
         Account::updateSession();
-        $request = $this->getRequest();
-        $params['user_id'] = USER_ID;
-        $currentUser = new UserInfo(USER_ID);
-        $params['current_user'] = $currentUser->aUser;
-        $forumId = Forum::url2Id($this->parameters['forum']);
-        $forum   = new Forum($forumId);
-        $params['current_forum'] = $forum->forumData;
+        $request                   = $this->getRequest();
+        $params['user_id']         = USER_ID;
+        $currentUser               = new UserInfo(USER_ID);
+        $params['current_user']    = $currentUser->aUser;
+        $forumId                   = Forum::url2Id($this->parameters['forum']);
+        $forum                     = new Forum($forumId);
+        $params['current_forum']   = $forum->forumData;
         $params['view_navigation'] = '';
 
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $request->getUri()));
         }
         if (USER_ID != (int)$forum->getVar('owner_id')) {
-            // TODO: Add a missing permission page
-            return;
+            return $this->render('forum/theme_admin1/no-permission.html.twig');
         }
 
         ForumAcp::includeLibs();
@@ -576,9 +585,12 @@ class ForumController extends Controller
         $view = 'acp_not_found';
 
         foreach (ForumAcp::getAllMenus('root') as $sMenu => $aMenuInfo) {
-            $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
-            $params['view_navigation'] .= '<li><a href="' . $this->generateUrl('app_forum_forum_admin',
-                    array('forum' => $forum->getVar('url'), 'page' => $aMenuInfo['href'])) . '" ' . $selected . '>' . $aMenuInfo['title'] . '</a></li>';
+            $selected                  = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
+            $params['view_navigation'] .= '<li><a href="'.$this->generateUrl('app_forum_forum_admin',
+                    array(
+                        'forum' => $forum->getVar('url'),
+                        'page'  => $aMenuInfo['href'],
+                    )).'" '.$selected.'>'.$aMenuInfo['title'].'</a></li>';
 
             if (strlen($selected) > 0) {
                 if (is_callable($aMenuInfo['screen'])) {
@@ -603,12 +615,15 @@ class ForumController extends Controller
                 }
                 continue;
             }
-            $params['view_navigation'] .= '<li><a href="#">' . $aGroupInfo['title'] . '<span class="fa arrow"></span></a><ul class="nav nav-second-level collapse">';
+            $params['view_navigation'] .= '<li><a href="#">'.$aGroupInfo['title'].'<span class="fa arrow"></span></a><ul class="nav nav-second-level collapse">';
 
             foreach (ForumAcp::getAllMenus($aGroupInfo['id']) as $sMenu => $aMenuInfo) {
-                $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
-                $params['view_navigation'] .= '<li><a href="' . $this->generateUrl('app_forum_forum_admin',
-                        array('forum' => $forum->getVar('url'), 'page' => $aMenuInfo['href'])) . '" ' . $selected . '>' . $aMenuInfo['title'] . '</a></li>';
+                $selected                  = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
+                $params['view_navigation'] .= '<li><a href="'.$this->generateUrl('app_forum_forum_admin',
+                        array(
+                            'forum' => $forum->getVar('url'),
+                            'page'  => $aMenuInfo['href'],
+                        )).'" '.$selected.'>'.$aMenuInfo['title'].'</a></li>';
                 if (strlen($selected) > 0) {
                     if (is_callable($aMenuInfo['screen'])) {
                         $view = $aMenuInfo['screen'];

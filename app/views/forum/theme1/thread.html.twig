@@ -47,9 +47,13 @@
                             <tr>
                                 <td class="col-md-2">
                                     <p class="text-center">{{ post.formatted_username|raw }}</p>
-                                    <a href="#" class="thumbnail">
+                                    <a href="{{ path('app_account_user', {'username': post.username}) }}" class="thumbnail">
                                         <img src="{{ path('app_account_api', {'function': 'get_img', 'user_id': post.user_id, 'height': 200, 'width': 200}) }}" alt="" />
                                     </a>
+                                    {% if post.user_id == current_user.user_id %}
+                                        {# TODO: Add URL, Add style #}
+                                        <a href="#edit">{{ 'Edit'|trans }}</a>
+                                    {% endif %}
                                 </td>
                                 <td>{{ post.formatted_message|raw }}</td>
                             </tr>
@@ -66,7 +70,7 @@
 
                         {# Previous Page #}
                         {% if pagination.current_page > 1 %}
-                            <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_forum.id, 'page': pagination.previous_page, 'show': pagination.item_limit}) }}" aria-label="{{ 'Previous'|trans }}"><span aria-hidden="true">&laquo;</span></a></li>
+                            <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': pagination.previous_page, 'show': pagination.item_limit}) }}" aria-label="{{ 'Previous'|trans }}"><span aria-hidden="true">&laquo;</span></a></li>
                         {% else %}
                             <li class="disabled"><a aria-label="{{ 'Previous'|trans }}"><span aria-hidden="true">&laquo;</span></a></li>
                         {% endif %}
@@ -78,17 +82,70 @@
                                 {% if page_counter == pagination.current_page %}
                                     <li class="active"><a>{{ page_counter }}</a></li>
                                 {% else %}
-                                    <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_forum.id, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
+                                    <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
                                 {% endif %}
                                 {% set page_counter = page_counter + 1 %}
                             {% endfor %}
-                        {% else %}{# enough pages to hide some #}
+                        {% elseif pagination.pages_count >= (7 + (pagination.adjacents * 2)) %}{# enough pages to hide some #}
 
+                            {# close to beginning; only hide later pages #}
+                            {% if pagination.current_page < (1 + (pagination.adjacents * 3)) %}
+                                {% set page_counter = 1 %}
+                                {% for i in page_counter..(4 +(pagination.adjacents * 2)) %}
+                                    {% if page_counter == pagination.current_page %}
+                                        <li class="active"><a>{{ page_counter }}</a></li>
+                                    {% else %}
+                                        <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
+                                    {% endif %}
+                                    {% set page_counter = page_counter + 1 %}
+                                {% endfor %}
+
+                                <li class="disabled"><a>...</a></li>
+                                <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': pagination.last_page_m1, 'show': pagination.item_limit}) }}">{{ pagination.last_page_m1 }}</a></li>
+                                <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': pagination.pages_count, 'show': pagination.item_limit}) }}">{{ pagination.pages_count }}</a></li>
+
+                            {# in middle; hide some front and some back #}
+                            {% elseif (pagination.pages_count - (pagination.adjacents * 2)) > pagination.current_page and pagination.current_page > (pagination.adjacents * 3) %}
+                                <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': 1, 'show': pagination.item_limit}) }}">1</a></li>
+                                <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': 2, 'show': pagination.item_limit}) }}">2</a></li>
+                                <li class="disabled"><a>...</a></li>
+
+                                {% set page_counter = pagination.current_page - pagination.adjacents %}
+                                {% for i in page_counter..(pagination.current_page + pagination.adjacents) %}
+                                    {% if page_counter == pagination.current_page %}
+                                        <li class="active"><a>{{ page_counter }}</a></li>
+                                    {% else %}
+                                        <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
+                                    {% endif %}
+                                    {% set page_counter = page_counter + 1 %}
+                                {% endfor %}
+
+                                <li class="disabled"><a>...</a></li>
+                                <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': pagination.last_page_m1, 'show': pagination.item_limit}) }}">{{ pagination.last_page_m1 }}</a></li>
+                                <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': pagination.pages_count, 'show': pagination.item_limit}) }}">{{ pagination.pages_count }}</a></li>
+
+                            {# close to end; only hide early pages #}
+                            {% else %}
+                                <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': 1, 'show': pagination.item_limit}) }}">1</a></li>
+                                <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': 2, 'show': pagination.item_limit}) }}">2</a></li>
+                                <li class="disabled"><a>...</a></li>
+
+                                {% set page_counter = pagination.pages_count - (1 + (pagination.adjacents * 3)) %}
+                                {% for i in page_counter..pagination.pages_count %}
+                                    {% if page_counter == pagination.current_page %}
+                                        <li class="active"><a>{{ page_counter }}</a></li>
+                                    {% else %}
+                                        <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
+                                    {% endif %}
+                                    {% set page_counter = page_counter + 1 %}
+                                {% endfor %}
+
+                            {% endif %}
                         {% endif %}
 
                         {# Next page #}
                         {% if pagination.current_page < pagination.last_page_m1 %}
-                            <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_forum.id, 'page': pagination.next_page, 'show': pagination.item_limit}) }}" aria-label="{{ 'Next'|trans }}"><span aria-hidden="true">&raquo;</span></a></li>
+                            <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': pagination.next_page, 'show': pagination.item_limit}) }}" aria-label="{{ 'Next'|trans }}"><span aria-hidden="true">&raquo;</span></a></li>
                         {% else %}
                             <li class="disabled"><a aria-label="{{ 'Next'|trans }}"><span aria-hidden="true">&raquo;</span></a></li>
                         {% endif %}

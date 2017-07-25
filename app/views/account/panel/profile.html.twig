@@ -211,8 +211,9 @@
                                 dataType: 'json',
                                 done: function(e, data) {
                                     $.each(data.result.files, function(index, file) {
+                                        $('#profile-picture').html("");
                                         $('<img class="img-thumbnail" />')
-                                                .attr('src', '/app/account/profile_pictures/' + file.name)
+                                                .attr('src', '/app/account/profile_pictures/' + file)
                                                 .appendTo('#profile-picture');
                                     });
                                 },

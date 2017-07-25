@@ -75,6 +75,8 @@ class ForumBoard
      * @param $board_id
      *
      * @return string
+     *
+     * TODO: This should return an array, so we can define the style in twig (see "App/Forum/addons/10-forums.php", and "app/views/forum/theme_admin1/board-list.html.twig")
      */
     public static function listBoardsTree($forum_id, $board_id)
     {
@@ -87,10 +89,11 @@ class ForumBoard
         }
 
         foreach ($aForums as $iCurrentBoardId) {
-            $text = '';
+            $text  = '';
             $board = new ForumBoard($iCurrentBoardId);
 
-            $text .= '
+            $text
+                .= '
 				<div class="media">
 					<div class="media-left">
 						<a href="#">
@@ -108,7 +111,8 @@ class ForumBoard
                 $text .= self::listBoardsTree($iForumId, $iCurrentBoardId);
             }
 
-            $text .= '
+            $text
+                .= '
 					</div>
 				</div>';
 
@@ -133,18 +137,18 @@ class ForumBoard
             return array('error:no_entry');
         }
 
-        if(is_null($list)) {
-            $list = array();
+        if (is_null($list)) {
+            $list                   = array();
             $list['- Main (ID: 0)'] = 0;
         }
 
         foreach ($aForums as $iCurrentBoardId) {
             $sLine = '-';
-            for ($i = strlen($sLine)-1; $i < $level; $i++) {
+            for ($i = strlen($sLine) - 1; $i < $level; $i++) {
                 $sLine .= '-';
             }
 
-            $title = $sLine.' '.self::id2Board($iCurrentBoardId).' (ID: '.$iCurrentBoardId.')';
+            $title        = $sLine.' '.self::id2Board($iCurrentBoardId).' (ID: '.$iCurrentBoardId.')';
             $list[$title] = $iCurrentBoardId;
 
             if (self::hasSubboards($iForumId, $iCurrentBoardId)) {
@@ -265,6 +269,7 @@ class ForumBoard
     public static function intent($board_id)
     {
         $class = new self($board_id);
+
         return $class;
     }
 

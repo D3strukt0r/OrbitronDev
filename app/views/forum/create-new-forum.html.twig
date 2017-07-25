@@ -24,9 +24,16 @@
         body {
             margin: 0;
             padding: 0;
-            background: url(/assets/img/background/bg-cyan.jpg) fixed 50% 50%;
+            background: url('/assets/img/background/bg-cyan.jpg') fixed 50% 50%;
             background-size: cover;
         }
+
+        {# Alternative
+        body, html {
+                height: 100%;
+                background: linear-gradient(rgb(37, 37, 37), rgb(0, 3, 84)) no-repeat fixed;
+        }
+        #}
 
         .sky-form {
             margin: 0 auto;
@@ -82,47 +89,47 @@
 
 {% block content %}
     {{ form_start(create_forum_form, {'attr': {'class': 'sky-form sky-changes-3', 'id': 'login-form'}}) }}
-    {{ form_row(create_forum_form._token) }}
+        {{ form_row(create_forum_form._token) }}
 
-    <header>{{ 'Create a new forum'|trans }}</header>
-    <fieldset>
-        {{ form_errors(create_forum_form) }}
-        <section>
-            <div class="row">
-                {{ form_label(create_forum_form.name, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                <div class="col col-8">
-                    <label class="input">
-                        <i class="icon-append fa fa-user"></i>
-                        {{ form_widget(create_forum_form.name) }}
-                    </label>
-                    <div class="note note-error">{{ form_errors(create_forum_form.name) }}</div>
-                    <div class="note">{{ 'How should your forum be called?'|trans }}</div>
+        <header>{{ 'Create a new forum'|trans }}</header>
+        <fieldset>
+            {{ form_errors(create_forum_form) }}
+            <section>
+                <div class="row">
+                    {{ form_label(create_forum_form.name, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                    <div class="col col-8">
+                        <label class="input">
+                            <i class="icon-append fa fa-user"></i>
+                            {{ form_widget(create_forum_form.name) }}
+                        </label>
+                        <div class="note note-error">{{ form_errors(create_forum_form.name) }}</div>
+                        <div class="note">{{ 'How should your forum be called?'|trans }}</div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section>
-            <div class="row">
-                {{ form_label(create_forum_form.url, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                <div class="col col-8">
-                    <label class="input">
-                        <i class="icon-append fa fa-globe"></i>
-                        {{ form_widget(create_forum_form.url) }}
-                    </label>
-                    <div class="note note-error">{{ form_errors(create_forum_form.url) }}</div>
-                    <div class="note">{{ 'This will be used to access your forum over "https://forum.orbitrondev.org/<url>/".'|trans }}</div>
+            <section>
+                <div class="row">
+                    {{ form_label(create_forum_form.url, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                    <div class="col col-8">
+                        <label class="input">
+                            <i class="icon-append fa fa-globe"></i>
+                            {{ form_widget(create_forum_form.url) }}
+                        </label>
+                        <div class="note note-error">{{ form_errors(create_forum_form.url) }}</div>
+                        <div class="note">{{ 'This will be used to access your forum over "https://forum.orbitrondev.org/<url>/".'|trans }}</div>
+                    </div>
                 </div>
-            </div>
-        </section>
-    </fieldset>
-    <fieldset>
-        <section>
-            {{ form_widget(create_forum_form.recaptcha) }}
-            <div class="note note-error">{{ form_errors(create_forum_form.recaptcha) }}</div>
-        </section>
-    </fieldset>
-    <footer>
-        {{ form_widget(create_forum_form.send, {'attr': {'class': 'button'}}) }}
-    </footer>
+            </section>
+        </fieldset>
+        <fieldset>
+            <section>
+                {{ form_widget(create_forum_form.recaptcha) }}
+                <div class="note note-error">{{ form_errors(create_forum_form.recaptcha) }}</div>
+            </section>
+        </fieldset>
+        <footer>
+            {{ form_widget(create_forum_form.send, {'attr': {'class': 'button'}}) }}
+        </footer>
     {{ form_end(create_forum_form) }}
 {% endblock %}

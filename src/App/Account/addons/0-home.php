@@ -10,7 +10,7 @@ use Container\DatabaseContainer;
 AccountAcp::addMenu(array(
     'parent' => 'root',
     'id'     => 'home',
-    'title'  => _('Overview'),
+    'title'  => 'Overview',
     'href'   => 'home',
     'screen' => 'acp_html_home',
 ));

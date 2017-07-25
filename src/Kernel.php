@@ -52,6 +52,7 @@ class Kernel
             throw new Exception("Unable to load Parameters. Unable to parse the YAML string: %s", $e->getMessage());
         }
 
+        // Load components
         $this->set('kernel', $this);
         $this->loadLogger();
         $this->loadDatabase();
@@ -62,6 +63,7 @@ class Kernel
         $this->loadMailer();
         //$this->runCronJob(); // TODO: Add Cron Job
 
+        // Load template
         if ($this->has('routing.error')) {
             $error = $this->get('routing.error');
             $response = new Response($this->get('twig')->render('error/error404.html.twig', array('status_code' => $error->getCode(), 'status_text' => $error->getMessage())), 404);

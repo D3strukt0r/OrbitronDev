@@ -33,6 +33,16 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $("#form_message").wysibb();
+
+            var breadcrumb = $('.new-thread');
+            var inputTitle = $('#form_title');
+            inputTitle.keyup(function(ev){
+                breadcrumb.text($('#form_title').val());
+                if(inputTitle.val() === '') {
+                    breadcrumb.text('...');
+                }
+            });
+
         })
     </script>
 {% endblock %}
@@ -47,8 +57,7 @@
                 {% endif %}
             {% endfor %}
             <li class="active"><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': current_board.id}) }}">{{ current_board.title }}</a></li>
-            {# TODO: Add JS Code to get typed header #}
-            <li class="new-theme">...</li>
+            <li class="new-thread">...</li>
         </ol><!-- /.breadcrumb -->
     </div><!-- /.container -->
 {% endblock %}

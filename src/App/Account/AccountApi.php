@@ -32,7 +32,7 @@ class AccountApi
         $rootPictureDir = Kernel::$kernel->getRootDir() . '/web/app/account/profile_pictures/';
 
         if (AccountTools::idExists($userId)) {
-            if (file_exists($filename = $rootPictureDir . $selectedUser->getFromProfile('profile_picture'))) {
+            if (!is_null($selectedUser->getFromProfile('profile_picture')) && file_exists($filename = $rootPictureDir . $selectedUser->getFromProfile('profile_picture'))) {
                 $oImage = new SimpleImage($filename);
                 $oImage->resize($width, $height);
                 $oImage->output();
@@ -82,10 +82,11 @@ class AccountApi
         }
 
         if (isset($files[0]->error) && !is_string($files[0]->error)) {
-            $current_user->updateProfilePicture($files[0]->name);
+            $current_user->updateProfilePicture($files[0]->getFileName());
         }
 
-        return array('files' => $files);
+        //return array('files' => $files);
+        return array('files' => array('name' => $files[0]->getFileName()));
     }
 
     public static function upload_progress()

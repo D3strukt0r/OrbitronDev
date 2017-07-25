@@ -9,8 +9,7 @@
 </section><!-- /#header -->
 <section id="page">
     <div class="col-md-12">
-        {# TODO: Create path with TWIG #}
-        <a href="new-board" class="btn btn-success">{{ 'Create new board'|trans }}</a>
+        <a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'new-board'}) }}" class="btn btn-success">{{ 'Create new board'|trans }}</a>
         <hr />
         <div class="panel panel-info">
             <div class="panel-body">
@@ -18,7 +17,6 @@
             </div>
         </div>
         <hr />
-        {# TODO: Create path with TWIG #}
-        <a href="new-board" class="btn btn-success">{{ 'Create new board'|trans }}</a>
+        <a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'new-board'}) }}" class="btn btn-success">{{ 'Create new board'|trans }}</a>
     </div>
 </section><!-- /#page -->
