@@ -18,7 +18,7 @@ class DatabaseContainer
      *
      * @throws \Exception
      */
-    function __construct($kernel)
+    public function __construct($kernel)
     {
         $config = $kernel->get('config');
 
@@ -35,5 +35,20 @@ class DatabaseContainer
 
         DatabaseContainer::$database = $db;
         $kernel->set('database', $db);
+    }
+
+    /**
+     * Get the database object
+     *
+     * @return \PDO
+     * @throws \Exception
+     */
+    public static function getDatabase()
+    {
+        if (is_null(self::$database)) {
+            throw new \Exception('A database connection is required');
+        }
+
+        return self::$database;
     }
 }

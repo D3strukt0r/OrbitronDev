@@ -6,10 +6,12 @@
 //if ($_SERVER['HTTP_HOST'] != 'localhost') {
 use Symfony\Component\Debug\Debug;
 
+// Add www. before domain
 if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
     header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     exit;
 }
+// Add www. before domain
 if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
     if (count(explode('.', $_SERVER['HTTP_HOST'])) < 2) {
         header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
@@ -21,6 +23,7 @@ if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
         exit;
     }
 }
+// Add www. before domain
 /*if (strpos($_SERVER['HTTP_HOST'], 'www.') === false) {
     header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     exit;

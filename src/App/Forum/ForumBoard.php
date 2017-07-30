@@ -2,77 +2,72 @@
 
 namespace App\Forum;
 
-use App\Core\DatabaseConnection;
 use Container\DatabaseContainer;
 use PDO;
 
 class ForumBoard
 {
     /**
-     * @param $forum_id
-     * @param $board_id
+     * @param int $forum_id
+     * @param int $board_id
      *
      * @return bool
      * @throws \Exception
      */
-    public static function hasSubboards($forum_id, $board_id)
+    public static function hasSubBoards($forum_id, $board_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
+        $database = DatabaseContainer::getDatabase();
+
+        $getSubBoardCount = $database->prepare('SELECT NULL FROM `forum_boards` WHERE `forum_id`=:forum_id AND `parent_id`=:parent_id');
+        $getSubBoardCount->bindValue(':forum_id', $forum_id, PDO::PARAM_INT);
+        $getSubBoardCount->bindValue(':parent_id', $board_id, PDO::PARAM_INT);
+        $sqlSuccess = $getSubBoardCount->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute SQL');
+        } else {
+            if ($getSubBoardCount->rowCount() > 0) {
+                return true;
+            }
+
+            return false;
         }
-
-        $iForumId = (int)$forum_id;
-        $iBoardId = (int)$board_id;
-
-        $oGetSubBoardCount = $database->prepare('SELECT NULL FROM `forum_boards` WHERE `forum_id`=:forum_id AND `parent_id`=:parent_id');
-        $oGetSubBoardCount->execute(array(
-            ':forum_id'  => $iForumId,
-            ':parent_id' => $iBoardId,
-        ));
-        if (@$oGetSubBoardCount->rowCount() > 0) {
-            return true;
-        }
-
-        return false;
     }
 
     /**
-     * @param $forum_id
-     * @param $parent_board_id
+     * @param int $forum_id
+     * @param int $parent_board_id
      *
      * @return array
      * @throws \Exception
      */
     public static function scanForum($forum_id, $parent_board_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $iForumId       = $forum_id;
-        $iParentBoardId = $parent_board_id;
+        $getBoards = $database->prepare('SELECT `id` FROM `forum_boards` WHERE `forum_id`=:forum_id AND `parent_id`=:parent_id');
+        $getBoards->bindValue(':forum_id', $forum_id, PDO::PARAM_INT);
+        $getBoards->bindValue(':parent_id', $parent_board_id, PDO::PARAM_INT);
+        $sqlSuccess = $getBoards->execute();
 
-        $oGetBoards = $database->prepare('SELECT `id` FROM `forum_boards` WHERE `forum_id`=:forum_id AND `parent_id`=:parent_id');
-        $oGetBoards->execute(array(
-            ':forum_id'  => $iForumId,
-            ':parent_id' => $iParentBoardId,
-        ));
-        if (@$oGetBoards->rowCount() == 0) {
-            return array(); // Means that there is no subforum
-        }
-        $aBoardList = array();
-        foreach ($oGetBoards->fetchAll() as $iListId => $aBoardData) {
-            $aBoardList[] = $aBoardData['id'];
-        }
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute SQL');
+        } else {
+            if ($getBoards->rowCount() == 0) {
+                return array(); // Means that there is no sub-forum
+            }
+            $boardList = array();
+            foreach ($getBoards->fetchAll() as $currentBoardData) {
+                $boardList[] = $currentBoardData['id'];
+            }
 
-        return $aBoardList;
+            return $boardList;
+        }
     }
 
     /**
-     * @param $forum_id
-     * @param $board_id
+     * @param int $forum_id
+     * @param int $board_id
      *
      * @return string
      *
@@ -80,17 +75,11 @@ class ForumBoard
      */
     public static function listBoardsTree($forum_id, $board_id)
     {
-        $iForumId = (float)$forum_id;
-        $iBoardId = (float)$board_id;
-        $aForums  = self::scanForum($iForumId, $iBoardId);
+        $boardList = self::scanForum($forum_id, $board_id);
 
-        if (is_null($aForums)) {
-            return 'error:no_board';
-        }
-
-        foreach ($aForums as $iCurrentBoardId) {
-            $text  = '';
-            $board = new ForumBoard($iCurrentBoardId);
+        $text = '';
+        foreach ($boardList as $currentBoardId) {
+            $board = new ForumBoard($currentBoardId);
 
             $text
                 .= '
@@ -107,53 +96,44 @@ class ForumBoard
 						</h4>
 						'.$board->getVar('description');
 
-            if (self::hasSubboards($iForumId, $iCurrentBoardId)) {
-                $text .= self::listBoardsTree($iForumId, $iCurrentBoardId);
+            if (self::hasSubBoards($forum_id, $currentBoardId)) {
+                $text .= self::listBoardsTree($forum_id, $currentBoardId);
             }
 
-            $text
-                .= '
-					</div>
-				</div>';
-
-            return $text;
+            $text .= '</div></div>';
         }
+
+        return $text;
     }
 
     /**
-     * @param      $forum_id
-     * @param      $board_id
-     * @param int  $level
-     * @param null $list
+     * @param int   $forum_id
+     * @param int   $board_id
+     * @param int   $level
+     * @param array $list
      *
      * @return array
      */
-    public static function listBoardsFormSelect($forum_id, $board_id, $level = 1, &$list = null)
+    public static function listBoardsFormSelect($forum_id, $board_id, $level = 1, &$list = array())
     {
-        $iForumId = (int)$forum_id;
-        $iBoardId = (int)$board_id;
-        $aForums  = self::scanForum($iForumId, $iBoardId);
-        if (is_null($aForums)) {
-            return array('error:no_entry');
-        }
+        $boardList = self::scanForum($forum_id, $board_id);
 
-        if (is_null($list)) {
-            $list                   = array();
+        if (empty($list)) {
             $list['- Main (ID: 0)'] = 0;
         }
 
-        foreach ($aForums as $iCurrentBoardId) {
-            $sLine = '-';
-            for ($i = strlen($sLine) - 1; $i < $level; $i++) {
-                $sLine .= '-';
+        foreach ($boardList as $currentBoardId) {
+            $line = '-';
+            for ($i = strlen($line) - 1; $i < $level; $i++) {
+                $line .= '-';
             }
 
-            $title        = $sLine.' '.self::id2Board($iCurrentBoardId).' (ID: '.$iCurrentBoardId.')';
-            $list[$title] = $iCurrentBoardId;
+            $title        = $line.' '.self::id2Board($currentBoardId).' (ID: '.$currentBoardId.')';
+            $list[$title] = $currentBoardId;
 
-            if (self::hasSubboards($iForumId, $iCurrentBoardId)) {
-                $iNextLevel = $level + 1;
-                self::listBoardsFormSelect($iForumId, $iCurrentBoardId, $iNextLevel, $list);
+            if (self::hasSubBoards($forum_id, $currentBoardId)) {
+                $nextLevel = $level + 1;
+                self::listBoardsFormSelect($forum_id, $currentBoardId, $nextLevel, $list);
             }
         }
 
@@ -161,90 +141,77 @@ class ForumBoard
     }
 
     /**
-     * @param $board_id
+     * @param int $board_id
      *
      * @return null
      * @throws \Exception
      */
     public static function id2Board($board_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
+        $database = DatabaseContainer::getDatabase();
+
+        $getBoardTitle = $database->prepare('SELECT `title` FROM `forum_boards` WHERE `id`=:board_id');
+        $getBoardTitle->bindValue(':board_id', $board_id, PDO::PARAM_INT);
+        $sqlSuccess = $getBoardTitle->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $boardData = $getBoardTitle->fetchAll();
+
+            return $boardData[0]['title'];
         }
-
-        $iBoardId = $board_id;
-
-        $oGetBoardTitle           = $database->prepare('SELECT `title` FROM `forum_boards` WHERE `id`=:board_id');
-        $oGetBoardTitleSuccessful = $oGetBoardTitle->execute(array(
-            ':board_id' => $iBoardId,
-        ));
-        if ($oGetBoardTitleSuccessful) {
-            $aBoardData = $oGetBoardTitle->fetchAll();
-
-            return $aBoardData[0]['title'];
-        }
-
-        return null;
     }
 
     /**
-     * @param $board_id
+     * @param int $board_id
      *
      * @return bool
      * @throws \Exception
      */
     public static function boardExists($board_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
+        $database = DatabaseContainer::getDatabase();
+
+        $forumExists = $database->prepare('SELECT NULL FROM `forum_boards` WHERE `id`=:board_id LIMIT 1');
+        $forumExists->bindValue(':board_id', $board_id, PDO::PARAM_INT);
+        $sqlSuccess = $forumExists->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            if ($forumExists->rowCount() > 0) {
+                return true;
+            }
+
+            return false;
         }
-
-        $oForumExists = $database->prepare('SELECT NULL FROM `forum_boards` WHERE `id`=:board_id LIMIT 1');
-        $oForumExists->execute(array(
-            ':board_id' => $board_id,
-        ));
-
-        if (@$oForumExists->rowCount() > 0) {
-            return true;
-        }
-
-        return false;
     }
 
     /*****************************************************************************************/
 
     /**
-     * @param $forum_id
-     * @param $title
-     * @param $description
-     * @param $parent_id
-     * @param $type
+     * Create a new board under the given parent
+     *
+     * @param int    $forum_id
+     * @param string $title
+     * @param string $description
+     * @param int    $parent_id
+     * @param int    $type
      *
      * @throws \Exception
      */
     public static function addBoard($forum_id, $title, $description, $parent_id, $type)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $iForumId     = (int)$forum_id;
-        $sParentId    = (int)$parent_id;
-        $sTitle       = (string)$title;
-        $sDescription = (string)$description;
-        $iType        = (int)$type;
-
-        $oAddBoard = $database->prepare('INSERT INTO `forum_boards`(`forum_id`,`parent_id`,`title`,`description`,`type`) VALUES (:forum_id,:parent_id,:title,:description,:type)');
-        $oAddBoard->execute(array(
-            ':forum_id'    => $iForumId,
-            ':parent_id'   => $sParentId,
-            ':title'       => $sTitle,
-            ':description' => $sDescription,
-            ':type'        => $iType,
-        ));
+        $addBoard = $database->prepare('INSERT INTO `forum_boards`(`forum_id`,`parent_id`,`title`,`description`,`type`) VALUES (:forum_id,:parent_id,:title,:description,:type)');
+        $addBoard->bindValue(':forum_id', $forum_id, PDO::PARAM_INT);
+        $addBoard->bindValue(':parent_id', $parent_id, PDO::PARAM_INT);
+        $addBoard->bindValue(':title', $title, PDO::PARAM_STR);
+        $addBoard->bindValue(':description', $description, PDO::PARAM_STR);
+        $addBoard->bindValue(':type', $type, PDO::PARAM_INT);
+        $addBoard->execute();
     }
 
     /******************************************************************************/
@@ -275,13 +242,13 @@ class ForumBoard
 
     public function sync()
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $dbSync = $database->prepare('SELECT * FROM `forum_boards` WHERE `id`=:board_id LIMIT 1');
-        if (!$dbSync->execute(array(':board_id' => $this->boardId))) {
+        $dbSync->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
+        $sqlSuccess = $dbSync->execute();
+
+        if (!$sqlSuccess) {
             throw new \RuntimeException('Could not execute sql');
         } else {
             if ($dbSync->rowCount() > 0) {
@@ -309,133 +276,114 @@ class ForumBoard
      */
     public function getVar($key)
     {
-        if ($this->exists()) {
-            $value = $this->boardData[$key];
-
-            return $value;
-        } else {
+        if (!$this->exists()) {
             return null;
         }
+
+        return $this->boardData[$key];
     }
 
     /**
-     * @param int    $board_id
-     * @param string $key
+     * @param int $user_id
      *
-     * @return mixed|null
-     *
-     * @deprecated Moved to the function "getVarStatic"
+     * @return $this|null
      */
-    public static function getVar2($board_id, $key) // TODO: Migrate function to "getVarStatic"
+    public function setLastPostUserId($user_id)
     {
-        $board = new ForumBoard($board_id);
+        if (!$this->exists()) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
 
-        return $board->getVar($key);
+        $update = $database->prepare('UPDATE `forum_boards` SET `last_post_user_id`=:value WHERE `id`=:board_id');
+        $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
+        $update->bindValue(':value', $user_id, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
     }
 
     /**
-     * @param int    $board_id
-     * @param string $key
+     * @param int $time
      *
-     * @return mixed|null
+     * @return $this|null
      */
-    public static function getVarStatic($board_id, $key) // TODO: Migrate function to "getVarStatic"
+    public function setLastPostTime($time)
     {
-        $board = new ForumBoard($board_id);
-
-        return $board->getVar($key);
-    }
-
-
-    public function setLastPostUserId($value)
-    {
-        if ($this->exists()) {
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
-
-            $update = $database->prepare('UPDATE `forum_boards` SET `last_post_user_id`=:value WHERE `id`=:board_id');
-            $update->bindValue(':value', $value, PDO::PARAM_INT);
-            $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
-            if ($update->execute()) {
-                $this->sync();
-
-                return true;
-            }
-
-            return false;
-        } else {
+        if (!$this->exists()) {
             return null;
         }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forum_boards` SET `last_post_time`=:value WHERE `id`=:board_id');
+        $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
+        $update->bindValue(':value', $time, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
     }
 
-    public function setLastPostTime($value)
+    /**
+     * @param int $threads
+     *
+     * @return $this|null
+     */
+    public function setThreads($threads)
     {
-        if ($this->exists()) {
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
-
-            $update = $database->prepare('UPDATE `forum_boards` SET `last_post_time`=:value WHERE `id`=:board_id');
-            $update->bindValue(':value', $value, PDO::PARAM_INT);
-            $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
-            if ($update->execute()) {
-                $this->sync();
-
-                return true;
-            }
-
-            return false;
-        } else {
+        if (!$this->exists()) {
             return null;
         }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forum_boards` SET `threads`=:value WHERE `id`=:board_id');
+        $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
+        $update->bindValue(':value', $threads, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
     }
 
-    public function setThreads($value)
+    /**
+     * @param int $posts
+     *
+     * @return $this|null
+     */
+    public function setPosts($posts)
     {
-        if ($this->exists()) {
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
-
-            $update = $database->prepare('UPDATE `forum_boards` SET `threads`=:value WHERE `id`=:board_id');
-            $update->bindValue(':value', $value, PDO::PARAM_INT);
-            $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
-            if ($update->execute()) {
-                $this->sync();
-
-                return true;
-            }
-
-            return false;
-        } else {
+        if (!$this->exists()) {
             return null;
         }
-    }
+        $database = DatabaseContainer::getDatabase();
 
-    public function setPosts($value)
-    {
-        if ($this->exists()) {
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
+        $update = $database->prepare('UPDATE `forum_boards` SET `posts`=:value WHERE `id`=:board_id');
+        $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
+        $update->bindValue(':value', $posts, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
 
-            $update = $database->prepare('UPDATE `forum_boards` SET `posts`=:value WHERE `id`=:board_id');
-            $update->bindValue(':value', $value, PDO::PARAM_INT);
-            $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
-            if ($update->execute()) {
-                $this->sync();
-
-                return true;
-            }
-
-            return false;
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
         } else {
-            return null;
+            $this->sync();
         }
+
+        return $this;
     }
 }

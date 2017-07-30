@@ -2,25 +2,25 @@
 
 namespace App\Forum;
 
-use App\Core\DatabaseConnection;
 use Container\DatabaseContainer;
 use PDO;
 
 class Forum
 {
     /**
+     * Get a list of all existing forums
+     *
      * @return array
      * @throws \Exception
      */
     public static function getForumList()
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $getAllForums = $database->prepare('SELECT `name`,`url`,`owner_id` FROM `forums`');
-        if (!$getAllForums->execute()) {
+        $sqlSuccess   = $getAllForums->execute();
+
+        if (!$sqlSuccess) {
             throw new \Exception('Cannot get list with all forums');
         } else {
             return $getAllForums->fetchAll(PDO::FETCH_ASSOC);
@@ -28,22 +28,50 @@ class Forum
     }
 
     /**
-     * @param $url
+     * Get all forums which belong to the given User
+     *
+     * @param int $user_id
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public static function getOwnerForumList($user_id)
+    {
+        $database = DatabaseContainer::getDatabase();
+
+        $getAllForums = $database->prepare('SELECT * FROM `forums` WHERE `owner_id`=:user_id');
+        $getAllForums->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $sqlSuccess = $getAllForums->execute();
+
+        if (!$sqlSuccess) {
+            throw new \Exception('Cannot get list with all forums you own');
+        } else {
+            $forumList     = array();
+            $forumDataList = $getAllForums->fetchAll();
+            foreach ($forumDataList as $currentForumData) {
+                array_push($forumList, $currentForumData);
+            }
+
+            return $forumList;
+        }
+    }
+
+    /**
+     * Checks whether the given url exists, in other words, if the forum exists
+     *
+     * @param string $url
      *
      * @return bool
      * @throws \Exception
      */
     public static function urlExists($url)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $getUrl = $database->prepare('SELECT NULL FROM `forums` WHERE `url`=:url');
-        $getUrl->execute(array(
-            ':url' => $url,
-        ));
+        $getUrl->bindValue(':url', $url, PDO::PARAM_STR);
+        $getUrl->execute();
+
         if ($getUrl->rowCount()) {
             return true;
         }
@@ -52,76 +80,25 @@ class Forum
     }
 
     /**
-     * @param $user_id
+     * Checks whether the given forum exists
      *
-     * @return array
-     * @throws \Exception
-     */
-    // TODO: Is this function required?
-    public static function getOwnerForumList($user_id)
-    {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
-
-        $fUserId = (float)$user_id;
-
-        $oGetForumList = $database->prepare('SELECT * FROM `forums` WHERE `owner_id`=:user_id');
-        if (!$oGetForumList->execute(array(':user_id' => $fUserId))) {
-            throw new \Exception('Cannot get list with all forums you own');
-        } else {
-            $aForums    = array();
-            $aForumData = $oGetForumList->fetchAll();
-            foreach ($aForumData as $aForumData) {
-                array_push($aForums, $aForumData);
-            }
-
-            return $aForums;
-        }
-    }
-
-    /**
-     * @param $forum_url
-     *
-     * @return mixed
-     * @throws \Exception
-     */
-    public static function url2Id($forum_url)
-    {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
-
-        $oGetForumId = $database->prepare('SELECT `id` FROM `forums` WHERE `url`=:forum_url LIMIT 1');
-        if (!$oGetForumId->execute(array(':forum_url' => $forum_url))) {
-            throw new \RuntimeException('Could not execute sql');
-        } else {
-            $aForumData = $oGetForumId->fetchAll();
-
-            return $aForumData[0]['id'];
-        }
-    }
-
-    /**
-     * @param $forum_id
+     * @param int $forum_id
      *
      * @return bool
      * @throws \Exception
      */
     public static function forumExists($forum_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oForumExists = $database->prepare('SELECT NULL FROM `forums` WHERE `id`=:forum_id LIMIT 1');
-        if (!$oForumExists->execute(array(':forum_id' => $forum_id))) {
+        $forumExists = $database->prepare('SELECT NULL FROM `forums` WHERE `id`=:forum_id LIMIT 1');
+        $forumExists->bindValue(':forum_id', $forum_id, PDO::PARAM_INT);
+        $sqlSuccess = $forumExists->execute();
+
+        if (!$sqlSuccess) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            if ($oForumExists->rowCount() > 0) {
+            if ($forumExists->rowCount() > 0) {
                 return true;
             }
 
@@ -129,29 +106,54 @@ class Forum
         }
     }
 
+    /**
+     * Converts the given URL to the existing id of the forum. Hint: always use "urlExists()" before using this function
+     *
+     * @param string $forum_url
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function url2Id($forum_url)
+    {
+        $database = DatabaseContainer::getDatabase();
+
+        $getForumId = $database->prepare('SELECT `id` FROM `forums` WHERE `url`=:forum_url LIMIT 1');
+        $getForumId->bindValue(':forum_url', $forum_url, PDO::PARAM_STR);
+        $sqlSuccess = $getForumId->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $forumData = $getForumId->fetchAll();
+
+            return $forumData[0]['id'];
+        }
+    }
+
     /******************************************************************************/
 
-    private $fForumId;
+    private $forumId;
     public  $forumData;
 
     /**
      * Forum constructor.
      *
-     * @param $forum_id
+     * @param int $forum_id
      *
      * @throws \Exception
      */
     public function __construct($forum_id)
     {
-        $this->fForumId = (float)$forum_id;
+        $this->forumId = $forum_id;
 
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $getData = $database->prepare('SELECT * FROM `forums` WHERE `id`=:forum_id LIMIT 1');
-        if (!$getData->execute(array(':forum_id' => $forum_id))) {
+        $getData->bindValue(':forum_id', $forum_id, PDO::PARAM_INT);
+        $sqlSuccess = $getData->execute();
+
+        if (!$sqlSuccess) {
             throw new \RuntimeException('Could not execute sql');
         } else {
             if ($getData->rowCount() > 0) {
@@ -164,7 +166,9 @@ class Forum
     }
 
     /**
-     * @param $key
+     * Get information of current forum
+     *
+     * @param string $key
      *
      * @return mixed
      */
@@ -176,47 +180,139 @@ class Forum
     }
 
     /**
-     * @param $key
-     * @param $value
+     * Set the new forum name
      *
-     * @throws \Exception
+     * @param string $name
+     *
+     * @return $this
      */
-    public function setVar($key, $value)
+    public function setName($name)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
+        if ($this->forumData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forums` SET `name`=:value WHERE `id`=:forum_id');
+        $update->bindValue(':forum_id', $this->forumId, PDO::PARAM_INT);
+        $update->bindValue(':value', $name, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->forumData['name'] = $name;
         }
 
-        $oUpdateTable                = $database->prepare('UPDATE `forums` SET :key=:value WHERE `id`=:forum_id');
-        $bUpdateTableQuerySuccessful = $oUpdateTable->execute(array(
-            ':key'      => $key,
-            ':value'    => $value,
-            ':forum_id' => $this->fForumId,
-        ));
-        if (!$bUpdateTableQuerySuccessful) {
-            throw new \RuntimeException('Could not execute sql');
-        }
+        return $this;
     }
+
+    /**
+     * Set the new URL
+     *
+     * @param string $url
+     *
+     * @return $this
+     */
+    public function setUrl($url)
+    {
+        if ($this->forumData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forums` SET `url`=:value WHERE `id`=:forum_id');
+        $update->bindValue(':forum_id', $this->forumId, PDO::PARAM_INT);
+        $update->bindValue(':value', $url, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->forumData['url'] = $url;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the given User to be the new Owner
+     *
+     * @param int $owner_id
+     *
+     * @return $this
+     */
+    public function setOwnerId($owner_id)
+    {
+        if ($this->forumData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forums` SET `owner_id`=:value WHERE `id`=:forum_id');
+        $update->bindValue(':forum_id', $this->forumId, PDO::PARAM_INT);
+        $update->bindValue(':value', $owner_id, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->forumData['owner_id'] = $owner_id;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set Google Analytics ID
+     *
+     * @param string $ga_id
+     *
+     * @return $this
+     */
+    public function setGAID($ga_id)
+    {
+        if ($this->forumData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forums` SET `page_gaid`=:value WHERE `id`=:forum_id');
+        $update->bindValue(':forum_id', $this->forumId, PDO::PARAM_INT);
+        $update->bindValue(':value', $ga_id, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->forumData['page_gaid'] = $ga_id;
+        }
+
+        return $this;
+    }
+
 
     /******************************************************************************/
 
     /**
+     * Get a breadcrumb for the current tree
+     *
      * @param int $board_id
      *
      * @return array
      */
     public static function getBreadcrumb($board_id)
     {
-        $aBoards = array();
-        $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
+        $boardsList    = array();
+        $parentBoardId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
 
-        while ($iParentId != 0) {
-            $iNext = (int)$iParentId;
-            array_unshift($aBoards, $iNext);
-            $board_id = $iNext;
-            $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
+        while ($parentBoardId != 0) {
+            $next = (int)$parentBoardId;
+            array_unshift($boardsList, $next);
+            $board_id      = $next;
+            $parentBoardId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
-        return $aBoards;
+
+        return $boardsList;
     }
 }
