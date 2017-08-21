@@ -20,10 +20,7 @@ class ForumThread
      */
     static function createThread($board_id, $thread_name, $message, $user_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $iBoardId    = (int)$board_id;
         $sThreadName = (string)$thread_name;
@@ -65,10 +62,7 @@ class ForumThread
      */
     public static function threadExists($thread_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $iThreadId = (int)$thread_id;
 
@@ -168,10 +162,7 @@ class ForumThread
 
     public function sync()
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $dbSync = $database->prepare('SELECT * FROM `forum_threads` WHERE `id`=:thread_id LIMIT 1');
         $dbSync->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
@@ -232,10 +223,7 @@ class ForumThread
     //private function setVar($key, $value)
     {
         if ($this->exists()) {
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
+            $database = DatabaseContainer::getDatabase();
 
             $update = $database->prepare('UPDATE `forum_threads` SET :key=:value WHERE `id`=:thread_id');
             $update->bindValue(':key', $key, PDO::PARAM_STR);
@@ -264,10 +252,8 @@ class ForumThread
             $currentViews = (int)$this->getVar('views');
             $newViews     = $currentViews + 1;
 
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
+            $database = DatabaseContainer::getDatabase();
+
             $update = $database->prepare('UPDATE `forum_threads` SET `views`=:views WHERE `id`=:thread_id');
             $update->bindValue(':views', $newViews, PDO::PARAM_INT);
             $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
@@ -282,10 +268,7 @@ class ForumThread
     public function setReplies($value)
     {
         if ($this->exists()) {
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
+            $database = DatabaseContainer::getDatabase();
 
             $update = $database->prepare('UPDATE `forum_threads` SET `replies`=:value WHERE `id`=:thread_id');
             $update->bindValue(':value', $value, PDO::PARAM_INT);
@@ -305,10 +288,7 @@ class ForumThread
     public function setLastPostUserId($value)
     {
         if ($this->exists()) {
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
+            $database = DatabaseContainer::getDatabase();
 
             $update = $database->prepare('UPDATE `forum_threads` SET `last_post_user_id`=:value WHERE `id`=:thread_id');
             $update->bindValue(':value', $value, PDO::PARAM_INT);
@@ -328,10 +308,7 @@ class ForumThread
     public function setLastPostTime($value)
     {
         if ($this->exists()) {
-            $database = DatabaseContainer::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
+            $database = DatabaseContainer::getDatabase();
 
             $update = $database->prepare('UPDATE `forum_threads` SET `last_post_time`=:value WHERE `id`=:thread_id');
             $update->bindValue(':value', $value, PDO::PARAM_INT);

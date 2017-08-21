@@ -2,7 +2,6 @@
 
 namespace App\Forum;
 
-use App\Core\DatabaseConnection;
 use Container\DatabaseContainer;
 
 class ForumPost
@@ -19,10 +18,7 @@ class ForumPost
      */
     static function createPost($thread_id, $parent_post_id, $user_id, $subject, $message)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $iThreadId     = (int)$thread_id;
         $iParentPostId = (int)$parent_post_id;
@@ -59,10 +55,7 @@ class ForumPost
      */
     public static function postExists($post_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $iPostId = (int)$post_id;
 
@@ -140,10 +133,7 @@ class ForumPost
      */
     public static function getVar($post_id, $key)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $iPostId = (int)$post_id;
         $sKey = (string)$key;
@@ -170,10 +160,7 @@ class ForumPost
      */
     public static function setVar($post_id, $key, $value)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $iPostId = (int)$post_id;
         $sKey = $key;
