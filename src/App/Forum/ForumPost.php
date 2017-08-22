@@ -3,15 +3,16 @@
 namespace App\Forum;
 
 use Container\DatabaseContainer;
+use PDO;
 
 class ForumPost
 {
     /**
-     * @param $thread_id
-     * @param $parent_post_id
-     * @param $user_id
-     * @param $subject
-     * @param $message
+     * @param int    $thread_id
+     * @param int    $parent_post_id
+     * @param int    $user_id
+     * @param string $subject
+     * @param string $message
      *
      * @return string
      * @throws \Exception
@@ -20,35 +21,30 @@ class ForumPost
     {
         $database = DatabaseContainer::getDatabase();
 
-        $iThreadId     = (int)$thread_id;
-        $iParentPostId = (int)$parent_post_id;
-        $iUserId       = (int)$user_id;
-        $sSubject      = (string)$subject;
-        $sMessage      = (string)$message; // TODO: This should bypass the BBCode parser
+        $subject = (string)$subject;
+        $message = (string)$message; // TODO: This should bypass the BBCode parser
 
-        $oAddPost = $database->prepare('INSERT INTO `forum_posts`(`thread_id`,`parent_post_id`,`user_id`,`subject`,`message`,`time`) VALUES (:thread_id,:parent_post_id,:user_id,:subject,:message,:time)');
-        $oAddPost->execute(array(
-            ':thread_id'      => $iThreadId,
-            ':parent_post_id' => $iParentPostId,
-            ':user_id'        => $iUserId,
-            ':subject'        => $sSubject,
-            ':message'        => $sMessage,
-            ':time'           => time(),
-        ));
+        $addPost = $database->prepare('INSERT INTO `forum_posts`(`thread_id`,`parent_post_id`,`user_id`,`subject`,`message`,`time`) VALUES (:thread_id,:parent_post_id,:user_id,:subject,:message,:time)');
+        $addPost->bindValue(':thread_id', $thread_id, PDO::PARAM_INT);
+        $addPost->bindValue(':parent_post_id', $parent_post_id, PDO::PARAM_INT);
+        $addPost->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $addPost->bindValue(':subject', $subject, PDO::PARAM_STR);
+        $addPost->bindValue(':message', $message, PDO::PARAM_STR);
+        $addPost->bindValue(':time', time(), PDO::PARAM_INT);
+        $addPost->execute();
 
-        $iNewPostId = $database->lastInsertId();
-        $thread = new ForumThread($iThreadId);
-        $iThreadInBoardId = $thread->getVar('board_id');
+        $iNewPostId       = $database->lastInsertId();
+        $iThreadInBoardId = ForumThread::intent($thread_id)->getVar('board_id');
 
         ForumThread::updatePost($iThreadInBoardId, USER_ID, time());
-        self::updateRepliesCountInThread($iThreadId);
-        self::updatePostsCountInForum($iThreadId, $iUserId, time());
+        self::updateRepliesCountInThread($thread_id);
+        self::updatePostsCountInForum($thread_id, $user_id, time());
 
         return $iNewPostId;
     }
 
     /**
-     * @param $post_id
+     * @param int $post_id
      *
      * @return bool
      * @throws \Exception
@@ -57,16 +53,14 @@ class ForumPost
     {
         $database = DatabaseContainer::getDatabase();
 
-        $iPostId = (int)$post_id;
+        $postExists = $database->prepare('SELECT NULL FROM `forum_posts` WHERE `id`=:post_id');
+        $postExists->bindValue(':post_id', $post_id, PDO::PARAM_INT);
+        $postExists->execute();
 
-        $oPostExists = $database->prepare('SELECT NULL FROM `forum_posts` WHERE `id`=:post_id');
-        $oPostExists->execute(array(
-            ':post_id' => $iPostId,
-        ));
-
-        if ($oPostExists->rowCount() > 0) {
+        if ($postExists->rowCount() > 0) {
             return true;
         }
+
         return false;
     }
 
@@ -75,12 +69,10 @@ class ForumPost
      */
     public static function updateRepliesCountInThread($thread_id)
     {
-        $iThreadId = (int)$thread_id;
-
-        $thread = new ForumThread($iThreadId);
+        $thread = new ForumThread($thread_id);
 
         $iActualRepliesCount = (int)$thread->getVar('replies');
-        $iNewRepliesCount = $iActualRepliesCount + 1;
+        $iNewRepliesCount    = $iActualRepliesCount + 1;
 
         $thread->setReplies($iNewRepliesCount);
     }
@@ -92,86 +84,126 @@ class ForumPost
      */
     public static function updatePostsCountInForum($thread_id, $user_id, $last_post_time)
     {
-        $iThreadId = (int)$thread_id;
-        $thread = new ForumThread($iThreadId);
-        $iUserId = (int)$user_id;
-        $iLastPostTime = (int)$last_post_time;
-        $aBoards = array();
+        $thread   = new ForumThread($thread_id);
         $iBoardId = $thread->getVar('board_id');
 
-        $iParentId = (int)ForumBoard::intent($iBoardId)->getVar('parent_id');
+        $boardsList = array();
+        $iParentId  = (int)ForumBoard::intent($iBoardId)->getVar('parent_id');
 
-        array_push($aBoards, $iBoardId);
+        array_push($boardsList, $iBoardId);
         while ($iParentId != 0) {
             $iNext = (int)$iParentId;
-            array_push($aBoards, $iNext);
-            $board_id = $iNext;
-            $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
+            array_push($boardsList, $iNext);
+            $iBoardId  = $iNext;
+            $iParentId = (int)ForumBoard::intent($iBoardId)->getVar('parent_id');
         }
 
-        foreach ($aBoards as $iBoard) {
+        foreach ($boardsList as $iBoard) {
             // Update last post
-            $board = new ForumBoard($iBoard);
+            $board             = new ForumBoard($iBoard);
             $iActualPostsCount = $board->getVar('posts');
-            $iNewPostsCount = $iActualPostsCount + 1;
+            $iNewPostsCount    = $iActualPostsCount + 1;
             ForumBoard::intent($iBoard)->setPosts($iNewPostsCount);
-            ForumThread::intent($iThreadId)->setLastPostUserId($iUserId);
-            ForumThread::intent($iThreadId)->setLastPostTime($iLastPostTime);
-            ForumBoard::intent($iBoard)->setLastPostUserId($iUserId);
-            ForumBoard::intent($iBoard)->setLastPostTime($iLastPostTime);
+            ForumThread::intent($thread_id)->setLastPostUserId($user_id);
+            ForumThread::intent($thread_id)->setLastPostTime($last_post_time);
+            ForumBoard::intent($iBoard)->setLastPostUserId($user_id);
+            ForumBoard::intent($iBoard)->setLastPostTime($last_post_time);
         }
     }
 
     /*************************************************************************************************/
 
+    private $postId;
+    private $notFound = false;
+    public  $postData;
+
     /**
-     * @param $post_id
-     * @param $key
+     * ForumPost constructor.
      *
-     * @return string
+     * @param int $post_id
+     *
      * @throws \Exception
      */
-    public static function getVar($post_id, $key)
+    public function __construct($post_id)
+    {
+        $this->boardId = (int)$post_id;
+        $this->sync();
+    }
+
+    public static function intent($post_id)
+    {
+        $class = new self($post_id);
+
+        return $class;
+    }
+
+    public function sync()
     {
         $database = DatabaseContainer::getDatabase();
 
-        $iPostId = (int)$post_id;
-        $sKey = (string)$key;
+        $dbSync = $database->prepare('SELECT * FROM `forum_posts` WHERE `id`=:post_id LIMIT 1');
+        $dbSync->bindValue(':post_id', $this->postId, PDO::PARAM_INT);
+        $sqlSuccess = $dbSync->execute();
 
-        $oGetPostInfo = $database->prepare('SELECT * FROM `forum_posts` WHERE `id`=:post_id LIMIT 1');
-        $oGetPostInfo->execute(array(
-            ':post_id' => $iPostId,
-        ));
-
-        if (@$oGetPostInfo->rowCount() == 0) {
-            return '';
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
         } else {
-            $aPostInfo = $oGetPostInfo->fetchAll(\PDO::FETCH_ASSOC);
-            return $aPostInfo[0][$sKey];
+            if ($dbSync->rowCount() > 0) {
+                $data            = $dbSync->fetchAll(PDO::FETCH_ASSOC);
+                $this->postData = $data[0];
+            } else {
+                $this->postData = null;
+                $this->notFound  = true;
+            }
         }
     }
 
     /**
-     * @param $post_id
-     * @param $key
-     * @param $value
-     *
-     * @throws \Exception
+     * @return bool
      */
-    public static function setVar($post_id, $key, $value)
+    public function exists()
     {
-        $database = DatabaseContainer::getDatabase();
-
-        $iPostId = (int)$post_id;
-        $sKey = $key;
-        $sValue = $value;
-
-        $oSetPostInfo = $database->prepare('UPDATE `forum_posts` SET :key=:value WHERE `id`=:post_id');
-        $oSetPostInfo->execute(array(
-            ':key'     => $sKey,
-            ':value'   => $sValue,
-            ':post_id' => $iPostId,
-        ));
+        return !$this->notFound;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return mixed|null
+     */
+    public function getVar($key)
+    {
+        if (!$this->exists()) {
+            return null;
+        }
+
+        return $this->postData[$key];
+    }
+
+
+    /**
+     * @param string $message
+     *
+     * @return $this|null
+     */
+    public function setMessage($message)
+    {
+        if (!$this->exists()) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forum_posts` SET `message`=:value WHERE `id`=:post_id');
+        $update->bindValue(':post_id', $this->postId, PDO::PARAM_INT);
+        $update->bindValue(':value', $message, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
+    }
 }

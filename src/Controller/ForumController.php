@@ -14,7 +14,6 @@ use Container\DatabaseContainer;
 use Controller;
 use Decoda\Decoda;
 use Form\RecaptchaType;
-use Kernel;
 use PDO;
 use ReCaptcha\ReCaptcha;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
