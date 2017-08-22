@@ -250,6 +250,9 @@ class ForumController extends Controller
             }
             $boardTree[$index]['subboards'] = $subboards;
         }
+        foreach ($boardTree as $index => $boardRoot) {
+            $boardTree[$index]['last_post_username'] = AccountTools::formatUsername($boardRoot['last_post_user_id']);
+        }
 
         // Get all threads
         /** @var Request $request */
