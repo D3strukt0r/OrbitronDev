@@ -10,10 +10,10 @@ class ForumThread
     const DefaultShowThreadAmount = 10;
 
     /**
-     * @param $board_id
-     * @param $thread_name
-     * @param $message
-     * @param $user_id
+     * @param int    $board_id
+     * @param string $thread_name
+     * @param string $message
+     * @param int    $user_id
      *
      * @return float
      * @throws \Exception
@@ -22,32 +22,30 @@ class ForumThread
     {
         $database = DatabaseContainer::getDatabase();
 
-        $iBoardId    = (int)$board_id;
-        $sThreadName = (string)$thread_name;
-        $sMessage    = (string)$message; // TODO: This should bypass the BBCode parser
-        $iUserId     = (int)$user_id;
+        $thread_name = (string)$thread_name;
+        $message     = (string)$message; // TODO: This should bypass the BBCode parser
+        $timeAdded   = time();
 
-        $oAddThread = $database->prepare('INSERT INTO `forum_threads`(`user_id`,`board_id`,`topic`,`time`,`last_post_user_id`,`last_post_time`) VALUES (:user_id,:board_id,:topic,:time,:user_id,:time)');
-        $oAddThread->execute(array(
-            ':user_id'  => $iUserId,
-            ':board_id' => $iBoardId,
-            ':topic'    => $sThreadName,
-            ':time'     => time(),
-        ));
+        $addThread = $database->prepare('INSERT INTO `forum_threads`(`user_id`,`board_id`,`topic`,`time`,`last_post_user_id`,`last_post_time`) VALUES (:user_id,:board_id,:topic,:time,:user_id,:time)');
+        $addThread->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $addThread->bindValue(':board_id', $board_id, PDO::PARAM_INT);
+        $addThread->bindValue(':topic', $thread_name, PDO::PARAM_STR);
+        $addThread->bindValue(':time', $timeAdded, PDO::PARAM_INT);
+        $addThread->execute();
 
         $iNewThreadId = $database->lastInsertId();
 
-        $oAddPostToNewThread = $database->prepare('INSERT INTO `forum_posts`(`thread_id`,`parent_post_id`,`user_id`,`subject`,`message`,`time`) VALUES (:thread_id,0,:user_id,:subject,:message,:time)');
-        $oAddPostToNewThread->execute(array(
-            ':thread_id' => $iNewThreadId,
-            ':user_id'   => $iUserId,
-            ':subject'   => $sThreadName,
-            ':message'   => $sMessage,
-            ':time'      => time(),
-        ));
+        // Add Post for the new thread
+        $addPost = $database->prepare('INSERT INTO `forum_posts`(`thread_id`,`parent_post_id`,`user_id`,`subject`,`message`,`time`) VALUES (:thread_id,0,:user_id,:subject,:message,:time)');
+        $addPost->bindValue(':thread_id', $iNewThreadId, PDO::PARAM_INT);
+        $addPost->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $addPost->bindValue(':subject', $thread_name, PDO::PARAM_STR);
+        $addPost->bindValue(':message', $message, PDO::PARAM_STR);
+        $addPost->bindValue(':time', $timeAdded, PDO::PARAM_INT);
+        $addPost->execute();
 
-        self::addThreadCount($iBoardId);
-        self::updatePost($iBoardId, $iUserId, time());
+        self::addThreadCount($board_id);
+        self::updatePost($board_id, $user_id, $timeAdded);
 
         $new_thread_id = (float)$iNewThreadId;
 
@@ -55,7 +53,7 @@ class ForumThread
     }
 
     /**
-     * @param $thread_id
+     * @param int $thread_id
      *
      * @return bool
      * @throws \Exception
@@ -64,14 +62,11 @@ class ForumThread
     {
         $database = DatabaseContainer::getDatabase();
 
-        $iThreadId = (int)$thread_id;
+        $threadExists = $database->prepare('SELECT NULL FROM `forum_threads` WHERE `id`=:thread_id');
+        $threadExists->bindValue(':thread_id', $thread_id, PDO::PARAM_INT);
+        $threadExists->execute();
 
-        $oThreadExists = $database->prepare('SELECT NULL FROM `forum_threads` WHERE `id`=:thread_id');
-        $oThreadExists->execute(array(
-            ':thread_id' => $iThreadId,
-        ));
-
-        if ($oThreadExists->rowCount() > 0) {
+        if ($threadExists->rowCount() > 0) {
             return true;
         }
 
@@ -84,15 +79,15 @@ class ForumThread
     private static function addThreadCount($board_id)
     {
         $iBoardId = (int)$board_id;
-        $aBoards  = array();
 
+        $aBoards  = array();
         $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
 
         array_push($aBoards, $iBoardId);
         while ($iParentId != 0) {
             $iNext = (int)$iParentId;
             array_push($aBoards, $iNext);
-            $board_id = $iNext;
+            $board_id  = $iNext;
             $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
 
@@ -112,26 +107,23 @@ class ForumThread
      */
     public static function updatePost($board_id, $user_id, $time)
     {
-        $iBoardId = (int)$board_id;
-        $iUserId  = (int)$user_id;
-        $iTime    = (int)$time;
         $aBoards  = array();
-
         $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
 
-        array_push($aBoards, $iBoardId);
+        array_push($aBoards, $board_id);
         while ($iParentId != 0) {
             $iNext = (int)$iParentId;
             array_push($aBoards, $iNext);
-            $board_id = $iNext;
+            $board_id  = $iNext;
             $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
 
         foreach ($aBoards as $iBoard) {
             // Update last post
             $board = new ForumBoard($iBoard);
-            $board->setLastPostUserId($iUserId);
-            $board->setLastPostTime($iTime);
+            $board->setLastPostUserId($user_id);
+            $board->setLastPostUsername($user_id);
+            $board->setLastPostTime($time);
         }
     }
 
@@ -154,9 +146,15 @@ class ForumThread
         $this->sync();
     }
 
+    /**
+     * @param int $thread_id
+     *
+     * @return \App\Forum\ForumThread
+     */
     public static function intent($thread_id)
     {
         $class = new self($thread_id);
+
         return $class;
     }
 
@@ -188,7 +186,7 @@ class ForumThread
     }
 
     /**
-     * @param $key
+     * @param int|string $key
      *
      * @return string
      */
@@ -203,125 +201,116 @@ class ForumThread
         }
     }
 
-    public static function getVarStatic($thread_id, $key)
-    {
-        $thread = new ForumThread($thread_id);
-
-        return $thread->getVar($key);
-    }
-
-    /**
-     * @param string $key
-     * @param string $value
-     *
-     * @return bool|null
-     * @throws \Exception
-     *
-     * TODO: Variable Key is not possible to be set in PDO sql // Test if there is still a way to use "setVar"
-     */
-    public function setVar($key, $value)
-    //private function setVar($key, $value)
-    {
-        if ($this->exists()) {
-            $database = DatabaseContainer::getDatabase();
-
-            $update = $database->prepare('UPDATE `forum_threads` SET :key=:value WHERE `id`=:thread_id');
-            $update->bindValue(':key', $key, PDO::PARAM_STR);
-            $update->bindValue(':value', $value, PDO::PARAM_STR);
-            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
-
-            if ($update->execute()) {
-                $this->threadData[$key] = $value;
-                $this->sync();
-
-                return true;
-            }
-
-            return false;
-        } else {
-            return null;
-        }
-    }
-
     /**
      * @throws \Exception
      */
     public function addView()
     {
-        if ($this->exists()) {
-            $currentViews = (int)$this->getVar('views');
-            $newViews     = $currentViews + 1;
-
-            $database = DatabaseContainer::getDatabase();
-
-            $update = $database->prepare('UPDATE `forum_threads` SET `views`=:views WHERE `id`=:thread_id');
-            $update->bindValue(':views', $newViews, PDO::PARAM_INT);
-            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
-            if ($update->execute()) {
-                $this->sync();
-            } else {
-                // TODO: Send a message to an admin that views are not being updated
-            }
+        if (!$this->exists()) {
+            return null;
         }
+
+        $currentViews = (int)$this->getVar('views');
+        $newViews     = $currentViews + 1;
+
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forum_threads` SET `views`=:views WHERE `id`=:thread_id');
+        $update->bindValue(':views', $newViews, PDO::PARAM_INT);
+        $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            // TODO: Send a message to an admin that views are not being updated
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
     }
 
+    /**
+     * @param int $value
+     *
+     * @return $this|null
+     */
     public function setReplies($value)
     {
-        if ($this->exists()) {
-            $database = DatabaseContainer::getDatabase();
-
-            $update = $database->prepare('UPDATE `forum_threads` SET `replies`=:value WHERE `id`=:thread_id');
-            $update->bindValue(':value', $value, PDO::PARAM_INT);
-            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
-            if ($update->execute()) {
-                $this->sync();
-
-                return true;
-            }
-
-            return false;
-        } else {
+        if (!$this->exists()) {
             return null;
         }
+
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forum_threads` SET `replies`=:value WHERE `id`=:thread_id');
+        $update->bindValue(':value', $value, PDO::PARAM_INT);
+        $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            // TODO: Send a message to an admin that views are not being updated
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
     }
 
+    /**
+     * @param int $value
+     *
+     * @return $this|null
+     */
     public function setLastPostUserId($value)
     {
-        if ($this->exists()) {
-            $database = DatabaseContainer::getDatabase();
-
-            $update = $database->prepare('UPDATE `forum_threads` SET `last_post_user_id`=:value WHERE `id`=:thread_id');
-            $update->bindValue(':value', $value, PDO::PARAM_INT);
-            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
-            if ($update->execute()) {
-                $this->sync();
-
-                return true;
-            }
-
-            return false;
-        } else {
+        if (!$this->exists()) {
             return null;
         }
+
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forum_threads` SET `last_post_user_id`=:value WHERE `id`=:thread_id');
+        $update->bindValue(':value', $value, PDO::PARAM_INT);
+        $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            // TODO: Send a message to an admin that views are not being updated
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
     }
 
+    /**
+     * @param int $value
+     *
+     * @return $this|null
+     */
     public function setLastPostTime($value)
     {
-        if ($this->exists()) {
-            $database = DatabaseContainer::getDatabase();
-
-            $update = $database->prepare('UPDATE `forum_threads` SET `last_post_time`=:value WHERE `id`=:thread_id');
-            $update->bindValue(':value', $value, PDO::PARAM_INT);
-            $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
-            if ($update->execute()) {
-                $this->sync();
-
-                return true;
-            }
-
-            return false;
-        } else {
+        if (!$this->exists()) {
             return null;
         }
+
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forum_threads` SET `last_post_time`=:value WHERE `id`=:thread_id');
+        $update->bindValue(':value', $value, PDO::PARAM_INT);
+        $update->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            // TODO: Send a message to an admin that views are not being updated
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
     }
 }

@@ -103,11 +103,16 @@ class ForumPost
             $board             = new ForumBoard($iBoard);
             $iActualPostsCount = $board->getVar('posts');
             $iNewPostsCount    = $iActualPostsCount + 1;
-            ForumBoard::intent($iBoard)->setPosts($iNewPostsCount);
-            ForumThread::intent($thread_id)->setLastPostUserId($user_id);
-            ForumThread::intent($thread_id)->setLastPostTime($last_post_time);
-            ForumBoard::intent($iBoard)->setLastPostUserId($user_id);
-            ForumBoard::intent($iBoard)->setLastPostTime($last_post_time);
+
+            $board = new ForumBoard($iBoard);
+            $board->setPosts($iNewPostsCount);
+            $board->setLastPostUserId($user_id);
+            $board->setLastPostUsername($user_id);
+            $board->setLastPostTime($last_post_time);
+
+            $thread = new ForumThread($thread_id);
+            $thread->setLastPostUserId($user_id);
+            $thread->setLastPostTime($last_post_time);
         }
     }
 
@@ -126,7 +131,7 @@ class ForumPost
      */
     public function __construct($post_id)
     {
-        $this->boardId = (int)$post_id;
+        $this->postId = (int)$post_id;
         $this->sync();
     }
 

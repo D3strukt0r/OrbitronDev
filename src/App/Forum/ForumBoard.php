@@ -2,6 +2,7 @@
 
 namespace App\Forum;
 
+use App\Account\UserInfo;
 use Container\DatabaseContainer;
 use PDO;
 
@@ -298,6 +299,35 @@ class ForumBoard
         $update = $database->prepare('UPDATE `forum_boards` SET `last_post_user_id`=:value WHERE `id`=:board_id');
         $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
         $update->bindValue(':value', $user_id, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->sync();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param int $user_id
+     *
+     * @return $this|null
+     */
+    public function setLastPostUsername($user_id)
+    {
+        if (!$this->exists()) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forum_boards` SET `last_post_username`=:value WHERE `id`=:board_id');
+        $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
+
+        $user = new UserInfo($user_id);
+        $update->bindValue(':value', $user->getFromUser('username'), PDO::PARAM_STR);
+
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
