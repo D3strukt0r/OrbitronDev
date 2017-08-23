@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use PDO;
+
 class CronJob
 {
     /**
@@ -17,7 +19,7 @@ class CronJob
 
         $oGetCronJobs = $database->prepare('SELECT * FROM `app_cronjob` WHERE `enabled`="1" ORDER BY `priority` ASC');
         if ($oGetCronJobs->execute()) {
-            foreach ($oGetCronJobs->fetchAll(\PDO::FETCH_ASSOC) as $key => $value) {
+            foreach ($oGetCronJobs->fetchAll(PDO::FETCH_ASSOC) as $key => $value) {
                 if (self::getNextExec($value['id']) <= time()) {
                     self::runJob($value['id']);
                 }
@@ -45,7 +47,7 @@ class CronJob
         ));
         if ($oGetCronJobInfoQuerySuccessful) {
             if ($oGetCronJobInfo->rowCount() > 0) {
-                $aJobInfo = $oGetCronJobInfo->fetchAll();
+                $aJobInfo = $oGetCronJobInfo->fetchAll(PDO::FETCH_ASSOC);
                 return $aJobInfo[0]['last_exec'] + $aJobInfo[0]['exec_every'];
             }
         }
@@ -70,7 +72,7 @@ class CronJob
             ':job_id' => $job_id,
         ));
         if ($oGetCronJobInfoQuerySuccessful) {
-            $aJobInfo = $oGetCronJobInfo->fetchAll();
+            $aJobInfo = $oGetCronJobInfo->fetchAll(PDO::FETCH_ASSOC);
             $sFileDir = \Kernel::$rootDir2 . '/src/App/Core/cron_job/' . $aJobInfo[0]['scriptfile'];
 
             if (file_exists($sFileDir)) {

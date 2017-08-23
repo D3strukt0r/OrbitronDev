@@ -6,6 +6,7 @@ use Container\DatabaseContainer;
 use Container\TranslatingContainer;
 use Exception;
 use Kernel;
+use PDO;
 
 class AccountTools
 {
@@ -172,7 +173,7 @@ class AccountTools
         if (!$oGetId->execute(array(':username' => $username))) {
             throw new \RuntimeException('[Database]: Cannot execute sql (' . $oGetId->queryString . ')');
         }
-        $aUserData = $oGetId->fetchAll();
+        $aUserData = $oGetId->fetchAll(PDO::FETCH_ASSOC);
         return (float)$aUserData[0]['user_id'];
     }
 
@@ -197,7 +198,7 @@ class AccountTools
         if ($oGetId->rowCount() == 0) {
             return 0;
         }
-        $aUserData = $oGetId->fetchAll();
+        $aUserData = $oGetId->fetchAll(PDO::FETCH_ASSOC);
         return (int)$aUserData[0]['user_id'];
     }
 

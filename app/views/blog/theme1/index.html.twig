@@ -1,0 +1,90 @@
+{% extends 'blog/theme1/layout.html.twig' %}
+
+{% set service_page_links %}
+    {% for text,link in current_blog.page_links %}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+    {% endfor %}
+{% endset %}
+{% set service = {
+'page_name': current_blog.name,
+'page_logo_link': '/' ~ current_blog.url,
+'page_author': current_blog.owner_username,
+'page_description': current_blog.page_description,
+'page_keywords': current_blog.page_keywords,
+'page_links': service_page_links
+} %}
+
+{% block title %}{{ 'Index'|trans }} | {{ service.page_name }}{% endblock %}
+
+{% block header %}
+    <div class="container">
+        <h1 class="page-header">{{ current_blog.name }}</h1>
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="active">{{ 'Home'|trans }}</li>
+        </ol><!-- /.breadcrumb -->
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-md-push-8">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <p><b>{{ 'Search'|trans }}</b></p>
+                        <form action="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">
+                            <div class="input-group">
+                                <input name="query" id="search" class="form-control" placeholder="{{ 'Search for...'|trans }}" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                                </span>
+                            </div><!-- /input-group -->
+                        </form>
+                        <hr />
+                        <p><b>Categories</b></p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><a href="{{ path('app_blog_blog_search', {'blog': current_blog.url, 'c': 'news'}) }}">{{ 'News'|trans }}</a></li>
+                                    <li><a href="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">{{ 'Category'|trans }}</a></li>
+                                    <li><a href="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">{{ 'Category'|trans }}</a></li>
+                                    <li><a href="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">{{ 'Category'|trans }}</a></li>
+                                </ul>
+                            </div><!-- /.col-md-6 -->
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li><a href="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">{{ 'Category'|trans }}</a></li>
+                                    <li><a href="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">{{ 'Category'|trans }}</a></li>
+                                    <li><a href="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">{{ 'Category'|trans }}</a></li>
+                                    <li><a href="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">{{ 'Category'|trans }}</a></li>
+                                </ul>
+                            </div><!-- /.col-md-6 -->
+                        </div><!-- /.row -->
+                    </div><!-- /.panel-body -->
+                </div><!-- /.panel -->
+            </div><!-- /.col-md-4 -->
+
+            <div class="col-md-8 col-md-pull-4">
+
+                {# TODO: Add Posts display here #}
+
+                {# TODO: Add function of paging here #}
+
+                <ul class="pagination" style="float: right; margin: 0;">
+                    <li class="disabled"><a href="#">&laquo;</a></li>
+                    <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#">&raquo;</a></li>
+                </ul>
+            </div><!-- /.col-md-8 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+{% endblock %}

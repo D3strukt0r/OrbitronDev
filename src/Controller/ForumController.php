@@ -94,14 +94,14 @@ class ForumController extends Controller
                 if (strlen($forumName = trim($createForumForm->get('name')->getData())) == 0) {
                     $errorMessages[] = '';
                     $createForumForm->get('name')->addError(new FormError('Please give your forum a name'));
-                } elseif (strlen($forumName) <= 4) {
+                } elseif (strlen($forumName) < 4) {
                     $errorMessages[] = '';
                     $createForumForm->get('name')->addError(new FormError('Your forum must have minimally 4 characters'));
                 }
                 if (strlen($forumUrl = trim($createForumForm->get('url')->getData())) == 0) {
                     $errorMessages[] = '';
                     $createForumForm->get('url')->addError(new FormError('Please give your forum an unique url to access it'));
-                } elseif (strlen($forumUrl) <= 4) {
+                } elseif (strlen($forumUrl) < 3) {
                     $errorMessages[] = '';
                     $createForumForm->get('url')->addError(new FormError('Your forum must url have minimally 3 characters'));
                 } elseif (preg_match('/[^a-z_\-0-9]/i', $forumUrl)) {
@@ -196,7 +196,6 @@ class ForumController extends Controller
             'current_forum' => $forum->forumData,
             'board_tree'    => $boardTree,
         ));
-
     }
 
     public function forumBoardAction()
@@ -263,8 +262,7 @@ class ForumController extends Controller
         /** @var \PDOStatement $getThreads */
         $getThreads = $this->get('database')->prepare('SELECT * FROM `forum_threads` WHERE `board_id`=:board_id ORDER BY `last_post_time` DESC LIMIT :offset,:row_count');
         $getThreads->bindValue(':board_id', $board->getVar('id'), PDO::PARAM_INT);
-        $getThreads->bindValue(':offset', ($pagination['current_page'] - 1) * $pagination['item_limit'],
-            PDO::PARAM_INT);
+        $getThreads->bindValue(':offset', ($pagination['current_page'] - 1) * $pagination['item_limit'], PDO::PARAM_INT);
         $getThreads->bindValue(':row_count', $pagination['item_limit'], PDO::PARAM_INT);
         $getThreads->execute();
         $threads = $getThreads->fetchAll(PDO::FETCH_ASSOC);

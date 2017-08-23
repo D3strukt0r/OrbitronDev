@@ -158,7 +158,7 @@ class ForumBoard
         if (!$sqlSuccess) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            $boardData = $getBoardTitle->fetchAll();
+            $boardData = $getBoardTitle->fetchAll(PDO::FETCH_ASSOC);
 
             return $boardData[0]['title'];
         }

@@ -1,13 +1,13 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}{{ 'Discover all forums'|trans }} | {{ parent() }}{% endblock %}
+{% block title %}{{ 'Discover all blogs'|trans }} | {{ parent() }}{% endblock %}
 
 {% block breadcrumb %}
     <div class="breadcrumbs">
         <div class="container">
-            <h1 class="pull-left">{{ 'Discover all forums'|trans }}</h1>
+            <h1 class="pull-left">{{ 'Discover all blogs'|trans }}</h1>
             <ul class="pull-right breadcrumb">
-                <li><a href="{{ path('app_forum_index') }}" class="active">{{ 'Forums'|trans }}</a></li>
+                <li><a href="{{ path('app_blog_index') }}" class="active">{{ 'Blogs'|trans }}</a></li>
             </ul>
         </div>
     </div>
@@ -19,20 +19,20 @@
             <section id="admin">
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        {{ 'Administrate your forums'|trans }}
+                        {{ 'Administrate your blogs'|trans }}
                         <div class="pull-right">
-                            <a href="{{ path('app_forum_new') }}" class="btn btn-success btn-xs" role="button">{{ 'Create new forum'|trans }}</a>
+                            <a href="{{ path('app_blog_new') }}" class="btn btn-success btn-xs" role="button">{{ 'Create new blog'|trans }}</a>
                         </div>
                     </div><!-- /.panel-heading -->
                     <div class="panel-body">
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped table-hover">
                                 <tbody>
-                                    {% for forum in forums_list %}
-                                        {% if current_user.user_id == forum.owner_id %}
+                                    {% for blog in blog_list %}
+                                        {% if current_user.user_id == blog.owner_id %}
                                             <tr>
-                                                <td><a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}">{{ forum.name }}</a></td>
-                                                <td><a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a></td>
+                                                <td><a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}">{{ blog.name }}</a></td>
+                                                <td><a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a></td>
                                             </tr>
                                         {% endif %}
                                     {% endfor %}
@@ -44,7 +44,7 @@
             </section><!-- /#admin -->
         {% endif %}
         <section id="forum-list">
-            <h2 class="page-header">{{ 'Forum list'|trans }}</h2>
+            <h2 class="page-header">{{ 'Blog list'|trans }}</h2>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover">
                     <thead>
@@ -55,11 +55,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for forum in forums_list %}
+                        {% for blog in blog_list %}
                             <tr>
-                                <td><a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}">{{ forum.name }}</a></td>
-                                <td>{{ forum.username }}</td>
-                                <td>{% if current_user.user_id == forum.owner_id %}<a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
+                                <td><a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}">{{ blog.name }}</a></td>
+                                <td>{{ blog.username }}</td>
+                                <td>{% if current_user.user_id == blog.owner_id %}<a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

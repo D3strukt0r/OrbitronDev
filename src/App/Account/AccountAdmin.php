@@ -4,6 +4,7 @@ namespace App\Account;
 
 use Container\DatabaseContainer;
 use Exception;
+use PDO;
 
 class AccountAdmin
 {
@@ -43,7 +44,7 @@ class AccountAdmin
         $oGetUserId->execute(array(
             ':username' => $sUsername,
         ));
-        $oUserData = $oGetUserId->fetchAll();
+        $oUserData = $oGetUserId->fetchAll(PDO::FETCH_ASSOC);
         $fUserId = (float)$oUserData[0]['user_id'];
 
         // Insert to "user_profiles"
@@ -105,7 +106,7 @@ class AccountAdmin
         $sql->execute(array(
             ':id' => $id,
         ));
-        $data = $sql->fetchAll();
+        $data = $sql->fetchAll(PDO::FETCH_ASSOC);
         $value = (isset($data[0][$var]) ? $data[0][$var] : null);
         return $value;
     }

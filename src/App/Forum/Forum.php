@@ -47,7 +47,7 @@ class Forum
             throw new \Exception('Cannot get list with all forums you own');
         } else {
             $forumList     = array();
-            $forumDataList = $getAllForums->fetchAll();
+            $forumDataList = $getAllForums->fetchAll(PDO::FETCH_ASSOC);
             foreach ($forumDataList as $currentForumData) {
                 array_push($forumList, $currentForumData);
             }
@@ -107,7 +107,8 @@ class Forum
     }
 
     /**
-     * Converts the given URL to the existing id of the forum. Hint: always use "urlExists()" before using this function
+     * Converts the given URL to the existing id of the forum.
+     * Hint: always use "urlExists()" before using this function
      *
      * @param string $forum_url
      *
@@ -125,7 +126,7 @@ class Forum
         if (!$sqlSuccess) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            $forumData = $getForumId->fetchAll();
+            $forumData = $getForumId->fetchAll(PDO::FETCH_ASSOC);
 
             return $forumData[0]['id'];
         }
@@ -157,7 +158,7 @@ class Forum
             throw new \RuntimeException('Could not execute sql');
         } else {
             if ($getData->rowCount() > 0) {
-                $data            = $getData->fetchAll();
+                $data            = $getData->fetchAll(PDO::FETCH_ASSOC);
                 $this->forumData = $data[0];
             } else {
                 $this->forumData = null;

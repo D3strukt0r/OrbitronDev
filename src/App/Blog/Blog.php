@@ -2,116 +2,144 @@
 
 namespace App\Blog;
 
-
 use Container\DatabaseContainer;
+use PDO;
 
 class Blog
 {
     /**
+     * Get a list of all existing blogs
+     *
      * @return array
      * @throws \Exception
      */
     public static function getBlogList()
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetBlogList = $database->prepare('SELECT `url` FROM `blogs`');
-        if (!$oGetBlogList->execute()) {
+        $getAllBlogs = $database->prepare('SELECT `name`,`url`,`owner_id` FROM `blogs`');
+        $sqlSuccess  = $getAllBlogs->execute();
+
+        if (!$sqlSuccess) {
             throw new \Exception('Cannot get list with all blogs');
         } else {
-            $aBlogs = array();
-            $aBlogData = $oGetBlogList->fetchAll();
-            foreach ($aBlogData as $aBlogData) {
-                array_push($aBlogs, $aBlogData['url']);
-            }
-            return $aBlogs;
+            return $getAllBlogs->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 
     /**
-     * @param $user_id
+     * Get all blogs which belong to the given User
+     *
+     * @param int $user_id
      *
      * @return array
      * @throws \Exception
      */
     public static function getOwnerBlogList($user_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
-        $fUserId = (float)$user_id;
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetBlogList = $database->prepare('SELECT * FROM `blogs` WHERE `owner_id`=:user_id');
-        if (!$oGetBlogList->execute(array(':user_id' => $fUserId))) {
+        $getAllBlogs = $database->prepare('SELECT * FROM `blogs` WHERE `owner_id`=:user_id');
+        $getAllBlogs->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $sqlSuccess = $getAllBlogs->execute();
+
+        if (!$sqlSuccess) {
             throw new \Exception('Cannot get list with all blogs you own');
         } else {
-            $aBlogs = array();
-            $aBlogData = $oGetBlogList->fetchAll();
-            foreach ($aBlogData as $aBlogData) {
-                array_push($aBlogs, $aBlogData);
+            $blogList      = array();
+            $forumDataList = $getAllBlogs->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($forumDataList as $currentForumData) {
+                array_push($blogList, $currentForumData);
             }
-            return $aBlogs;
+
+            return $blogList;
         }
     }
 
     /**
-     * @param $blog_url
+     * Checks whether the given url exists, in other words, if the blog exists
      *
-     * @return mixed
+     * @param string $url
+     *
+     * @return bool
      * @throws \Exception
      */
-    public static function url2Id($blog_url)
+    public static function urlExists($url)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetBlogId = $database->prepare('SELECT `id` FROM `blogs` WHERE `url`=:blog_url LIMIT 1');
-        $bGetBlogIdQuerySuccessful = $oGetBlogId->execute(array(
-            ':blog_url' => $blog_url,
-        ));
-        if (!$bGetBlogIdQuerySuccessful) {
-            throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
+        $getUrl = $database->prepare('SELECT NULL FROM `blogs` WHERE `url`=:url');
+        $getUrl->bindValue(':url', $url, PDO::PARAM_STR);
+        $sqlSuccess = $getUrl->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('[DATABASE]: Could not execute sql');
         } else {
-            $aBlogData = $oGetBlogId->fetchAll();
-            $blog_id = $aBlogData[0]['id'];
-            return $blog_id;
+            if ($getUrl->rowCount()) {
+                return true;
+            }
+
+            return false;
         }
     }
 
     /**
-     * @param $blog_id
+     * Checks whether the given blog exists
+     *
+     * @param int $blog_id
      *
      * @return bool
      * @throws \Exception
      */
     public static function blogExists($blog_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oBlogExists = $database->prepare('SELECT NULL FROM `blogs` WHERE `id`=:blog_id LIMIT 1');
-        if (!$oBlogExists->execute(array(':blog_id' => $blog_id))) {
-            throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
+        $blogExists = $database->prepare('SELECT NULL FROM `blogs` WHERE `id`=:blog_id LIMIT 1');
+        $blogExists->bindValue(':blog_id', $blog_id, PDO::PARAM_INT);
+        $sqlSuccess = $blogExists->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('[DATABASE]: Could not execute sql');
         } else {
-            if ($oBlogExists->rowCount() > 0) {
+            if ($blogExists->rowCount() > 0) {
                 return true;
             }
+
             return false;
+        }
+    }
+
+    /**
+     * Converts the given URL to the existing id of the blog.
+     * Hint: always use "urlExists()" before using this function
+     *
+     * @param string $blog_url
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function url2Id($blog_url)
+    {
+        $database = DatabaseContainer::getDatabase();
+
+        $getBlogId = $database->prepare('SELECT `id` FROM `blogs` WHERE `url`=:blog_url LIMIT 1');
+        $getBlogId->bindValue(':blog_url', $blog_url, PDO::PARAM_STR);
+        $sqlSuccess = $getBlogId->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('[Database]: Could not execute sql');
+        } else {
+            $blogData = $getBlogId->fetchAll(PDO::FETCH_ASSOC);
+
+            return $blogData[0]['id'];
         }
     }
 
     /******************************************************************************/
 
-    private $iBlogId;
-    private $aBlogData;
+    private $blogId;
+    public  $blogData;
 
     /**
      * Blog constructor.
@@ -122,54 +150,93 @@ class Blog
      */
     public function __construct($blog_id)
     {
-        $this->iBlogId = $blog_id;
+        $this->blogId = $blog_id;
 
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetBlogData = $database->prepare('SELECT * FROM `blogs` WHERE `id`=:blog_id LIMIT 1');
-        if (!$oGetBlogData->execute(array(':blog_id' => $this->iBlogId))) {
-            throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
+        $getData = $database->prepare('SELECT * FROM `blogs` WHERE `id`=:blog_id LIMIT 1');
+        $getData->bindValue(':blog_id', $blog_id, PDO::PARAM_INT);
+        $sqlSuccess = $getData->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('[Database]: '.'Could not execute sql');
         } else {
-            $aBlogData = $oGetBlogData->fetchAll();
-            $this->aBlogData = $aBlogData[0];
+            if ($getData->rowCount() > 0) {
+                $data           = $getData->fetchAll(PDO::FETCH_ASSOC);
+                $this->blogData = $data[0];
+            } else {
+                $this->blogData = null;
+            }
         }
     }
 
     /**
-     * @param $key
+     * Get information of current blog
+     *
+     * @param string $key
      *
      * @return mixed
      */
     public function getVar($key)
     {
-        $value = $this->aBlogData[$key];
+        $value = $this->blogData[$key];
+
         return $value;
     }
 
     /**
-     * @param $key
-     * @param $value
+     * Set the new blog name
      *
-     * @throws \Exception
+     * @param string $name
+     *
+     * @return $this
      */
-    public function setVar($key, $value)
+    public function setName($name)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
+        if ($this->blogData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `blogs` SET `name`=:value WHERE `id`=:blog_id');
+        $update->bindValue(':blog_id', $this->blogId, PDO::PARAM_INT);
+        $update->bindValue(':value', $name, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->blogData['name'] = $name;
         }
 
-        $oUpdateTable = $database->prepare('UPDATE `blogs` SET :key=:value WHERE `id`=:blog_id');
-        $bUpdateTableQuerySuccessful = $oUpdateTable->execute(array(
-            ':key'     => $key,
-            ':value'   => $value,
-            ':blog_id' => $this->iBlogId,
-        ));
-        if (!$bUpdateTableQuerySuccessful) {
-            throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
+        return $this;
+    }
+
+    /**
+     * Set the new URL
+     *
+     * @param string $url
+     *
+     * @return $this
+     */
+    public function setUrl($url)
+    {
+        if ($this->blogData == null) {
+            return null;
         }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `blogs` SET `url`=:value WHERE `id`=:blog_id');
+        $update->bindValue(':blog_id', $this->blogId, PDO::PARAM_INT);
+        $update->bindValue(':value', $url, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->blogData['url'] = $url;
+        }
+
+        return $this;
     }
 }
