@@ -3,7 +3,7 @@
 <!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
 <!--[if !IE]><!--><html lang="en"><!--<![endif]-->
     <head>
-        <title>404 Not Found | OrbitronDev</title>
+        <title>401 Unauthorized | OrbitronDev</title>
 
         <!-- Meta -->
         <meta charset="utf-8" />
@@ -27,7 +27,7 @@
         <meta name="msapplication-TileColor" content="#2b5797">
         <meta name="msapplication-TileImage" content="{{ asset('mstile-144x144.png?v=QE5RNE7RE9') }}">
         <meta name="theme-color" content="#2980b9">
-
+        
         <!-- Web Fonts -->
         <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin" />
 
@@ -48,7 +48,7 @@
         <link rel="stylesheet" href="{{ asset('assets/css/pages/page_error4_404.css') }}" />
 
         <!-- CSS Theme -->
-        <link rel="stylesheet" href="{{ asset('assets/css/theme-colors/blue.css') }}" id="style_color" />
+        <link rel="stylesheet" href="{{ asset('assets/css/theme-colors/default.css') }}" id="style_color" />
         <link rel="stylesheet" href="{{ asset('assets/css/theme-skins/dark.css') }}" />
 
         <!-- CSS Customization -->
@@ -64,15 +64,12 @@
                         <a href="{{ path('app_default_index') }}">
                             <img src="{{ asset('assets/logo-long.png') }}" alt="OrbitronDev" height="30px" />
                         </a>
-                        <h1>404</h1>
-                        <span class="sorry">{{ 'The requested URL was not found on this server.'|trans }}</span>
-                        {#{% set referer = app.request.server.get('http-referer') %}
-                        {% if not referer == '/' %}#}
-                        <span class="sorry">{{ 'The link on the'|trans }} <a href="{{ referer }}">{{ 'referring page'|trans }}</a> {{ 'seems to be wrong or outdated. Please inform the author of'|trans }} <a href="{{ referer }}">{{ 'that page'|trans }}</a> {{ 'about the error.'|trans }}</span>
-                        {#{% else %}#}
-                        <span class="sorry">{{ 'If you entered the URL manually please check your spelling and try again.'|trans }}</span>
-                        {#{% endif %}#}
-
+                        <h1>401</h1>
+                        <span class="sorry">
+                            {{ 'This server could not verify that you are authorized to access the URL "' ~ app.request.server.get('http-referer')|default('/') ~ '".
+                            You either supplied the wrong credentials (e.g., bad password), or your browser doesn\'t understand how to supply the credentials required.
+                            In case you are allowed to request the document, please check your user-id and password and try again.'|trans }}
+                        </span>
                         <p style="color:white;margin-top:-30px;">Server message: [Code: {{ status_code }}] {{ status_text }}</p>
                         <div class="row">
                             <div class="col-md-6 col-md-offset-3">
@@ -98,14 +95,14 @@
         <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
         <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery-migrate.min.js') }}"></script>
         <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
-
+        
         <!-- JS Implementing Plugins -->
         <script type="text/javascript" src="{{ asset('assets/plugins/back-to-top.js') }}"></script>
         <script type="text/javascript" src="{{ asset('assets/plugins/backstretch/jquery.backstretch.min.js') }}"></script>
-
+        
         <!-- JS Customization -->
         <script type="text/javascript" src="{{ asset('assets/js/custom.js') }}"></script>
-
+        
         <!-- JS Page Level -->
         <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
         <script type="text/javascript">

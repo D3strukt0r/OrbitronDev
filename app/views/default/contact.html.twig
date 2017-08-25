@@ -236,10 +236,17 @@
                         {{ form_widget(contact_form.send, {'attr': {'class': 'btn-u'}}) }}
                     </footer>
 
-                    <div class="message">
-                        <i class="rounded-x fa fa-check"></i>
-                        <p>Your message was successfully sent!</p>
-                    </div>
+                    {% if app.request.get('sent') == 1 %}
+                        <div class="message">
+                            <i class="rounded-x fa fa-check"></i>
+                            <p>{{ 'Your message was successfully sent! We will try to contact you as soon as possible.'|trans }}</p>
+                        </div>
+                    {% elseif app.request.get('sent') == 0 %}
+                        <div class="message">
+                            <i class="rounded-x fa fa-times"></i>
+                            <p>{{ 'Your message couldn\'t be sent. Try again!'|trans }}</p>
+                        </div>
+                    {% endif %}
                 {{ form_end(contact_form) }}
             </div><!--/col-md-9-->
 
@@ -256,7 +263,7 @@
                 #}
                 <ul class="list-unstyled who margin-bottom-30">
                     <li>Please only use our email or the contact form to contact us </li>
-                    <li><a href="mailto:team-orbitron@hotmail.com"><i class="fa fa-envelope"></i>team-orbitron@hotmail.com</a></li>
+                    <li><a href="mailto:info@orbitrondev.org"><i class="fa fa-envelope"></i>info@orbitrondev.org</a></li>
                     <li><a href="#"><i class="fa fa-globe"></i>https://orbitrondev.org</a></li>
                 </ul>
 
