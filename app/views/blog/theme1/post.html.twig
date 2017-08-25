@@ -1,0 +1,77 @@
+{% extends 'blog/theme1/layout.html.twig' %}
+
+{% set service_page_links %}
+    {% for text,link in current_blog.page_links %}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+    {% endfor %}
+{% endset %}
+{% set service = {
+'page_name': current_blog.name,
+'page_logo_link': '/' ~ current_blog.url,
+'page_author': current_blog.owner_username,
+'page_description': current_blog.page_description,
+'page_keywords': current_blog.page_keywords,
+'page_links': service_page_links
+} %}
+
+{% block title %}{{ current_post.title }} | {{ service.page_name }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <article itemscope="" itemtype="http://schema.org/BlogPosting">
+            <header>
+                <h1 itemprop="headline">{{ current_post.title }}</h1>
+                <p class="meta">
+                    <time datetime="2010-06-10" itemprop="datePublished"><span class="glyphicon glyphicon-time"></span> {{ 'Posted on'|trans }} <b>{{ current_post.published|date('F t, Y') }} {{ 'at'|trans }} {{ current_post.published|date('H:i') }}</b></time>
+                    {{ '· tagged with'|trans }} {{ current_post.categories }}
+                </p>
+            </header>
+            <div itemprop="articleBody">
+                {{ current_post.story|raw }}
+            </div>
+            <section style="margin-top: 20px; border-top: 1px solid #e5e5e5;">
+                <h1>{{ 'Leave a comment'|trans }}</h1>
+                <form method="post" role="form">
+                    <fieldset>
+                        <legend>{{ 'Comment on'|trans }} “{{ current_post.title }}”</legend>
+                        {% if current_user.user_id == -1 %}
+                        <p>
+                            <label for="comment-name">{{ 'Name'|trans }} <em>*</em></label>
+                            <input name="comment-name" id="comment-name" required="">
+                        </p>
+                        <p>
+                            <label for="comment-mail">{{ 'Email'|trans }} <em>*</em></label>
+                            <input type="email" name="comment-mail" id="comment-mail" required="" autocapitalize="off" autocorrect="off">
+                        </p>
+                        <p>
+                            <label for="comment-site">{{ 'Website'|trans }}</label>
+                            <input type="url" name="comment-site" id="comment-site" autocapitalize="off" autocorrect="off">
+                        </p>
+                        {% endif %}
+                        <p><textarea rows="5" name="comment-text" class="form-control" required=""></textarea></p>
+                        <p class="submit">
+                            <input type="submit" name="submit" value="{{ 'Add your comment'|trans }}" class="btn btn-primary" />
+                        </p>
+                    </fieldset>
+                </form>
+            </section>
+            <section id="comments" style="margin-top: 20px; border-top: 1px solid #e5e5e5;">
+                <h1>{{ 'Comments'|trans }}</h1>
+                <article id="comment-1" class="media" data-id="73" itemprop="comment" itemscope="" itemtype="http://schema.org/UserComments">
+                    <header>
+                        <div class="avatar pull-left" style="padding-right: 10px;"><img src="//placehold.it/64x64"  class="media-object" alt="" width="64" height="64" srcset="//placehold.it/64x64"></div>
+                        <h4 class="meta media-heading">
+                            <span itemprop="creator" itemscope="" itemtype="http://schema.org/Person"><a href="//www.onderhond.com/" rel="author nofollow" itemprop="name">Niels Matthijs</a></span>
+                            <small><time datetime="2010-06-10T14:08" itemprop="commentTime"><a href="#comment-1" rel="bookmark" itemprop="url" title="Permanent link to comment 1 on “How to enable Safari Reader on your site?”">10th June 2010 at 14:08</a></time><span>&nbsp;</span></small>
+                            <small><a href="#comment-text" title="Reply to this comment" class="comment-reply">(reply)</a></small>
+                        </h4>
+                    </header>
+                    <div itemprop="commentText" class="media-body">
+                        <p>One thing you seem to have missed is that the reader fails when it has multiple possible reader sections on one page. The reader works on my blog, unless the article has a somewhat populated comment section. At that time there are two areas competing for the reader’s attention, and  It appears to drop the functionality completely in such a case. </p>
+                        <p>Still, interesting stuff, comes very close to what I’d figured out myself (minus the math and points system that is :)).</p>
+                    </div>
+                </article>
+            </section><!-- /#comments -->
+        </article>
+    </div><!-- /.container -->
+{% endblock %}

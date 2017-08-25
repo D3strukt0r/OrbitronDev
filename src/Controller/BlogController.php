@@ -6,11 +6,15 @@ use App\Account\Account;
 use App\Account\AccountTools;
 use App\Account\UserInfo;
 use App\Blog\Blog;
+use App\Blog\BlogPost;
 use Container\DatabaseContainer;
 use Controller;
 use Form\RecaptchaType;
 use PDO;
 use ReCaptcha\ReCaptcha;
+use Suin\RSSWriter\Channel;
+use Suin\RSSWriter\Feed;
+use Suin\RSSWriter\Item;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
@@ -141,7 +145,7 @@ class BlogController extends Controller
 
     public function blogIndexAction()
     {
-        // Does the forum even exist?
+        // Does the blog even exist?
         if (!Blog::urlExists($this->parameters['blog'])) {
             return $this->render('error/error404.html.twig');
         }
@@ -193,10 +197,105 @@ class BlogController extends Controller
         ));
     }
 
-    public function blogPostAction() {}
-    public function blogWritePostAction() {}
-    public function blogWriteCommentAction() {}
-    public function blogSearchAction() {}
-    public function blogRssAction() {}
-    public function blogAdminAction() {}
+    public function blogPostAction()
+    {
+        // Does the blog even exist?
+        if (!Blog::urlExists($this->parameters['blog'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        // Does the post even exist?
+        if (!BlogPost::postExists($this->parameters['post'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        $blogId = Blog::url2Id($this->parameters['blog']);
+        $blog   = new Blog($blogId);
+        $post   = new BlogPost($this->parameters['post']);
+
+        return $this->render('blog/theme1/post.html.twig', array(
+            'current_user' => $currentUser->aUser,
+            'current_blog' => $blog->blogData,
+            'current_post' => $post->postData,
+        ));
+    }
+
+    public function blogWritePostAction()
+    {
+        echo 'Write Post (Coming Soon)';
+    }
+
+    public function blogWriteCommentAction()
+    {
+        echo 'Write Comment (Coming Soon)';
+    }
+
+    public function blogSearchAction()
+    {
+        // Does the blog even exist?
+        if (!Blog::urlExists($this->parameters['blog'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        $blogId = Blog::url2Id($this->parameters['blog']);
+        $blog   = new Blog($blogId);
+
+        return $this->render('blog/theme1/search.html.twig', array(
+            'current_user' => $currentUser->aUser,
+            'current_blog' => $blog->blogData,
+        ));
+    }
+
+    public function blogRssAction()
+    {
+        // Does the blog even exist?
+        if (!Blog::urlExists($this->parameters['blog'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        $blogUrl = $this->parameters['blog'];
+        $blogId  = Blog::url2Id($blogUrl);
+        $blog    = new Blog($blogId);
+
+        $feed    = new Feed();
+        $channel = new Channel();
+        $channel
+            ->title($blog->getVar('name'))
+            ->url('https://blog.orbitrondev.org/'.$blog->getVar('url'))
+            ->description($blog->getVar('description'))
+            ->language($blog->getVar('language'))
+            ->copyright($blog->getVar('copyright'))
+            ->pubDate(strtotime(date('D, j M Y H:i:s O', $blog->getVar('published'))))
+            ->lastBuildDate(strtotime(date('D, j M Y H:i:s O', $blog->getVar('updated'))))
+            ->ttl(60)
+            ->appendTo($feed);
+
+        $postList = BlogPost::getPostList($blog->getVar('id'));
+        foreach ($postList as $postData) {
+            $post = new BlogPost($postData['post_id']);
+            $item = new Item();
+            $item
+                ->title($post->getVar('title'))
+                ->url('https://blog.orbitrondev.org/'.$blog->getVar('url').'/?p='.$post->getVar('post_id'))
+                ->description('<div>'.$post->getVar('description').'</div>')
+                ->guid('https://blog.orbitrondev.org/'.$blog->getVar('url').'/?p='.$post->getVar('post_id'), true)
+                ->pubDate(strtotime(date('D, j M Y H:i:s O', $blog->getVar('published'))))
+                ->appendTo($channel);
+        }
+
+        header('Content-Type: application/rss+xml; charset=utf-8');
+
+        return $feed->render();
+    }
+
+    public function blogAdminAction()
+    {
+        echo 'Admin (Coming Soon)';
+    }
 }

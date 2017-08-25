@@ -85,6 +85,9 @@ class Kernel
                 $response->prepare($this->getRequest());
                 $response->send();
                 //echo $response->getContent();
+            } elseif (is_string($response)) {
+                // TODO: Use Symfony Response
+                echo $response;
             }
         }
     }

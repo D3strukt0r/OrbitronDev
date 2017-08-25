@@ -2,130 +2,132 @@
 
 namespace App\Blog;
 
-use App\Core\DatabaseConnection;
+use Container\DatabaseContainer;
+use PDO;
 
 class BlogPost
 {
     /**
-     * @param $blog_id
+     * @param int $blog_id
      *
      * @return array
      * @throws \Exception
      */
     public static function getPostList($blog_id)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
-        $fBlogId = (float)$blog_id;
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetPostList = $database->prepare('SELECT * FROM `blog_posts` WHERE `blog_id`=:blog_id');
-        if (!$oGetPostList->execute(array(':blog_id' => $fBlogId))) {
+        $getAllPosts = $database->prepare('SELECT * FROM `blog_posts` WHERE `blog_id`=:blog_id');
+        $getAllPosts->bindValue(':blog_id', $blog_id, PDO::PARAM_INT);
+        $sqlSuccess = $getAllPosts->execute();
+
+        if (!$sqlSuccess) {
             throw new \Exception('Cannot get list with all posts');
         } else {
-            $aPosts = array();
-            $aPostData = $oGetPostList->fetchAll();
+            $aPosts    = array();
+            $aPostData = $getAllPosts->fetchAll();
             foreach ($aPostData as $aBlogData) {
                 array_push($aPosts, $aBlogData);
             }
+
             return $aPosts;
         }
     }
 
     /**
-     * @param $post_id
+     * @param int $post_id
      *
      * @return bool
      * @throws \Exception
      */
     public static function postExists($post_id)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
-        $fPostId = (float)$post_id;
+        $database = DatabaseContainer::getDatabase();
 
-        $oPostExists = $database->prepare('SELECT NULL FROM `blog_posts` WHERE `post_id`=:post_id LIMIT 1');
-        if (!$oPostExists->execute(array(':post_id' => $fPostId))) {
-            throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
+        $postExists = $database->prepare('SELECT NULL FROM `blog_posts` WHERE `post_id`=:post_id LIMIT 1');
+        $postExists->bindValue(':post_id', $post_id, PDO::PARAM_INT);
+        $sqlSuccess = $postExists->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('[Database]: '.'Could not execute sql');
         } else {
-            if ($oPostExists->rowCount() > 0) {
+            if ($postExists->rowCount() > 0) {
                 return true;
             }
+
             return false;
         }
     }
 
     /******************************************************************************/
 
-    private $iPostId;
-    private $aPostData = array();
+    private $postId;
+    public  $postData;
 
     /**
      * BlogPost constructor.
      *
-     * @param $post_id
+     * @param int $post_id
      *
      * @throws \Exception
      */
     public function __construct($post_id)
     {
-        $this->iPostId = $post_id;
+        $this->postId = $post_id;
 
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetPostData = $database->prepare('SELECT * FROM `blog_posts` WHERE `post_id`=:post_id LIMIT 1');
-        if (!$oGetPostData->execute(array(':post_id' => $this->iPostId))) {
-            throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
+        $getData = $database->prepare('SELECT * FROM `blog_posts` WHERE `post_id`=:post_id LIMIT 1');
+        $getData->bindValue(':post_id', $this->postId, PDO::PARAM_INT);
+        $sqlSuccess = $getData->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('[Database]: '.'Could not execute sql');
         } else {
-            $aPostData = $oGetPostData->fetchAll();
-            if ($oGetPostData->rowCount() > 0) {
-                $this->aPostData = $aPostData[0];
+            if ($getData->rowCount() > 0) {
+                $data           = $getData->fetchAll(PDO::FETCH_ASSOC);
+                $this->postData = $data[0];
+            } else {
+                $this->postData = null;
             }
         }
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return mixed
      */
     public function getVar($key)
     {
-        $value = $this->aPostData[$key];
+        $value = $this->postData[$key];
+
         return $value;
     }
 
     /**
-     * @param $key
-     * @param $value
+     * @param string $value
      *
-     * @throws \Exception
+     * @return $this|null
      */
-    public function setVar($key, $value)
+    public function setStory($value)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
+        if ($this->postData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `blog_posts` SET `story`=:value WHERE `post_id`=:post_id');
+        $update->bindValue(':post_id', $this->postId, PDO::PARAM_INT);
+        $update->bindValue(':value', $value, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('[Database]: '.'Could not execute sql');
+        } else {
+            $this->postData['story'] = $value;
         }
 
-        $oUpdateTable = $database->prepare('UPDATE `blog_posts` SET :key=:value WHERE `id`=:blog_id');
-        $bUpdateTableQuerySuccessful = $oUpdateTable->execute(array(
-            ':key'     => $key,
-            ':value'   => $value,
-            ':blog_id' => $this->iPostId,
-        ));
-        if (!$bUpdateTableQuerySuccessful) {
-            throw new \RuntimeException('[Database]: ' . 'Could not execute sql');
-        }
+        return $this;
     }
 }

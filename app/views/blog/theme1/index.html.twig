@@ -22,14 +22,6 @@
     </div><!-- /.container -->
 {% endblock %}
 
-{% block breadcrumb %}
-    <div class="container">
-        <ol class="breadcrumb">
-            <li class="active">{{ 'Home'|trans }}</li>
-        </ol><!-- /.breadcrumb -->
-    </div><!-- /.container -->
-{% endblock %}
-
 {% block content %}
     <div class="container">
         <div class="row">
@@ -39,7 +31,7 @@
                         <p><b>{{ 'Search'|trans }}</b></p>
                         <form action="{{ path('app_blog_blog_search', {'blog': current_blog.url}) }}">
                             <div class="input-group">
-                                <input name="query" id="search" class="form-control" placeholder="{{ 'Search for...'|trans }}" />
+                                <input name="q" id="search" class="form-control" placeholder="{{ 'Search for...'|trans }}" />
                                 <span class="input-group-btn">
                                     <button class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
                                 </span>
@@ -70,20 +62,117 @@
             </div><!-- /.col-md-4 -->
 
             <div class="col-md-8 col-md-pull-4">
+                {% if posts|length == 0 %}
+                    <hr />
+                    <div class="alert alert-danger" role="alert">
+                        {{ 'There aren\'t any posts'|trans }}
+                    </div>
+                {% else %}
+                    {% for post in posts %}
+                        <div class="panel panel-info">
+                            <div class="panel-body">
+                                <div class="col-xs-12">
+                                    <h2><a href="{{ path('app_blog_blog_post', {'blog': current_blog.url, 'post': post.post_id}) }}">{{ post.title }}</a></h2>
+                                    <p class="lead">{{ 'by'|trans }} {{ post.username|raw }}</p>
+                                    <p><span class="glyphicon glyphicon-time"></span> {{ 'Posted on'|trans }} <b>{{ post.published|date('F t, Y') }} {{ 'at'|trans }} {{ post.published|date('H:i') }}</b></p>
+                                    <hr />
+                                    <img class="img-responsive" src="//placehold.it/900x300" alt="" />
+                                    <hr />
+                                    <p>{{ post.description }}</p>
+                                    <a class="btn btn-primary" href="{{ path('app_blog_blog_post', {'blog': current_blog.url, 'post': post.post_id}) }}">{{ 'Read More'|trans }} <span class="glyphicon glyphicon-chevron-right"></span></a>
+                                </div><!-- /.col-xs-12 -->
+                            </div><!-- /.panel-body -->
+                        </div><!-- /.panel -->
+                    {% endfor %}
+                {% endif %}
 
-                {# TODO: Add Posts display here #}
+                {% if pagination.pages_count > 1 %}
+                    <ul class="pagination" style="float: right; margin: 0;">
 
-                {# TODO: Add function of paging here #}
+                        {# Previous Page #}
+                        {% if pagination.current_page > 1 %}
+                            <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': pagination.previous_page, 'show': pagination.item_limit}) }}" aria-label="{{ 'Previous'|trans }}"><span aria-hidden="true">&laquo;</span></a></li>
+                        {% else %}
+                            <li class="disabled"><a aria-label="{{ 'Previous'|trans }}"><span aria-hidden="true">&laquo;</span> <span class="sr-only">(current)</span></a></li>
+                        {% endif %}
 
-                <ul class="pagination" style="float: right; margin: 0;">
-                    <li class="disabled"><a href="#">&laquo;</a></li>
-                    <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
+                        {# Pager #}
+                        {% if pagination.pages_count < (7 + (pagination.adjacents * 2)) %}{# not enough pages to bother breaking it up #}
+                            {% set page_counter = 1 %}
+                            {% for i in page_counter..pagination.pages_count %}
+                                {% if page_counter == pagination.current_page %}
+                                    <li class="active"><a>{{ page_counter }} <span class="sr-only">(current)</span></a></li>
+                                {% else %}
+                                    <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
+                                {% endif %}
+                                {% set page_counter = page_counter + 1 %}
+                            {% endfor %}
+                        {% elseif pagination.pages_count >= (7 + (pagination.adjacents * 2)) %}{# enough pages to hide some #}
+
+                            {# close to beginning; only hide later pages #}
+                            {% if pagination.current_page < (1 + (pagination.adjacents * 3)) %}
+                                {% set page_counter = 1 %}
+                                {% for i in page_counter..(4 +(pagination.adjacents * 2)) %}
+                                    {% if page_counter == pagination.current_page %}
+                                        <li class="active"><a>{{ page_counter }} <span class="sr-only">(current)</span></a></li>
+                                    {% else %}
+                                        <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
+                                    {% endif %}
+                                    {% set page_counter = page_counter + 1 %}
+                                {% endfor %}
+
+                                <li class="disabled"><a>...</a></li>
+                                <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': pagination.last_page_m1, 'show': pagination.item_limit}) }}">{{ pagination.last_page_m1 }}</a></li>
+                                <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': pagination.pages_count, 'show': pagination.item_limit}) }}">{{ pagination.pages_count }}</a></li>
+
+                                {# in middle; hide some front and some back #}
+                            {% elseif (pagination.pages_count - (pagination.adjacents * 2)) > pagination.current_page and pagination.current_page > (pagination.adjacents * 3) %}
+                                <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': 1, 'show': pagination.item_limit}) }}">1</a></li>
+                                <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': 2, 'show': pagination.item_limit}) }}">2</a></li>
+                                <li class="disabled"><a>...</a></li>
+
+                                {% set page_counter = pagination.current_page - pagination.adjacents %}
+                                {% for i in page_counter..(pagination.current_page + pagination.adjacents) %}
+                                    {% if page_counter == pagination.current_page %}
+                                        <li class="active"><a>{{ page_counter }} <span class="sr-only">(current)</span></a></li>
+                                    {% else %}
+                                        <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
+                                    {% endif %}
+                                    {% set page_counter = page_counter + 1 %}
+                                {% endfor %}
+
+                                <li class="disabled"><a>...</a></li>
+                                <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': pagination.last_page_m1, 'show': pagination.item_limit}) }}">{{ pagination.last_page_m1 }}</a></li>
+                                <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': pagination.pages_count, 'show': pagination.item_limit}) }}">{{ pagination.pages_count }}</a></li>
+
+                                {# close to end; only hide early pages #}
+                            {% else %}
+                                <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': 1, 'show': pagination.item_limit}) }}">1</a></li>
+                                <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': 2, 'show': pagination.item_limit}) }}">2</a></li>
+                                <li class="disabled"><a>...</a></li>
+
+                                {% set page_counter = pagination.pages_count - (1 + (pagination.adjacents * 3)) %}
+                                {% for i in page_counter..pagination.pages_count %}
+                                    {% if page_counter == pagination.current_page %}
+                                        <li class="active"><a>{{ page_counter }} <span class="sr-only">(current)</span></a></li>
+                                    {% else %}
+                                        <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'board': current_thread.id, 'page': page_counter, 'show': pagination.item_limit}) }}">{{ page_counter }}</a></li>
+                                    {% endif %}
+                                    {% set page_counter = page_counter + 1 %}
+                                {% endfor %}
+
+                            {% endif %}
+                        {% endif %}
+
+                        {# Next page #}
+                        {% if pagination.current_page < pagination.last_page_m1 %}
+                            <li><a href="{{ path('app_blog_blog_index', {'blog': current_blog.url, 'page': pagination.next_page, 'show': pagination.item_limit}) }}" aria-label="{{ 'Next'|trans }}"><span aria-hidden="true">&raquo;</span></a></li>
+                        {% else %}
+                            <li class="disabled"><a aria-label="{{ 'Next'|trans }}"><span aria-hidden="true">&raquo;</span> <span class="sr-only">(current)</span></a></li>
+                        {% endif %}
+
+                    </ul><!-- /.pagination -->
+                {% endif %}
             </div><!-- /.col-md-8 -->
         </div><!-- /.row -->
     </div><!-- /.container -->

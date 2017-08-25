@@ -44,6 +44,7 @@
         "bshaffer/oauth2-server-php": "^1.9",
         "guzzlehttp/guzzle": "^6.2",
         "mjohnson/decoda": "^6.8",
-        "braintree/braintree_php": "^3.23"
+        "braintree/braintree_php": "^3.23",
+        "suin/php-rss-writer": "^1.6"
     }
 }
