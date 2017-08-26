@@ -1,3 +1,10 @@
 app_cloud_index:
     path:     /
-    defaults: { _controller: 'DefaultController::indexAction' }
+    defaults: { _controller: 'CloudController::indexAction' }
+
+app_cloud_files:
+    path:     /files
+    defaults: { _controller: 'CloudController::filesAction' }
+app_cloud_share:
+    path:     /share
+    defaults: { _controller: 'CloudController::shareAction' }
