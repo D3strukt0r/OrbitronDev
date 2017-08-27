@@ -151,7 +151,7 @@ class Forum
         $database = DatabaseContainer::getDatabase();
 
         $getData = $database->prepare('SELECT * FROM `forums` WHERE `id`=:forum_id LIMIT 1');
-        $getData->bindValue(':forum_id', $forum_id, PDO::PARAM_INT);
+        $getData->bindValue(':forum_id', $this->forumId, PDO::PARAM_INT);
         $sqlSuccess = $getData->execute();
 
         if (!$sqlSuccess) {

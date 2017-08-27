@@ -116,12 +116,8 @@ class ForumController extends Controller
                 }
 
                 if (!count($errorMessages)) {
-                    $database = DatabaseContainer::$database;
-                    if (is_null($database)) {
-                        throw new \Exception('A database connection is required');
-                    }
-
-                    $addForum   = $database->prepare('INSERT INTO `forums`(`name`,`url`,`owner_id`) VALUES (:name,:url,:user_id)');
+                    /** @var \PDOStatement $addForum */
+                    $addForum = $this->get('database')->prepare('INSERT INTO `forums`(`name`,`url`,`owner_id`) VALUES (:name,:url,:user_id)');
                     $forumAdded = $addForum->execute(array(
                         ':name'    => $forumName,
                         ':url'     => $forumUrl,
@@ -129,7 +125,8 @@ class ForumController extends Controller
                     ));
 
                     if ($forumAdded) {
-                        $getForum = $database->prepare('SELECT `url` FROM `forums` WHERE `url`=:url LIMIT 1');
+                        /** @var \PDOStatement $getForum */
+                        $getForum = $this->get('database')->prepare('SELECT `url` FROM `forums` WHERE `url`=:url LIMIT 1');
                         $getForum->execute(array(
                             ':url' => $forumUrl,
                         ));

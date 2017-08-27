@@ -2,181 +2,265 @@
 
 namespace App\Store;
 
-use App\Core\DatabaseConnection;
 use Container\DatabaseContainer;
+use PDO;
 
 class Store
 {
     /**
+     * Get a list of all existing stores
+     *
      * @return array
      * @throws \Exception
      */
     public static function getStoreList()
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetStoreList = $database->prepare('SELECT `url` FROM `stores`');
-        if (!$oGetStoreList->execute()) {
+        $getAllStores = $database->prepare('SELECT `name`,`url`,`owner_id` FROM `stores`');
+        $sqlSuccess   = $getAllStores->execute();
+
+        if (!$sqlSuccess) {
             throw new \Exception('Cannot get list with all stores');
         } else {
-            $aStores = array();
-            $aStoreData = $oGetStoreList->fetchAll();
-            foreach ($aStoreData as $iListId => $aStoreData) {
-                array_push($aStores, $aStoreData['url']);
-            }
-            return $aStores;
+            return $getAllStores->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 
     /**
-     * @param $user_id
+     * Get all stores which belong to the given User
+     *
+     * @param int $user_id
      *
      * @return array
      * @throws \Exception
      */
     public static function getOwnerStoreList($user_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $fUserId = (float)$user_id;
+        $getAllStores = $database->prepare('SELECT * FROM `stores` WHERE `owner_id`=:user_id');
+        $getAllStores->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $sqlSuccess = $getAllStores->execute();
 
-        $oGetStoreList = $database->prepare('SELECT * FROM `stores` WHERE `owner_id`=:user_id');
-        if (!$oGetStoreList->execute(array(':user_id' => $fUserId))) {
+        if (!$sqlSuccess) {
             throw new \Exception('Cannot get list with all stores you own');
         } else {
-            $aStores = array();
-            $aStoreData = $oGetStoreList->fetchAll();
-            foreach ($aStoreData as $aStoreData) {
-                array_push($aStores, $aStoreData);
+            $storeList     = array();
+            $storeDataList = $getAllStores->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($storeDataList as $currentStoreData) {
+                array_push($storeList, $currentStoreData);
             }
-            return $aStores;
+
+            return $storeList;
         }
     }
 
     /**
-     * @param $store_url
+     * Checks whether the given url exists, in other words, if the store exists
      *
-     * @return mixed
+     * @param string $url
+     *
+     * @return bool
      * @throws \Exception
      */
-    public static function url2Id($store_url)
+    public static function urlExists($url)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
+        $database = DatabaseContainer::getDatabase();
+
+        $getUrl = $database->prepare('SELECT NULL FROM `stores` WHERE `url`=:url');
+        $getUrl->bindValue(':url', $url, PDO::PARAM_STR);
+        $getUrl->execute();
+
+        if ($getUrl->rowCount()) {
+            return true;
         }
 
-        $oGetStoreId = $database->prepare('SELECT `id` FROM `stores` WHERE `url`=:store_url LIMIT 1');
-        $bGetStoreIdQuerySuccessful = $oGetStoreId->execute(array(
-            ':store_url' => $store_url,
-        ));
-        if (!$bGetStoreIdQuerySuccessful) {
-            throw new \RuntimeException('Could not execute sql');
-        } else {
-            $aStoreData = $oGetStoreId->fetchAll();
-            $store_id = $aStoreData[0]['id'];
-            return $store_id;
-        }
+        return false;
     }
 
     /**
-     * @param $store_id
+     * Checks whether the given store exists
+     *
+     * @param int $store_id
      *
      * @return bool
      * @throws \Exception
      */
     public static function storeExists($store_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oStoreExists = $database->prepare('SELECT NULL FROM `stores` WHERE `id`=:store_id LIMIT 1');
-        $bStoreExistsQuerySuccessful = $oStoreExists->execute(array(
-            ':store_id' => $store_id,
-        ));
-        if (!$bStoreExistsQuerySuccessful) {
+        $storeExists = $database->prepare('SELECT NULL FROM `stores` WHERE `id`=:store_id LIMIT 1');
+        $storeExists->bindValue(':forum_id', $store_id, PDO::PARAM_INT);
+        $sqlSuccess = $storeExists->execute();
+
+        if (!$sqlSuccess) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            if ($oStoreExists->rowCount() > 0) {
+            if ($storeExists->rowCount() > 0) {
                 return true;
             }
+
             return false;
+        }
+    }
+
+    /**
+     * Converts the given URL to the existing id of the store.
+     * Hint: always use "urlExists()" before using this function
+     *
+     * @param string $store_url
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public static function url2Id($store_url)
+    {
+        $database = DatabaseContainer::getDatabase();
+
+        $getStoreId = $database->prepare('SELECT `id` FROM `stores` WHERE `url`=:store_url LIMIT 1');
+        $getStoreId->bindValue(':store_url', $store_url, PDO::PARAM_STR);
+        $sqlSuccess = $getStoreId->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $storeData = $getStoreId->fetchAll(PDO::FETCH_ASSOC);
+
+            return $storeData[0]['id'];
         }
     }
 
     /******************************************************************************/
 
-    private $iStoreId;
-    private $aStoreData;
+    private $storeId;
+    public  $storeData;
 
     /**
      * Store constructor.
      *
-     * @param $store_id
+     * @param int $store_id
      *
      * @throws \Exception
      */
     public function __construct($store_id)
     {
-        $this->iStoreId = $store_id;
+        $this->storeId = $store_id;
 
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetStoreData = $database->prepare('SELECT * FROM `stores` WHERE `id`=:store_id LIMIT 1');
-        $bGetStoreDataSuccessful = $oGetStoreData->execute(array(
-            ':store_id' => $this->iStoreId,
-        ));
-        if (!$bGetStoreDataSuccessful) {
+        $getData = $database->prepare('SELECT * FROM `stores` WHERE `id`=:store_id LIMIT 1');
+        $getData->bindValue(':store_id', $this->storeId, PDO::PARAM_INT);
+        $sqlSuccess = $getData->execute();
+
+        if (!$sqlSuccess) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            $aStoreData = $oGetStoreData->fetchAll();
-            $this->aStoreData = $aStoreData[0];
+            if ($getData->rowCount() > 0) {
+                $data            = $getData->fetchAll(PDO::FETCH_ASSOC);
+                $this->storeData = $data[0];
+            } else {
+                $this->storeData = null;
+            }
         }
     }
 
     /**
+     * Get information of current store
+     *
      * @param $key
      *
      * @return mixed
      */
     public function getVar($key)
     {
-        $value = $this->aStoreData[$key];
+        $value = $this->storeData[$key];
+
         return $value;
     }
 
     /**
-     * @param $key
-     * @param $value
+     * Set the new store name
      *
-     * @throws \Exception
+     * @param string $name
+     *
+     * @return $this
      */
-    public function setVar($key, $value)
+    public function setName($name)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
+        if ($this->storeData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `stores` SET `name`=:value WHERE `id`=:store_id');
+        $update->bindValue(':store_id', $this->storeId, PDO::PARAM_INT);
+        $update->bindValue(':value', $name, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->storeData['name'] = $name;
         }
 
-        $oUpdateTable = $database->prepare('UPDATE `stores` SET :key=:value WHERE `id`=:store_id');
-        $bUpdateTableQuerySuccessful = $oUpdateTable->execute(array(
-            ':key'      => $key,
-            ':value'    => $value,
-            ':store_id' => $this->iStoreId,
-        ));
-        if (!$bUpdateTableQuerySuccessful) {
-            throw new \RuntimeException('Could not execute sql');
+        return $this;
+    }
+
+    /**
+     * Set the new URL
+     *
+     * @param string $url
+     *
+     * @return $this
+     */
+    public function setUrl($url)
+    {
+        if ($this->storeData == null) {
+            return null;
         }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `stores` SET `url`=:value WHERE `id`=:store_id');
+        $update->bindValue(':store_id', $this->storeId, PDO::PARAM_INT);
+        $update->bindValue(':value', $url, PDO::PARAM_STR);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->storeData['url'] = $url;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the given User to be the new Owner
+     *
+     * @param int $owner_id
+     *
+     * @return $this
+     */
+    public function setOwnerId($owner_id)
+    {
+        if ($this->storeData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `forums` SET `owner_id`=:value WHERE `id`=:store_id');
+        $update->bindValue(':store_id', $this->storeId, PDO::PARAM_INT);
+        $update->bindValue(':value', $owner_id, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->storeData['owner_id'] = $owner_id;
+        }
+
+        return $this;
     }
 }

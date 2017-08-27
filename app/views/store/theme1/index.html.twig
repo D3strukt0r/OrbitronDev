@@ -1,0 +1,35 @@
+{% extends 'blog/theme1/layout.html.twig' %}
+
+{% set service_page_links %}
+    {% for text,link in current_store.page_links %}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+    {% endfor %}
+{% endset %}
+{% set service = {
+'page_name': current_store.name,
+'page_logo_link': '/' ~ current_store.url,
+'page_author': current_store.owner_username,
+'page_description': current_store.page_description,
+'page_keywords': current_store.page_keywords,
+'page_links': service_page_links
+} %}
+
+{% block title %}{{ 'Index'|trans }} | {{ service.page_name }}{% endblock %}
+
+{% block header %}
+    <div class="container">
+        <h1 class="page-header">{{ current_store.name }}</h1>
+        <ul class="nav nav-pills">
+            <li role="presentation" class="active"><a href="{{ path('app_store_store_index', {'store': current_store.url}) }}">{{ 'Home'|trans }}</a></li>
+            <li role="presentation"><a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}">{{ 'Checkout'|trans }}</a></li>
+        </ul>
+        <hr />
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+{% endblock %}

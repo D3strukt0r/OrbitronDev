@@ -40,54 +40,7 @@ define('MAINTENANCE', false);
 define('APPLICATION_ENV', 'development'); // Use: 'dev' or 'prod'
 
 if (MAINTENANCE) {
-    ?>
-    <html>
-        <head>
-            <title>Maintenance</title>
-            <meta name="viewport"
-                  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
-                  type="text/css" />
-            <style type="text/css">
-                hr {
-                    margin-top: 20px;
-                    margin-bottom: 20px;
-                    border: 0;
-                    border-top: 1px solid #eee;
-                }
-
-                .col-center {
-                    float: none;
-                    margin: 0 auto;
-                }
-
-                .error-message {
-                    margin-top: 50px;
-                }
-
-                body {
-                    background-color: darkgray;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="col-sm-6 col-lg-6 col-center error-message">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <b>The website is currently under maintenance</b>
-                    </div>
-                    <div class="panel-body">
-                        <p>We are acutally improving our website.</p>
-                        <p>Please be patient</p>
-                        <hr />
-                        <i>Normally we wont take long please just wait a minute and try it then again. If this page is
-                           persistant, please contact an Administrator.</i>
-                    </div>
-                </div>
-            </div>
-        </body>
-    </html>
-    <?php
+    echo file_get_contents(__DIR__.'/../app/views/error/maintenance.phtml');
     exit;
 }
 /**

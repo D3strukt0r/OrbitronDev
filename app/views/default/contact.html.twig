@@ -16,7 +16,7 @@
 
 {% block javascripts_implementing_plugins %}
     {{ parent() }}
-    <script type="text/javascript" src="https://maps.google.com/maps/api/js"></script>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBSO1fpoQuukeVKiueZxzqhLCFlkgP0IMM"></script>
     <script type="text/javascript" src="{{ asset('assets/plugins/gmap/gmap.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
@@ -67,80 +67,63 @@
                     // Validation
                     $("#contact-form").validate({
                         // Rules for form validation
-                        rules:
-                            {
-                                'form[name]':
-                                    {
-                                        required: true
-                                    },
-                                'form[email]':
-                                    {
-                                        required: true,
-                                        email: true
-                                    },
-                                'form[subject]':
-                                    {
-                                        required: true,
-                                        minlength: 10
-                                    },
-                                'form[message]':
-                                    {
-                                        required: true,
-                                        minlength: 10
-                                    },
-                                captcha:
-                                    {
-                                        required: true,
-                                        remote: '/contact?verify_captcha'
-                                    }
+                        rules: {
+                            'form[name]': {
+                                required: true
                             },
+                            'form[email]': {
+                                required: true,
+                                email: true
+                            },
+                            'form[subject]': {
+                                required: true,
+                                minlength: 10
+                            },
+                            'form[message]': {
+                                required: true,
+                                minlength: 10
+                            },
+                            captcha: {
+                                required: true,
+                                remote: '/contact?verify_captcha'
+                            }
+                        },
 
                         // Messages for form validation
-                        messages:
-                            {
-                                'form[name]':
-                                    {
-                                        required: 'Please enter your name'
-                                    },
-                                'form[email]':
-                                    {
-                                        required: 'Please enter your email address',
-                                        email: 'Please enter a VALID email address'
-                                    },
-                                'form[subject]':
-                                    {
-                                        required: 'Please enter your subject'
-                                    },
-                                'form[message]':
-                                    {
-                                        required: 'Please enter your message'
-                                    },
-                                captcha:
-                                    {
-                                        required: 'Please enter characters',
-                                        remote: 'Correct captcha is required'
-                                    }
+                        messages: {
+                            'form[name]': {
+                                required: 'Please enter your name'
                             },
+                            'form[email]': {
+                                required: 'Please enter your email address',
+                                email: 'Please enter a VALID email address'
+                            },
+                            'form[subject]': {
+                                required: 'Please enter your subject'
+                            },
+                            'form[message]': {
+                                required: 'Please enter your message'
+                            },
+                            captcha: {
+                                required: 'Please enter characters',
+                                remote: 'Correct captcha is required'
+                            }
+                        },
 
                         // Ajax form submition
-                        submitHandler: function(form)
-                        {
-                            $(form).ajaxSubmit(
-                                {
-                                    beforeSend: function()
-                                    {
-                                        $("#contact-form").find('button[type="submit"]').attr('disabled', true);
-                                    },
-                                    success: function()
-                                    {
-                                        $("#contact-form").addClass('submited');
-                                    }
-                                });
+                        submitHandler: function(form) {
+                            $(form).ajaxSubmit({
+                                beforeSend: function() {
+                                    $("#contact-form").find('button[type="submit"]').attr('disabled', true);
+                                },
+                                success: function() {
+                                    $("#contact-form").addClass('submited');
+                                }
+                            });
                         },
 
                         // Do not change code below
-                        errorPlacement: function(error, element)
-                        {
+                        errorPlacement: function(error, element) {
                             error.insertAfter(element.parent());
                         }
                     });
@@ -166,8 +149,7 @@
 
 {% block header %}
 <!-- Google Map -->
-<div id="map" class="map">
-</div><!---/map-->
+<div id="map" class="map"></div><!---/map-->
 <!-- End Google Map -->
 {% endblock %}
 
@@ -179,6 +161,21 @@
                 <div class="headline"><h2>Contact Form</h2></div>
                 <p>Contact us if you have any questions to us, e.g. Information about a project or you need help for one of our services or you want to improve our website or services. Simply everything you want.</p>
                 <p>If you want to contact us with your email client (e.g. Hotmail) you can use this E-mail: <a href="mailto:info@orbitrondev.org">info@orbitrondev.org</a></p><br />
+
+                {% if app.request.get('sent') is not empty %}
+                    <br />
+                    {% if app.request.get('sent') == 1 %}
+                        <div class="alert alert-success fade in alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            {{ 'Your message was successfully sent! We will try to contact you as soon as possible.'|trans }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger fade in alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            {{ 'Your message couldn\'t be sent. Try again!'|trans }}
+                        </div>
+                    {% endif %}
+                {% endif %}
 
                 {{ form_start(contact_form, {'action': path('app_default_contact'), 'attr': {'class': 'sky-form sky-changes-3', 'id': 'contact-form'}}) }}
                     {{ form_row(contact_form._token) }}
@@ -228,7 +225,7 @@
                         </section>
 
                         <section>
-                            <label class="checkbox">{{ form_widget(contact_form.send_to_own) }}<i></i>Send a copy to my e-mail address</label>
+                            <label class="checkbox">{{ form_widget(contact_form.send_to_own) }}<i></i>{{ 'Send a copy to my e-mail address'|trans }}</label>
                         </section>
                     </fieldset>
 
@@ -236,17 +233,10 @@
                         {{ form_widget(contact_form.send, {'attr': {'class': 'btn-u'}}) }}
                     </footer>
 
-                    {% if app.request.get('sent') == 1 %}
-                        <div class="message">
-                            <i class="rounded-x fa fa-check"></i>
-                            <p>{{ 'Your message was successfully sent! We will try to contact you as soon as possible.'|trans }}</p>
-                        </div>
-                    {% elseif app.request.get('sent') == 0 %}
-                        <div class="message">
-                            <i class="rounded-x fa fa-times"></i>
-                            <p>{{ 'Your message couldn\'t be sent. Try again!'|trans }}</p>
-                        </div>
-                    {% endif %}
+                    <div class="message">
+                        <i class="rounded-x fa fa-check"></i>
+                        <p>{{ 'Your message was successfully sent! We will try to contact you as soon as possible.'|trans }}</p>
+                    </div>
                 {{ form_end(contact_form) }}
             </div><!--/col-md-9-->
 
@@ -264,7 +254,7 @@
                 <ul class="list-unstyled who margin-bottom-30">
                     <li>Please only use our email or the contact form to contact us </li>
                     <li><a href="mailto:info@orbitrondev.org"><i class="fa fa-envelope"></i>info@orbitrondev.org</a></li>
-                    <li><a href="#"><i class="fa fa-globe"></i>https://orbitrondev.org</a></li>
+                    <li><a href="#"><i class="fa fa-globe"></i>https://www.orbitrondev.org</a></li>
                 </ul>
 
                 {#<!-- Business Hours -->

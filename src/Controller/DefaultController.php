@@ -159,7 +159,7 @@ class DefaultController extends Controller
                     ->setSubject(trim($formData['subject']))
                     ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
                     ->setTo(array('info@orbitrondev.org'))
-                    ->setBody($this->renderView('mail/contact.html.twig', array(
+                    ->setBody($this->renderView('default/mail/contact.html.twig', array(
                         'ip'      => $request->getClientIp(),
                         'name'    => $formData['name'],
                         'message' => $formData['message'],

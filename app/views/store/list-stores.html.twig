@@ -1,13 +1,13 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}{{ 'Discover all blogs'|trans }} | {{ parent() }}{% endblock %}
+{% block title %}{{ 'Discover all stores'|trans }} | {{ parent() }}{% endblock %}
 
 {% block breadcrumb %}
     <div class="breadcrumbs">
         <div class="container">
-            <h1 class="pull-left">{{ 'Discover all blogs'|trans }}</h1>
+            <h1 class="pull-left">{{ 'Discover all stores'|trans }}</h1>
             <ul class="pull-right breadcrumb">
-                <li><a href="{{ path('app_blog_index') }}" class="active">{{ 'Blogs'|trans }}</a></li>
+                <li><a href="{{ path('app_store_index') }}" class="active">{{ 'Stores'|trans }}</a></li>
             </ul>
         </div>
     </div>
@@ -19,20 +19,20 @@
             <section id="admin">
                 <div class="panel panel-info">
                     <div class="panel-heading">
-                        {{ 'Administrate your blogs'|trans }}
+                        {{ 'Administrate your stores'|trans }}
                         <div class="pull-right">
-                            <a href="{{ path('app_blog_new') }}" class="btn btn-success btn-xs" role="button">{{ 'Create new blog'|trans }}</a>
+                            <a href="{{ path('app_store_new') }}" class="btn btn-success btn-xs" role="button">{{ 'Create new store'|trans }}</a>
                         </div>
                     </div><!-- /.panel-heading -->
                     <div class="panel-body">
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped table-hover">
                                 <tbody>
-                                    {% for blog in blog_list %}
-                                        {% if current_user.user_id == blog.owner_id %}
+                                    {% for store in store_list %}
+                                        {% if current_user.user_id == store.owner_id %}
                                             <tr>
-                                                <td><a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}">{{ blog.name }}</a></td>
-                                                <td><a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a></td>
+                                                <td><a href="{{ path('app_store_store_index', {'store': store.url}) }}">{{ store.name }}</a></td>
+                                                <td><a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a></td>
                                             </tr>
                                         {% endif %}
                                     {% endfor %}
@@ -43,8 +43,8 @@
                 </div><!-- /.panel -->
             </section><!-- /#admin -->
         {% endif %}
-        <section id="blog-list">
-            <h2 class="page-header">{{ 'Blog list'|trans }}</h2>
+        <section id="store-list">
+            <h2 class="page-header">{{ 'Store list'|trans }}</h2>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover">
                     <thead>
@@ -55,16 +55,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for blog in blog_list %}
+                        {% for store in store_list %}
                             <tr>
-                                <td><a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}">{{ blog.name }}</a></td>
-                                <td>{{ blog.username }}</td>
-                                <td>{% if current_user.user_id == blog.owner_id %}<a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
+                                <td><a href="{{ path('app_store_store_index', {'store': store.url}) }}">{{ store.name }}</a></td>
+                                <td>{{ store.username }}</td>
+                                <td>{% if current_user.user_id == store.owner_id %}<a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table><!-- /.table -->
             </div><!-- /.table-responsive -->
-        </section><!-- /#blog-list -->
+        </section><!-- /#store-list -->
     </div>
 {% endblock %}
