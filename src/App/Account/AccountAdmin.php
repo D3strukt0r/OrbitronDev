@@ -3,36 +3,30 @@
 namespace App\Account;
 
 use Container\DatabaseContainer;
-use Exception;
+use Kernel;
 use PDO;
 
 class AccountAdmin
 {
     /**
-     * @param $username
-     * @param $hashed_password
-     * @param $email
+     * @param string $username
+     * @param string $hashed_password
+     * @param string $email
      *
      * @return float
      * @throws \Exception
      */
     public static function addUser($username, $hashed_password, $email)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
-        $sUsername = (string)$username;
-        $sHashedPassword = (string)$hashed_password;
-        $sEmail = (string)$email;
-        $request = \Kernel::$kernel->getRequest();
+        $database = DatabaseContainer::getDatabase();
+        $request = Kernel::$kernel->getRequest();
 
         // Insert to table "users"
         $oAddUser = $database->prepare('INSERT INTO `users`(`username`,`password`,`email`,`created`,`last_online`,`last_ip`,`registration_ip`) VALUES (:username,:password,:email,:created,:lastOnline,:lastIp,:registrationIp)');
         $oAddUser->execute(array(
-            ':username'       => $sUsername,
-            ':password'       => $sHashedPassword,
-            ':email'          => $sEmail,
+            ':username'       => $username,
+            ':password'       => $hashed_password,
+            ':email'          => $email,
             ':created'        => time(),
             ':lastOnline'     => time(),
             ':lastIp'         => $request->server->get('REMOTE_ADDR'),
@@ -42,7 +36,7 @@ class AccountAdmin
         // Get "user_id"
         $oGetUserId = $database->prepare('SELECT `user_id` FROM `users` WHERE `username`=:username LIMIT 1');
         $oGetUserId->execute(array(
-            ':username' => $sUsername,
+            ':username' => $username,
         ));
         $oUserData = $oGetUserId->fetchAll(PDO::FETCH_ASSOC);
         $fUserId = (float)$oUserData[0]['user_id'];
@@ -67,19 +61,15 @@ class AccountAdmin
     }
 
     /**
-     * @param $id
+     * @param int $user_id
      *
      * @throws \Exception
      */
-    public static function removeUser($id)
+    public static function removeUser($user_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
-        $user_id = (float)$id;
+        $database = DatabaseContainer::getDatabase();
 
-        // D<gelete all data
+        // Delete all data
         $sql = $database->prepare('DELETE FROM `users` WHERE `user_id`=:id LIMIT 1');
         $sql->execute(array(':id' => $user_id));
         $sql = $database->prepare('DELETE FROM `user_profiles` WHERE `user_id`=:id LIMIT 1');
@@ -95,12 +85,10 @@ class AccountAdmin
      * @return null
      * @throws \Exception
      */
+    // TODO: Is the function "getUserVar" still needed?
     public static function getUserVar($id, $var)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $sql = $database->prepare('SELECT * FROM `users` WHERE `user_id`=:id LIMIT 1');
         $sql->execute(array(
@@ -118,12 +106,10 @@ class AccountAdmin
      *
      * @throws \Exception
      */
+    // TODO: Is the function "setUserVar" still needed?
     public static function setUserVar($id, $key, $value)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $sql = $database->prepare('SHOW COLUMNS FROM `users` LIKE \'' . $key . '\'');
         $sql->execute();

@@ -18,25 +18,19 @@ class Account
         self::$publicDir = Kernel::$kernel->getRootDir() . '/web/app/account';
         self::$srcDir = Kernel::$kernel->getRootDir() . '/src/App/Account';
         self::$twigDir = Kernel::$kernel->getRootDir() . '/app/views/account';
-
     }
 
     /**
-     * @param $username
-     * @param $email
-     * @param $password
-     * @param $confirm_password
+     * @param string $username
+     * @param string $email
+     * @param string $password
+     * @param string $confirm_password
      *
      * @return bool|string
      * @throws \Exception
      */
     public static function register($username, $email, $password, $confirm_password)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
-
         // Check username
         if (strlen($username) == 0) {
             return 'username:insert_username';
@@ -70,9 +64,9 @@ class Account
     }
 
     /**
-     * @param      $usernameOrEmail
-     * @param      $password
-     * @param bool $cookies
+     * @param string $usernameOrEmail
+     * @param string $password
+     * @param bool   $cookies
      *
      * @return bool|string
      */
@@ -127,10 +121,7 @@ class Account
      */
     public static function validateUser($username, $password)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $validate = $database->prepare('SELECT `password` FROM `users` WHERE `username`=:username LIMIT 1');
         $validate->execute(array(
@@ -154,10 +145,7 @@ class Account
      */
     public static function validateUserByEmail($email, $password)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $validate = $database->prepare('SELECT `password` FROM `users` WHERE `email`=:email');
         $validate->execute(array(
@@ -217,8 +205,7 @@ class Account
         $_SESSION['USER_EM'] = $accountData['email'];
         $_SESSION['USER_PW'] = $accountData['password'];
         if ($accountData['remember']) {
-            setcookie('account', base64_encode(json_encode($accountData)), strtotime('+1 month'), '/',
-                'orbitrondev.org');
+            setcookie('account', base64_encode(json_encode($accountData)), strtotime('+1 month'), '/', 'orbitrondev.org');
         }
     }
 

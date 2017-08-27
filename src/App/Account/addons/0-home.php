@@ -5,7 +5,6 @@ use App\Account\UserInfo;
 use App\Blog\Blog;
 use App\Forum\Forum;
 use App\Store\Store;
-use Container\DatabaseContainer;
 
 AccountAcp::addMenu(array(
     'parent' => 'root',
@@ -23,10 +22,6 @@ AccountAcp::addMenu(array(
  */
 function acp_html_home($twig)
 {
-    $database = DatabaseContainer::$database;
-    if (is_null($database)) {
-        throw new Exception('A database connection is required');
-    }
     $currentUser = new UserInfo(USER_ID);
 
     return $twig->render('account/panel/home.html.twig', array(

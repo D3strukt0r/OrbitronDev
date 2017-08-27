@@ -7,7 +7,7 @@ use Kernel;
 class AccountAcp
 {
     private static $aAcpGroupElements = array();
-    private static $aAcpMenuElements = array();
+    private static $aAcpMenuElements  = array();
 
     /**
      * @param $group_info
@@ -20,7 +20,7 @@ class AccountAcp
             'title'   => '',
             'display' => 'true',
         );
-        $aGroupInfo = array_replace($aDefaultInfo, $group_info);
+        $aGroupInfo   = array_replace($aDefaultInfo, $group_info);
 
         self::$aAcpGroupElements[] = $aGroupInfo;
     }
@@ -39,7 +39,7 @@ class AccountAcp
                 'tabindex' => -1,
             ),
         );
-        $aMenuInfo = array_replace($aDefaultInfo, $menu_info);
+        $aMenuInfo    = array_replace($aDefaultInfo, $menu_info);
 
         self::$aAcpMenuElements[] = $aMenuInfo;
     }
@@ -49,11 +49,11 @@ class AccountAcp
      */
     public static function includeLibs()
     {
-        $sLibDir = Kernel::$rootDir2 . '/src/App/Account/addons';
+        $sLibDir = Kernel::$rootDir2.'/src/App/Account/addons';
 
         $aGetLibs = scandir($sLibDir);
         foreach ($aGetLibs as $ACPLibrary) {
-            $sLibFile = $sLibDir . '/' . $ACPLibrary;
+            $sLibFile = $sLibDir.'/'.$ACPLibrary;
 
             if ($ACPLibrary !== '.' && $ACPLibrary !== '..' && is_file($sLibFile)) {
                 include_once($sLibFile);
@@ -82,10 +82,12 @@ class AccountAcp
                 $aReturnMenus[] = self::$aAcpMenuElements[$sMenu];
             }
         }
+
         return $aReturnMenus;
     }
 
     // TODO: This is a new function, integrate it in HTML
+
     /**
      * @param string $page_name
      *
@@ -96,13 +98,13 @@ class AccountAcp
         $page_changer = 'url_js'; // 'href', 'hash', 'url', 'url_js'
 
         if ($page_changer === 'js') {
-            return 'href="javascript:ControlPanel.changePage(\'' . $page_name . '\')" data-toggle="page"';
+            return 'href="javascript:ControlPanel.changePage(\''.$page_name.'\')" data-toggle="page"';
         } elseif ($page_changer === 'url_js') {
-            return 'href="javascript:ControlPanel.changePage(\'' . $page_name . '\', true)" data-toggle="page"';
+            return 'href="javascript:ControlPanel.changePage(\''.$page_name.'\', true)" data-toggle="page"';
         } elseif ($page_changer === 'hash') {
-            return 'href="#/' . $page_name . '"';
+            return 'href="#/'.$page_name.'"';
         } elseif ($page_changer === 'url') {
-            return 'href="https://account.orbitrondev.org/panel/' . $page_name . '"';
+            return 'href="https://account.orbitrondev.org/panel/'.$page_name.'"';
         } else {
             return '';
         }

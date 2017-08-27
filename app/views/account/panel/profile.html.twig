@@ -76,7 +76,7 @@
                                 <div class="col col-12">
                                     <label class="input">
                                         <div id="locationField">
-                                            <input type="text" id="autocomplete" placeholder="Enter your address (Autocomplete)" onfocus="geolocate()" />
+                                            <input id="autocomplete" placeholder="Enter your address (Autocomplete)" onfocus="geolocate()" />
                                         </div>
                                     </label>
                                 </div>
@@ -157,11 +157,13 @@
                 <section>
                     <div class="row">
                         <div id="profile-picture" class="col col-3">
+                            <img class="img-thumbnail" src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.user_id}) }}" />
+                            {# TODO: OLD CODE
                             {% if current_user_profile.profile_picture|length > 0 %}
                                 <img class="img-thumbnail" src="/app/account/profile_pictures/{{ current_user_profile.profile_picture }}" />
                             {% else %}
                                 <img class="img-thumbnail" src="/assets/img/user.jpg" />
-                            {% endif %}
+                            {% endif %}#}
                         </div>
                     </div>
                 </section>
@@ -184,141 +186,138 @@
                             </div>
                         </div>
                     </div>
-                    {% set params %}user_id={{ current_user.user_id }}{% endset %}
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-
-                            // Initialize the jQuery File Upload widget:
-                            var fileUploadObject = $('#fileupload');
-                            fileUploadObject.fileupload({
-                                // Uncomment the following to send cross-domain cookies:
-                                //xhrFields: {withCredentials: true},
-                                url: '{{ path('app_account_api', {'function': 'update_profile_pic', 'parameters': params}) }}'
-                            });
-
-                            fileUploadObject.fileupload('option', {
-                                url: '{{ path('app_account_api', {'function': 'update_profile_pic', 'parameters': params}) }}',
-                                // Enable image resizing, except for Android and Opera,
-                                // which actually support image resizing, but fail to
-                                // send Blob objects via XHR requests:
-                                disableImageResize: /Android(?!.*Chrome)|Opera/
-                                        .test(window.navigator.userAgent),
-                                maxFileSize: 999000,
-                                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
-                            });
-
-                             fileUploadObject.fileupload({
-                                dataType: 'json',
-                                done: function(e, data) {
-                                    $.each(data.result.files, function(index, file) {
-                                        $('#profile-picture').html("");
-                                        $('<img class="img-thumbnail" />')
-                                                .attr('src', '/app/account/profile_pictures/' + file)
-                                                .appendTo('#profile-picture');
-                                    });
-                                },
-                                progressall: function(e, data) {
-                                    var progress = parseInt(data.loaded / data.total * 100, 10);
-                                    $('#upload-progress').css('width', progress + '%');
-
-                                    var uploadSpeed = data.bitrate; //  // Bps
-                                    var uploadSpeedText = 'Bps';
-                                    if(uploadSpeed > 1024) {
-                                        uploadSpeed = uploadSpeed / 1024; // KBps
-                                        uploadSpeedText = 'KBps';
-                                        if(uploadSpeed > 1024) {
-                                            uploadSpeed = uploadSpeed / 1024; // MBps
-                                            uploadSpeedText = 'MBps';
-                                            if(uploadSpeed > 1024) {
-                                                uploadSpeed = uploadSpeed / 1024; // GBps
-                                                uploadSpeedText = 'GBps';
-                                            }
-                                        }
-                                    }
-                                    uploadSpeed = Math.round(uploadSpeed * 100) / 100;
-                                    $('#upload-progress-speed').text(uploadSpeed + ' ' + uploadSpeedText);
-                                    $('#upload-progress-percentage').text(progress + '%');
-                                }
-                            });
-                        });
-                    </script>
                 </section>
             </fieldset>
         </form>
     </div>
-    <script type="text/javascript">
-        var placeSearch, autocomplete;
-        var componentForm = {
-            street_number: 'short_name',
-            route: 'long_name',
-            locality: 'long_name',
-            //administrative_area_level_1: 'short_name',
-            country: 'long_name',
-            postal_code: 'short_name'
-        };
-        var input_ids = {
-            street_number: 'form_location_street_number',
-            route: 'form_location_street',
-            locality: 'form_location_city',
-            country: 'form_location_country',
-            postal_code: 'form_location_postal_code'
-        };
+</section>
+{% set params %}user_id={{ current_user.user_id }}{% endset %}
+<script type="text/javascript">
+    $(document).ready(function () {
 
-        function initAutocomplete() {
-            // Create the autocomplete object, restricting the search to geographical
-            // location types.
-            autocomplete = new google.maps.places.Autocomplete(
-                    /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
-                    {types: ['geocode']});
+        // Initialize the jQuery File Upload widget:
+        var fileUploadObject = $('#fileupload');
 
-            // When the user selects an address from the dropdown, populate the address
-            // fields in the form.
-            autocomplete.addListener('place_changed', fillInAddress);
-        }
+        fileUploadObject.fileupload({
+            // Uncomment the following to send cross-domain cookies:
+            //xhrFields: {withCredentials: true},
+            url: '{{ path('app_account_api', {'function': 'update_profile_pic', 'parameters': params}) }}',
+            // Enable image resizing, except for Android and Opera,
+            // which actually support image resizing, but fail to
+            // send Blob objects via XHR requests:
+            //disableImageResize: /Android(?!.*Chrome)|Opera/
+            //    .test(window.navigator && navigator.userAgent),
+            //imageMaxWidth: 800,
+            //imageMaxHeight: 800,
+            //imageCrop: true, // Force cropped images
+            maxFileSize: 999000,
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+            dataType: 'json',
+            done: function(e, data) {
+                $.each(data.result.files, function(index, file) {
+                    $('#profile-picture').html("");
+                    $('<img class="img-thumbnail" />')
+                        .attr('src', '/app/account/profile_pictures/' + file)
+                        .appendTo('#profile-picture');
+                });
+            },
+            progressall: function(e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $('#upload-progress').css('width', progress + '%');
 
-        // [START region_fillform]
-        function fillInAddress() {
-            // Get the place details from the autocomplete object.
-            var place = autocomplete.getPlace();
+                var uploadSpeed = data.bitrate; //  // Bps
+                var uploadSpeedText = 'Bps';
+                if(uploadSpeed > 1024) {
+                    uploadSpeed = uploadSpeed / 1024; // KBps
+                    uploadSpeedText = 'KBps';
+                    if(uploadSpeed > 1024) {
+                        uploadSpeed = uploadSpeed / 1024; // MBps
+                        uploadSpeedText = 'MBps';
+                        if(uploadSpeed > 1024) {
+                            uploadSpeed = uploadSpeed / 1024; // GBps
+                            uploadSpeedText = 'GBps';
+                        }
+                    }
+                }
+                uploadSpeed = Math.round(uploadSpeed * 100) / 100;
+                $('#upload-progress-speed').text(uploadSpeed + ' ' + uploadSpeedText);
+                $('#upload-progress-percentage').text(progress + '%');
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    var placeSearch, autocomplete;
+    var componentForm = {
+        street_number: 'short_name',
+        route: 'long_name',
+        locality: 'long_name',
+        //administrative_area_level_1: 'short_name',
+        country: 'long_name',
+        postal_code: 'short_name'
+    };
+    var input_ids = {
+        street_number: 'form_location_street_number',
+        route: 'form_location_street',
+        locality: 'form_location_city',
+        country: 'form_location_country',
+        postal_code: 'form_location_postal_code'
+    };
 
-            /** Not Required as can be predefined by user
-            for (var component in componentForm) {
+    function initAutocomplete() {
+        // Create the autocomplete object, restricting the search to geographical
+        // location types.
+        autocomplete = new google.maps.places.Autocomplete(
+            /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+            {types: ['geocode']});
+
+        // When the user selects an address from the dropdown, populate the address
+        // fields in the form.
+        autocomplete.addListener('place_changed', fillInAddress);
+    }
+
+    // [START region_fillform]
+    function fillInAddress() {
+        // Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+
+        /** Not Required as can be predefined by user
+         for (var component in componentForm) {
                 document.getElementById(component).value = '';
                 document.getElementById(component).disabled = false;
             }
-            */
-            // Get each component of the address from the place details
-            // and fill the corresponding field on the form.
-            for (var i = 0; i < place.address_components.length; i++) {
-                var addressType = place.address_components[i].types[0];
-                if (componentForm[addressType]) {
-                    var val = place.address_components[i][componentForm[addressType]];
-                    console.log(input_ids[addressType]);
-                    document.getElementById(input_ids[addressType]).value = val;
-                }
+         */
+        // Get each component of the address from the place details
+        // and fill the corresponding field on the form.
+        for (var i = 0; i < place.address_components.length; i++) {
+            var addressType = place.address_components[i].types[0];
+            if (componentForm[addressType]) {
+                var val = place.address_components[i][componentForm[addressType]];
+                console.log(input_ids[addressType]);
+                document.getElementById(input_ids[addressType]).value = val;
             }
         }
-        // [END region_fillform]
+    }
+    // [END region_fillform]
 
-        // [START region_geolocation]
-        // Bias the autocomplete object to the user's geographical location,
-        // as supplied by the browser's 'navigator.geolocation' object.
-        function geolocate() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var geolocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    var circle = new google.maps.Circle({
-                        center: geolocation,
-                        radius: position.coords.accuracy
-                    });
-                    autocomplete.setBounds(circle.getBounds());
+    // [START region_geolocation]
+    // Bias the autocomplete object to the user's geographical location,
+    // as supplied by the browser's 'navigator.geolocation' object.
+    function geolocate() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var geolocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                var circle = new google.maps.Circle({
+                    center: geolocation,
+                    radius: position.coords.accuracy
                 });
-            }
+                autocomplete.setBounds(circle.getBounds());
+            });
         }
-        // [END region_geolocation]
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSO1fpoQuukeVKiueZxzqhLCFlkgP0IMM&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
-</section>
+    }
+    // [END region_geolocation]
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSO1fpoQuukeVKiueZxzqhLCFlkgP0IMM&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>

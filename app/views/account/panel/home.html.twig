@@ -5,9 +5,9 @@
 </style>
 <section id="header">
     <div class="col-lg-12">
-        <h1 class="page-header">Main dashboard</h1>
+        <h1 class="page-header">{{ 'Main dashboard'|trans }}</h1>
         <ol class="breadcrumb">
-            <li class="active">Home</li>
+            <li class="active">{{ 'Home'|trans }}</li>
         </ol><!-- /.breadcrumb -->
         <hr />
     </div><!-- /.col-lg-12 -->
@@ -79,6 +79,7 @@
                             <div class="well well-sm">
                                 {{ blog.name }}
                                 <div class="pull-right">
+                                    <a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'View'|trans }}</a>
                                     <a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
                                     <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
                                 </div>
@@ -90,15 +91,18 @@
                     <div id="service-cloud" class="panel panel-default">
                         <div class="panel-heading">
                             {{ 'Cloud'|trans }}
+                            <span class="pull-right">
+                                <a href="{{ path('app_cloud_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'Open'|trans }}</a>
+						    </span>
                         </div>
                     </div>
                     <div id="service-forum" class="panel panel-default">
                         <div class="panel-heading">
                             {{ 'Forum'|trans }}
                             <span class="pull-right">
-							<a href="{{ path('app_forum_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
-							<a href="{{ path('app_forum_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new forum'|trans }}</a>
-						</span>
+                                <a href="{{ path('app_forum_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
+                                <a href="{{ path('app_forum_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new forum'|trans }}</a>
+						    </span>
                         </div>
                         {% if forums|length > 0 %}
                         <div class="panel-body">
@@ -106,6 +110,7 @@
                             <div class="well well-sm">
                                 {{ forum.name }}
                                 <div class="pull-right">
+                                    <a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'View'|trans }}</a>
                                     <a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
                                     <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
                                 </div>
@@ -133,6 +138,7 @@
                             <div class="well well-sm">
                                 {{ store.name }}
                                 <div class="pull-right">
+                                    <a href="{{ path('app_store_store_index', {'store': store.url}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'View'|trans }}</a>
                                     <a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
                                     <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
                                 </div>

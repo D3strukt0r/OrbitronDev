@@ -25,78 +25,69 @@ class AccountTools
     }
 
     /**
-     * @param $username
+     * @param string $username
      *
      * @return bool
      */
     public static function isValidName($username)
     {
-        $sUsername = (string)$username;
-        if (preg_match('/^[a-z0-9_]+$/i', $sUsername) && strlen($sUsername) >= 3 && strlen($sUsername) <= 32) {
+        if (preg_match('/^[a-z0-9_]+$/i', $username) && strlen($username) >= 3 && strlen($username) <= 32) {
             return true;
         }
         return false;
     }
 
     /**
-     * @param $username
+     * @param string $username
      *
      * @return bool
      * @throws \Exception
      */
     public static function isNameTaken($username)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
-        $sUsername = (string)$username;
+        $database = DatabaseContainer::getDatabase();
 
         $oIsTaken = $database->prepare('SELECT NULL FROM `users` WHERE `username`=:username');
-        if (!$oIsTaken->execute(array(':username' => $sUsername))) {
+        $oIsTaken->bindValue(':username', $username, PDO::PARAM_STR);
+        if (!$oIsTaken->execute()) {
             throw new \RuntimeException('[Database]: Cannot execute sql (' . $oIsTaken->queryString . ')');
         }
         return ($oIsTaken->rowCount() > 0 ? true : false);
     }
 
     /**
-     * @param $user_id
+     * @param int $user_id
      *
      * @return bool
      * @throws \Exception
      */
     public static function idExists($user_id)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
-        $fUserId = (float)$user_id;
+        $database = DatabaseContainer::getDatabase();
 
         $oIdExists = $database->prepare('SELECT NULL FROM `users` WHERE `user_id`=:id LIMIT 1');
-        if (!$oIdExists->execute(array(':id' => $fUserId))) {
+        $oIdExists->bindValue(':id', $user_id, PDO::PARAM_INT);
+        if (!$oIdExists->execute()) {
             throw new \RuntimeException('[Database]: Cannot execute sql (' . $oIdExists->queryString . ')');
         }
         return ($oIdExists->rowCount() ? true : false);
     }
 
     /**
-     * @param $username
+     * @param string $username
      *
      * @return bool
      */
     public static function isNameBlocked($username)
     {
-        $sUsername = (string)$username;
-
         foreach (self::$aBlockedNames as $bl) {
-            if (strtolower($sUsername) == strtolower($bl)) {
+            if (strtolower($username) == strtolower($bl)) {
                 return true;
             }
         }
 
         foreach (self::$aBlockedNameParts as $bl) {
-            if (strpos(strtolower($sUsername), strtolower($bl)) != false) {
+            if (strpos(strtolower($username), strtolower($bl)) != false) {
                 return true;
             }
         }
@@ -104,26 +95,24 @@ class AccountTools
     }
 
     /**
-     * @param $user_email
+     * @param string $user_email
      *
      * @return bool
      * @throws \Exception
      */
     public static function userExist($user_email)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
-        $sUsernameOrEmail = (string)$user_email;
+        $database = DatabaseContainer::getDatabase();
 
         $oUserExists = $database->prepare('SELECT NULL FROM `users` WHERE `username`=:username LIMIT 1');
-        $oUserExists->execute(array(':username' => $sUsernameOrEmail));
+        $oUserExists->bindValue(':username', $user_email, PDO::PARAM_STR);
+        $oUserExists->execute();
         if ($oUserExists->rowCount()) {
             return true;
         } else {
             $oUserExists = $database->prepare('SELECT NULL FROM `users` WHERE `email`=:email LIMIT 1');
-            $oUserExists->execute(array(':email' => $sUsernameOrEmail));
+            $oUserExists->bindValue(':email', $user_email, PDO::PARAM_STR);
+            $oUserExists->execute();
             if ($oUserExists->rowCount()) {
                 return true;
             }
@@ -156,21 +145,18 @@ class AccountTools
     }
 
     /**
-     * @param $username
+     * @param string $username
      *
      * @return float
      * @throws \Exception
      */
     public static function name2Id($username)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
-        $sUsername = (string)$username;
+        $database = DatabaseContainer::getDatabase();
 
         $oGetId = $database->prepare('SELECT `user_id` FROM `users` WHERE `username`=:username LIMIT 1');
-        if (!$oGetId->execute(array(':username' => $username))) {
+        $oGetId->bindValue(':username', $username, PDO::PARAM_STR);
+        if (!$oGetId->execute()) {
             throw new \RuntimeException('[Database]: Cannot execute sql (' . $oGetId->queryString . ')');
         }
         $aUserData = $oGetId->fetchAll(PDO::FETCH_ASSOC);
@@ -178,21 +164,18 @@ class AccountTools
     }
 
     /**
-     * @param $email
+     * @param string $email
      *
      * @return int
      * @throws \Exception
      */
     public static function email2Id($email)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
-        $sEmail = (string)$email;
+        $database = DatabaseContainer::getDatabase();
 
         $oGetId = $database->prepare('SELECT `user_id` FROM `users` WHERE `email`=:email LIMIT 1');
-        if (!$oGetId->execute(array(':email' => $email))) {
+        $oGetId->bindValue(':email', $email, PDO::PARAM_STR);
+        if (!$oGetId->execute()) {
             throw new \RuntimeException('[Database]: Cannot execute sql (' . $oGetId->queryString . ')');
         }
         if ($oGetId->rowCount() == 0) {
@@ -203,7 +186,7 @@ class AccountTools
     }
 
     /**
-     * @param      $user_id
+     * @param int  $user_id
      * @param bool $link
      * @param bool $styles
      *
@@ -212,29 +195,20 @@ class AccountTools
      */
     public static function formatUsername($user_id, $link = true, $styles = true)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
         $translator = TranslatingContainer::$translator;
 
-        $fUserId = (float)$user_id;
-        $bLink = (bool)$link;
-        $bStyles = (bool)$styles;
-
-        if (!self::idExists($fUserId)) {
+        if (!self::idExists($user_id)) {
             return '<s>' . $translator->trans('Unknown user') . '</s>';
         }
-        $oUser = new UserInfo($fUserId);
+        $oUser = new UserInfo($user_id);
 
         $sPrefix = '';
         $username = $oUser->getFromUser('username');
         $sSuffix = '';
 
         if ($link) {
-            $user = new UserInfo($fUserId);
-            $sPrefix .= '<a href="' . Kernel::$kernel->get('router')->generate('app_account_user',
-                    array('username' => $user->getFromUser('username'))) . '">';
+            $user = new UserInfo($user_id);
+            $sPrefix .= '<a href="' . Kernel::$kernel->get('router')->generate('app_account_user', array('username' => $user->getFromUser('username'))) . '">';
             $sSuffix .= '</a>';
         }
 

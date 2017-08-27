@@ -13,7 +13,7 @@ var ControlPanel = {
 		ControlPanelSettings.elementLoader = oLoaderIconElement;
 		
 		if(ControlPanelSettings.debug)
-			console.debug('[ControlPanel] Initted');
+			console.debug('[ControlPanel] Initiated');
 	},
 	'startLoading' : function() {
 		$(ControlPanelSettings.elementLoader).show();

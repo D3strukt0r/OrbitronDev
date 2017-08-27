@@ -102,6 +102,7 @@ class AccountApi
         return $progress;
     }
 
+    // TODO: Is the function "panel_pages" still needed?
     public static function panel_pages()
     {
         $page = $_GET['p'];

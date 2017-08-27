@@ -9,7 +9,6 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -198,7 +197,6 @@ function acp_html_profile($twig, $controller)
         $dtBirthday = null;
     }
 
-
     $editProfileForm = $controller->createFormBuilder()
         ->add('first_name', TextType::class, array(
             'label' => 'First name',
@@ -294,7 +292,7 @@ function acp_html_profile($twig, $controller)
         ))
         ->getForm();
 
-    $request = Request::createFromGlobals();
+    $request = Kernel::$kernel->getRequest();
     $editProfileForm->handleRequest($request);
     if ($editProfileForm->isSubmitted()) {
 

@@ -45,11 +45,9 @@ class UserSubscription
     }
 
     /**
-     * @param $user_id
-     *
      * @return mixed
      */
-    public function getSubscription($user_id)
+    public function getSubscription()
     {
         return $this->oUser->getFromSubscription('subscription_id');
     }
@@ -68,11 +66,9 @@ class UserSubscription
     }
     */
     /**
-     * @param $user_id
-     *
      * @return bool
      */
-    public function isNormal($user_id)
+    public function isNormal()
     {
         if ($this->oUser->isNormal()) {
             return true;
@@ -81,11 +77,9 @@ class UserSubscription
     }
 
     /**
-     * @param $user_id
-     *
      * @return bool
      */
-    public function isPremium($user_id)
+    public function isPremium()
     {
         if ($this->oUser->isPremium()) {
             return true;
@@ -94,11 +88,9 @@ class UserSubscription
     }
 
     /**
-     * @param $user_id
-     *
      * @return bool
      */
-    public function isEnterprise($user_id)
+    public function isEnterprise()
     {
         if ($this->oUser->isEnterprise()) {
             return true;

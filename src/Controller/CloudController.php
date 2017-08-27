@@ -19,6 +19,7 @@ class CloudController extends Controller
         return $this->redirectToRoute('app_cloud_files');
     }
 
+    // TODO: Add possibility to publish a website by crating a "public_html" folder in the root
     public function filesAction()
     {
         Account::updateSession();

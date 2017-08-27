@@ -8,7 +8,6 @@ use Container\DatabaseContainer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 if (!isset($indirectly)) {
@@ -119,11 +118,9 @@ function acp_html_developer_create_application($twig, $controller)
 /**
  * @param \Twig_Environment             $twig
  *
- * @param \Controller\AccountController $controller
- *
  * @return string
  */
-function acp_html_developer_applications($twig, $controller)
+function acp_html_developer_applications($twig)
 {
     return $twig->render('account/panel/developer-list-applications.html.twig', array(
         'current_user_dev_apps' => AccountDeveloper::getApps(USER_ID),
@@ -145,10 +142,7 @@ function acp_html_developer_show_applications($twig, $controller)
         header('Location: ' . $controller->generateUrl('app_account_panel', array('p' => 'developer-applications')));
         exit;
     }
-    $database = DatabaseContainer::$database;
-    if (is_null($database)) {
-        throw new \Exception('A database connection is required');
-    }
+    $database = DatabaseContainer::getDatabase();
     $fAppId = $_GET['app'];
     $oApplicationData = $database->prepare('SELECT * FROM `oauth_clients` WHERE `client_id`=:id');
     $oApplicationData->execute(array(
@@ -180,7 +174,7 @@ function acp_html_developer_register($twig, $controller)
 
     $currentUser = new UserInfo(USER_ID);
 
-    $request = Request::createFromGlobals();
+    $request = Kernel::$kernel->getRequest();
     $developerForm->handleRequest($request);
     if ($developerForm->isSubmitted()) {
         $currentUser->updateUserDeveloper(true);

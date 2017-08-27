@@ -36,25 +36,21 @@ if (!isset($indirectly)) {
 }
 
 /**
- * @param \Twig_Environment             $twig
- *
- * @param \Controller\AccountController $controller
+ * @param \Twig_Environment $twig
  *
  * @return string
  */
-function acp_html_buy_credits($twig, $controller)
+function acp_html_buy_credits($twig)
 {
     return $twig->render('account/panel/buy-credits.html.twig');
 }
 
 /**
- * @param \Twig_Environment             $twig
- *
- * @param \Controller\AccountController $controller
+ * @param \Twig_Environment $twig
  *
  * @return string
  */
-function acp_html_plans($twig, $controller)
+function acp_html_plans($twig)
 {
     $currentUser = new UserInfo(USER_ID);
     return $twig->render('account/panel/plans.html.twig', array(

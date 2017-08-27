@@ -4,6 +4,7 @@ namespace App\Account;
 
 use Container\DatabaseContainer;
 use Exception;
+use PDO;
 
 class UserInfo
 {
@@ -39,7 +40,7 @@ class UserInfo
         $oGetUserData->execute(array(
             ':user_id' => $fUserId,
         ));
-        $aUserData = $oGetUserData->fetchAll(\PDO::FETCH_ASSOC);
+        $aUserData = $oGetUserData->fetchAll(PDO::FETCH_ASSOC);
         if (count($aUserData) !== 0) {
             foreach ($aUserData[0] as $key => $value) {
                 $this->aUser[$key] = $value;
@@ -51,7 +52,7 @@ class UserInfo
         $oGetProfile->execute(array(
             ':user_id' => $fUserId,
         ));
-        $aProfileData = $oGetProfile->fetchAll(\PDO::FETCH_ASSOC);
+        $aProfileData = $oGetProfile->fetchAll(PDO::FETCH_ASSOC);
         if (count($aProfileData) !== 0) {
             foreach ($aProfileData[0] as $key => $value) {
                 $this->aProfile[$key] = $value;
@@ -63,7 +64,7 @@ class UserInfo
         $oGetSubscription->execute(array(
             ':user_id' => $fUserId,
         ));
-        $aSubscriptionData = $oGetSubscription->fetchAll(\PDO::FETCH_ASSOC);
+        $aSubscriptionData = $oGetSubscription->fetchAll(PDO::FETCH_ASSOC);
         if (count($aSubscriptionData) !== 0) {
             foreach ($aSubscriptionData[0] as $key => $value) {
                 $this->aSubscription[$key] = $value;
