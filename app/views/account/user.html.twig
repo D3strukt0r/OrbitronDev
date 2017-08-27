@@ -16,16 +16,16 @@
                         <div class="caption">
                             <h3>{{ current_user.username }}</h3>
                             <hr />
-                            {% if current_user_profile.first_name|length == 0 and current_user_profile.last_name|length == 0 %}
+                            {% if current_user_profile.firstname|length == 0 and current_user_profile.lastname|length == 0 %}
                                 <p>{{ 'No name set'|trans }}</p>
                             {% else %}
-                            <p>{{ current_user_profile.first_name }} {{ current_user_profile.last_name }}</p>
+                            <p>{{ current_user_profile.firstname }} {{ current_user_profile.lastname }}</p>
                             {% endif %}
                             <p>{% if current_user_profile.gender == 0 %}{{ 'No gender set'|trans }}
                                 {% elseif current_user_profile.gender == 1 %}{{ 'Male'|trans }}
                                 {% elseif current_user_profile.gender == 2 %}{{ 'Female'|trans }}
                                 {% endif %}</p>
-                            <p>{{ current_user_profile.birthdate }}</p>
+                            <p>{{ current_user_profile.birthday }}</p>
                         </div>
                     </div>
                 </div><!-- /.col-lg-3 -->
@@ -57,11 +57,16 @@
                                 </div>
                             {% endif %}
                         </div>
-                        <div id="service-cloud" class="panel panel-default">
-                            <div class="panel-heading">
-                                {{ 'Cloud'|trans }}
+                        {% if logged_in_user_id == current_user.user_id %}
+                            <div id="service-cloud" class="panel panel-default">
+                                <div class="panel-heading">
+                                    {{ 'Cloud'|trans }}
+                                    <span class="pull-right">
+                                        <a href="{{ path('app_cloud_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'Open'|trans }}</a>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
                         <div id="service-forum" class="panel panel-default">
                             <div class="panel-heading">
                                 {{ 'Forum'|trans }}

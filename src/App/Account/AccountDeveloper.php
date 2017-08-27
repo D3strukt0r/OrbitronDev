@@ -70,6 +70,7 @@ class AccountDeveloper
 
     /**
      * @param int    $clientId
+     * @param string $clientName
      * @param string $clientSecret
      * @param string $redirectUri
      * @param array  $scopes
@@ -77,13 +78,13 @@ class AccountDeveloper
      *
      * @return bool
      */
-    public static function addApp($clientId, $clientSecret, $redirectUri, $scopes = array(), $userId)
+    public static function addApp($clientId, $clientName, $clientSecret, $redirectUri, $scopes = array(), $userId)
     {
         $database = DatabaseContainer::getDatabase();
 
         $getClient = $database->prepare('INSERT INTO `oauth_clients`(`client_id`, `client_name`, `client_secret`, `redirect_uri`, `scope`, `user_id`) VALUES (:client_id, :client_name, :client_secret, :redirect_uri, :scopes, :user_id)');
         $getClient->bindValue(':client_id', $clientId, PDO::PARAM_INT);
-        $getClient->bindValue(':client_name', $clientId, PDO::PARAM_STR);
+        $getClient->bindValue(':client_name', $clientName, PDO::PARAM_STR);
         $getClient->bindValue(':client_secret', $clientSecret, PDO::PARAM_STR);
         $getClient->bindValue(':redirect_uri', $redirectUri, PDO::PARAM_STR);
         $getClient->bindValue(':scopes', implode(' ', $scopes), PDO::PARAM_STR);

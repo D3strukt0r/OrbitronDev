@@ -95,19 +95,20 @@
 {% endblock %}
 
 {% block content %}
-    <form action="{{ path('app_account_register') }}" method="post" id="register-form" class="sky-form sky-changes-3"
-          novalidate="novalidate">
+    <form action="{{ path('app_account_register') }}" method="post" id="register-form" class="sky-form sky-changes-3" novalidate="novalidate">
         {{ form_row(register_form._token) }}
 
         <header>Register</header>
         <fieldset>
+            <img src="{{ asset('assets/logo-long.png') }}" width="60%" class="img-responsive center-block" alt="" />
+            <br />
             {{ form_errors(register_form) }}
             <section>
                 <div class="row">
                     {{ form_label(register_form.username, null, {'label_attr': {'class': 'label col col-4'}}) }}
                     <div class="col col-8">
                         <label class="input">
-                            <i class="icon-append fa fa-user"></i>
+                            {#<i class="icon-append fa fa-user"></i>#}
                             {{ form_widget(register_form.username) }}
                         </label>
                         <div class="note note-error">{{ form_errors(register_form.username) }}</div>
@@ -120,7 +121,7 @@
                     {{ form_label(register_form.email, null, {'label_attr': {'class': 'label col col-4'}}) }}
                     <div class="col col-8">
                         <label class="input">
-                            <i class="icon-append fa fa-envelope"></i>
+                            {#<i class="icon-append fa fa-envelope"></i>#}
                             {{ form_widget(register_form.email) }}
                         </label>
                         <div class="note note-error">{{ form_errors(register_form.email) }}</div>
@@ -133,9 +134,11 @@
                     {{ form_label(register_form.password, null, {'label_attr': {'class': 'label col col-4'}}) }}
                     <div class="col col-8">
                         <label class="input">
-                            <i class="icon-append fa fa-lock"></i>
-                            {{ form_widget(register_form.password) }}
+                            {#<i class="icon-append fa fa-lock"></i>#}
+                            {{ form_widget(register_form.password, {'attr': {'class': 'password-verify'}}) }}
                         </label>
+                        {#<div class="pwstrength_viewport_progress"></div>
+                        <script src="{{ asset('assets/js/admin/password-strength.js') }}"></script>#}
                         <div class="note note-error">{{ form_errors(register_form.password) }}</div>
                     </div>
                 </div>
@@ -146,7 +149,7 @@
                     {{ form_label(register_form.password_verify, null, {'label_attr': {'class': 'label col col-4'}}) }}
                     <div class="col col-8">
                         <label class="input">
-                            <i class="icon-append fa fa-lock"></i>
+                            {#<i class="icon-append fa fa-lock"></i>#}
                             {{ form_widget(register_form.password_verify) }}
                         </label>
                         <div class="note note-error">{{ form_errors(register_form.password_verify) }}</div>
@@ -165,6 +168,8 @@
                 By registering you agree to our <a href="https://www.orbitrondev.org/en/terms-of-service" target="_blank">Terms and Conditions <i class="fa fa-external-link"></i></a>
                 and the <a href="https://www.orbitrondev.org/en/privacy-policy" target="_blank">Privacy Policy <i class="fa fa-external-link"></i></a>
             </small>
+            <br />
+            <br />
         </fieldset>
         <footer>
             {{ form_widget(register_form.send, {'attr': {'class': 'button'}}) }}

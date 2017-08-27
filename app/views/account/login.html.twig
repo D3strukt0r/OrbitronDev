@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Login | {{ parent() }}{% endblock %}
+{% block title %}{{ 'Login'|trans }} | {{ parent() }}{% endblock %}
 
 {% block stylesheets_implemeting_plugins %}
     {{ parent() }}
@@ -27,6 +27,13 @@
             background: url(/assets/img/background/bg-cyan.jpg) fixed 50% 50%;
             background-size: cover;
         }
+        /*body {
+                background: url(https://i.imgur.com/GHr12sH.jpg) no-repeat center center fixed;
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                -o-background-size: cover;
+                background-size: cover;
+            }*/
 
         .sky-form {
             margin: 0 auto;
@@ -85,15 +92,17 @@
         {{ form_row(login_form._token) }}
         {{ form_row(login_form.redirect) }}
 
-        <header>Login form</header>
+        <header>{{ 'Login form'|trans }}</header>
         <fieldset>
+            <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" alt="" width="100" height="100" class="img-circle center-block" />
+            <br />
             {{ form_errors(login_form) }}
             <section>
                 <div class="row">
                     {{ form_label(login_form.email, null, {'label_attr': {'class': 'label col col-4'}}) }}
                     <div class="col col-8">
                         <label class="input">
-                            <i class="icon-append fa fa-user"></i>
+                            {#<i class="icon-append fa fa-user"></i>#}
                             {{ form_widget(login_form.email) }}
                         </label>
                         <div class="note note-error">{{ form_errors(login_form.email) }}</div>
@@ -106,7 +115,7 @@
                     {{ form_label(login_form.password, null, {'label_attr': {'class': 'label col col-4'}}) }}
                     <div class="col col-8">
                         <label class="input">
-                            <i class="icon-append fa fa-lock"></i>
+                            {#<i class="icon-append fa fa-lock"></i>#}
                             {{ form_widget(login_form.password) }}
                         </label>
                         <div class="note note-error">{{ form_errors(login_form.password) }}</div>
@@ -119,14 +128,14 @@
                 <div class="row">
                     <div class="col col-4"></div>
                     <div class="col col-8">
-                        {{ form_widget(login_form.remember) }}
+                        <label class="checkbox">{{ form_widget(login_form.remember) }}<i></i>{{ 'Keep me logged in'|trans }}</label>
                     </div>
                 </div>
             </section>
         </fieldset>
         <footer>
             {{ form_widget(login_form.send, {'attr': {'class': 'button'}}) }}
-            <a href="{{ path('app_account_register') }}" class="button button-secondary">Register</a>
+            <a href="{{ path('app_account_register') }}" class="button button-secondary">{{ 'Register'|trans }}</a>
         </footer>
     {{ form_end(login_form) }}
 {% endblock %}

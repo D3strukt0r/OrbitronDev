@@ -24,15 +24,12 @@ jQuery(document).ready(function() {
             $('#messages').text('Start typing password');
         }
     };
-    $(':password').pwstrength(options);
+    $('.password-verify').pwstrength(options);
 });
 
 
 (function (jQuery) {
 // Source: src/rules.js
-
-
-
 
     var rulesEngine = {};
 

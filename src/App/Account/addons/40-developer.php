@@ -98,6 +98,7 @@ function acp_html_developer_create_application($twig, $controller)
     if ($createAppForm->isValid()) {
 
         AccountDeveloper::addApp(
+            hash('md5', time()),
             $createAppForm->get('client_name')->getData(),
             Token::createRandomToken(array('use_openssl' => false)),
             $createAppForm->get('redirect_uri')->getData(),

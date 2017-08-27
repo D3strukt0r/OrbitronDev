@@ -68,8 +68,7 @@ class AccountController extends Controller
 
         $loginForm = $this->createFormBuilder()
             ->add('redirect', HiddenType::class, array(
-                'data' => strlen($request->query->get('redir')) > 0 ? $request->query->get('redir') : $this->generateUrl('app_account_panel',
-                    array('page' => 'home')),
+                'data' => strlen($request->query->get('redir')) > 0 ? $request->query->get('redir') : $this->generateUrl('app_account_panel', array('page' => 'home')),
             ))
             ->add('email', EmailType::class, array(
                 'label'       => 'E-mail',
@@ -103,8 +102,7 @@ class AccountController extends Controller
                 'user_dont_exists' => $this->container->get('translator')->trans('This user doesn\'t exist'),
                 'unknown_error'    => $this->container->get('translator')->trans('Unknown error'),
             );
-            $loginResult = Account::login($loginForm->get('email')->getData(), $loginForm->get('password')->getData(),
-                $loginForm->get('remember')->getData());
+            $loginResult = Account::login($loginForm->get('email')->getData(), $loginForm->get('password')->getData(), $loginForm->get('remember')->getData());
 
             if ($loginResult === true) {
 
@@ -179,7 +177,7 @@ class AccountController extends Controller
             ))
             ->getForm();
 
-        $request = Request::createFromGlobals();
+        $request = $this->getRequest();
         $registerForm->handleRequest($request);
         if ($registerForm->isValid()) {
 
@@ -275,8 +273,8 @@ class AccountController extends Controller
 
         foreach (AccountAcp::getAllMenus('root') as $sMenu => $aMenuInfo) {
             $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
-            $params['view_navigation'] .= '<li><a href="' . $this->generateUrl('app_account_panel',
-                    array('page' => $aMenuInfo['href'])) . '" ' . $selected . '>' . $aMenuInfo['title'] . '</a></li>';
+            $url = $this->generateUrl('app_account_panel', array('page' => $aMenuInfo['href']));
+            $params['view_navigation'] .= '<li><a href="' . $url . '" ' . $selected . '>' . $aMenuInfo['title'] . '</a></li>';
 
             if (strlen($selected) > 0) {
                 if (is_callable($aMenuInfo['screen'])) {
@@ -305,8 +303,8 @@ class AccountController extends Controller
 
             foreach (AccountAcp::getAllMenus($aGroupInfo['id']) as $sMenu => $aMenuInfo) {
                 $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
-                $params['view_navigation'] .= '<li><a href="' . $this->generateUrl('app_account_panel',
-                        array('page' => $aMenuInfo['href'])) . '" ' . $selected . '>' . $aMenuInfo['title'] . '</a></li>';
+                $url = $this->generateUrl('app_account_panel', array('page' => $aMenuInfo['href']));
+                $params['view_navigation'] .= '<li><a href="' . $url . '" ' . $selected . '>' . $aMenuInfo['title'] . '</a></li>';
                 if (strlen($selected) > 0) {
                     if (is_callable($aMenuInfo['screen'])) {
                         $view = $aMenuInfo['screen'];
@@ -380,7 +378,7 @@ class AccountController extends Controller
     public function forgotAction()
     {
         Account::updateSession();
-        $request = Request::createFromGlobals();
+        $request = $this->getRequest();
         if (LOGGED_IN) {
             return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
         }
@@ -537,7 +535,7 @@ class AccountController extends Controller
     {
         Account::updateSession();
         $currentUser = new UserInfo(USER_ID);
-        $request = Request::createFromGlobals();
+        $request = $this->getRequest();
         $sendEmailForm = $this->createFormBuilder()
             ->add('send', SubmitType::class, array(
                 'label' => 'Send Email',
@@ -653,7 +651,7 @@ class AccountController extends Controller
     {
         $this->oauthServer();
 
-        $request2 = Request::createFromGlobals();
+        $request2 = $this->getRequest();
         $request = \OAuth2\Request::createFromGlobals();
         $response = new \OAuth2\Response();
 
@@ -666,10 +664,7 @@ class AccountController extends Controller
         // display an authorization form
         $clientInfo = AccountDeveloper::getClientInformation($request2->query->get('client_id')); // Get all information about the Client requesting an Auth code
 
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
         $scopes = array();
         foreach (explode(' ', trim($clientInfo['scope'])) as $scope) {
             $getScope = $database->prepare('SELECT * FROM `oauth_scopes` WHERE `scope`=:scope LIMIT 1');
