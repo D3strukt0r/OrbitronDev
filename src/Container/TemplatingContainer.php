@@ -138,7 +138,7 @@ class TemplatingContainer
     {
         $requestStack = new RequestStack();
         $assetContext = new RequestStackContext($requestStack);
-        $assetPackage = new Packages(new PathPackage('', new EmptyVersionStrategy(), $assetContext, array()));
+        $assetPackage = new Packages(new PathPackage('', new EmptyVersionStrategy(), $assetContext));
         $this->twig->addExtension(new AssetExtension($assetPackage));
     }
 

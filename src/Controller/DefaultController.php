@@ -26,7 +26,7 @@ class DefaultController extends Controller
 
     public function testAction()
     {
-        $request = Kernel::$kernel->getRequest();
+        $request = Kernel::getIntent()->getRequest();
         echo $request->server->get('REMOTE_ADDR');
 
         return '';
@@ -227,7 +227,7 @@ class DefaultController extends Controller
             ))
             ->getForm();
 
-        $request = Kernel::$kernel->getRequest();
+        $request = Kernel::getIntent()->getRequest();
         if ($request->isMethod('POST')) {
             $searchForm->handleRequest($request);
 

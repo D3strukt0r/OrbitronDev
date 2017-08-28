@@ -17,14 +17,14 @@ use Symfony\Component\Yaml\Yaml;
 class Kernel
 {
     public $components = array();
-
     public $environment = null;
-
-    public $rootDir = null;
-    public static $rootDir2 = null;
+    // TODO: Pages should define whether they need the database. Loads faster if not needed
+    private $config = array(
+        'database' => true,
+    );
 
     /** @var Kernel $kernel */
-    public static $kernel = null;
+    private static $kernel = null;
 
     private $request = null;
 
@@ -40,13 +40,10 @@ class Kernel
             error_reporting(0);
         }
 
-        $this->rootDir = realpath(dirname(__DIR__));
-        Kernel::$rootDir2 = realpath(dirname(__DIR__));
-
         $this->request = Request::createFromGlobals();
 
         try {
-            $config = Yaml::parse(file_get_contents($this->rootDir . '/app/config/parameters.yml'));
+            $config = Yaml::parse(file_get_contents($this->getRootDir() . '/app/config/parameters.yml'));
             $this->set('config', $config);
         } catch (ParseException $e) {
             throw new Exception("Unable to load Parameters. Unable to parse the YAML string: %s", $e->getMessage());
@@ -55,7 +52,9 @@ class Kernel
         // Load components
         $this->set('kernel', $this);
         $this->loadLogger();
-        $this->loadDatabase();
+        if($this->config['database']) {
+            $this->loadDatabase();
+        }
         $this->loadSession();
         $this->loadTranslation();
         $this->loadRouting();
@@ -81,7 +80,7 @@ class Kernel
             $class->setParameters($this->components['routing']);
             /** @var Response $response */
             $response = $class->$functionName($this); // Execute Controller
-            if (is_object($response)) {
+            if (is_object($response) && $response instanceof Response) {
                 $response->prepare($this->getRequest());
                 $response->send();
                 //echo $response->getContent();
@@ -139,7 +138,7 @@ class Kernel
     function loadLogger()
     {
         $log = new Logger('Root');
-        $log->pushHandler(new StreamHandler($this->rootDir . '/var/debug.log', Logger::DEBUG));
+        $log->pushHandler(new StreamHandler($this->getRootDir() . '/var/debug.log', Logger::DEBUG));
         $this->set('logger', $log);
     }
 
@@ -234,6 +233,19 @@ class Kernel
     function getLogDir()
     {
         return realpath(dirname(__DIR__) . '/var/logs');
+    }
+
+    /**
+     * @return \Kernel
+     * @throws \Exception
+     */
+    public static function getIntent()
+    {
+        if(is_null(self::$kernel)) {
+            throw new Exception('Kernel not initiated');
+        } else {
+            return self::$kernel;
+        }
     }
 
     /**

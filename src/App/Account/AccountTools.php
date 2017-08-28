@@ -208,7 +208,7 @@ class AccountTools
 
         if ($link) {
             $user = new UserInfo($user_id);
-            $sPrefix .= '<a href="' . Kernel::$kernel->get('router')->generate('app_account_user', array('username' => $user->getFromUser('username'))) . '">';
+            $sPrefix .= '<a href="' . Kernel::getIntent()->get('router')->generate('app_account_user', array('username' => $user->getFromUser('username'))) . '">';
             $sSuffix .= '</a>';
         }
 

@@ -50,7 +50,7 @@ class ECBCurrencyConverter
 
     private static function setupDir()
     {
-        self::$sCachedFile = Kernel::$kernel->getRootDir() . '/app/data/currency/euro.xml';
+        self::$sCachedFile = Kernel::getIntent()->getRootDir() . '/app/data/currency/euro.xml';
     }
 
     public static function update()

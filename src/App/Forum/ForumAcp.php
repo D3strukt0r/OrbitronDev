@@ -50,7 +50,7 @@ class ForumAcp
     public static function includeLibs()
     {
 
-        $sLibDir = Kernel::$kernel->getRootDir().'/src/App/Forum/addons';
+        $sLibDir = Kernel::getIntent()->getRootDir().'/src/App/Forum/addons';
 
         $aGetLibs = scandir($sLibDir);
         foreach ($aGetLibs as $ACPLibrary) {

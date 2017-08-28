@@ -1,16 +1,13 @@
 <?php
 
-/**
- * Force https if not accessing over localhost
- */
-//if ($_SERVER['HTTP_HOST'] != 'localhost') {
 use Symfony\Component\Debug\Debug;
 
-// Add www. before domain
+// Force https if not accessing over localhost
 if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
     header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
     exit;
 }
+
 // Add www. before domain
 if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
     if (count(explode('.', $_SERVER['HTTP_HOST'])) < 2) {
@@ -23,12 +20,15 @@ if (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) {
         exit;
     }
 }
-// Add www. before domain
-/*if (strpos($_SERVER['HTTP_HOST'], 'www.') === false) {
-    header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-    exit;
-}*/
-//}
+// Add www. before domain (even if there is a sub-domain)
+/*
+if ($_SERVER['HTTP_HOST'] != 'localhost') {
+    if (strpos($_SERVER['HTTP_HOST'], 'www.') === false) {
+        header('Location: https://www.' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+        exit;
+    }
+}
+*/
 
 // Decline static file requests back to the PHP built-in webserver
 if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
@@ -37,7 +37,7 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['RE
 
 define('EXEC_START', microtime(true));
 define('MAINTENANCE', false);
-define('APPLICATION_ENV', 'development'); // Use: 'dev' or 'prod'
+define('APPLICATION_ENV', 'dev'); // Use: 'dev' or 'prod'
 
 if (MAINTENANCE) {
     echo file_get_contents(__DIR__.'/../app/views/error/maintenance.phtml');

@@ -19,7 +19,7 @@ class AccountAdmin
     public static function addUser($username, $hashed_password, $email)
     {
         $database = DatabaseContainer::getDatabase();
-        $request = Kernel::$kernel->getRequest();
+        $request = Kernel::getIntent()->getRequest();
 
         // Insert to table "users"
         $oAddUser = $database->prepare('INSERT INTO `users`(`username`,`password`,`email`,`created`,`last_online`,`last_ip`,`registration_ip`) VALUES (:username,:password,:email,:created,:lastOnline,:lastIp,:registrationIp)');

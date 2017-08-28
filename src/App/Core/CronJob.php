@@ -2,6 +2,9 @@
 
 namespace App\Core;
 
+use Container\DatabaseContainer;
+use Exception;
+use Kernel;
 use PDO;
 
 class CronJob
@@ -11,11 +14,7 @@ class CronJob
      */
     public static function execute()
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $oGetCronJobs = $database->prepare('SELECT * FROM `app_cronjob` WHERE `enabled`="1" ORDER BY `priority` ASC');
         if ($oGetCronJobs->execute()) {
@@ -35,11 +34,7 @@ class CronJob
      */
     public static function getNextExec($job_id)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $oGetCronJobInfo = $database->prepare('SELECT `last_exec`,`exec_every` FROM `app_cronjob` WHERE `id`=:job_id LIMIT 1');
         $oGetCronJobInfoQuerySuccessful = $oGetCronJobInfo->execute(array(
@@ -61,11 +56,7 @@ class CronJob
      */
     public static function runJob($job_id)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $oGetCronJobInfo = $database->prepare('SELECT `scriptfile` FROM `app_cronjob` WHERE `id`=:job_id LIMIT 1');
         $oGetCronJobInfoQuerySuccessful = $oGetCronJobInfo->execute(array(
@@ -73,7 +64,7 @@ class CronJob
         ));
         if ($oGetCronJobInfoQuerySuccessful) {
             $aJobInfo = $oGetCronJobInfo->fetchAll(PDO::FETCH_ASSOC);
-            $sFileDir = \Kernel::$rootDir2 . '/src/App/Core/cron_job/' . $aJobInfo[0]['scriptfile'];
+            $sFileDir = Kernel::getIntent()->getRootDir() . '/src/App/Core/cron_job/' . $aJobInfo[0]['scriptfile'];
 
             if (file_exists($sFileDir)) {
                 include $sFileDir;
@@ -84,7 +75,7 @@ class CronJob
                     ':job_id' => $job_id,
                 ));
             } else {
-                throw new \Exception('[CronJob][Fatal Error]: ' . 'Could not execute cron job. Could not locate script file ("' . $sFileDir . '")');
+                throw new Exception('[CronJob][Fatal Error]: ' . 'Could not execute cron job. Could not locate script file ("' . $sFileDir . '")');
             }
         }
     }

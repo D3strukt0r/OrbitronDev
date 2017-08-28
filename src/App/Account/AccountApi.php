@@ -21,7 +21,7 @@ class AccountApi
 
     public static function get_img()
     {
-        $request = Kernel::$kernel->getRequest();
+        $request = Kernel::getIntent()->getRequest();
 
         $userId = (int)$request->query->get('user_id');
         $selectedUser = new UserInfo($userId);
@@ -29,7 +29,7 @@ class AccountApi
         $width = !is_null($request->query->get('width')) ? (int)$request->query->get('width') : 1000;
         $height = !is_null($request->query->get('height')) ? (int)$request->query->get('height') : 1000;
 
-        $rootPictureDir = Kernel::$kernel->getRootDir() . '/web/app/account/profile_pictures/';
+        $rootPictureDir = Kernel::getIntent()->getRootDir() . '/web/app/account/profile_pictures/';
 
         if (AccountTools::idExists($userId)) {
             if (!is_null($selectedUser->getFromProfile('profile_picture')) && file_exists($filename = $rootPictureDir . $selectedUser->getFromProfile('profile_picture'))) {
@@ -37,7 +37,7 @@ class AccountApi
                 $oImage->resize($width, $height);
                 $oImage->output();
             } else {
-                $oImage = new SimpleImage(Kernel::$kernel->getRootDir() . '/web/assets/img/user.jpg');
+                $oImage = new SimpleImage(Kernel::getIntent()->getRootDir() . '/web/assets/img/user.jpg');
                 $oImage->resize($width, $height);
                 $oImage->output();
             }

@@ -93,7 +93,7 @@ function acp_html_account($twig, $controller)
         ))
         ->getForm();
 
-    $request = Kernel::$kernel->getRequest();
+    $request = Kernel::getIntent()->getRequest();
     $editAccountForm->handleRequest($request);
     if ($editAccountForm->isSubmitted()) {
         if (strlen($newUsername = $editAccountForm->get('new_username')->getData()) > 0) {
@@ -292,7 +292,7 @@ function acp_html_profile($twig, $controller)
         ))
         ->getForm();
 
-    $request = Kernel::$kernel->getRequest();
+    $request = Kernel::getIntent()->getRequest();
     $editProfileForm->handleRequest($request);
     if ($editProfileForm->isSubmitted()) {
 

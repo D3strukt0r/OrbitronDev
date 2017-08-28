@@ -93,7 +93,7 @@ function acp_html_developer_create_application($twig, $controller)
         ))
         ->getForm();
 
-    $request = Kernel::$kernel->getRequest();
+    $request = Kernel::getIntent()->getRequest();
     $createAppForm->handleRequest($request);
     if ($createAppForm->isValid()) {
 
@@ -175,7 +175,7 @@ function acp_html_developer_register($twig, $controller)
 
     $currentUser = new UserInfo(USER_ID);
 
-    $request = Kernel::$kernel->getRequest();
+    $request = Kernel::getIntent()->getRequest();
     $developerForm->handleRequest($request);
     if ($developerForm->isSubmitted()) {
         $currentUser->updateUserDeveloper(true);

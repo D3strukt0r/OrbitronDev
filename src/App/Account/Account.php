@@ -15,9 +15,9 @@ class Account
 
     public static function buildPaths()
     {
-        self::$publicDir = Kernel::$kernel->getRootDir() . '/web/app/account';
-        self::$srcDir = Kernel::$kernel->getRootDir() . '/src/App/Account';
-        self::$twigDir = Kernel::$kernel->getRootDir() . '/app/views/account';
+        self::$publicDir = Kernel::getIntent()->getRootDir() . '/web/app/account';
+        self::$srcDir = Kernel::getIntent()->getRootDir() . '/src/App/Account';
+        self::$twigDir = Kernel::getIntent()->getRootDir() . '/app/views/account';
     }
 
     /**

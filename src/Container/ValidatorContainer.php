@@ -28,7 +28,7 @@ class ValidatorContainer
         )));
         $instance->setTranslator($this->$kernel('translator'));
         $instance->setTranslationDomain('validators');
-        $instance->addXmlMappings(array(0 => ($kernel->rootDir . '/vendor/symfony/form/Resources/config/validation.xml')));
+        $instance->addXmlMappings(array(0 => ($kernel->getRootDir() . '/vendor/symfony/form/Resources/config/validation.xml')));
         //$instance->enableAnnotationMapping($this->get('annotation_reader')); // TODO: No annotation available
         $instance->addMethodMapping('loadValidatorMetadata');
         //$instance->addObjectInitializers(array(0 => $this->get('doctrine.orm.validator_initializer'))); // TODO: Doctrine not installed

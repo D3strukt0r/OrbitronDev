@@ -64,7 +64,7 @@ class AccountController extends Controller
             return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
         }
 
-        $request = Kernel::$kernel->getRequest();
+        $request = Kernel::getIntent()->getRequest();
 
         $loginForm = $this->createFormBuilder()
             ->add('redirect', HiddenType::class, array(

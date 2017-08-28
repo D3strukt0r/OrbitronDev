@@ -2,7 +2,6 @@
 
 namespace App\Store;
 
-
 use App\Account\UserInfo;
 use App\Core\DatabaseConnection;
 

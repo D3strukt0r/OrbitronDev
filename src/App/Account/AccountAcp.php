@@ -49,7 +49,7 @@ class AccountAcp
      */
     public static function includeLibs()
     {
-        $sLibDir = Kernel::$rootDir2.'/src/App/Account/addons';
+        $sLibDir = Kernel::getIntent()->getRootDir().'/src/App/Account/addons';
 
         $aGetLibs = scandir($sLibDir);
         foreach ($aGetLibs as $ACPLibrary) {
