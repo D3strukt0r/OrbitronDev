@@ -8,6 +8,9 @@ class Template
     public $params = array();
     private $include_files = array();
 
+    const INCLUDE_SETS_DIR = './app/data/template/include_sets';
+    const VIEWS_DIR = './app/views';
+
     /**
      * Template constructor.
      */
@@ -40,7 +43,7 @@ class Template
      */
     public static function templateExists($template_name)
     {
-        $sTemplateFileDir = './app/views/' . $template_name . '.phtml';
+        $sTemplateFileDir = self::VIEWS_DIR . '/' . $template_name . '.phtml';
 
         if (file_exists($sTemplateFileDir)) {
             return true;
@@ -49,14 +52,20 @@ class Template
     }
 
     /**
+     * Uses .txt as reference to get all sources at once
+     *
+     * Create a "example.txt" file in the "include_sets" directory
+     *
+     * add following example entity's:
+     * text/css;{{cdn}}/bootstrap/current/css/bootstrap.min.css;stylesheet;
+     * text/javascript;{{cdn}}/jquery/current/js/jquery.min.js;;
+     *
      * @param string $include_set
      */
     function addIncludeSet($include_set)
     {
-        $include_set_dir = './app/data/template/include_sets';
-
-        if (file_exists($include_set_dir . '/' . $include_set . '.txt')) {
-            $includes = file($include_set_dir . '/' . $include_set . '.txt');
+        if (file_exists(self::INCLUDE_SETS_DIR . '/' . $include_set . '.txt')) {
+            $includes = file(self::INCLUDE_SETS_DIR . '/' . $include_set . '.txt');
             foreach ($includes as $include_info) {
                 $include_info = explode(';', $include_info);
                 $this->addIncludeFile($include_info[0], $include_info[1], $include_info[2], $include_info[3]);
@@ -65,10 +74,10 @@ class Template
     }
 
     /**
-     * @param   string  $type
-     * @param    string $src
-     * @param string    $rel
-     * @param string    $name
+     * @param string $type
+     * @param string $src
+     * @param string $rel
+     * @param string $name
      */
     function addIncludeFile($type, $src, $rel = '', $name = '')
     {

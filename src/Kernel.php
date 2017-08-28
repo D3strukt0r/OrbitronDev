@@ -60,7 +60,7 @@ class Kernel
         $this->loadRouting();
         $this->loadTemplating();
         $this->loadMailer();
-        //$this->runCronJob(); // TODO: Add Cron Job
+        //$this->runCronJob(); // TODO: Enable Cron Job
 
         // Load template
         if ($this->has('routing.error')) {

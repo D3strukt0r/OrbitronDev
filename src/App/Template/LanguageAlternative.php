@@ -5,14 +5,7 @@
 namespace App\Template;
 
 /**
- *
- * Requires JSON Translator file
- *
- * FORMAT:
- * {
- *     "Key": "Value",
- *     "Key2": "Value with {0} variables {1}. Yeah"
- * }
+ * Requires JSON Translator file. Check function "IncludeLanguageFile"
  *
  * Class LanguageAlternative
  *
@@ -21,6 +14,8 @@ namespace App\Template;
 class LanguageAlternative
 {
     private static $aLanguage = array();
+
+    const LOCALES_DIR = './app/data/locale';
 
     static function RedirIfNotSet($config)
     {
@@ -62,13 +57,29 @@ class LanguageAlternative
         }
     }
 
+    /**
+     * Include the language file
+     *
+     * Create a "en.json" file in the "locale" directory
+     *
+     * Add following example content:
+     * {
+     *     "page.hello_name" : "Hello {0}, how are you?",
+     *     "page.pageIndicate" : "Page {0} from {1}"
+     * }
+     *
+     *
+     * @param $sLangCode
+     *
+     * @return mixed
+     */
     static function IncludeLanguageFile($sLangCode)
     {
-        $sLangFile = './app/data/locale/alternative/' . $sLangCode . '.json';
+        $sLangFile = self::LOCALES_DIR . '/' . $sLangCode . '.json';
         if (file_exists($sLangFile)) {
             $aLanguage = json_decode(file_get_contents($sLangFile), true);
         } else {
-            $aLanguage = json_decode(file_get_contents('./app/data/locale/alternative/en.json'),
+            $aLanguage = json_decode(file_get_contents(self::LOCALES_DIR . '/en.json'),
                 true);
         }
         self::$aLanguage = $aLanguage;

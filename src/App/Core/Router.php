@@ -5,32 +5,41 @@ namespace App\Core;
 class Router
 {
     /**
-     * CONFIG SETUP BRANCHES
+     * #CONFIG SETUP BRANCHES
      * /ACCESS_URL;CONTROLLER.php;HEADER;FOOTER
+     * /;app/data/router/index.php;__global__;__global__
      * /store;app/data/router/store.php;__global__;__global__
-     *
-     * CONFIG SETUP TEMPLATE
-     * return array(
-     *     'save' => 'FILE', // 'FILE' or 'DB'
-     *     'sql'  => array(
-     *         'hostname' => '',
-     *         'username' => '',
-     *         'password' => '',
-     *         'database' => '',
-     *         'prefix'   => '',
-     *      ),
-     *
-     *     'gheader'  => 'navigation',
-     *     'gfooter'  => 'footer',
-     *     'notfound' => array(
-     *         'page'    => 'home/404',
-     *         'gheader' => false,
-     *         'gfooter' => false,
-     *     ),
-     * );
-     *
-     *
-     * @param array       $config       Requires an array of settings (see above)
+     */
+
+    /**
+     * #CONFIG SETUP TEMPLATE
+     */
+    const DEFAULT_CONFIG = array(
+        'save' => 'FILE', // 'FILE' or 'DB'
+        'sql'  => array(
+            'hostname' => '',
+            'username' => '',
+            'password' => '',
+            'database' => '',
+            'prefix'   => '',
+        ),
+
+        'gheader'  => 'navigation', // The navigation view. In this case "views/navigation.phtml
+        'gfooter'  => 'footer', // The footer view. In this case "views/footer.phtml
+        'notfound' => array(
+            'page'    => 'home/404',
+            'gheader' => false,
+            'gfooter' => false,
+        ),
+    );
+
+    /**
+     * @var string The path for the branches file
+     */
+    const BRANCHES_FILE = './app/config/branches.txt';
+
+    /**
+     * @param array       $config       Requires an array of settings (see above #CONFIG SETUP TEMPLATE)
      * @param string      $request_uri  Use parse_url(\Core\BrowserInfo::fullUrl(), PHP_URL_PATH)
      * @param string|null $request_host Use parse_url(\Core\BrowserInfo::fullUrl(), PHP_URL_HOST)
      *
@@ -38,6 +47,8 @@ class Router
      */
     public static function init($config, $request_uri, $request_host = null)
     {
+        $config = array_merge(self::DEFAULT_CONFIG, $config);
+
         if ($request_uri == '/') {
             $request_uri = '';
         }
@@ -60,7 +71,7 @@ class Router
 
         // Get branches
         if ($config['save'] == 'FILE') {
-            $branch_list = file('./app/config/branches.txt');
+            $branch_list = file(self::BRANCHES_FILE);
             $branches = array();
 
             foreach ($branch_list as $value) {
