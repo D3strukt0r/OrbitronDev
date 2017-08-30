@@ -100,7 +100,7 @@ $opts = array(
 		    'alias'         => 'Home',
 			'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
 			'path'          => '../../../../app/data/cloud/storage/'.$_GET['user_id'].'/', // path to files (REQUIRED)
-			'URL'           => dirname($_SERVER['PHP_SELF']) . '/../../../../app/data/cloud/storage/'.$_GET['user_id'].'/', // URL to files (REQUIRED)
+			'URL'           => '/files/', // URL to files (REQUIRED)
 			'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload

@@ -1,6 +1,6 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}Search for "..." | {{ parent() }}{% endblock %}
+{% block title %}{{ 'Search for'|trans }} "{{ search }}" | {{ parent() }}{% endblock %}
 
 {% block stylesheets_page_style %}
     {{ parent() }}
@@ -11,10 +11,10 @@
     <!--=== Breadcrumbs ===-->
     <div class="breadcrumbs breadcrumbs-dark">
         <div class="container">
-            <h1 class="pull-left">Search Results</h1>
+            <h1 class="pull-left">{{ 'Search Results'|trans }}</h1>
             <ul class="pull-right breadcrumb">
-                <li><a href="{{ path('app_default_index') }}">Home</a></li>
-                <li class="active">Search results</li>
+                <li><a href="{{ path('app_default_index') }}">{{ 'Home'|trans }}</a></li>
+                <li class="active">{{ 'Search results'|trans }}</li>
             </ul>
         </div>
     </div>
@@ -28,10 +28,10 @@
     <div class="search-block-v2">
         <div class="container">
             <div class="col-md-6 col-md-offset-3">
-                <h2>Search again</h2>
-                <form action="{{ path('app_default_search') }}" method="GET">
+                <h2>{{ 'Search again'|trans }}</h2>
+                <form action="{{ path('app_default_search') }}" method="get">
                     <div class="input-group">
-                        <input type="search" name="q" required="required" placeholder="{% trans %}Search words with regular expressions ...{% endtrans %}" class="form-control" />
+                        <input type="search" name="q" required="required" placeholder="{{ 'Search words with regular expressions ...'|trans }}" class="form-control" />
                         <span class="input-group-btn">
                             <button type="submit" class="btn-u"><i class="fa fa-search"></i></button>
                         </span>
@@ -42,7 +42,21 @@
     </div><!--/container-->
     <!--=== End Search Block Version 2 ===-->
 
-    <!--=== Search Results ===-->
+    <div class="container s-results margin-bottom-50">
+        <script>
+            (function() {
+                var cx = '015599512232270868774:yok4otkk5fg';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+            })();
+        </script>
+        <gcse:searchresults-only></gcse:searchresults-only>
+    </div><!--/container-->
+    {#<!--=== Search Results ===-->
     <div class="container s-results margin-bottom-50">
         <div class="row">
             <div class="col-md-2 hidden-xs related-search">
@@ -271,5 +285,5 @@
             </div><!--/col-md-10-->
         </div>
     </div><!--/container-->
-    <!--=== End Search Results ===-->
+    <!--=== End Search Results ===-->#}
 {% endblock %}

@@ -5,6 +5,11 @@ app_cloud_index:
 app_cloud_files:
     path:     /files
     defaults: { _controller: 'CloudController::filesAction' }
+app_cloud_show_file:
+    path:     /files/{file}
+    defaults: { _controller: 'CloudController::showRawFileAction' }
+    requirements:
+        file: .+
 app_cloud_share:
     path:     /share
     defaults: { _controller: 'CloudController::shareAction' }

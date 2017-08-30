@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# 29.08.2017:v1
+
+#CACHE:
+#/assets/
+
+NETWORK:
+*
+
+#FALLBACK:
+#img/large/ img/offline.jpg
+#/ /offline.html

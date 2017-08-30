@@ -206,8 +206,11 @@ class DefaultController extends Controller
             return $response;
         }
 
-        // TODO: Handle form submission or use Google search
-        return $this->render('default/search.html.twig');
+        $request = $this->getRequest();
+
+        return $this->render('default/search.html.twig', array(
+            'search'   => $request->query->get('q'),
+        ));
     }
 
     private function searchHandler()
@@ -227,13 +230,12 @@ class DefaultController extends Controller
             ))
             ->getForm();
 
-        $request = Kernel::getIntent()->getRequest();
+        $request = $this->getRequest();
         if ($request->isMethod('POST')) {
             $searchForm->handleRequest($request);
 
             if ($searchForm->isSubmitted() && $searchForm->isValid()) {
-                return $this->redirect($this->generateUrl('app_default_search',
-                    array('q' => $searchForm->get('search')->getData())));
+                return $this->redirect($this->generateUrl('app_default_search', array('q' => $searchForm->get('search')->getData())));
             }
         }
 
