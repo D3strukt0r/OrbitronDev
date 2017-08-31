@@ -14,6 +14,25 @@
 'page_links': service_page_links
 } %}
 
+{% block stylesheet %}
+<style type="text/css">
+    .thumbnail img {
+        width: 100%;
+    }
+    .ratings {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    .thumbnail {
+        padding: 0;
+    }
+    .thumbnail .caption-full {
+        padding: 9px;
+        color: #333;
+    }
+</style>
+{% endblock %}
+
 {% block title %}{{ 'Index'|trans }} | {{ service.page_name }}{% endblock %}
 
 {% block header %}
@@ -30,6 +49,54 @@
 {% block content %}
     <div class="container">
         <div class="row">
+            {# Check if there is a product which isn't closed #}
+            {% set counter = 0 %}
+            {% for product in product_list %}
+                {% if not product.closed %}
+                    {% set counter = counter + 1 %}
+                {% endif %}
+            {% endfor %}
+
+            {% if product_list|length == 0 or counter == 0 %}
+                <p style="text-align: center"><b>{{ 'There aren\'t any products'|trans }}</b></p>
+                <br />
+            {% else %}
+                {% for product in product_list %}
+                    {% if not product.closed %}
+                        <div class="col-sm-4 col-md-4 col-lg-4">
+                            <div class="thumbnail">
+                                <a href="{{ path('app_store_store_product', {'store': current_store.url, 'product': product.id}) }}">
+                                    {# <img src="/img/store/' . $value['small_icon'] . '" title="' . $sName . '" /> #}
+                                    <img src="//placehold.it/500x300" alt="" />
+                                </a>
+                                <div class="caption-full">
+                                    <h4 class="pull-right">
+                                        {% if product.price == 0 %}
+                                            {{ 'Free'|trans }}
+                                        {% else %}
+                                            {{ product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                        {% endif %}
+                                    </h4>
+                                    <h4>
+                                        <a href="{{ path('app_store_store_product', {'store': current_store.url, 'product': product.id}) }}">{{ product.name }}</a>
+                                        <br />
+                                        {% if product.stock_available == 0 %}
+                                            <span class="text-danger">{{ 'Sold!'|trans }}</span>
+                                        {% endif %}
+                                    </h4>
+                                    <p>{{ product.short_description }}</p>
+                                </div>
+                                <div class="ratings">
+                                    <p class="pull-right">{{ product.rating_count|number_format(0, '.', '\'') }} {{ 'Comments'|trans }}</p>
+                                    <p>
+                                        {% for i in 1..5 %}<span class="fa fa-star{% if i > product.rating_cache %}-o{% endif %}"></span>&nbsp;{% endfor %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         </div><!-- /.row -->
     </div><!-- /.container -->
 {% endblock %}

@@ -4,8 +4,8 @@ namespace Controller;
 
 use App\Account\Account;
 use App\Account\UserInfo;
-use App\Blog\Blog;
 use App\Store\Store;
+use App\Store\StoreProduct;
 use Controller;
 use Form\RecaptchaType;
 use PDO;
@@ -153,9 +153,26 @@ class StoreController extends Controller
         $storeId = Store::url2Id($this->parameters['store']);
         $store   = new Store($storeId);
 
+        $productList = StoreProduct::getProductList($store->getVar('id'));
+        $userLanguage = 'en'; // TODO: Make this editable by the user
+        $userCurrency = 'dollar';  // TODO: Make this editable by the user
+
+        foreach ($productList as $index => $product) {
+            $productList[$index]['short_description'] = $product['short_description_' . $userLanguage];
+            $productList[$index]['price'] = $product['price_' . $userCurrency];
+            $productList[$index]['in_sale'] = is_null($product['price_sale_' . $userCurrency]) ? false : true;
+            $productList[$index]['price_sale'] = $productList[$index]['in_sale'] ? $product['price_sale_' . $userCurrency] : null; // TODO: Show it when there is a sale
+        }
+
         return $this->render('store/theme1/index.html.twig', array(
             'current_user'  => $currentUser->aUser,
             'current_store' => $store->storeData,
+            'product_list'  => $productList,
         ));
+    }
+
+    public function storeProductAction()
+    {
+
     }
 }
