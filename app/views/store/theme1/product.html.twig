@@ -1,0 +1,256 @@
+{% extends 'store/theme1/layout.html.twig' %}
+
+{% set service_page_links %}
+    {% for text,link in current_store.page_links %}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+    {% endfor %}
+{% endset %}
+{% set service = {
+'page_name': current_store.name,
+'page_logo_link': '/' ~ current_store.url,
+'page_author': current_store.owner_username,
+'page_description': current_store.page_description,
+'page_keywords': current_store.page_keywords,
+'page_links': service_page_links
+} %}
+
+{% block stylesheet %}
+    <script src="{{ asset('app/store/js/starrr.js') }}" type="text/javascript"></script>
+    <style type="text/css">
+        .ratings {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+        .thumbnail-product img {
+            width: 100%;
+            height: 100%;
+        }
+        .thumbnail-product {
+            padding: 0;
+            margin: 0;
+        }
+        .thumbnail .caption-full {
+            padding: 9px;
+            color: #333;
+        }
+        .stars {
+            margin: 20px 0;
+            font-size: 24px;
+            color: orange;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}{{ 'Product'|trans }} | {{ service.page_name }}{% endblock %}
+
+{% block header %}
+    <div class="container">
+        <h1 class="page-header">{{ current_product.name }}</h1>
+        <ul class="nav nav-pills">
+            <li role="presentation"><a href="{{ path('app_store_store_index', {'store': current_store.url}) }}">{{ 'Home'|trans }}</a></li>
+            <li role="presentation"><a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}">{{ 'Checkout'|trans }}</a></li>
+        </ul>
+        <hr />
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block content %}
+    {% if not current_product.closed %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="thumbnail thumbnail-product">
+                                <!--<img class="img-responsive" src="%cdn%/img/store/<?php echo $aProductInfo['big_icon']; ?>" alt="" />-->
+                                <img src="//placehold.it/500x500" alt="" />
+                            </div><!-- /.thumbnail -->
+                        </div> <!-- /.panel-body -->
+                    </div><!-- /.panel .panel-default -->
+                </div><!-- /.col-md-5 -->
+                <div class="col-md-7">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            {% if current_product.stock_available > 0 %}
+                                <form accept-charset="UTF-8" action="{{ path('app_store_store_do_add_to_cart', {'store': current_store.url}) }}" method="post">
+                                    <input type="hidden" name="form-name" value="add-to-cart" />
+                                    <input type="hidden" name="store-id" value="{{ current_store.id }}" />
+                                    <input type="hidden" name="product-id" value="{{ current_product.id }}" />
+                                    <span class="col-xs-5 col-md-4">
+										<div class="row">
+											<div class="input-group">
+												<input type="number" min="1" max="{{ current_product.stock_available }}" default="1" id="product-count" name="product-count" class="form-control" value="1" aria-describedby="product-count-desc" />
+												<span class="input-group-addon" id="product-count-desc">Stück</span>
+											</div>
+                                            <p class="help-block text-success"><b>Verfügbarer lagerbestand: {{ current_product.stock_available }}</b></p>
+                                        </div>
+									</span>
+                                    <span class="pull-right">
+                                        {% if current_product.in_sale %}
+                                            <span class="text-danger" style="/* color:#00FF00 */"><b>SALE!</b></span>
+                                            &nbsp;
+                                            <del>
+                                        {% endif %}
+                                        <span id="output-price">
+                                            <b>
+                                                {% if current_product.price == 0 %}
+                                                    {{ 'Free'|trans }}
+                                                {% else %}
+                                                    {{ current_product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                {% endif %}
+                                            </b>
+                                        </span>
+                                        {% if current_product.in_sale %}
+                                            </del>
+                                            &nbsp;
+                                            <span id="output-price-sale">
+                                                <b>{{ current_product.price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}</b>
+                                            </span>
+                                        {% endif %}
+                                        &nbsp;
+										<button type="submit" id="add-checkout" data-count="product-count" class="btn btn-primary">In den Warenkorb</button>
+									</span>
+                                </form>
+                                <script type="text/javascript">
+                                    function number_format(number, decimals, dec_point, thousands_sep) {
+                                        number = (number + '')
+                                            .replace(/[^0-9+\-Ee.]/g, '');
+                                        var n = !isFinite(+number) ? 0 : +number,
+                                            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+                                            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+                                            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+                                            s = '',
+                                            toFixedFix = function(n, prec) {
+                                                var k = Math.pow(10, prec);
+                                                return '' + (Math.round(n * k) / k)
+                                                    .toFixed(prec);
+                                            };
+                                        // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+                                        s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+                                            .split('.');
+                                        if (s[0].length > 3) {
+                                            s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+                                        }
+                                        if ((s[1] || '')
+                                                .length < prec) {
+                                            s[1] = s[1] || '';
+                                            s[1] += new Array(prec - s[1].length + 1)
+                                                .join('0');
+                                        }
+                                        return s.join(dec);
+                                    }
+                                    $('#product-count').change(function() {
+                                        var price = {{ current_product.price }};
+                                        $("#output-price").html("<b>" + number_format(price * $('#product-count').val(), 2, '.', '\'') + " $</b>");
+                                        if($("#output-price-sale").length != 0) {
+                                            var sale = {{ current_product.price_sale }};
+                                            $("#output-price-sale").html("<b>" + number_format(sale * $('#product-count').val(), 2, '.', '\'') + " $</b>");
+                                        }
+                                    });
+                                </script>
+                            {% else %}
+                                <span class="col-xs-5 col-md-4">
+                                        <div class="row">
+                                            <div class="input-group">
+                                                <input type="number" min="0" max="0" default="0" class="form-control" value="0" aria-describedby="product-count-desc" disabled />
+                                                <span class="input-group-addon" id="product-count-desc">St&uuml;ck</span>
+                                            </div>
+                                            <h4 class="help-block text-danger"><b>Ausverkauft!</b></h4>
+                                        </div>
+                                    </span>
+                                <span class="pull-right">
+
+                                    {% if current_product.in_sale %}
+                                        <span class="text-danger" style="/* color:#00FF00 */"><b>SALE!</b></span>
+                                        &nbsp;
+                                        <del>
+                                    {% endif %}
+                                    <span id="output-price">
+                                        <b>
+                                            {% if current_product.price == 0 %}
+                                                {{ 'Free'|trans }}
+                                            {% else %}
+                                                {{ current_product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                            {% endif %}
+                                        </b>
+                                    </span>
+                                    {% if current_product.in_sale %}
+                                        </del>
+                                        &nbsp;
+                                        <span id="output-price-sale">
+                                            <b>{{ current_product.price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}</b>
+                                        </span>
+                                    {% endif %}
+									&nbsp;
+									<button type="submit" disabled class="btn btn-primary">In den Warenkorb</button>
+								</span>
+                            {% endif %}
+                        </div><!-- /.panel-body -->
+                    </div><!-- /.panel .panel-default -->
+                </div><!-- /.col-md-7 -->
+                <div class="col-md-7">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>
+                                <a href="{{ path('app_store_store_product', {'store': current_store.url, 'product': current_product.id}) }}">{{ current_product.name }}</a>
+                                <span class="text-danger" style="/* color:#00FF00 */">({{ ((1 - (current_product.price_sale / current_product.price)) * 100)|round }}% Rabatt!)</span>
+                            </h4>
+                            <p>{{ current_product.description }}</p>
+                            <hr />
+                            <div class="ratings">
+                                <p class="pull-right">{{ product.rating_count|number_format(0, '.', '\'') }} Kommentare</p>
+                                <p>{% for i in 1..5 %}<span class="fa fa-star{% if i > current_product.rating_cache %}-o{% endif %}"></span>&nbsp;{% endfor %}&nbsp;&nbsp;{{ current_product.rating_cache }} Sterne</p>
+                            </div>
+                        </div><!-- /.panel-body -->
+                    </div><!-- /.panel .panel-default -->
+                </div><!-- /.col-md-7 -->
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+        <div class="container">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <form accept-charset="UTF-8" method="post">
+                            <input type="hidden" name="form-name" value="product-review" />
+                            <input type="hidden" name="store-id" value="{{ current_product.id }}">
+                            <input type="hidden" name="rating" value="0" id="ratings-hidden">
+                            <div class="col-md-7">
+                                <textarea class="form-control animated" id="new-review" name="comment" placeholder="Enter your review here..." style="overflow: hidden; word-wrap: break-word; resize: vertical; height: 54px;"></textarea>
+                                <div class="text-right"><span class="stars starrr" data-rating="0"></span></div>
+                            </div>
+                            <div class="col-md-5">
+                                <button class="btn btn-primary" type="submit">Bewertung schreiben</button>
+                            </div>
+                        </form>
+                    </div>
+                    <script type="text/javascript">
+                        $(document).ready(function() {
+                            $('.starrr').on('starrr:change', function(event, value) {
+                                $('#ratings-hidden').val(value);
+                            });
+                        });
+                    </script>
+                    {% if not comments|length == 0 %}
+                        {% for comment in comments %}
+                            <hr />
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    {{ comment.author|raw }}
+                                    {% for i in 1..5 %}<span class="fa fa-star{% if i > current_product.rating_cache %}-o{% endif %}"></span>&nbsp;{% endfor %}
+                                    <span class="pull-right">
+                                        {% set datediff = date().timestamp - comment.created %}
+                                        {{ (datediff / (60 * 60 * 24))|round(0, 'floor') }} Tage her
+                                    </span>
+                                    <p>{{ comment.comment }}</p>
+                                </div><!-- /.col-xs-12 -->
+                            </div><!-- /.row -->
+                        {% endfor %}
+                    {% else %}
+                    <hr />
+                    <center><b><i>There aren't any comments. Be the first!</i></b></center>
+                    {% endif %}
+                </div><!-- /.panel-body -->
+            </div><!-- /.panel .panel-default -->
+        </div><!-- /.container -->
+    {% endif %}
+{% endblock %}

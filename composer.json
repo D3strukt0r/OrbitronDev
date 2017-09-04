@@ -45,6 +45,7 @@
         "guzzlehttp/guzzle": "^6.2",
         "mjohnson/decoda": "^6.8",
         "braintree/braintree_php": "^3.23",
-        "suin/php-rss-writer": "^1.6"
+        "suin/php-rss-writer": "^1.6",
+        "doctrine/annotations": "^1.5"
     }
 }

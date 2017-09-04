@@ -3,8 +3,10 @@
 namespace Controller;
 
 use App\Account\Account;
+use App\Account\AccountTools;
 use App\Account\UserInfo;
 use App\Store\Store;
+use App\Store\StoreComments;
 use App\Store\StoreProduct;
 use Controller;
 use Form\RecaptchaType;
@@ -173,6 +175,33 @@ class StoreController extends Controller
 
     public function storeProductAction()
     {
+        // Does the store even exist?
+        if (!Store::urlExists($this->parameters['store'])) {
+            return $this->render('error/error404.html.twig');
+        }
 
+        // TODO: Add check, to see if product exists
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        $storeId      = Store::url2Id($this->parameters['store']);
+        $store        = new Store($storeId);
+        $userLanguage = 'en'; // TODO: Make this editable by the user
+        $userCurrency = 'dollar';  // TODO: Make this editable by the user
+        $product      = new StoreProduct($this->parameters['product']);
+
+        //$product->productData['formatted_author'] = AccountTools::formatUsername($product->getVar('author'));
+        $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
+        $product->productData['price'] = $product->getVar('price_' . $userCurrency);
+        $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
+        $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
+
+        return $this->render('store/theme1/product.html.twig', array(
+            'current_user'  => $currentUser->aUser,
+            'current_store' => $store->storeData,
+            'current_product'  => $product->productData,
+            'comments' => StoreComments::getCommentList($product->getVar('id')),
+        ));
     }
 }

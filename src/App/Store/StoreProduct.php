@@ -9,7 +9,7 @@ use RuntimeException;
 class StoreProduct
 {
     /**
-     * @param     $store_id
+     * @param int $store_id
      * @param int $category
      *
      * @return array
@@ -37,8 +37,8 @@ class StoreProduct
 
     /******************************************************************************/
 
-    private $iProductId;
-    private $aProductData;
+    private $productId;
+    public  $productData;
 
     /**
      * StoreProduct constructor.
@@ -49,23 +49,23 @@ class StoreProduct
      */
     public function __construct($product_id)
     {
-        $this->iProductId = $product_id;
+        $this->productId = $product_id;
 
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetProductData = $database->prepare('SELECT * FROM `store_products` WHERE `id`=:product_id LIMIT 1');
-        $bGetProductDataSuccessful = $oGetProductData->execute(array(
-            ':product_id' => $this->iProductId,
-        ));
-        if (!$bGetProductDataSuccessful) {
+        $getProductData = $database->prepare('SELECT * FROM `store_products` WHERE `id`=:product_id LIMIT 1');
+        $getProductData->bindValue(':product_id', $this->productId, PDO::PARAM_INT);
+        $sqlSuccess = $getProductData->execute();
+
+        if (!$sqlSuccess) {
             throw new RuntimeException('Could not execute sql');
         } else {
-            $aProductData = $oGetProductData->fetchAll();
-            $this->aProductData = $aProductData[0];
+            if ($getProductData->rowCount() > 0) {
+                $data               = $getProductData->fetchAll(PDO::FETCH_ASSOC);
+                $this->productData = $data[0];
+            } else {
+                $this->productData = null;
+            }
         }
     }
 
@@ -76,29 +76,30 @@ class StoreProduct
      */
     public function getVar($key)
     {
-        $value = $this->aProductData[$key];
+        $value = $this->productData[$key];
+
         return $value;
     }
 
     /**
+     * TODO: Replace this function with a specific one for every column
+     *
      * @param string $key
      * @param string $value
      *
      * @throws \Exception
+     *
+     * @deprecated This function shouldn't be used anymore
      */
     public function setVar($key, $value)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $oUpdateTable = $database->prepare('UPDATE `store_products` SET :key=:value WHERE `id`=:product_id');
         $bUpdateTableQuerySuccessful = $oUpdateTable->execute(array(
             ':key'        => $key,
             ':value'      => $value,
-            ':product_id' => $this->iProductId,
+            ':product_id' => $this->productId,
         ));
         if (!$bUpdateTableQuerySuccessful) {
             throw new RuntimeException('Could not execute sql');

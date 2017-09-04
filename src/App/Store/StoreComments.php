@@ -2,7 +2,9 @@
 
 namespace App\Store;
 
-use App\Core\DatabaseConnection;
+use Container\DatabaseContainer;
+use PDO;
+use RuntimeException;
 
 class StoreComments
 {
@@ -14,23 +16,19 @@ class StoreComments
      */
     public static function getCommentList($product_id)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetCommentList = $database->prepare('SELECT `id` FROM `store_comments` WHERE `product_id`=:product_id ORDER BY `updated` DESC');
+        $oGetCommentList = $database->prepare('SELECT * FROM `store_comments` WHERE `product_id`=:product_id ORDER BY `updated` DESC');
         $oGetCommentListSuccessful = $oGetCommentList->execute(array(
             ':product_id' => $product_id,
         ));
         if (!$oGetCommentListSuccessful) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             if (@$oGetCommentList->rowCount() == 0) {
                 return array();
             } else {
-                $comment_list = $oGetCommentList->fetchAll(\PDO::FETCH_ASSOC);
+                $comment_list = $oGetCommentList->fetchAll(PDO::FETCH_ASSOC);
                 return $comment_list;
             }
         }
@@ -46,11 +44,7 @@ class StoreComments
      */
     public static function addReview($product_id, $user_id, $comment, $stars)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $product_id = (float)$product_id;
         $comment = (string)$comment;
@@ -85,7 +79,7 @@ class StoreComments
 
         $ustars = 0;
         $count = 0;
-        foreach ($sql2->fetchAll(\PDO::FETCH_ASSOC) as $item) {
+        foreach ($sql2->fetchAll(PDO::FETCH_ASSOC) as $item) {
             $ustars += $rating['rating'];
             $count++;
         }
@@ -99,35 +93,35 @@ class StoreComments
 
     /******************************************************************************/
 
-    private $iCommentId;
-    private $aCommentData;
+    private $commentId;
+    private $commentData;
 
     /**
      * StoreComments constructor.
      *
-     * @param float $comment_id
+     * @param int $comment_id
      *
      * @throws \Exception
      */
     public function __construct($comment_id)
     {
-        $this->iCommentId = $comment_id;
+        $this->commentId = $comment_id;
 
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
-        $oGetCommentData = $database->prepare('SELECT * FROM `store_comments` WHERE `id`=:comment_id LIMIT 1');
-        $bGetCommentDataSuccessful = $oGetCommentData->execute(array(
-            ':comment_id' => $this->iCommentId,
-        ));
-        if (!$bGetCommentDataSuccessful) {
+        $getData = $database->prepare('SELECT * FROM `store_comments` WHERE `id`=:comment_id LIMIT 1');
+        $getData->bindValue(':comment_id', $this->commentId, PDO::PARAM_INT);
+        $sqlSuccess = $getData->execute();
+
+        if (!$sqlSuccess) {
             throw new \RuntimeException('Could not execute sql');
         } else {
-            $aCommentData = $oGetCommentData->fetchAll();
-            $this->aCommentData = $aCommentData[0];
+            if ($getData->rowCount() > 0) {
+                $data            = $getData->fetchAll(PDO::FETCH_ASSOC);
+                $this->commentData = $data[0];
+            } else {
+                $this->commentData = null;
+            }
         }
     }
 
@@ -138,7 +132,8 @@ class StoreComments
      */
     public function getVar($key)
     {
-        $value = $this->aCommentData[$key];
+        $value = $this->commentData[$key];
+
         return $value;
     }
 
@@ -147,23 +142,21 @@ class StoreComments
      * @param string $value
      *
      * @throws \Exception
+     *
+     * @deprecated Function not working
      */
     public function setVar($key, $value)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $oUpdateTable = $database->prepare('UPDATE `store_comments` SET :key=:value WHERE `id`=:product_id');
         $bUpdateTableQuerySuccessful = $oUpdateTable->execute(array(
             ':key'        => $key,
             ':value'      => $value,
-            ':product_id' => $this->iCommentId,
+            ':product_id' => $this->commentId,
         ));
         if (!$bUpdateTableQuerySuccessful) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         }
     }
 }
