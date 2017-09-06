@@ -85,7 +85,7 @@
                     <ul class="nav navbar-nav navbar-right">
                         {{ service.page_links }}
                         {% if current_user.user_id == current_store.owner_id %}
-                            <li><a href="{{ path('app_forum_forum_admin', {'forum': current_store.url, 'page': 'home'}) }}" class="admin-link">{{ 'Admin Panel'|trans }}</a></li>
+                            <li><a href="{{ path('app_store_store_admin', {'store': current_store.url, 'page': 'home'}) }}" class="admin-link">{{ 'Admin Panel'|trans }}</a></li>
                         {% endif %}
                         {% if current_user.user_id > -1 %}
                             <li class="dropdown">

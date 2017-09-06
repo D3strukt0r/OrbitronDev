@@ -92,7 +92,7 @@ class Store
         $database = DatabaseContainer::getDatabase();
 
         $storeExists = $database->prepare('SELECT NULL FROM `stores` WHERE `id`=:store_id LIMIT 1');
-        $storeExists->bindValue(':forum_id', $store_id, PDO::PARAM_INT);
+        $storeExists->bindValue(':store_id', $store_id, PDO::PARAM_INT);
         $sqlSuccess = $storeExists->execute();
 
         if (!$sqlSuccess) {

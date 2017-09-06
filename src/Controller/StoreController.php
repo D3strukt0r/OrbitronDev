@@ -6,13 +6,18 @@ use App\Account\Account;
 use App\Account\AccountTools;
 use App\Account\UserInfo;
 use App\Store\Store;
+use App\Store\StoreCheckout;
 use App\Store\StoreComments;
 use App\Store\StoreProduct;
 use Controller;
 use Form\RecaptchaType;
 use PDO;
 use ReCaptcha\ReCaptcha;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -180,7 +185,10 @@ class StoreController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        // TODO: Add check, to see if product exists
+        // Does the product even exist?
+        if (!StoreProduct::productExists($this->parameters['product'])) {
+            return $this->render('error/error404.html.twig');
+        }
 
         Account::updateSession();
         $currentUser = new UserInfo(USER_ID);
@@ -191,17 +199,94 @@ class StoreController extends Controller
         $userCurrency = 'dollar';  // TODO: Make this editable by the user
         $product      = new StoreProduct($this->parameters['product']);
 
-        //$product->productData['formatted_author'] = AccountTools::formatUsername($product->getVar('author'));
         $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
         $product->productData['price'] = $product->getVar('price_' . $userCurrency);
         $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
         $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
 
+        $addToCartForm = $this->createFormBuilder()
+            ->add('store_id', HiddenType::class, array(
+                'data' => $store->getVar('id'),
+            ))
+            ->add('product_id', HiddenType::class, array(
+                'data' => $product->getVar('id'),
+            ))
+            ->add('product_count', IntegerType::class, array(
+                //'data'        => 1,
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter a number')),
+                ),
+                'disabled' => $product->getVar('stock_available') == 0 ? true : false,
+            ))
+            ->add('send', SubmitType::class, array(
+                'label' => 'Add to shopping cart',
+                'disabled' => $product->getVar('stock_available') == 0 ? true : false,
+            ))
+            ->getForm();
+
+        /** @var Request $request */
+        $request = $this->get('kernel')->getRequest();
+        $addToCartForm->handleRequest($request);
+        if ($addToCartForm->isSubmitted() && $addToCartForm->isValid()) {
+            $formData = $addToCartForm->getData();
+
+            if (LOGGED_IN) {
+                // Is registered user
+                $user = new UserInfo(USER_ID);
+                if (StoreCheckout::cartExistsForUser($user)) {
+                    // Cart exists
+                    $cartId = StoreCheckout::getCartIdFromUser($user);
+                    $cart = new StoreCheckout($cartId, true, $user);
+                } else {
+                    // Create new cart
+                    $cart = new StoreCheckout(null, true, $user);
+                }
+            } else {
+                // Is a guest
+                $cart = new StoreCheckout(null);
+            }
+            $store = new Store($formData['store_id']);
+            $product = new StoreProduct($formData['product_id']);
+            $cart->addToCart($store, $product, $formData['product_count']);
+
+            // TODO: Add message for user, that the article was added
+        }
+
+        $addCommentForm = $this->createFormBuilder()
+            ->add('product_id', HiddenType::class, array(
+                'data' => $product->getVar('id'),
+            ))
+            ->add('rating', HiddenType::class, array(
+                'data' => 0,
+            ))
+            ->add('comment', TextareaType::class, array(
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter a message')),
+                ),
+            ))
+            ->add('send', SubmitType::class, array(
+                'label' => 'Write a review',
+            ))
+            ->getForm();
+
+        $addCommentForm->handleRequest($request);
+        if ($addCommentForm->isSubmitted() && $addCommentForm->isValid()) {
+            $formData = $addCommentForm->getData();
+            StoreComments::addReview($formData['product_id'], USER_ID, $formData['comment'], $formData['rating']);
+        }
+
+        $comments = StoreComments::getCommentList($product->getVar('id'));
+        foreach($comments as $index => $comment) {
+            $comments[$index]['formatted_username'] = AccountTools::formatUsername($comment['user_id']);
+        }
+
         return $this->render('store/theme1/product.html.twig', array(
             'current_user'  => $currentUser->aUser,
             'current_store' => $store->storeData,
             'current_product'  => $product->productData,
-            'comments' => StoreComments::getCommentList($product->getVar('id')),
+            'comments' => $comments,
+            'add_to_cart_form' => $addToCartForm->createView(),
+            'add_comment_form' => $addCommentForm->createView(),
         ));
     }
 }

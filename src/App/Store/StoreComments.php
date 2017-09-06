@@ -35,8 +35,8 @@ class StoreComments
     }
 
     /**
-     * @param float  $product_id
-     * @param float  $user_id
+     * @param int    $product_id
+     * @param int    $user_id
      * @param string $comment
      * @param int    $stars
      *
@@ -46,16 +46,12 @@ class StoreComments
     {
         $database = DatabaseContainer::getDatabase();
 
-        $product_id = (float)$product_id;
-        $comment = (string)$comment;
-        $stars = (int)$stars;
-
         if ($stars > 5) {
             $stars = 5;
         }
 
         // Insert review
-        $sql = $database->prepare('INSERT INTO `store_comments`(`product_id`,`user_id`,`rating`,`comment`,`created_at`,`updated_at`) VALUES (:product_id,:user_id,:rating,:comment,:time)');
+        $sql = $database->prepare('INSERT INTO `store_comments`(`product_id`,`user_id`,`rating`,`comment`,`created`,`updated`) VALUES (:product_id,:user_id,:rating,:comment,:time,:time)');
         $sql->execute(array(
             ':product_id' => $product_id,
             ':user_id'    => $user_id,
@@ -69,7 +65,7 @@ class StoreComments
         // Update rating count
         $rating = $product->getVar('rating_count');
         $rating = $rating + 1;
-        $product->setVar('rating_count', $rating);
+        $product->setRatingCount($rating);
 
         // Update stars
         $sql2 = $database->prepare('SELECT `rating` FROM `store_comments` WHERE `product_id`=:product_id');
@@ -80,15 +76,15 @@ class StoreComments
         $ustars = 0;
         $count = 0;
         foreach ($sql2->fetchAll(PDO::FETCH_ASSOC) as $item) {
-            $ustars += $rating['rating'];
+            $ustars += $item['rating'];
             $count++;
         }
         $ustars += $stars;
         $count++;
 
-        (float)$average = $ustars / $count;
+        $average = round(($ustars / $count) * 2)/2;
 
-        $product->setVar('rating_cache', $average);
+        $product->setRatingCache($average);
     }
 
     /******************************************************************************/

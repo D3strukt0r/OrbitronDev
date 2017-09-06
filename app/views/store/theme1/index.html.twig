@@ -15,22 +15,23 @@
 } %}
 
 {% block stylesheet %}
-<style type="text/css">
-    .thumbnail img {
-        width: 100%;
-    }
-    .ratings {
-        padding-right: 10px;
-        padding-left: 10px;
-    }
-    .thumbnail {
-        padding: 0;
-    }
-    .thumbnail .caption-full {
-        padding: 9px;
-        color: #333;
-    }
-</style>
+    {{ parent() }}
+    <style type="text/css">
+        .thumbnail img {
+            width: 100%;
+        }
+        .ratings {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+        .thumbnail {
+            padding: 0;
+        }
+        .thumbnail .caption-full {
+            padding: 9px;
+            color: #333;
+        }
+    </style>
 {% endblock %}
 
 {% block title %}{{ 'Index'|trans }} | {{ service.page_name }}{% endblock %}
@@ -89,7 +90,7 @@
                                 <div class="ratings">
                                     <p class="pull-right">{{ product.rating_count|number_format(0, '.', '\'') }} {{ 'Comments'|trans }}</p>
                                     <p>
-                                        {% for i in 1..5 %}<span class="fa fa-star{% if i > product.rating_cache %}-o{% endif %}"></span>&nbsp;{% endfor %}
+                                        {% for i in 1..5 %}<span class="fa fa-star{% if product.rating_cache matches '/^[-+]?[0-9]*\\.?[0-9]+$/' and i > product.rating_cache and i < (product.rating_cache + 1) %}-half{% endif %}{% if i > product.rating_cache %}-o{% endif %}"></span>&nbsp;{% endfor %}
                                     </p>
                                 </div>
                             </div>

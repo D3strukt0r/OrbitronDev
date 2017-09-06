@@ -46,11 +46,11 @@ use Kernel;
 class ECBCurrencyConverter
 {
     private static $sXmlFile = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
-    private static $sCachedFile = '/app/data/currency/euro.xml';
+    private static $sCachedFile = '/app/data/currency/currency-data.xml';
 
     private static function setupDir()
     {
-        self::$sCachedFile = Kernel::getIntent()->getRootDir() . '/app/data/currency/euro.xml';
+        self::$sCachedFile = Kernel::getIntent()->getRootDir() . '/app/data/currency/currency-data.xml';
     }
 
     public static function update()

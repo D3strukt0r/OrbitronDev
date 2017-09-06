@@ -35,6 +35,33 @@ class StoreProduct
         }
     }
 
+    /**
+     * Checks whether the given product exists
+     *
+     * @param int $product_id
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public static function productExists($product_id)
+    {
+        $database = DatabaseContainer::getDatabase();
+
+        $productExists = $database->prepare('SELECT NULL FROM `store_products` WHERE `id`=:product_id LIMIT 1');
+        $productExists->bindValue(':product_id', $product_id, PDO::PARAM_INT);
+        $sqlSuccess = $productExists->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            if ($productExists->rowCount() > 0) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     /******************************************************************************/
 
     private $productId;
@@ -82,27 +109,58 @@ class StoreProduct
     }
 
     /**
-     * TODO: Replace this function with a specific one for every column
+     * Set the new Rating count
      *
-     * @param string $key
-     * @param string $value
+     * @param int $count
      *
-     * @throws \Exception
-     *
-     * @deprecated This function shouldn't be used anymore
+     * @return $this
      */
-    public function setVar($key, $value)
+    public function setRatingCount($count)
     {
+        if ($this->productData == null) {
+            return null;
+        }
         $database = DatabaseContainer::getDatabase();
 
-        $oUpdateTable = $database->prepare('UPDATE `store_products` SET :key=:value WHERE `id`=:product_id');
-        $bUpdateTableQuerySuccessful = $oUpdateTable->execute(array(
-            ':key'        => $key,
-            ':value'      => $value,
-            ':product_id' => $this->productId,
-        ));
-        if (!$bUpdateTableQuerySuccessful) {
-            throw new RuntimeException('Could not execute sql');
+        $update = $database->prepare('UPDATE `store_products` SET `rating_count`=:value WHERE `id`=:product_id');
+        $update->bindValue(':product_id', $this->productId, PDO::PARAM_INT);
+        $update->bindValue(':value', $count, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->productData['rating_count'] = $count;
         }
+
+        return $this;
+    }
+
+    /**
+     * Set the new Rating cache
+     *
+     * @param int $rating
+     *
+     * @return $this
+     */
+    public function setRatingCache($rating)
+    {
+        if ($this->productData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `store_products` SET `rating_cache`=:value WHERE `id`=:product_id');
+        $update->bindValue(':product_id', $this->productId, PDO::PARAM_INT);
+        $update->bindValue(':value', $rating, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->productData['rating_cache'] = $rating;
+        }
+
+        return $this;
     }
 }
