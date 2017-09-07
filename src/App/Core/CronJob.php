@@ -16,9 +16,13 @@ class CronJob
     {
         $database = DatabaseContainer::getDatabase();
 
-        $oGetCronJobs = $database->prepare('SELECT * FROM `app_cronjob` WHERE `enabled`="1" ORDER BY `priority` ASC');
-        if ($oGetCronJobs->execute()) {
-            foreach ($oGetCronJobs->fetchAll(PDO::FETCH_ASSOC) as $key => $value) {
+        $getCronJobs = $database->prepare('SELECT * FROM `app_cronjob` WHERE `enabled`=\'1\' ORDER BY `priority` ASC');
+        $sqlSuccess = $getCronJobs->execute();
+
+        if ($sqlSuccess) {
+            $cronJobList = $getCronJobs->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($cronJobList as $key => $value) {
                 if (self::getNextExec($value['id']) <= time()) {
                     self::runJob($value['id']);
                 }
@@ -27,7 +31,7 @@ class CronJob
     }
 
     /**
-     * @param $job_id
+     * @param int $job_id
      *
      * @return int
      * @throws \Exception
@@ -36,21 +40,21 @@ class CronJob
     {
         $database = DatabaseContainer::getDatabase();
 
-        $oGetCronJobInfo = $database->prepare('SELECT `last_exec`,`exec_every` FROM `app_cronjob` WHERE `id`=:job_id LIMIT 1');
-        $oGetCronJobInfoQuerySuccessful = $oGetCronJobInfo->execute(array(
-            ':job_id' => $job_id,
-        ));
-        if ($oGetCronJobInfoQuerySuccessful) {
-            if ($oGetCronJobInfo->rowCount() > 0) {
-                $aJobInfo = $oGetCronJobInfo->fetchAll(PDO::FETCH_ASSOC);
-                return $aJobInfo[0]['last_exec'] + $aJobInfo[0]['exec_every'];
+        $getCronJobInfo = $database->prepare('SELECT `last_exec`,`exec_every` FROM `app_cronjob` WHERE `id`=:job_id LIMIT 1');
+        $getCronJobInfo->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+        $sqlSuccessful = $getCronJobInfo->execute();
+
+        if ($sqlSuccessful) {
+            if ($getCronJobInfo->rowCount() > 0) {
+                $jobInfo = $getCronJobInfo->fetchAll(PDO::FETCH_ASSOC);
+                return $jobInfo[0]['last_exec'] + $jobInfo[0]['exec_every'];
             }
         }
         return -1;
     }
 
     /**
-     * @param $job_id
+     * @param int $job_id
      *
      * @throws \Exception
      */
@@ -58,22 +62,21 @@ class CronJob
     {
         $database = DatabaseContainer::getDatabase();
 
-        $oGetCronJobInfo = $database->prepare('SELECT `scriptfile` FROM `app_cronjob` WHERE `id`=:job_id LIMIT 1');
-        $oGetCronJobInfoQuerySuccessful = $oGetCronJobInfo->execute(array(
-            ':job_id' => $job_id,
-        ));
-        if ($oGetCronJobInfoQuerySuccessful) {
-            $aJobInfo = $oGetCronJobInfo->fetchAll(PDO::FETCH_ASSOC);
+        $getCronJobInfo = $database->prepare('SELECT `scriptfile` FROM `app_cronjob` WHERE `id`=:job_id LIMIT 1');
+        $getCronJobInfo->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+        $sqlSuccessful = $getCronJobInfo->execute();
+
+        if ($sqlSuccessful) {
+            $aJobInfo = $getCronJobInfo->fetchAll(PDO::FETCH_ASSOC);
             $sFileDir = Kernel::getIntent()->getRootDir() . '/src/App/Core/cron_job/' . $aJobInfo[0]['scriptfile'];
 
             if (file_exists($sFileDir)) {
                 include $sFileDir;
 
-                $oUpdateCronJob = $database->prepare('UPDATE `app_cronjob` SET `last_exec`=:time WHERE `id`=:job_id LIMIT 1');
-                $oUpdateCronJob->execute(array(
-                    ':time'   => time(),
-                    ':job_id' => $job_id,
-                ));
+                $updateCronJob = $database->prepare('UPDATE `app_cronjob` SET `last_exec`=:time WHERE `id`=:job_id LIMIT 1');
+                $updateCronJob->bindValue(':job_id', $job_id, PDO::PARAM_INT);
+                $updateCronJob->bindValue(':time', time(), PDO::PARAM_INT);
+                $updateCronJob->execute();
             } else {
                 throw new Exception('[CronJob][Fatal Error]: ' . 'Could not execute cron job. Could not locate script file ("' . $sFileDir . '")');
             }

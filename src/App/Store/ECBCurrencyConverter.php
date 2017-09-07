@@ -79,18 +79,33 @@ class ECBCurrencyConverter
 
     /***********************************************************************************/
 
-    private function getRate($currency)
+    /**
+     * @param string $currency
+     *
+     * @return float
+     */
+    private static function getRate($currency)
     {
         self::setupDir();
         $oXmlFile = simplexml_load_file(self::$sCachedFile);
         foreach ($oXmlFile->Cube->Cube->Cube as $aRate) {
             if (strtoupper($currency) == strtoupper($aRate['currency'])) {
-                return $aRate['rate'];
+                return (float)$aRate['rate'];
             }
         }
         return 'currency_does_not_exists';
     }
 
+    /**
+     * Hint: Base is EUR, so everything is converted to EUR and then to the given currency
+     *
+     * @param float  $amount
+     * @param string $from
+     * @param string $to
+     * @param int    $decimals
+     *
+     * @return float
+     */
     public static function convert($amount, $from, $to, $decimals)
     {
         self::setupDir();
@@ -98,8 +113,14 @@ class ECBCurrencyConverter
             self::download(self::$sCachedFile);
         }
 
-        $fNewCurrency = (float)($amount / self::getRate($from)) * self::getRate($to);
-        $fConvertedNumber = (float)number_format($fNewCurrency, $decimals);
-        return $fConvertedNumber;
+        if (self::getRate($from) == 'currency_does_not_exists' || (strtoupper($to) != 'EUR' && self::getRate($to) == 'currency_does_not_exists')) {
+            return Kernel::getIntent()->get('translator')->trans('Currency not found');
+        }
+
+        $currency = $amount / self::getRate($from);
+        if (strtoupper($to) != 'EUR') {
+            $currency = $currency * self::getRate($to);
+        }
+        return number_format($currency, $decimals);
     }
 }

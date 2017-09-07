@@ -6,6 +6,11 @@ default:
 #    requirements:
 #        _locale: "|en|fr|de|it|es" # put a pipe "|" first
 
+# Just for testing purposes. For unknown reasons /test-page doesn't work
+app_test:
+    path:     /test-page2
+    defaults: { _controller: 'TestController::indexAction' }
+
 account:
     resource: 'account/routing.yml'
     host:     account.orbitrondev.org

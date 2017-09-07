@@ -48,6 +48,7 @@ class Core
 
         shuffle($keys);
 
+        $new = array();
         foreach ($keys as $key) {
             $new[$key] = $array[$key];
         }
