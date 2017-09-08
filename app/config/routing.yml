@@ -29,3 +29,7 @@ store:
 wiki:
     resource: 'wiki/routing.yml'
     host:     wiki.orbitrondev.org
+developer:
+    resource: 'developer/routing.yml'
+    host:     developer.orbitrondev.org
+

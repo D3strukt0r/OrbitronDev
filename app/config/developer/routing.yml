@@ -1,0 +1,11 @@
+app_developer_index:
+    path:     /
+    defaults: { _controller: 'DeveloperController::indexAction' }
+app_developer_download:
+    path:     /d/{file}
+    defaults: { _controller: 'DeveloperController::downloadAction' }
+app_developer_page:
+    path:     /{page}
+    defaults: { _controller: 'DeveloperController::pageAction' }
+    requirements:
+        page: .+

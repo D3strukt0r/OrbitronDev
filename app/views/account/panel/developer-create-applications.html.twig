@@ -66,6 +66,11 @@
                     {{ form_widget(create_app_form.send, {'attr': {'class': 'button'}}) }}
                 </footer>
             {{ form_end(create_app_form) }}
+            <br />
+            <p>
+                {{ 'Check out this page to learn how to integrate Oauth2:'|trans }}
+                <a href="{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}">{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}</a>
+            </p>
         {% else %}
             <div class="alert alert-danger" role="alert">{{ 'You are not a developer'|trans }}</div>
         {% endif %}

@@ -5,6 +5,39 @@ namespace App\Core;
 class Router
 {
     /**
+     * #CONTROLLER (example)
+        ///////////////////////////////////////////
+        //   www.example.com
+        ///////////////////////////////////////////
+        if(!isset($_SERVER[SERVER_KEY]['var'][0]) || in_array(@$_SERVER[SERVER_KEY]['var'][0], array('home', 'index'))) {
+            $template = new \Template\Template();
+            $template->setParam('PageTitle', _('Welcome to OrbitronDev'));
+            $template->setParam('PageHeader', _('OrbitronDev'));
+            $template->addGeneric('home/index');
+            echo $template;
+
+        ///////////////////////////////////////////
+        //   www.example.com/products
+        ///////////////////////////////////////////
+        } elseif(in_array($_SERVER[SERVER_KEY]['var'][0], array('products'))) {
+            $template = new \Template\Template();
+            $template->setParam('PageTitle', _('Product of OrbitronDev'));
+            $template->setParam('PageHeader', _('About OrbitronDev'));
+            $template->addGeneric('home/products');
+            echo $template;
+
+        } else {
+            $template = new \Template\Template();
+            $template->setParam('PageTitle', _('Page not found'));
+            $template->setParam('PageHeader', _('OrbitronDev'));
+            $template->addGeneric('home/404');
+            echo $template;
+        }
+     *
+     */
+
+
+    /**
      * #CONFIG SETUP BRANCHES
      * /ACCESS_URL;CONTROLLER.php;HEADER;FOOTER
      * /;app/data/router/index.php;__global__;__global__

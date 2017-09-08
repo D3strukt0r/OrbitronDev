@@ -21,6 +21,7 @@
                                 <i class="fa fa-globe"></i>
                                 <a href="javascript:void(0);">{{ 'header.language.base'|trans }} ({{ app.request.getLocale()|upper }})</a>
                                 <ul class="languages hoverSelectorBlock">
+                                    {# TODO: Maybe add images from "web/assets/img/icons/flags" #}
                                     {% if app.request.getLocale() == "en" %}
                                          <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">English <i class="fa fa-check"></i></a></li>
                                     {% else %}
@@ -59,6 +60,7 @@
                                 <li><a href="{{ path('app_account_index') }}">{{ 'header.account.account'|trans }}</a></li>
                             {% else %}
                                 {% if current_user.user_id > -1 %}
+                                    {# TODO: Maybe add links (Account and Logout) and username #}
                                     <li><a href="{{ path('app_account_index') }}">{{ 'header.account.account'|trans }}</a></li>
                                 {% else %}
                                     <li><a href="{{ path('app_account_login', {'redir': app.request.uri}) }}">{{ 'header.account.login'|trans }}</a></li>
@@ -208,6 +210,16 @@
             <!--=== End Header ===-->
         {% endblock %}
 
+        <noscript>
+            <div class="alert alert-danger" style="margin:0;border:0;">
+                <div class="container">
+                    {{ 'Missing JavaScript support'|trans }}
+                    <br />
+                    {{ 'Javascript is disabled on your browser. Please enable JavaScript or upgrade to a Javascript-capable browser.'|trans }}
+                </div>
+            </div>
+        </noscript>
+
         {% block breadcrumb %}{% endblock %}
 
         {% block header %}{% endblock %}
@@ -299,17 +311,17 @@
                             <div class="col-md-6">
                                 <ul class="footer-socials list-inline">
                                     <li>
-                                        <a href="#" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Facebook"><!-- DEVELOPER: Update URL -->
+                                        <a href="#" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Facebook">{# TODO: Update URL #}
                                             <i class="fa fa-facebook"></i>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter"><!-- DEVELOPER: Update URL -->
+                                        <a href="#" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter">{# TODO: Update URL #}
                                             <i class="fa fa-twitter"></i>
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Google Plus"><!-- DEVELOPER: Update URL -->
+                                        <a href="#" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Google Plus">{# TODO: Update URL #}
                                             <i class="fa fa-google-plus"></i>
                                         </a>
                                     </li>

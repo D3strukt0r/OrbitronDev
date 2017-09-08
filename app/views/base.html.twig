@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--[if IE 8]><html lang="en" class="ie8"><![endif]-->
 <!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
-<!--[if !IE]><!--><html lang="{{ app.request.getLocale() }}"><!--<![endif]-->
+<!--[if !IE]><!--><html lang="{{ app.request.getLocale() }}" {# manifest="/website.appcache" #}><!--<![endif]-->
     <head>
         <title>{% block title %}OrbitronDev{% endblock %}</title>
 
@@ -11,7 +11,7 @@
         <meta name="description" content="{% block description %}The official site of OrbitronDev. Containing all projects and everything about us.{% endblock %}" />
         <meta name="author" content="OrbitronDev" />
         <meta name="publisher" content="OrbitronDev" />
-        <meta name="copyright" content="OrbitronDev &copy; 2013-2015" />
+        <meta name="copyright" content="OrbitronDev &copy; 2013-2017" />
         <meta name="keywords" content="" />
         <meta name="audience" content="Alle" />
         <meta name="robots" content="INDEX,FOLLOW" />
