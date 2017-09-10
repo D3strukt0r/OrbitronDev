@@ -1,0 +1,409 @@
+{% extends 'store/theme1/layout.html.twig' %}
+
+{% set service_page_links %}
+    {% for text,link in current_store.page_links %}
+        <li><a href="{{ link }}">{{ text }}</a></li>
+    {% endfor %}
+{% endset %}
+{% set service = {
+'page_name': current_store.name,
+'page_logo_link': '/' ~ current_store.url,
+'page_author': current_store.owner_username,
+'page_description': current_store.page_description,
+'page_keywords': current_store.page_keywords,
+'page_links': service_page_links
+} %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <style>
+        #map {
+            height: 100%;
+        }
+
+        #locationField, #controls {
+            position: relative;
+        }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script type="text/javascript">
+        function number_format(number, decimals, dec_point, thousands_sep) {
+            number = (number + '')
+                .replace(/[^0-9+\-Ee.]/g, '');
+            var n = !isFinite(+number) ? 0 : +number,
+                prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+                sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+                dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+                s = '',
+                toFixedFix = function (n, prec) {
+                    var k = Math.pow(10, prec);
+                    return '' + (Math.round(n * k) / k)
+                        .toFixed(prec);
+                };
+            // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+            s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+                .split('.');
+            if (s[0].length > 3) {
+                s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+            }
+            if ((s[1] || '')
+                    .length < prec) {
+                s[1] = s[1] || '';
+                s[1] += new Array(prec - s[1].length + 1)
+                    .join('0');
+            }
+            return s.join(dec);
+        }
+    </script>
+
+    <script type="text/javascript">
+        var placeSearch, autocomplete;
+        var componentForm = {
+            street_number: 'short_name',
+            route: 'long_name',
+            locality: 'long_name',
+            //administrative_area_level_1: 'short_name',
+            country: 'long_name',
+            postal_code: 'short_name'
+        };
+        var input_ids = {
+            street_number: 'form_location_street_number',
+            route: 'form_location_street',
+            locality: 'form_location_city',
+            country: 'form_location_country',
+            postal_code: 'form_location_postal_code'
+        };
+
+        function initAutocomplete() {
+            // Create the autocomplete object, restricting the search to geographical
+            // location types.
+            autocomplete = new google.maps.places.Autocomplete(
+                /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+                {types: ['geocode']});
+
+            // When the user selects an address from the dropdown, populate the address
+            // fields in the form.
+            autocomplete.addListener('place_changed', fillInAddress);
+        }
+
+        // [START region_fillform]
+        function fillInAddress() {
+            // Get the place details from the autocomplete object.
+            var place = autocomplete.getPlace();
+
+            /** Not Required as can be predefined by user
+             for (var component in componentForm) {
+                document.getElementById(component).value = '';
+                document.getElementById(component).disabled = false;
+            }
+             */
+            // Get each component of the address from the place details
+            // and fill the corresponding field on the form.
+            for (var i = 0; i < place.address_components.length; i++) {
+                var addressType = place.address_components[i].types[0];
+                if (componentForm[addressType]) {
+                    var val = place.address_components[i][componentForm[addressType]];
+                    console.log(input_ids[addressType]);
+                    document.getElementById(input_ids[addressType]).value = val;
+                }
+            }
+        }
+        // [END region_fillform]
+
+        // [START region_geolocation]
+        // Bias the autocomplete object to the user's geographical location,
+        // as supplied by the browser's 'navigator.geolocation' object.
+        function geolocate() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var geolocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    var circle = new google.maps.Circle({
+                        center: geolocation,
+                        radius: position.coords.accuracy
+                    });
+                    autocomplete.setBounds(circle.getBounds());
+                });
+            }
+        }
+        // [END region_geolocation]
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSO1fpoQuukeVKiueZxzqhLCFlkgP0IMM&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
+{% endblock %}
+
+{% block title %}{{ 'Checkout'|trans }} | {{ service.page_name }}{% endblock %}
+
+{% block header %}
+    <div class="container">
+        <h1 class="page-header">{{ current_store.name }}</h1>
+        <ul class="nav nav-pills">
+            <li role="presentation"><a href="{{ path('app_store_store_index', {'store': current_store.url}) }}">{{ 'Home'|trans }}</a></li>
+            <li role="presentation" class="active"><a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}">{{ 'Checkout'|trans }}</a></li>
+        </ul>
+        <hr />
+    </div><!-- /.container -->
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            {{ form_start(checkout_form) }}
+            <section id="personal-information">
+                <div class="col-md-4 col-md-push-8">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                {{ form_label(checkout_form.name) }}
+                                {{ form_widget(checkout_form.name, {'attr': {'class': 'form-control'}}) }}
+                                <span class="help-block text-danger">{{ form_errors(checkout_form.name) }}</span>
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(checkout_form.email) }}
+                                {{ form_widget(checkout_form.email, {'attr': {'class': 'form-control'}}) }}
+                                <span class="help-block text-danger">{{ form_errors(checkout_form.email) }}</span>
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(checkout_form.phone) }}
+                                {{ form_widget(checkout_form.phone, {'attr': {'class': 'form-control'}}) }}
+                                <span class="help-block text-danger">{{ form_errors(checkout_form.phone) }}</span>
+                            </div>
+                            <hr />
+                            <div class="form-group">
+                                <div id="locationField">
+                                    <input id="autocomplete" placeholder="{{ 'Enter your address (Autocomplete)'|trans }}" onfocus="geolocate()" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col col-xs-8">
+                                        {{ form_label(checkout_form.location_street) }}
+                                        {{ form_widget(checkout_form.location_street, {'attr': {'class': 'form-control'}}) }}
+                                        <span class="help-block text-danger">{{ form_errors(checkout_form.location_street) }}</span>
+                                    </div>
+                                    <div class="col col-xs-4">
+                                        {{ form_label(checkout_form.location_street_number) }}
+                                        {{ form_widget(checkout_form.location_street_number, {'attr': {'class': 'form-control'}}) }}
+                                        <span class="help-block text-danger">{{ form_errors(checkout_form.location_street_number) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col col-xs-4">
+                                        {{ form_label(checkout_form.location_postal_code) }}
+                                        {{ form_widget(checkout_form.location_postal_code, {'attr': {'class': 'form-control'}}) }}
+                                        <span class="help-block text-danger">{{ form_errors(checkout_form.location_postal_code) }}</span>
+                                    </div>
+                                    <div class="col col-xs-8">
+                                        {{ form_label(checkout_form.location_city) }}
+                                        {{ form_widget(checkout_form.location_city, {'attr': {'class': 'form-control'}}) }}
+                                        <span class="help-block text-danger">{{ form_errors(checkout_form.location_city) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(checkout_form.location_country) }}
+                                {{ form_widget(checkout_form.location_country, {'attr': {'class': 'form-control'}}) }}
+                                <span class="help-block text-danger">{{ form_errors(checkout_form.location_country) }}</span>
+                            </div>
+                        </div><!-- /.panel-body -->
+                    </div><!-- /.panel .panel-default -->
+                </div><!-- /.col-md-4 -->
+            </section><!-- /#personal-information -->
+            <section id="form">
+                <div class="col-md-8 col-md-pull-4">
+                    <div id="voucher" class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-8"><label>Voucher</label>
+                                    <div class="input-group">
+                                        <input type="text" id="js-voucher-code" class="form-control" name="voucher" value />
+                                        <span class="input-group-btn">
+                                            <a id="js-check-voucher" class="btn btn-default" type="button">Check!</a>
+                                        </span>
+                                    </div><!-- /.input-group -->
+                                </div><!-- /.col-md-8 -->
+                                <div class="col-md-4">
+                                    <div id="js-voucher-check">
+                                    </div>
+                                </div><!-- /.col-md-4 -->
+                                <script type="text/javascript">
+                                    $("#js-check-voucher").click(function() {
+                                        $.ajax({
+                                            url: "https://store.orbitrondev.org/{{ current_store.url }}/do-check-voucher",
+                                            type: "GET",
+                                            data: { a : "checkVoucher", code : $("#js-voucher-code").val() }
+                                        }).done(function(data) {
+                                            var validation = $(data).find('result').first().text();
+                                            if(validation == "invalid") {
+                                                $("#js-voucher-check").html("<h4 class=\"text-danger\">Invalid code</h4>");
+                                            }
+                                            else if(validation == "valid") {
+                                                $("#js-voucher-check").html("<h4 class=\"text-success\">Valid code</h4>");
+                                                $("#js-voucher-code").attr("disabled", "");
+                                            }
+                                        }).fail(function() {
+                                            console.log("Ajax failed!");
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div><!-- /.panel-body -->
+                    </div><!-- /#voucher -->
+                    <div id="transport" class="panel panel-default">
+                        <div class="panel-body">
+                            <label>Shipping method (update this for UPS)</label>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="radio" name="shipping" value="1" data-cost="9.00" /></td>
+                                            <td>DIE POST</td>
+                                            <td>A-Post 9,00 CHF<br />Die Lieferung erfolgt via Paket, dies kann bis zu 3 - 4 Werktage dauern.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="radio" name="shipping" value="2" data-cost="7.00" checked /></td>
+                                            <td>DIE POST</td>
+                                            <td>B-Post 7,00 CHF<br />Die Lieferung erfolgt via Paket, dies kann bis zu 4 - 5 Werktage dauern.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <!-- /.table .table-hover -->
+                            </div>
+                            <!-- /.table-responsive -->
+                            {% set deliveryPrice = 7 %}
+                            <script type="text/javascript">
+                                var old_price = parseFloat($("input[name=Delivery]:checked", "#orderForm").data("cost"));
+                                var price = parseFloat($("input[name=Delivery]:checked", "#orderForm").data("cost"));
+                                $("#orderForm input[type=radio]").on("change", function() {
+                                    old_price = price;
+                                    price = parseFloat($("input[name=Delivery]:checked", "#orderForm").data("cost"));
+                                    var form_old_price = parseFloat($("#hidden-output-price").val());
+                                    var form_new_price = form_old_price - old_price + price;
+
+                                    $("#hidden-output-price").val(form_new_price);
+                                    $("#output-price").html("<b>" + number_format(form_new_price, 2, '.', '\'') + " CHF</b>");
+                                });
+                            </script>
+                        </div><!-- /.panel-body -->
+                    </div><!-- /#transport -->
+                    <div id="cart" class="panel panel-default">
+                        <div class="panel-body">
+                            <label>Cart</label>
+                            <span class="pull-right"><a id="js-clear-checkout" style="cursor:pointer">Clear cart</a></span>
+                            <script type="text/javascript">
+                                $("#js-clear-checkout").click(function() {
+                                    $.ajax({
+                                        url: "%www%/do.php",
+                                        type: "GET",
+                                        data: { a : "clearCheckout" }
+                                    }).done(function(data) {
+                                        location.reload();
+                                    }).fail(function() {
+                                        console.log("Ajax failed!");
+                                    });
+                                });
+                            </script>
+                            {% if cart|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Bild</th>
+                                                <th>Name</th>
+                                                <th>Einzelpreis</th>
+                                                <th>Menge</th>
+                                                <th>Gesamtpreis</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% set productPrice = 0 %}
+                                            {% for product in cart %}
+                                                <tr>
+                                                    <td><img src="%cdn%/img/store/{{ product.small_icon }}" height="50" width="50" /></td>
+                                                    <td>{{ product.name }}</td>
+                                                    <td>
+                                                        {% if product.in_sale %}<strike>{% endif %}
+                                                        {% if product.price == 0 %}
+                                                            {{ 'Free'|trans }}
+                                                        {% else %}
+                                                            {{ product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                        {% endif %}
+                                                        {% if product.in_sale %}</strike>{% endif %}
+                                                        <br />
+                                                        {% if product.price_sale == 0 %}
+                                                            {{ 'Free'|trans }}
+                                                        {% else %}
+                                                            {{ product.price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ product.in_cart }}</td>
+                                                    <td>
+                                                        {% set product_total_price = product.price * product.in_cart %}
+                                                        {% set product_total_price_sale = product.price_sale * product.in_cart %}
+                                                        {% if product.in_sale %}<strike>{% endif %}
+                                                            {% if product_total_price == 0 %}
+                                                                {{ 'Free'|trans }}
+                                                            {% else %}
+                                                                {{ product_total_price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                            {% endif %}
+                                                            {% if product.in_sale %}</strike>{% endif %}
+                                                        <br />
+                                                        {% if product_total_price_sale == 0 %}
+                                                            {{ 'Free'|trans }}
+                                                        {% else %}
+                                                            {{ product_total_price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% if product.in_sale %}
+                                                    {% set productPrice = productPrice + product_total_price_sale %}
+                                                {% else %}
+                                                    {% set productPrice = productPrice + product_total_price %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <!-- /.table .table-hover -->
+                                </div>
+                                <!-- /.table-responsive -->
+                                <input type="hidden" name="cart" value="{{ store_cart }}" />
+                            {% else %}
+                                <p class="text-center text-warning"><b>Your cart is empty!</b></p>
+                            {% endif %}
+                        </div><!-- /.panel-body -->
+                    </div><!-- /#cart -->
+                    <div id="order-button" class="panel panel-default">
+                        <div class="panel-body">
+                            {% set fullPrice = productPrice + deliveryPrice %}
+                            <span class="pull-right">
+								<input type="hidden" id="hidden-output-price" name="output-price" value="{{ fullPrice }}" />
+                                {% if productPrice > 0 %}
+                                    <span id="output-price">{{ fullPrice|number_format(2, '.', '\'') }} $<b></b></span>&nbsp; {# TODO: Make this editable by the user #}
+                                {% endif %}
+                                {{ form_widget(checkout_form.send, {'attr': {'class': 'btn btn-success', 'data-count': 'product-count'}}) }}
+                            </span>
+                            <script type="text/javascript">
+                                var productPrice = {{ productPrice|default(0)  }};
+                                if(productPrice == 0) {
+                                    $('#form_send').attr("disabled", true);
+                                }
+
+                                $('#product-count').change(function() {
+                                    var value = number_format(25 * $('#product-count').val(), 2, '.', '\'');
+                                    $("#output-price").html("<b>" + value + " $</b>"); {# TODO: Make this editable by the user #}
+                                });
+                            </script>
+                        </div><!-- /.panel-body -->
+                    </div><!-- /#order-button -->
+                </div><!-- /.col-md-8 -->
+            </section><!-- /#form -->
+            {{ form_end(checkout_form) }}
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+{% endblock %}

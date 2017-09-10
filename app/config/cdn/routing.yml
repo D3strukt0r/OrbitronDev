@@ -1,0 +1,8 @@
+app_cdn_index:
+    path:     /
+    defaults: { _controller: 'CdnController::indexAction' }
+app_cdn_library:
+    path:     /{libraries}
+    defaults: { _controller: 'CdnController::sourceAction' }
+    requirements:
+        libraries: .+

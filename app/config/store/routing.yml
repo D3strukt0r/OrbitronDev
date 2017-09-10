@@ -18,7 +18,7 @@ app_store_store_do_order:
     path:     /{store}/do-order
     defaults: { _controller: 'StoreController::storeDoOrderAction' }
 app_store_store_do_check_voucher:
-    path:     /{store}/do-check-voucher
+    path:     /{store}/do-check-voucher/{voucher)
     defaults: { _controller: 'StoreController::storeDoCheckVoucherAction' }
 app_store_store_do_remove_to_cart:
     path:     /{store}/do-remove-from-cart

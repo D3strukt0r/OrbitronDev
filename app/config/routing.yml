@@ -32,4 +32,7 @@ wiki:
 developer:
     resource: 'developer/routing.yml'
     host:     developer.orbitrondev.org
+cdn:
+    resource: 'cdn/routing.yml'
+    host:     cdn.orbitrondev.org
 

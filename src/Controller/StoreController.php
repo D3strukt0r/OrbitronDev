@@ -9,10 +9,12 @@ use App\Store\Store;
 use App\Store\StoreCheckout;
 use App\Store\StoreComments;
 use App\Store\StoreProduct;
+use Container\DatabaseContainer;
 use Controller;
 use Form\RecaptchaType;
 use PDO;
 use ReCaptcha\ReCaptcha;
+use Sabre\VObject\Property\Text;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -22,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Type;
 
 class StoreController extends Controller
 {
@@ -211,10 +214,11 @@ class StoreController extends Controller
             ->add('product_id', HiddenType::class, array(
                 'data' => $product->getVar('id'),
             ))
-            ->add('product_count', IntegerType::class, array(
-                //'data'        => 1,
+            ->add('product_count', TextType::class, array( // TODO: This should be IntegerType
+                'label' => 'Amount',
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter a number')),
+                    //new Type(array('type' => 'int', 'message' => 'The value {{ value }} is not a valid {{ type }}.'))
                 ),
                 'disabled' => $product->getVar('stock_available') == 0 ? true : false,
             ))
@@ -223,34 +227,6 @@ class StoreController extends Controller
                 'disabled' => $product->getVar('stock_available') == 0 ? true : false,
             ))
             ->getForm();
-
-        /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
-        $addToCartForm->handleRequest($request);
-        if ($addToCartForm->isSubmitted() && $addToCartForm->isValid()) {
-            $formData = $addToCartForm->getData();
-
-            if (LOGGED_IN) {
-                // Is registered user
-                $user = new UserInfo(USER_ID);
-                if (StoreCheckout::cartExistsForUser($user)) {
-                    // Cart exists
-                    $cartId = StoreCheckout::getCartIdFromUser($user);
-                    $cart = new StoreCheckout($cartId, true, $user);
-                } else {
-                    // Create new cart
-                    $cart = new StoreCheckout(null, true, $user);
-                }
-            } else {
-                // Is a guest
-                $cart = new StoreCheckout(null);
-            }
-            $store = new Store($formData['store_id']);
-            $product = new StoreProduct($formData['product_id']);
-            $cart->addToCart($store, $product, $formData['product_count']);
-
-            // TODO: Add message for user, that the article was added
-        }
 
         $addCommentForm = $this->createFormBuilder()
             ->add('product_id', HiddenType::class, array(
@@ -269,6 +245,39 @@ class StoreController extends Controller
             ))
             ->getForm();
 
+        // Add product to cart
+        /** @var Request $request */
+        $request = $this->get('kernel')->getRequest();
+        $addToCartForm->handleRequest($request);
+        if ($addToCartForm->isSubmitted() && $addToCartForm->isValid()) {
+            $formData = $addToCartForm->getData();
+            $formData['product_count'] = intval($formData['product_count']); // TODO: As product_count is TextType, we have to convert it to a Int
+
+            if (LOGGED_IN) {
+                // Is registered user
+                $user = new UserInfo(USER_ID);
+                if (StoreCheckout::cartExistsForUser($user)) {
+                    // Cart exists
+                    $cartId = StoreCheckout::getCartIdFromUser($user);
+                    $cart = new StoreCheckout($cartId, true, $user);
+                } else {
+                    // Create new cart
+                    $cart = new StoreCheckout(null, true, $user);
+                }
+            } else {
+                // Is a guest
+                $cart = new StoreCheckout(null);
+            }
+            $store = new Store($formData['store_id']);
+            $product2 = new StoreProduct($formData['product_id']);
+            $cart->addToCart($store, $product2, $formData['product_count']);
+
+            $this->addFlash('product_added', 'Your product was added to the cart');
+        }
+
+        // Add a review
+        /** @var Request $request */
+        $request = $this->get('kernel')->getRequest();
         $addCommentForm->handleRequest($request);
         if ($addCommentForm->isSubmitted() && $addCommentForm->isValid()) {
             $formData = $addCommentForm->getData();
@@ -288,5 +297,153 @@ class StoreController extends Controller
             'add_to_cart_form' => $addToCartForm->createView(),
             'add_comment_form' => $addCommentForm->createView(),
         ));
+    }
+
+    public function storeCheckoutAction()
+    {
+        // Does the store even exist?
+        if (!Store::urlExists($this->parameters['store'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        $storeId      = Store::url2Id($this->parameters['store']);
+        $store        = new Store($storeId);
+        $userLanguage = 'en'; // TODO: Make this editable by the user
+        $userCurrency = 'dollar';  // TODO: Make this editable by the user
+
+        $deliveryPrice = 0;
+        $productPrice = 0;
+        $fullPrice = 0;
+
+        $rawCart = isset($_COOKIE['checkout']) ? json_decode($_COOKIE['checkout'], true) : array();
+        $cart = array();
+        foreach ($rawCart as $productInfo) {
+            $product = new StoreProduct($productInfo['PID']);
+
+            $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
+            $product->productData['price'] = $product->getVar('price_' . $userCurrency);
+            $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
+            $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
+            $product->productData['in_cart'] = $productInfo['PCOUNT'];
+
+            $cart[] = $product->productData;
+        }
+
+        $checkoutForm = $this->createFormBuilder()
+            ->add('name', TextType::class, array(
+                'label' => 'Full name',
+                'attr'  => array(
+                    'value'       => $currentUser->getFromProfile('firstname') . ' ' . $currentUser->getFromProfile('lastname'),
+                ),
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter your full name')),
+                ),
+            ))
+            ->add('email', TextType::class, array(
+                'label' => 'Email',
+                'attr'  => array(
+                    'value'       => $currentUser->getFromUser('email'),
+                ),
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter your email')),
+                ),
+            ))
+            ->add('phone', TextType::class, array(
+                'label' => 'Phone Nr.',
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter your email')),
+                ),
+            ))
+            ->add('location_street', TextType::class, array(
+                'label' => 'Street',
+                'attr'  => array(
+                    'value'       => $currentUser->getFromProfile('location_street'),
+                ),
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter your email')),
+                ),
+            ))
+            ->add('location_street_number', TextType::class, array(
+                'label' => 'House Nr.',
+                'attr'  => array(
+                    'value'       => $currentUser->getFromProfile('location_street_number'),
+                ),
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter your email')),
+                ),
+            ))
+            ->add('location_postal_code', TextType::class, array(
+                'label' => 'Postal code',
+                'attr'  => array(
+                    'value'       => $currentUser->getFromProfile('location_zip'),
+                ),
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter your email')),
+                ),
+            ))
+            ->add('location_city', TextType::class, array(
+                'label' => 'City',
+                'attr'  => array(
+                    'value'       => $currentUser->getFromProfile('location_city'),
+                ),
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter your email')),
+                ),
+            ))
+            ->add('location_country', TextType::class, array(
+                'label' => 'Country',
+                'attr'  => array(
+                    'value'       => $currentUser->getFromProfile('location_country'),
+                ),
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please enter your email')),
+                ),
+            ))
+            ->add('send', SubmitType::class, array(
+                'label' => 'Order',
+            ))
+            ->getForm();
+
+        return $this->render('store/theme1/checkout.html.twig', array(
+            'current_user'  => $currentUser->aUser,
+            'current_store' => $store->storeData,
+            'checkout_form' => $checkoutForm->createView(),
+            'cart' => $cart,
+            'store_cart' => @$_COOKIE['store'][$storeId]['cart'], // TODO: Does an info when not existing
+        ));
+    }
+
+    public function storeDoCheckVoucherAction()
+    {
+        // Does the store even exist?
+        if (!Store::urlExists($this->parameters['store'])) {
+            return $this->render('error/error404.html.twig');
+        }
+        $storeId = Store::url2Id($this->parameters['store']);
+        $store   = new Store($storeId);
+
+        $database = DatabaseContainer::getDatabase();
+        $sql = $database->prepare('SELECT * FROM `store_voucher` WHERE `code`=:voucher AND `store_id`=:store_id LIMIT 1');
+        $sql->execute(array(
+            ':voucher' => $this->parameters['voucher'],
+            ':store_id' => $store->getVar('id'),
+        ));
+
+        if ($sql->rowCount() == 0) {
+            $result = new \SimpleXMLElement('<root></root>');
+            $result->addChild('result', 'invalid');
+        } else {
+            $voucherInfo = $sql->fetchAll(\PDO::FETCH_ASSOC);
+
+            $result = new \SimpleXMLElement('<root></root>');
+            $result->addChild('result', 'valid');
+            $result->addChild('type', $voucherInfo['type']);
+            $result->addChild('amount', $voucherInfo['amount']);
+        }
+        header('Content-Type: text/xml');
+        return $result->asXML();
     }
 }

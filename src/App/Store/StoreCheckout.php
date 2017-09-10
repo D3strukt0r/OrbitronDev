@@ -4,6 +4,7 @@ namespace App\Store;
 
 use App\Account\UserInfo;
 use App\Core\DatabaseConnection;
+use Container\DatabaseContainer;
 
 class StoreCheckout
 {
@@ -28,15 +29,11 @@ class StoreCheckout
                 $this->cartId = $this->createNewCart($user);
             } else {
                 // Access existing cart
-                /** @var \PDO $database */
-                $database = DatabaseConnection::$database;
-                if (is_null($database)) {
-                    throw new \Exception('A database connection is required');
-                }
+                $database = DatabaseContainer::getDatabase();
 
                 $sql = $database->prepare('SELECT * FROM `store_carts` WHERE `user_id`=:user_id');
                 $sql->execute(array(
-                    ':user_id' => $user->getFromUser('id'),
+                    ':user_id' => $user->getFromUser('user_id'),
                 ));
 
                 if ($sql->rowCount() > 0) {
@@ -74,15 +71,11 @@ class StoreCheckout
      */
     private function createNewCart($user)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $sql = $database->prepare('INSERT INTO `store_carts`(`user_id`, `products`) VALUES (:user_id, :products)');
         $sql->execute(array(
-            ':user_id'  => $user->getFromUser('id'),
+            ':user_id'  => $user->getFromUser('user_id'),
             ':products' => '{}',
         ));
 
@@ -94,7 +87,7 @@ class StoreCheckout
      *
      * @param Store        $store   Required to get the ID
      * @param StoreProduct $product Required to know which product
-     * @param int                 $count   Amount to be added
+     * @param int          $count   Amount to be added
      */
     public function addToCart($store, $product, $count = 1)
     {
@@ -104,7 +97,7 @@ class StoreCheckout
         // How many are already in the cart?
         $alreadyInCart = 0;
         if (isset($this->products[$storeId][$productId])) {
-            $alreadyInCart = $this->products[$storeId][$productId]['amount'];
+            $alreadyInCart = $this->products[$storeId][$productId]['count'];
         }
 
         // Add it to the cart
@@ -126,11 +119,7 @@ class StoreCheckout
         if ($this->savedIn == 'cookie') {
             setcookie('store_cart', $this->products, time() + 60 * 60 * 24 * 30);
         } elseif ($this->savedIn == 'database') {
-            /** @var \PDO $database */
-            $database = DatabaseConnection::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
+            $database = DatabaseContainer::getDatabase();
 
             $sql = $database->prepare('UPDATE `store_carts` SET `products`=:products WHERE `cart_id`=:cart_id');
             $sql->execute(array(
@@ -146,11 +135,7 @@ class StoreCheckout
     public function clearCart()
     {
         if ($this->savedIn == 'database') {
-            /** @var \PDO $database */
-            $database = DatabaseConnection::$database;
-            if (is_null($database)) {
-                throw new \Exception('A database connection is required');
-            }
+            $database = DatabaseContainer::getDatabase();
 
             $sql = $database->prepare('UPDATE `store_carts` SET `products`=:products WHERE `cart_id`=:cart_id');
             $sql->execute(array(
@@ -175,15 +160,11 @@ class StoreCheckout
      */
     public static function cartExistsForUser($user)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $sql = $database->prepare('SELECT NULL FROM `store_carts` WHERE `user_id`=:user_id');
         $sql->execute(array(
-            ':user_id' => $user,
+            ':user_id' => $user->getFromUser('user_id'),
         ));
 
         if ($sql->rowCount() > 0) {
@@ -193,22 +174,18 @@ class StoreCheckout
     }
 
     /**
-     * @param $user
+     * @param UserInfo $user
      *
      * @return int|null
      * @throws \Exception
      */
     public static function getCartIdFromUser($user)
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $sql = $database->prepare('SELECT `cart_id` FROM `store_carts` WHERE `user_id`=:user_id');
         $sql->execute(array(
-            ':user_id' => $user,
+            ':user_id' => $user->getFromUser('user_id'),
         ));
 
         if ($sql->rowCount() > 0) {

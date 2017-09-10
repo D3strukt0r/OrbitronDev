@@ -130,6 +130,12 @@ class Kernel
     function loadDatabase()
     {
         new DatabaseContainer($this);
+        return;
+
+        // Database by Manuele Vaccari
+        echo '';
+        \App\Core\DatabaseConnection::createConnection();
+        $database = \App\Core\DatabaseConnection::$database;
     }
 
     /**
@@ -148,6 +154,19 @@ class Kernel
     function loadSession()
     {
         new SessionContainer($this);
+        return;
+
+        // Session by Manuele Vaccari
+        echo '';
+        $session_name = '_session'; // Set a custom session name
+        $secure = false; // Set to true if using https.
+        $httponly = false; // This stops javascript being able to access the session id.
+        //ini_set('session.use_only_cookies', 1); // Forces sessions to only use cookies.
+        $cookieParams = session_get_cookie_params(); // Gets current cookies params.
+        session_set_cookie_params($cookieParams['lifetime'], '/', 'orbitrondev.org', $secure, $httponly);
+        session_name($session_name); // Sets the session name to the one set above.
+        session_start(); // Start the php session
+        //session_regenerate_id(true); // regenerated the session, delete the old one.
     }
 
     /**
@@ -161,6 +180,7 @@ class Kernel
 
         // Templating by Manuele Vaccari and Noel Pineiro
         // Router and Templater are together. Templates are also in the "/views" directory but with the ".phtml" ending and support PHP functions, NO TWIG
+        echo '';
         $config = array(
             'save' => 'FILE', // 'FILE' or 'DB'
             'sql'  => array(
@@ -213,11 +233,13 @@ class Kernel
         return;
 
         // Translator by Manuele Vaccari
+        echo '';
         $default_cookie = array(
             'path'   => '/',
             'domain' => 'orbitrondev.org',
         );
         \App\Template\Language::setupCookie($default_cookie);
+        // No translating service created by myself
     }
 
     function getRootDir()

@@ -134,6 +134,13 @@
                                                 <span class="input-group-addon" id="product-count-desc">{{ 'Pieces'|trans }}</span>
                                             </div>
                                             <p class="help-block text-success"><b>{{ 'Available stock'|trans }}: {{ current_product.stock_available }}</b></p>
+                                            <span class="help-block text-danger">{{ form_errors(add_to_cart_form.product_count) }}</span>
+                                            <span class="help-block text-success">
+                                                {% for message in app.session.flashbag.get('product_added') %}
+                                                    {{ message }}
+                                                {% endfor %}
+                                            </span>
+
                                         </div>
                                     </div>
                                     <span class="pull-right">
