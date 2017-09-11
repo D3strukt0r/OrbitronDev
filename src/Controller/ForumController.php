@@ -10,7 +10,6 @@ use App\Forum\ForumAcp;
 use App\Forum\ForumBoard;
 use App\Forum\ForumPost;
 use App\Forum\ForumThread;
-use Container\DatabaseContainer;
 use Controller;
 use Decoda\Decoda;
 use Form\RecaptchaType;

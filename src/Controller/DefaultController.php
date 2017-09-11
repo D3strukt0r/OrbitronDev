@@ -169,8 +169,8 @@ class DefaultController extends Controller
             $mailer = $this->get('mailer');
             $mailSent = $mailer->send($message);
 
+            $this->addFlash('success', 'Your email has been sent! Thanks!');
             // TODO: Send message to UI as soon as email is sent
-            //$request->getSession()->getFlashBag()->add('success', 'Your email has been sent! Thanks!');
 
             if($mailSent) {
                 return $this->redirectToRoute('app_default_contact', array('sent' => 1));

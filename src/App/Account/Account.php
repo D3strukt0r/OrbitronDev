@@ -3,7 +3,6 @@
 namespace App\Account;
 
 use Container\DatabaseContainer;
-use Exception;
 use Kernel;
 use PDO;
 

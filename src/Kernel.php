@@ -11,6 +11,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -275,7 +276,11 @@ class Kernel
      */
     function getRequest()
     {
-        return is_null($this->request) ? Request::createFromGlobals() : $this->request;
+        $request = is_null($this->request) ? Request::createFromGlobals() : $this->request;
+        /** @var Session $session */
+        $session = $this->get('session');
+        $request->setSession($session);
+        return $request;
     }
 
     /**
@@ -323,4 +328,12 @@ class Kernel
         </div>
         <?php
     }
+
+    public static function testValue($value)
+    {
+        echo '<pre>';
+        var_dump($value);
+        echo '</pre>';
+    }
+
 }

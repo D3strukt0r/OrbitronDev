@@ -18,11 +18,14 @@ app_store_store_do_order:
     path:     /{store}/do-order
     defaults: { _controller: 'StoreController::storeDoOrderAction' }
 app_store_store_do_check_voucher:
-    path:     /{store}/do-check-voucher/{voucher)
+    path:     /{store}/do-check-voucher
     defaults: { _controller: 'StoreController::storeDoCheckVoucherAction' }
-app_store_store_do_remove_to_cart:
+app_store_store_do_remove_from_cart:
     path:     /{store}/do-remove-from-cart
-    defaults: { _controller: 'StoreController::storeDoRemoveToCartAction' }
+    defaults: { _controller: 'StoreController::storeDoRemoveFromCartAction' }
+app_store_store_do_clear_cart:
+    path:     /{store}/do-clear-cart
+    defaults: { _controller: 'StoreController::storeDoClearCartAction' }
 app_store_store_search:
     path:     /{store}/search
     defaults: { _controller: 'StoreController::storeSearchAction' }

@@ -217,14 +217,28 @@
             </section><!-- /#personal-information -->
             <section id="form">
                 <div class="col-md-8 col-md-pull-4">
+                    {% for message in app.session.flashbag.get('order_sent') %}
+                    <div class="panel panel-success">
+                        <div class="panel-body">
+                            <span class="text-success">{{ message }}</span>
+                        </div><!-- /.panel-body -->
+                    </div>
+                    {% endfor %}
+                    {% for message in app.session.flashbag.get('order_not_sent') %}
+                    <div class="panel panel-danger">
+                        <div class="panel-body">
+                            <span class="text-danger">{{ message }}</span>
+                        </div><!-- /.panel-body -->
+                    </div>
+                    {% endfor %}
                     <div id="voucher" class="panel panel-default">
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-md-8"><label>Voucher</label>
+                                <div class="col-md-8"><label>{{ 'Voucher'|trans }}</label>
                                     <div class="input-group">
                                         <input type="text" id="js-voucher-code" class="form-control" name="voucher" value />
                                         <span class="input-group-btn">
-                                            <a id="js-check-voucher" class="btn btn-default" type="button">Check!</a>
+                                            <a id="js-check-voucher" class="btn btn-default" type="button">{{ 'Check!'|trans }}</a>
                                         </span>
                                     </div><!-- /.input-group -->
                                 </div><!-- /.col-md-8 -->
@@ -235,15 +249,15 @@
                                 <script type="text/javascript">
                                     $("#js-check-voucher").click(function() {
                                         $.ajax({
-                                            url: "https://store.orbitrondev.org/{{ current_store.url }}/do-check-voucher",
+                                            url: "{{ path('app_store_store_do_check_voucher', {'store': current_store.url}) }}",
                                             type: "GET",
-                                            data: { a : "checkVoucher", code : $("#js-voucher-code").val() }
+                                            data: { code : $("#js-voucher-code").val() }
                                         }).done(function(data) {
                                             var validation = $(data).find('result').first().text();
-                                            if(validation == "invalid") {
+                                            if(validation === "invalid") {
                                                 $("#js-voucher-check").html("<h4 class=\"text-danger\">Invalid code</h4>");
                                             }
-                                            else if(validation == "valid") {
+                                            else if(validation === "valid") {
                                                 $("#js-voucher-check").html("<h4 class=\"text-success\">Valid code</h4>");
                                                 $("#js-voucher-code").attr("disabled", "");
                                             }
@@ -257,7 +271,7 @@
                     </div><!-- /#voucher -->
                     <div id="transport" class="panel panel-default">
                         <div class="panel-body">
-                            <label>Shipping method (update this for UPS)</label>
+                            <label>{{ 'Shipping method'|trans }}</label>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <tbody>
@@ -278,30 +292,29 @@
                             <!-- /.table-responsive -->
                             {% set deliveryPrice = 7 %}
                             <script type="text/javascript">
-                                var old_price = parseFloat($("input[name=Delivery]:checked", "#orderForm").data("cost"));
-                                var price = parseFloat($("input[name=Delivery]:checked", "#orderForm").data("cost"));
-                                $("#orderForm input[type=radio]").on("change", function() {
+                                var old_price = parseFloat($("input[name=shipping]:checked", "#transport").data("cost"));
+                                var price = parseFloat($("input[name=shipping]:checked", "#transport").data("cost"));
+                                $("#transport").find("input[type=radio]").on("change", function() {
                                     old_price = price;
-                                    price = parseFloat($("input[name=Delivery]:checked", "#orderForm").data("cost"));
+                                    price = parseFloat($("input[name=shipping]:checked", "#transport").data("cost"));
                                     var form_old_price = parseFloat($("#hidden-output-price").val());
                                     var form_new_price = form_old_price - old_price + price;
 
                                     $("#hidden-output-price").val(form_new_price);
-                                    $("#output-price").html("<b>" + number_format(form_new_price, 2, '.', '\'') + " CHF</b>");
+                                    $("#output-price").html(number_format(form_new_price, 2, '.', '\''));
                                 });
                             </script>
                         </div><!-- /.panel-body -->
                     </div><!-- /#transport -->
                     <div id="cart" class="panel panel-default">
                         <div class="panel-body">
-                            <label>Cart</label>
-                            <span class="pull-right"><a id="js-clear-checkout" style="cursor:pointer">Clear cart</a></span>
+                            <label>{{ 'Cart'|trans }}</label>
+                            <span class="pull-right"><a id="js-clear-checkout" style="cursor:pointer">{{ 'Clear cart'|trans }}</a></span>
                             <script type="text/javascript">
                                 $("#js-clear-checkout").click(function() {
                                     $.ajax({
-                                        url: "%www%/do.php",
-                                        type: "GET",
-                                        data: { a : "clearCheckout" }
+                                        url: "{{ path('app_store_store_do_clear_cart', {'store': current_store.url}) }}",
+                                        type: "GET"
                                     }).done(function(data) {
                                         location.reload();
                                     }).fail(function() {
@@ -314,27 +327,27 @@
                                     <table class="table table-hover table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Bild</th>
-                                                <th>Name</th>
-                                                <th>Einzelpreis</th>
-                                                <th>Menge</th>
-                                                <th>Gesamtpreis</th>
+                                                <th>{{ 'Picture'|trans }}</th>
+                                                <th>{{ 'Name'|trans }}</th>
+                                                <th>{{ 'Price'|trans }}</th>
+                                                <th>{{ 'Amount'|trans }}</th>
+                                                <th>{{ 'Total price'|trans }}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% set productPrice = 0 %}
                                             {% for product in cart %}
                                                 <tr>
-                                                    <td><img src="%cdn%/img/store/{{ product.small_icon }}" height="50" width="50" /></td>
+                                                    <td><img src="{{ asset('app/store/products_img/' ~ product.id ~ '/' ~ product.small_icon) }}" height="50" width="50" /></td>
                                                     <td>{{ product.name }}</td>
                                                     <td>
-                                                        {% if product.in_sale %}<strike>{% endif %}
+                                                        {% if product.in_sale %}<span style="text-decoration:line-through">{% endif %}
                                                         {% if product.price == 0 %}
                                                             {{ 'Free'|trans }}
                                                         {% else %}
                                                             {{ product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
                                                         {% endif %}
-                                                        {% if product.in_sale %}</strike>{% endif %}
+                                                        {% if product.in_sale %}</span>{% endif %}
                                                         <br />
                                                         {% if product.price_sale == 0 %}
                                                             {{ 'Free'|trans }}
@@ -346,13 +359,13 @@
                                                     <td>
                                                         {% set product_total_price = product.price * product.in_cart %}
                                                         {% set product_total_price_sale = product.price_sale * product.in_cart %}
-                                                        {% if product.in_sale %}<strike>{% endif %}
+                                                        {% if product.in_sale %}<span style="text-decoration:line-through">{% endif %}
                                                             {% if product_total_price == 0 %}
                                                                 {{ 'Free'|trans }}
                                                             {% else %}
                                                                 {{ product_total_price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
                                                             {% endif %}
-                                                            {% if product.in_sale %}</strike>{% endif %}
+                                                            {% if product.in_sale %}</span>{% endif %}
                                                         <br />
                                                         {% if product_total_price_sale == 0 %}
                                                             {{ 'Free'|trans }}
@@ -372,9 +385,8 @@
                                     <!-- /.table .table-hover -->
                                 </div>
                                 <!-- /.table-responsive -->
-                                <input type="hidden" name="cart" value="{{ store_cart }}" />
                             {% else %}
-                                <p class="text-center text-warning"><b>Your cart is empty!</b></p>
+                                <p class="text-center text-warning"><b>{{ 'Your cart is empty!'|trans }}</b></p>
                             {% endif %}
                         </div><!-- /.panel-body -->
                     </div><!-- /#cart -->
@@ -384,19 +396,19 @@
                             <span class="pull-right">
 								<input type="hidden" id="hidden-output-price" name="output-price" value="{{ fullPrice }}" />
                                 {% if productPrice > 0 %}
-                                    <span id="output-price">{{ fullPrice|number_format(2, '.', '\'') }} $<b></b></span>&nbsp; {# TODO: Make this editable by the user #}
+                                    <b><span id="output-price">{{ fullPrice|number_format(2, '.', '\'') }}</span> $</b> {# TODO: Make this editable by the user #}
                                 {% endif %}
-                                {{ form_widget(checkout_form.send, {'attr': {'class': 'btn btn-success', 'data-count': 'product-count'}}) }}
+                                {{ form_widget(checkout_form.send, {'attr': {'class': 'btn btn-success', 'data-count': 'product-count', 'style': 'margin-left: 10px'}}) }}
                             </span>
                             <script type="text/javascript">
-                                var productPrice = {{ productPrice|default(0)  }};
-                                if(productPrice == 0) {
+                                var productPrice = {{ productPrice|default(0) }};
+                                if(productPrice === 0) {
                                     $('#form_send').attr("disabled", true);
                                 }
 
                                 $('#product-count').change(function() {
                                     var value = number_format(25 * $('#product-count').val(), 2, '.', '\'');
-                                    $("#output-price").html("<b>" + value + " $</b>"); {# TODO: Make this editable by the user #}
+                                    $("#output-price").html(value);
                                 });
                             </script>
                         </div><!-- /.panel-body -->

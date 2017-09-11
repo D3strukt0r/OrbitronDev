@@ -14,7 +14,6 @@ use App\Store\Store;
 use Container\DatabaseContainer;
 use Controller;
 use App\Account\Account;
-use Exception;
 use Form\RecaptchaType;
 use Kernel;
 use OAuth2\GrantType\AuthorizationCode;
@@ -29,7 +28,6 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 

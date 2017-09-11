@@ -2,7 +2,6 @@
 
 namespace Controller;
 
-use App\Store\ECBCurrencyConverter;
 use Controller;
 
 class DeveloperController extends Controller

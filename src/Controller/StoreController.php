@@ -14,17 +14,14 @@ use Controller;
 use Form\RecaptchaType;
 use PDO;
 use ReCaptcha\ReCaptcha;
-use Sabre\VObject\Property\Text;
+use Swift_Message;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Type;
 
 class StoreController extends Controller
 {
@@ -314,29 +311,30 @@ class StoreController extends Controller
         $userLanguage = 'en'; // TODO: Make this editable by the user
         $userCurrency = 'dollar';  // TODO: Make this editable by the user
 
-        $deliveryPrice = 0;
-        $productPrice = 0;
-        $fullPrice = 0;
-
-        $rawCart = isset($_COOKIE['checkout']) ? json_decode($_COOKIE['checkout'], true) : array();
-        $cart = array();
-        foreach ($rawCart as $productInfo) {
-            $product = new StoreProduct($productInfo['PID']);
+        if (LOGGED_IN) {
+            $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
+        } else {
+            $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
+        }
+        $cart = $rawCart->getProductsForStore($store->getVar('id'));
+        foreach ($cart as $key => $productInfo) {
+            $product = new StoreProduct($productInfo['id']);
 
             $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
             $product->productData['price'] = $product->getVar('price_' . $userCurrency);
             $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
             $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
-            $product->productData['in_cart'] = $productInfo['PCOUNT'];
+            $product->productData['in_cart'] = $productInfo['count'];
 
-            $cart[] = $product->productData;
+            $productInCart = array_merge($cart[$key], $product->productData);
+            $cart[$key] = $productInCart;
         }
 
         $checkoutForm = $this->createFormBuilder()
             ->add('name', TextType::class, array(
                 'label' => 'Full name',
                 'attr'  => array(
-                    'value'       => $currentUser->getFromProfile('firstname') . ' ' . $currentUser->getFromProfile('lastname'),
+                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('firstname') : '') . ' ' . (!empty($currentUser->aProfile) ? $currentUser->getFromProfile('lastname') : ''),
                 ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your full name')),
@@ -345,7 +343,7 @@ class StoreController extends Controller
             ->add('email', TextType::class, array(
                 'label' => 'Email',
                 'attr'  => array(
-                    'value'       => $currentUser->getFromUser('email'),
+                    'value'       => (USER_ID != -1 ? $currentUser->getFromUser('email') : ''),
                 ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your email')),
@@ -354,52 +352,52 @@ class StoreController extends Controller
             ->add('phone', TextType::class, array(
                 'label' => 'Phone Nr.',
                 'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email')),
+                    new NotBlank(array('message' => 'Please enter your phone number')),
                 ),
             ))
             ->add('location_street', TextType::class, array(
                 'label' => 'Street',
                 'attr'  => array(
-                    'value'       => $currentUser->getFromProfile('location_street'),
+                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_street') : ''),
                 ),
                 'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email')),
+                    new NotBlank(array('message' => 'Please enter your street')),
                 ),
             ))
             ->add('location_street_number', TextType::class, array(
                 'label' => 'House Nr.',
                 'attr'  => array(
-                    'value'       => $currentUser->getFromProfile('location_street_number'),
+                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_street_number') : ''),
                 ),
                 'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email')),
+                    new NotBlank(array('message' => 'Please enter your house nr.')),
                 ),
             ))
             ->add('location_postal_code', TextType::class, array(
                 'label' => 'Postal code',
                 'attr'  => array(
-                    'value'       => $currentUser->getFromProfile('location_zip'),
+                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_zip') : ''),
                 ),
                 'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email')),
+                    new NotBlank(array('message' => 'Please enter your zip code')),
                 ),
             ))
             ->add('location_city', TextType::class, array(
                 'label' => 'City',
                 'attr'  => array(
-                    'value'       => $currentUser->getFromProfile('location_city'),
+                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_city') : ''),
                 ),
                 'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email')),
+                    new NotBlank(array('message' => 'Please enter your city')),
                 ),
             ))
             ->add('location_country', TextType::class, array(
                 'label' => 'Country',
                 'attr'  => array(
-                    'value'       => $currentUser->getFromProfile('location_country'),
+                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_country') : ''),
                 ),
                 'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email')),
+                    new NotBlank(array('message' => 'Please enter your country')),
                 ),
             ))
             ->add('send', SubmitType::class, array(
@@ -407,12 +405,41 @@ class StoreController extends Controller
             ))
             ->getForm();
 
+        /** @var Request $request */
+        $request = $this->get('kernel')->getRequest();
+        $checkoutForm->handleRequest($request);
+        if ($checkoutForm->isSubmitted() && $checkoutForm->isValid()) {
+            $formData = $checkoutForm->getData();
+            $ownerUser = new UserInfo($store->getVar('owner_id'));
+
+            $message = Swift_Message::newInstance()
+                ->setSubject('Order confirmation')
+                ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
+                ->setTo(array($ownerUser->getFromUser('email')))
+                ->setCc(array(trim($formData['email']) => trim($formData['name'])))
+                ->setReplyTo(array($ownerUser->getFromUser('email')))
+                ->setBody($this->renderView('store/mail/order-confirmation.html.twig', array(
+                    'current_store' => $store->storeData,
+                    'order_form' => $formData,
+                    'ordered_time' => time(),
+                )), 'text/html');
+
+            /** @var \Swift_Mailer $mailer */
+            $mailer = $this->get('mailer');
+            $mailSent = $mailer->send($message);
+
+            if($mailSent) {
+                $this->addFlash('order_sent', 'Your email has been sent! Thanks!');
+            } else {
+                $this->addFlash('order_not_sent', 'Your order was not sent. Try again!');
+            }
+        }
+
         return $this->render('store/theme1/checkout.html.twig', array(
             'current_user'  => $currentUser->aUser,
             'current_store' => $store->storeData,
             'checkout_form' => $checkoutForm->createView(),
             'cart' => $cart,
-            'store_cart' => @$_COOKIE['store'][$storeId]['cart'], // TODO: Does an info when not existing
         ));
     }
 
@@ -428,7 +455,7 @@ class StoreController extends Controller
         $database = DatabaseContainer::getDatabase();
         $sql = $database->prepare('SELECT * FROM `store_voucher` WHERE `code`=:voucher AND `store_id`=:store_id LIMIT 1');
         $sql->execute(array(
-            ':voucher' => $this->parameters['voucher'],
+            ':voucher' => $this->getRequest()->query->get('code'),
             ':store_id' => $store->getVar('id'),
         ));
 
@@ -440,10 +467,25 @@ class StoreController extends Controller
 
             $result = new \SimpleXMLElement('<root></root>');
             $result->addChild('result', 'valid');
-            $result->addChild('type', $voucherInfo['type']);
-            $result->addChild('amount', $voucherInfo['amount']);
+            $result->addChild('type', $voucherInfo[0]['type']);
+            $result->addChild('amount', $voucherInfo[0]['amount']);
         }
         header('Content-Type: text/xml');
         return $result->asXML();
+    }
+
+    public function storeDoClearCartAction()
+    {
+        // Does the store even exist?
+        if (!Store::urlExists($this->parameters['store'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+
+        $cart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
+        $cart->clearCart();
+        return '';
     }
 }

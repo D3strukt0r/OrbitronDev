@@ -3,7 +3,6 @@
 namespace App\Store;
 
 use App\Account\UserInfo;
-use App\Core\DatabaseConnection;
 use Container\DatabaseContainer;
 
 class StoreCheckout
@@ -53,7 +52,7 @@ class StoreCheckout
 
             if (!isset($_COOKIE['store_cart'])) {
                 // Create new cookie
-                setcookie('store_cart', $this->products, time() + 60 * 60 * 24 * 30);
+                setcookie('store_cart', json_encode($this->products), time() + 60 * 60 * 24 * 30);
             } else {
                 // Get information from existing cookie
                 $this->products = json_decode($_COOKIE['store_cart'], true);
@@ -193,5 +192,22 @@ class StoreCheckout
             return (int)$cartData[0]['cart_id'];
         }
         return null;
+    }
+
+    /**
+     * @param int $store_id
+     *
+     * @return array|null
+     */
+    public function getProductsForStore($store_id)
+    {
+        if (!Store::storeExists($store_id)) {
+            return null;
+        }
+        if (count($this->products) == 0) {
+            return array();
+        }
+
+        return $this->products[$store_id];
     }
 }
