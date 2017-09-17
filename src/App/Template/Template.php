@@ -17,6 +17,8 @@ class Template
     public function __construct()
     {
         $this->setParam('PageTitle', ' ');
+        $this->SetParam('www', '');
+        $this->SetParam('cdn', '');
     }
 
     /**

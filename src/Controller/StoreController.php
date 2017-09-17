@@ -5,6 +5,7 @@ namespace Controller;
 use App\Account\Account;
 use App\Account\AccountTools;
 use App\Account\UserInfo;
+use App\Store\StoreAcp;
 use App\Store\Store;
 use App\Store\StoreCheckout;
 use App\Store\StoreComments;
@@ -432,7 +433,6 @@ class StoreController extends Controller
                     $this->addFlash('products_unavailable', $item['name'].' has only '.$item['stock_available'].' left! You wanted '.$item['count']);
                 }
             } else {
-                // TODO: Order confirmations form is seen as Spam
                 $message = Swift_Message::newInstance();
                 $imgDir1 = $message->embed(Swift_Image::fromPath(Kernel::getIntent()->getRootDir().'/web/assets/logo-long.png'));
                 $message->setSubject('Order confirmation')
@@ -453,7 +453,7 @@ class StoreController extends Controller
                 $mailSent = $mailer->send($message);
 
                 if($mailSent) {
-                    $formData['delivery_type'] = '';
+                    $formData['delivery_type'] = @$_POST['shipping'];
                     $rawCart->makeOrder($store->getVar('id'), $formData);
 
                     $this->addFlash('order_sent', 'Your order has been sent! Thanks!');
@@ -515,5 +515,90 @@ class StoreController extends Controller
         $cart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
         $cart->clearCart();
         return '';
+    }
+
+    public function storeAdminAction()
+    {
+        $params = array();
+        Account::updateSession();
+        $request                   = $this->getRequest();
+        $params['user_id']         = USER_ID;
+        $currentUser               = new UserInfo(USER_ID);
+        $params['current_user']    = $currentUser->aUser;
+        $storeId                   = Store::url2Id($this->parameters['store']);
+        $store                     = new Store($storeId);
+        $params['current_store']   = $store->storeData;
+        $params['view_navigation'] = '';
+
+        if (!LOGGED_IN) {
+            return $this->redirectToRoute('app_account_login', array('redir' => $request->getUri()));
+        }
+        if (USER_ID != (int)$store->getVar('owner_id')) {
+            return $this->render('store/theme_admin1/no-permission.html.twig');
+        }
+
+        StoreAcp::includeLibs();
+
+        $view = 'acp_not_found';
+
+        foreach (StoreAcp::getAllMenus('root') as $sMenu => $aMenuInfo) {
+            $selected                  = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
+            $params['view_navigation'] .= '<li><a href="'.$this->generateUrl('app_store_store_admin',
+                    array(
+                        'store' => $store->getVar('url'),
+                        'page'  => $aMenuInfo['href'],
+                    )).'" '.$selected.'>'.$aMenuInfo['title'].'</a></li>';
+
+            if (strlen($selected) > 0) {
+                if (is_callable($aMenuInfo['screen'])) {
+                    $view = $aMenuInfo['screen'];
+                } else {
+                    $view = 'acp_function_error';
+                }
+            }
+        }
+
+        foreach (StoreAcp::getAllGroups() as $sGroup => $aGroupInfo) {
+            if (is_null($aGroupInfo['display']) || strlen($aGroupInfo['display']) == 0) {
+                foreach (StoreAcp::getAllMenus($aGroupInfo['id']) as $sMenu => $aMenuInfo) {
+                    $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? ' class="active"' : '');
+                    if (strlen($selected) > 0) {
+                        if (is_callable($aMenuInfo['screen'])) {
+                            $view = $aMenuInfo['screen'];
+                        } else {
+                            $view = 'acp_function_error';
+                        }
+                    }
+                }
+                continue;
+            }
+            $params['view_navigation'] .= '<li><a href="#">'.$aGroupInfo['title'].'<span class="fa arrow"></span></a><ul class="nav nav-second-level collapse">';
+
+            foreach (StoreAcp::getAllMenus($aGroupInfo['id']) as $sMenu => $aMenuInfo) {
+                $selected                  = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
+                $params['view_navigation'] .= '<li><a href="'.$this->generateUrl('app_store_store_admin',
+                        array(
+                            'store' => $store->getVar('url'),
+                            'page'  => $aMenuInfo['href'],
+                        )).'" '.$selected.'>'.$aMenuInfo['title'].'</a></li>';
+                if (strlen($selected) > 0) {
+                    if (is_callable($aMenuInfo['screen'])) {
+                        $view = $aMenuInfo['screen'];
+                    } else {
+                        $view = 'acp_function_error';
+                    }
+                }
+            }
+
+            $params['view_navigation'] .= '</ul></li>';
+        }
+
+
+        $response = call_user_func($view, $this->container->get('twig'), $this);
+        if (is_string($response)) {
+            $params['view_body'] = $response;
+        }
+
+        return $this->render('store/theme_admin1/panel.html.twig', $params);
     }
 }

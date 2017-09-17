@@ -218,29 +218,24 @@
             <section id="form">
                 <div class="col-md-8 col-md-pull-4">
                     {% for message in app.session.flashbag.get('order_sent') %}
-                    <div id="order-sent" class="panel panel-success">
-                        <div class="panel-body">
-                            <span class="text-success">{{ message }}</span>
-                        </div><!-- /.panel-body -->
+                    <div id="order-sent" class="alert alert-success alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'Close'|trans }}</span></button>
+                        {{ message }}
                     </div>
                     {% endfor %}
                     {% for message in app.session.flashbag.get('order_not_sent') %}
-                    <div id="order-not-sent" class="panel panel-danger">
-                        <div class="panel-body">
-                            <span class="text-danger">{{ message }}</span>
-                        </div><!-- /.panel-body -->
+                    <div id="order-not-sent" class="alert alert-danger alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'Close'|trans }}</span></button>
+                        {{ message }}
                     </div>
                     {% endfor %}
                     {% set message_no_products_availbale = app.session.flashbag.get('products_unavailable') %}
                     {% if message_no_products_availbale|length > 0 %}
-                        <div id="products-unavailable" class="panel panel-danger">
-                            <div class="panel-body">
-                                <ul>
-                                    {% for message in message_no_products_availbale %}
-                                        <li><span class="text-danger">{{ message }}</span></li>
-                                    {% endfor %}
-                                </ul>
-                            </div><!-- /.panel-body -->
+                        <div id="products-unavailable" class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'Close'|trans }}</span></button>
+                            {% for message in message_no_products_availbale %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
                         </div>
                     {% endif %}
                     <div id="voucher" class="panel panel-default">
@@ -255,8 +250,8 @@
                                     </div><!-- /.input-group -->
                                 </div><!-- /.col-md-8 -->
                                 <div class="col-md-4">
-                                    <div id="js-voucher-check">
-                                    </div>
+                                    <br />
+                                    <div id="js-voucher-check"></div>
                                 </div><!-- /.col-md-4 -->
                                 <script type="text/javascript">
                                     $("#js-check-voucher").click(function() {

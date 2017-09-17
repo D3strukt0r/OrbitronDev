@@ -231,7 +231,7 @@ class StoreCheckout
         // Save the order
         $database = DatabaseContainer::getDatabase();
         $productList = str_replace('"', '\\"', json_encode($this->products[$store_id]));
-        $addOrder = $database->prepare('INSERT INTO `store_orders`(`name`,`email`,`phone`,`street`,`zip_code`,`city`,`country`,`delivery_type`,`product_list`) VALUES (:name,:email,:phone,:street,:zip_code,:city,:country,:delivery_type,:product_list)');
+        $addOrder = $database->prepare('INSERT INTO `store_orders`(`name`,`email`,`phone`,`street`,`zip_code`,`city`,`country`,`delivery_type`,`product_list`,`store_id`) VALUES (:name,:email,:phone,:street,:zip_code,:city,:country,:delivery_type,:product_list,:store_id)');
         $addOrder->bindValue(':name', $order_info['name']);
         $addOrder->bindValue(':email', $order_info['email']);
         $addOrder->bindValue(':phone', $order_info['phone']);
@@ -241,6 +241,7 @@ class StoreCheckout
         $addOrder->bindValue(':country', $order_info['location_country']);
         $addOrder->bindValue(':delivery_type', $order_info['delivery_type']);
         $addOrder->bindValue(':product_list', $productList);
+        $addOrder->bindValue(':store_id', $store_id);
         $sqlSuccess = $addOrder->execute();
 
         if (!$sqlSuccess) {

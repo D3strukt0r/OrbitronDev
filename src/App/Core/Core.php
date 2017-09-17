@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use Container\DatabaseContainer;
+
 class Core
 {
     /**
@@ -10,11 +12,7 @@ class Core
      */
     public static function getMaintenanceStatus()
     {
-        /** @var \PDO $database */
-        $database = DatabaseConnection::$database;
-        if (is_null($database)) {
-            throw new \Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         $oGetMaintenance = $database->prepare('SELECT `val` FROM `app_config` WHERE `setting`=\'maintenance\' LIMIT 1');
         $oGetMaintenance->execute();

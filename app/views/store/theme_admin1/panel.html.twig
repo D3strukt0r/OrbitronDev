@@ -1,0 +1,58 @@
+{% extends 'layout_admin.html.twig' %}
+
+{% block stylesheets_implemeting_plugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
+{% endblock %}
+
+{% block javascripts_implementing_plugins %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery-ui.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.maskedinput.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
+{% endblock %}
+
+{% block javascripts_page_level %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/masking.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/datepicker.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/validation.js') }}"></script>
+{% endblock %}
+
+{% block stylesheets_code %}
+    {{ parent() }}
+    <style type="text/css">
+        .blue-border {
+            border-color: #337ab7;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts_code %}
+    {{ parent() }}
+    Masking.initMasking();
+    Datepicker.initDatepicker();
+{% endblock %}
+
+{% block brand %}<a class="navbar-brand" href="{{ path('app_store_store_admin', {'store': current_store.url, 'page': 'home'}) }}">{{ current_store.name }} {{ 'Admin'|trans }}</a>{% endblock %}
+
+{% block navigation_top %}
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-user">
+            <li><a href="{{ path('app_store_store_index', {'store': current_store.url}) }}">{{ 'Back to service'|trans }}</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ path('app_account_logout') }}"><i class="fa fa-sign-out fa-fw"></i> {{ 'Logout'|trans }}</a></li>
+        </ul>
+        <!-- /.dropdown-user -->
+    </li>
+    <!-- /.dropdown -->
+{% endblock %}
+
+{% block navigation %}{{ view_navigation|raw }}{% endblock %}
+
+{% block body %}{{ view_body|raw }}{% endblock %}
