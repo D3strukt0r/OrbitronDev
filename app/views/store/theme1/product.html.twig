@@ -39,39 +39,47 @@
             font-size: 24px;
             color: orange;
         }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
     </style>
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org/",
+    "@type": "Product",
+    "name": "{{ current_product.name }}",
+    "image": "https://www.el-venezolano.ch/assets/img/products/arepa-con-ceso.jpg",
+    "description": "{{ current_product.short_description }}",
+    "mpn": "1",
+    "brand": {
+        "@type": "Thing",
+        "name": "{{ current_store.name }}"
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ current_product.rating_cache }}",
+        "reviewCount": "{{ current_product.rating_count }}"
+    },
+    "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "price": "{% if current_product.in_sale %}{{ current_product.price_sale|number_format(2, '.', '\'') }}{% else %}{{ current_product.price|number_format(2, '.', '\'') }}{% endif %}",
+        "priceValidUntil": "2020-01-01",
+        "itemCondition": "http://schema.org/UsedCondition",
+        "availability": "http://schema.org/InStock",
+        "seller": {
+            "@type": "Organization",
+            "name": "{{ current_store.name }}"
+        }
+    }
+}
+    </script>
 {% endblock %}
 {% block javascript %}
     {{ parent() }}
     <script src="{{ asset('app/store/js/starrr.js') }}" type="text/javascript"></script>
     <script type="text/javascript">
-        function number_format(number, decimals, dec_point, thousands_sep) {
-            number = (number + '')
-                .replace(/[^0-9+\-Ee.]/g, '');
-            var n = !isFinite(+number) ? 0 : +number,
-                prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-                sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-                dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-                s = '',
-                toFixedFix = function(n, prec) {
-                    var k = Math.pow(10, prec);
-                    return '' + (Math.round(n * k) / k)
-                        .toFixed(prec);
-                };
-            // Fix for IE parseFloat(0.55).toFixed(0) = 0;
-            s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
-                .split('.');
-            if (s[0].length > 3) {
-                s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
-            }
-            if ((s[1] || '')
-                    .length < prec) {
-                s[1] = s[1] || '';
-                s[1] += new Array(prec - s[1].length + 1)
-                    .join('0');
-            }
-            return s.join(dec);
-        }
         $('#product-count').change(function() {
             var price = {{ current_product.price }};
             $("#output-price").html("<b>" + number_format(price * $('#product-count').val(), 2, '.', '\'') + " $</b>");
@@ -97,10 +105,54 @@
 {% block header %}
     <div class="container">
         <h1 class="page-header">{{ current_product.name }}</h1>
-        <ul class="nav nav-pills">
-            <li role="presentation"><a href="{{ path('app_store_store_index', {'store': current_store.url}) }}">{{ 'Home'|trans }}</a></li>
-            <li role="presentation"><a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}">{{ 'Checkout'|trans }}</a></li>
-        </ul>
+        <div class="row">
+            <div class="col-xs-12">
+                <ul class="nav nav-pills pull-left">
+                    <li role="presentation"><a href="{{ path('app_store_store_index', {'store': current_store.url}) }}">{{ 'Home'|trans }}</a></li>
+                    <li role="presentation"><a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}">{{ 'Checkout'|trans }}</a></li>
+                </ul>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="nav-item dropdown shopping-cart">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="padding: 5px 10px;">
+                            <i class="fa fa-shopping-cart fa-2x"></i>
+                            <span class="badge pull-right">{{ checkout.system.total_count }}</span>
+                        </a>
+                        <div class="dropdown-menu shopping-cart-open">
+                            <div class="products-list">
+                                <div class="mCustomScrollbar">
+                                    {% if cart|length < 2 %}
+                                        <span class="shc-title">{{ 'No products in cart'|trans }}</span>
+                                        <hr style="margin-bottom:0;margin-top:5px" />
+                                    {% else %}
+                                        {% for product in cart %}
+                                            {% if product.id != 0 %}
+                                                <div class="products">
+                                                    <div class="row">
+                                                        <div class="col-xs-5">
+                                                            <img alt="" class="img-responsive img-tab-space" src="{{ asset(product.image) }}" />
+                                                        </div>
+                                                        <div class="col-xs-7">
+                                                            <a href="{{ path('app_store_store_do_remove_from_cart', {'store': current_store.url, 'product': product.id}) }}" class="close" data-dismiss="alert" aria-hidden="true">×</a>
+                                                            <a class="product-link" href="{{ path('app_store_store_product', {'store': current_store.url, 'product': product.id}) }}">{{ product.title }}</a>
+                                                            <p class="products-price">{{ product.count }} x CHF {{ product.price }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr style="margin-bottom:10px;margin-top:-25px" />
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="checkout-bottom">
+                                <a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> {{ 'Cart'|trans }}</a>
+                                <span class="shc-total">{{ 'Total:'|trans }} <strong>{{ checkout.system.total_price|number_format(2, '.', '\'') }} $</strong></span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <hr />
     </div><!-- /.container -->
 {% endblock %}

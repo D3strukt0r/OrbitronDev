@@ -174,10 +174,31 @@ class StoreController extends Controller
             $productList[$index]['price_sale'] = $productList[$index]['in_sale'] ? $product['price_sale_' . $userCurrency] : null; // TODO: Show it when there is a sale
         }
 
+        // Shopping cart widget
+        if (LOGGED_IN) {
+            $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
+        } else {
+            $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
+        }
+        $cart = $rawCart->getProductsForStore($store->getVar('id'));
+        foreach ($cart as $key => $productInfo) {
+            $product = new StoreProduct($productInfo['id']);
+
+            $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
+            $product->productData['price'] = $product->getVar('price_' . $userCurrency);
+            $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
+            $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
+            $product->productData['in_cart'] = $productInfo['count'];
+
+            $productInCart = array_merge($cart[$key], $product->productData);
+            $cart[$key] = $productInCart;
+        }
+
         return $this->render('store/theme1/index.html.twig', array(
             'current_user'  => $currentUser->aUser,
             'current_store' => $store->storeData,
             'product_list'  => $productList,
+            'cart'          => $cart,
         ));
     }
 
@@ -289,6 +310,26 @@ class StoreController extends Controller
             $comments[$index]['formatted_username'] = AccountTools::formatUsername($comment['user_id']);
         }
 
+        // Shopping cart widget
+        if (LOGGED_IN) {
+            $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
+        } else {
+            $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
+        }
+        $cart = $rawCart->getProductsForStore($store->getVar('id'));
+        foreach ($cart as $key => $productInfo) {
+            $product = new StoreProduct($productInfo['id']);
+
+            $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
+            $product->productData['price'] = $product->getVar('price_' . $userCurrency);
+            $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
+            $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
+            $product->productData['in_cart'] = $productInfo['count'];
+
+            $productInCart = array_merge($cart[$key], $product->productData);
+            $cart[$key] = $productInCart;
+        }
+
         return $this->render('store/theme1/product.html.twig', array(
             'current_user'  => $currentUser->aUser,
             'current_store' => $store->storeData,
@@ -296,6 +337,7 @@ class StoreController extends Controller
             'comments' => $comments,
             'add_to_cart_form' => $addToCartForm->createView(),
             'add_comment_form' => $addCommentForm->createView(),
+            'cart'             => $cart,
         ));
     }
 

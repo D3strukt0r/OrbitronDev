@@ -31,6 +31,10 @@
             padding: 9px;
             color: #333;
         }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+            margin-top: 0;
+        }
     </style>
 {% endblock %}
 
@@ -39,10 +43,54 @@
 {% block header %}
     <div class="container">
         <h1 class="page-header">{{ current_store.name }}</h1>
-        <ul class="nav nav-pills">
-            <li role="presentation" class="active"><a href="{{ path('app_store_store_index', {'store': current_store.url}) }}">{{ 'Home'|trans }}</a></li>
-            <li role="presentation"><a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}">{{ 'Checkout'|trans }}</a></li>
-        </ul>
+        <div class="row">
+            <div class="col-xs-12">
+                <ul class="nav nav-pills pull-left">
+                    <li role="presentation" class="active"><a href="{{ path('app_store_store_index', {'store': current_store.url}) }}">{{ 'Home'|trans }}</a></li>
+                    <li role="presentation"><a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}">{{ 'Checkout'|trans }}</a></li>
+                </ul>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="nav-item dropdown shopping-cart">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="padding: 5px 10px;">
+                            <i class="fa fa-shopping-cart fa-2x"></i>
+                            <span class="badge pull-right">{{ checkout.system.total_count }}</span>
+                        </a>
+                        <div class="dropdown-menu shopping-cart-open">
+                            <div class="products-list">
+                                <div class="mCustomScrollbar">
+                                    {% if cart|length < 2 %}
+                                        <span class="shc-title">{{ 'No products in cart'|trans }}</span>
+                                        <hr style="margin-bottom:0;margin-top:5px" />
+                                    {% else %}
+                                        {% for product in cart %}
+                                            {% if product.id != 0 %}
+                                                <div class="products">
+                                                    <div class="row">
+                                                        <div class="col-xs-5">
+                                                            <img alt="" class="img-responsive img-tab-space" src="{{ asset(product.image) }}" />
+                                                        </div>
+                                                        <div class="col-xs-7">
+                                                            <a href="{{ path('app_store_store_do_remove_from_cart', {'store': current_store.url, 'product': product.id}) }}" class="close" data-dismiss="alert" aria-hidden="true">×</a>
+                                                            <a class="product-link" href="{{ path('app_store_store_product', {'store': current_store.url, 'product': product.id}) }}">{{ product.title }}</a>
+                                                            <p class="products-price">{{ product.count }} x CHF {{ product.price }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr style="margin-bottom:10px;margin-top:-25px" />
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="checkout-bottom">
+                                <a href="{{ path('app_store_store_checkout', {'store': current_store.url}) }}" class="btn btn-primary btn-xs"><i class="fa fa-shopping-cart"></i> {{ 'Cart'|trans }}</a>
+                                <span class="shc-total">{{ 'Total:'|trans }} <strong>{{ checkout.system.total_price|number_format(2, '.', '\'') }} $</strong></span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
         <hr />
     </div><!-- /.container -->
 {% endblock %}
