@@ -12,8 +12,10 @@ use App\Store\StoreProduct;
 use Container\DatabaseContainer;
 use Controller;
 use Form\RecaptchaType;
+use Kernel;
 use PDO;
 use ReCaptcha\ReCaptcha;
+use Swift_Image;
 use Swift_Message;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -412,26 +414,52 @@ class StoreController extends Controller
             $formData = $checkoutForm->getData();
             $ownerUser = new UserInfo($store->getVar('owner_id'));
 
-            $message = Swift_Message::newInstance()
-                ->setSubject('Order confirmation')
-                ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
-                ->setTo(array($ownerUser->getFromUser('email')))
-                ->setCc(array(trim($formData['email']) => trim($formData['name'])))
-                ->setReplyTo(array($ownerUser->getFromUser('email')))
-                ->setBody($this->renderView('store/mail/order-confirmation.html.twig', array(
-                    'current_store' => $store->storeData,
-                    'order_form' => $formData,
-                    'ordered_time' => time(),
-                )), 'text/html');
+            $productUnavailable = array();
+            $newProductsStock = array();
+            foreach ($cart as $key => $productInfo) {
+                $product = new StoreProduct($productInfo['id']);
 
-            /** @var \Swift_Mailer $mailer */
-            $mailer = $this->get('mailer');
-            $mailSent = $mailer->send($message);
+                if($product->getVar('stock_available') >= $productInfo['count']) {
+                    $newProductsStock[$product->getVar('id')] = $product->getVar('stock_available') - $productInfo['count'];
+                } else {
+                    $product->productData['count'] = $productInfo['count'];
+                    $productUnavailable[$key] = $product->productData;
+                }
+            }
 
-            if($mailSent) {
-                $this->addFlash('order_sent', 'Your email has been sent! Thanks!');
+            if (count($productUnavailable) > 0) {
+                foreach ($productUnavailable as $key => $item) {
+                    $this->addFlash('products_unavailable', $item['name'].' has only '.$item['stock_available'].' left! You wanted '.$item['count']);
+                }
             } else {
-                $this->addFlash('order_not_sent', 'Your order was not sent. Try again!');
+                // TODO: Order confirmations form is seen as Spam
+                $message = Swift_Message::newInstance();
+                $imgDir1 = $message->embed(Swift_Image::fromPath(Kernel::getIntent()->getRootDir().'/web/assets/logo-long.png'));
+                $message->setSubject('Order confirmation')
+                    ->setFrom(array($store->getVar('email') => $store->getVar('name')))
+                    ->setTo(array(trim($formData['email']) => trim($formData['name'])))
+                    ->setBcc(array($store->getVar('email')))
+                    ->setReplyTo(array($store->getVar('email') => $store->getVar('name')))
+                    ->setBody($this->renderView('store/mail/order-confirmation.html.twig', array(
+                        'current_store' => $store->storeData,
+                        'order_form' => $formData,
+                        'header_image' => $imgDir1,
+                        'ordered_time' => time(),
+                        'cart' => $cart,
+                    )), 'text/html');
+
+                /** @var \Swift_Mailer $mailer */
+                $mailer = $this->get('mailer');
+                $mailSent = $mailer->send($message);
+
+                if($mailSent) {
+                    $formData['delivery_type'] = '';
+                    $rawCart->makeOrder($store->getVar('id'), $formData);
+
+                    $this->addFlash('order_sent', 'Your order has been sent! Thanks!');
+                } else {
+                    $this->addFlash('order_not_sent', 'Your order was not sent. Try again!');
+                }
             }
         }
 

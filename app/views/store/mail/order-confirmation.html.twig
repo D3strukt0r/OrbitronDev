@@ -5,10 +5,10 @@
                 <table bgcolor="#f1f1f1" height="60" style="border-collapse:collapse;" border="0" cellspacing="0" cellpadding="0">
                     <tbody>
                         <tr valign="middle" height="40">
-                            <td width="9"></td>
-                            <td width="217" valign="middle"><img src="http://www.powertomove.ch/cdn/img/logo-clear.png" border="0" alt="Power2move" style="display:block;" height="40" /></td>
-                            <td width="327" style="font-size:13px;font-family:arial, sans-serif;color:#777777;text-align:left;">{{ current_store.name }}</td>
-                            <td width="100"></td>
+                            {#<td width="9"></td>#}
+                            <td {#width="217"#} valign="middle"><img src="{{ header_image }}" border="0" alt="{{ current_store.name }}" style="display:block;" height="40" /></td>
+                            {#<td width="327" style="font-size:13px;font-family:arial, sans-serif;color:#777777;text-align:left;">{{ current_store.name }}</td>
+                            <td width="100"></td>#}
                         </tr>
                     </tbody>
                 </table>
@@ -23,7 +23,7 @@
                                 {{ 'Hello'|trans }} {{ order_form.name }},
                                 <br />
                                 <br />
-                                {{ 'Thank you very much for your ordner. We will try to deliver the products as soon as possible.'|trans }}
+                                {{ 'Thank you very much for your order. We will try to deliver the products as soon as possible.'|trans }}
                                 <br />
                                 <br />
                                 <div style="font-weight:bold;">

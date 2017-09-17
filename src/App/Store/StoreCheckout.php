@@ -91,7 +91,7 @@ class StoreCheckout
     public function addToCart($store, $product, $count = 1)
     {
         $storeId = $store->getVar('id');
-        $productId = $product->getVar('id');
+        $productId = (int)$product->getVar('id');
 
         // How many are already in the cart?
         $alreadyInCart = 0;
@@ -209,5 +209,44 @@ class StoreCheckout
         }
 
         return $this->products[$store_id];
+    }
+
+    /**
+     * @param int   $store_id
+     * @param array $order_info
+     *
+     * @return $this
+     */
+    public function makeOrder($store_id, $order_info)
+    {
+        // Update "stock_available" for every product in cart
+        $currentStoreProducts = $this->products[$store_id];
+        foreach ($currentStoreProducts as $key => $productInfo) {
+            $product = new StoreProduct($productInfo['id']);
+            $currentStock = $product->getVar('stock_available');
+            $newStock = $currentStock - $productInfo['count'];
+            $product->setStockAvailable($newStock);
+        }
+
+        // Save the order
+        $database = DatabaseContainer::getDatabase();
+        $productList = str_replace('"', '\\"', json_encode($this->products[$store_id]));
+        $addOrder = $database->prepare('INSERT INTO `store_orders`(`name`,`email`,`phone`,`street`,`zip_code`,`city`,`country`,`delivery_type`,`product_list`) VALUES (:name,:email,:phone,:street,:zip_code,:city,:country,:delivery_type,:product_list)');
+        $addOrder->bindValue(':name', $order_info['name']);
+        $addOrder->bindValue(':email', $order_info['email']);
+        $addOrder->bindValue(':phone', $order_info['phone']);
+        $addOrder->bindValue(':street', $order_info['location_street'].' '.$order_info['location_street_number']);
+        $addOrder->bindValue(':zip_code', $order_info['location_postal_code']);
+        $addOrder->bindValue(':city', $order_info['location_city']);
+        $addOrder->bindValue(':country', $order_info['location_country']);
+        $addOrder->bindValue(':delivery_type', $order_info['delivery_type']);
+        $addOrder->bindValue(':product_list', $productList);
+        $sqlSuccess = $addOrder->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            return $this;
+        }
     }
 }

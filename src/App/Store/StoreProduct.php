@@ -163,4 +163,32 @@ class StoreProduct
 
         return $this;
     }
+
+    /**
+     * Set the new Rating cache
+     *
+     * @param int $new_stock
+     *
+     * @return $this
+     */
+    public function setStockAvailable($new_stock)
+    {
+        if ($this->productData == null) {
+            return null;
+        }
+        $database = DatabaseContainer::getDatabase();
+
+        $update = $database->prepare('UPDATE `store_products` SET `stock_available`=:value WHERE `id`=:product_id');
+        $update->bindValue(':product_id', $this->productId, PDO::PARAM_INT);
+        $update->bindValue(':value', $new_stock, PDO::PARAM_INT);
+        $sqlSuccess = $update->execute();
+
+        if (!$sqlSuccess) {
+            throw new \RuntimeException('Could not execute sql');
+        } else {
+            $this->productData['stock_available'] = $new_stock;
+        }
+
+        return $this;
+    }
 }
