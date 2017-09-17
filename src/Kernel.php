@@ -1,6 +1,5 @@
 <?php
 
-
 use Container\DatabaseContainer;
 use Container\RoutingContainer;
 use Container\SessionContainer;
@@ -9,6 +8,7 @@ use Container\TemplatingContainer;
 use Container\TranslatingContainer;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -36,7 +36,22 @@ class Kernel
 
         $this->environment = $env;
         if ($this->environment == 'development' || $this->environment == 'dev') {
-            set_exception_handler('\\Kernel::exception');
+            if (DEV_ONLY_INTERNAL) {
+                if (isset($_SERVER['HTTP_CLIENT_IP'])
+                    || isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+                    || !(in_array(@$_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']) || php_sapi_name() === 'cli-server')
+                ) {
+                    header('HTTP/1.0 403 Forbidden');
+                    exit('You are not allowed to access this this page, while in development.');
+                }
+            }
+
+            Debug::enable();
+            //ini_set('display_errors', '1');
+            //ini_set('display_startup_errors', '1');
+            //ini_set('error_reporting', E_ALL);
+            //error_reporting(E_ALL);
+            //set_exception_handler('\\Kernel::exception');
         } elseif ($this->environment == 'production' || $this->environment == 'prod') {
             error_reporting(0);
         }

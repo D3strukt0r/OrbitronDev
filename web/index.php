@@ -1,7 +1,5 @@
 <?php
 
-use Symfony\Component\Debug\Debug;
-
 // Force https if not accessing over localhost
 if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
     header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
@@ -38,20 +36,11 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['RE
 define('EXEC_START', microtime(true));
 define('MAINTENANCE', false);
 define('APPLICATION_ENV', 'dev'); // Use: 'dev' or 'prod'
+define('DEV_ONLY_INTERNAL', false);
 
 if (MAINTENANCE) {
     echo file_get_contents(__DIR__.'/../app/views/error/maintenance.phtml');
     exit;
-}
-/**
- * Display all errors when APPLICATION_ENV is development.
- */
-if (APPLICATION_ENV == 'development' || APPLICATION_ENV == 'dev') {
-    //Debug::enable(); // TODO: Use debug by Symfony instead of own code & Check if better
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    ini_set('error_reporting', E_ALL);
-    error_reporting(E_ALL);
 }
 
 $loader = require __DIR__ . '/../vendor/autoload.php';

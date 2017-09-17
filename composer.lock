@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7408ae7715f0bd9021e9d8d445bc6f0b",
+    "content-hash": "f8a80c6aaa5f0b72d400f0e4f6fc55e7",
     "packages": [
         {
             "name": "braintree/braintree_php",
@@ -1451,33 +1451,32 @@
         },
         {
             "name": "symfony/debug",
-            "version": "v3.2.7",
+            "version": "v3.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/debug.git",
-                "reference": "56f613406446a4a0a031475cfd0a01751de22659"
+                "reference": "8beb24eec70b345c313640962df933499373a944"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/debug/zipball/56f613406446a4a0a031475cfd0a01751de22659",
-                "reference": "56f613406446a4a0a031475cfd0a01751de22659",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/8beb24eec70b345c313640962df933499373a944",
+                "reference": "8beb24eec70b345c313640962df933499373a944",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5.9",
+                "php": "^5.5.9|>=7.0.8",
                 "psr/log": "~1.0"
             },
             "conflict": {
                 "symfony/http-kernel": ">=2.3,<2.3.24|~2.4.0|>=2.5,<2.5.9|>=2.6,<2.6.2"
             },
             "require-dev": {
-                "symfony/class-loader": "~2.8|~3.0",
                 "symfony/http-kernel": "~2.8|~3.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.2-dev"
+                    "dev-master": "3.3-dev"
                 }
             },
             "autoload": {
@@ -1504,7 +1503,7 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
-            "time": "2017-03-28T21:38:24+00:00"
+            "time": "2017-09-01T13:23:39+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
