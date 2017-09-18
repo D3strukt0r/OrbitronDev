@@ -4,6 +4,7 @@ namespace App\Store;
 
 use App\Account\UserInfo;
 use Container\DatabaseContainer;
+use Kernel;
 
 class StoreCheckout
 {
@@ -28,15 +29,8 @@ class StoreCheckout
                 $this->cartId = $this->createNewCart($user);
             } else {
                 // Access existing cart
-                $database = DatabaseContainer::getDatabase();
-
-                $sql = $database->prepare('SELECT * FROM `store_carts` WHERE `user_id`=:user_id');
-                $sql->execute(array(
-                    ':user_id' => $user->getFromUser('user_id'),
-                ));
-
-                if ($sql->rowCount() > 0) {
-                    $cartData = $sql->fetchAll(\PDO::FETCH_ASSOC);
+                if (self::cartExistsForUser($user)) {
+                    $cartData = $this->getDatabase($user);
 
                     $this->savedIn = 'database';
                     $this->cartId = $cartData[0]['cart_id'];
@@ -50,12 +44,13 @@ class StoreCheckout
             // If user is not registered
             $this->savedIn = 'cookie';
 
-            if (!isset($_COOKIE['store_cart'])) {
+            $request = Kernel::getIntent()->getRequest();
+            if (!is_null($request->cookies->get('store_cart'))) {
                 // Create new cookie
-                setcookie('store_cart', json_encode($this->products), time() + 60 * 60 * 24 * 30);
+                $this->setCookie($this->products);
             } else {
                 // Get information from existing cookie
-                $this->products = json_decode($_COOKIE['store_cart'], true);
+                $this->products = $this->getCookie();
             }
         }
     }
@@ -107,25 +102,90 @@ class StoreCheckout
     }
 
     /**
+     * Remove a product from the cart
+     *
+     * @param int      $storeId
+     * @param int      $product
+     * @param int|null $count
+     */
+    public function removeFromCart($storeId, $product, $count = null)
+    {
+        if (isset($this->products[$storeId][$product])) {
+            if ((!is_null($count) || $count > 0) && $this->products[$storeId][$product]['count'] > $count) {
+                // Only remove the amount
+                $this->products[$storeId][$product]['count'] -= $count;
+            } else {
+                // Remove the product
+                unset($this->products[$storeId][$product]);
+            }
+            $this->syncWithSource();
+        }
+    }
+
+    /**
      * Update database or cookie
      *
      * @throws \Exception
      */
     private function syncWithSource()
     {
-        $formatted = json_encode($this->products);
-
         if ($this->savedIn == 'cookie') {
-            setcookie('store_cart', $this->products, time() + 60 * 60 * 24 * 30);
+            $this->setCookie($this->products);
         } elseif ($this->savedIn == 'database') {
-            $database = DatabaseContainer::getDatabase();
-
-            $sql = $database->prepare('UPDATE `store_carts` SET `products`=:products WHERE `cart_id`=:cart_id');
-            $sql->execute(array(
-                ':cart_id'  => $this->cartId,
-                ':products' => $formatted,
-            ));
+            $this->setDatabase($this->products);
         }
+    }
+
+    /**
+     * Updates the cookie
+     *
+     * @param $data
+     */
+    private function setCookie($data)
+    {
+        setcookie('store_cart', base64_encode(json_encode($data, JSON_FORCE_OBJECT)), time() + 60 * 60 * 24 * 30, '/', 'orbitrondev.org');
+    }
+
+    /**
+     * Gets the cookie
+     *
+     * @return array
+     */
+    private function getCookie()
+    {
+        $request = Kernel::getIntent()->getRequest();
+
+        return json_decode(base64_decode($request->cookies->get('store_cart')), true);
+    }
+
+    /**
+     * @param UserInfo $user
+     *
+     * @return array
+     */
+    private function getDatabase($user)
+    {
+        $database = DatabaseContainer::getDatabase();
+
+        $sql = $database->prepare('SELECT * FROM `store_carts` WHERE `user_id`=:user_id');
+        $sql->execute(array(
+            ':user_id' => $user->getFromUser('user_id'),
+        ));
+
+        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @param array $data
+     */
+    private function setDatabase($data)
+    {
+        $database = DatabaseContainer::getDatabase();
+        $sql = $database->prepare('UPDATE `store_carts` SET `products`=:products WHERE `cart_id`=:cart_id');
+        $sql->execute(array(
+            ':cart_id'  => $this->cartId,
+            ':products' => json_encode($data, JSON_FORCE_OBJECT),
+        ));
     }
 
     /**
@@ -133,20 +193,8 @@ class StoreCheckout
      */
     public function clearCart()
     {
-        if ($this->savedIn == 'database') {
-            $database = DatabaseContainer::getDatabase();
-
-            $sql = $database->prepare('UPDATE `store_carts` SET `products`=:products WHERE `cart_id`=:cart_id');
-            $sql->execute(array(
-                ':cart_id'  => $this->cartId,
-                ':products' => '{}',
-            ));
-            return true;
-        } elseif ($this->savedIn == 'cookie') {
-            setcookie('store_cart', '{}', time() + 60 * 60 * 24 * 30);
-            return true;
-        }
-        return false;
+        $this->products = array();
+        $this->syncWithSource();
     }
 
     /**
@@ -195,11 +243,13 @@ class StoreCheckout
     }
 
     /**
-     * @param int $store_id
+     * @param int  $store_id
+     * @param bool $additional_info
+     * @param bool $add_total
      *
      * @return array|null
      */
-    public function getProductsForStore($store_id)
+    public function getCart($store_id, $additional_info = false, $add_total = false)
     {
         if (!Store::storeExists($store_id)) {
             return null;
@@ -208,7 +258,41 @@ class StoreCheckout
             return array();
         }
 
-        return $this->products[$store_id];
+        $cart = $this->products[$store_id];
+
+        // TODO: Add additional info, like subtotal, total, etc.
+        if ($additional_info) {
+
+            $totalCount = 0;
+            $totalPrice = 0;
+
+            $userLanguage = 'en'; // TODO: Make this editable by the user
+            $userCurrency = 'dollar';  // TODO: Make this editable by the user
+
+            foreach ($cart as $key => $product) {
+                $product2 = new StoreProduct($product['id']);
+                $cart[$key] = $product2->productData;
+                $cart[$key]['description'] = $product2->getVar('long_description_' . $userLanguage);
+                $cart[$key]['price'] = $product2->getVar('price_' . $userCurrency);
+                $cart[$key]['in_sale'] = is_null($product2->getVar('price_sale_' . $userCurrency)) ? false : true;
+                $cart[$key]['price_sale'] = $cart[$key]['in_sale'] ? $product2->getVar('price_sale_' . $userCurrency) : null;
+                $cart[$key]['in_cart'] = $product['count'];
+                $cart[$key]['subtotal'] = $product['count'] * ($cart[$key]['in_sale'] ? $cart[$key]['price_sale'] : $cart[$key]['price']);
+
+                if ($add_total) {
+                    $totalCount += $cart[$key]['in_cart'];
+                    $totalPrice += $cart[$key]['subtotal'];
+                }
+            }
+
+            if ($add_total) {
+                $cart['system']['id'] = 0; // Needed, so it won't be displayed in the checkout
+                $cart['system']['total_count'] = $totalCount;
+                $cart['system']['total_price'] = $totalPrice;
+            }
+        }
+
+        return $cart;
     }
 
     /**

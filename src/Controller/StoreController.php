@@ -180,19 +180,7 @@ class StoreController extends Controller
         } else {
             $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
         }
-        $cart = $rawCart->getProductsForStore($store->getVar('id'));
-        foreach ($cart as $key => $productInfo) {
-            $product = new StoreProduct($productInfo['id']);
-
-            $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
-            $product->productData['price'] = $product->getVar('price_' . $userCurrency);
-            $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
-            $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
-            $product->productData['in_cart'] = $productInfo['count'];
-
-            $productInCart = array_merge($cart[$key], $product->productData);
-            $cart[$key] = $productInCart;
-        }
+        $cart = $rawCart->getCart($store->getVar('id'), true, true);
 
         return $this->render('store/theme1/index.html.twig', array(
             'current_user'  => $currentUser->aUser,
@@ -316,19 +304,7 @@ class StoreController extends Controller
         } else {
             $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
         }
-        $cart = $rawCart->getProductsForStore($store->getVar('id'));
-        foreach ($cart as $key => $productInfo) {
-            $product = new StoreProduct($productInfo['id']);
-
-            $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
-            $product->productData['price'] = $product->getVar('price_' . $userCurrency);
-            $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
-            $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
-            $product->productData['in_cart'] = $productInfo['count'];
-
-            $productInCart = array_merge($cart[$key], $product->productData);
-            $cart[$key] = $productInCart;
-        }
+        $cart = $rawCart->getCart($store->getVar('id'), true, true);
 
         return $this->render('store/theme1/product.html.twig', array(
             'current_user'  => $currentUser->aUser,
@@ -361,19 +337,7 @@ class StoreController extends Controller
         } else {
             $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
         }
-        $cart = $rawCart->getProductsForStore($store->getVar('id'));
-        foreach ($cart as $key => $productInfo) {
-            $product = new StoreProduct($productInfo['id']);
-
-            $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
-            $product->productData['price'] = $product->getVar('price_' . $userCurrency);
-            $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
-            $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
-            $product->productData['in_cart'] = $productInfo['count'];
-
-            $productInCart = array_merge($cart[$key], $product->productData);
-            $cart[$key] = $productInCart;
-        }
+        $cart = $rawCart->getCart($store->getVar('id'), true, false);
 
         $checkoutForm = $this->createFormBuilder()
             ->add('name', TextType::class, array(
@@ -455,7 +419,6 @@ class StoreController extends Controller
         $checkoutForm->handleRequest($request);
         if ($checkoutForm->isSubmitted() && $checkoutForm->isValid()) {
             $formData = $checkoutForm->getData();
-            $ownerUser = new UserInfo($store->getVar('owner_id'));
 
             $productUnavailable = array();
             $newProductsStock = array();
@@ -495,7 +458,7 @@ class StoreController extends Controller
                 $mailSent = $mailer->send($message);
 
                 if($mailSent) {
-                    $formData['delivery_type'] = @$_POST['shipping'];
+                    $formData['delivery_type'] = @$_POST['shipping']; // TODO: Integrate this into the form
                     $rawCart->makeOrder($store->getVar('id'), $formData);
 
                     $this->addFlash('order_sent', 'Your order has been sent! Thanks!');
@@ -557,6 +520,80 @@ class StoreController extends Controller
         $cart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
         $cart->clearCart();
         return '';
+    }
+
+    public function storeDoAddToCartAction()
+    {
+        // Does the store even exist?
+        if (!Store::urlExists($this->parameters['store'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+        $request = Kernel::getIntent()->getRequest();
+
+        if (LOGGED_IN) {
+            $checkout = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
+        } else {
+            $checkout = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
+        }
+
+        $product = !is_null($request->query->get('product')) ? $request->query->get('product') : (!is_null($request->request->get('product')) ? $request->request->get('product') : null);
+        $count = !is_null($request->query->get('product_count')) ? $request->query->get('product_count') : (!is_null($request->request->get('product_count')) ? $request->request->get('product_count') : null);
+        $responseType = !is_null($request->query->get('response')) ? $request->query->get('response') : (!is_null($request->request->get('response')) ? $request->request->get('response') : null);
+        $checkout->addToCart($product, $count);
+
+        $browser = !is_null($request->query->get('browser')) ? $request->query->get('browser') : (!is_null($request->request->get('browser')) ? $request->request->get('browser') : null);
+        if (!is_null($responseType)) {
+            if ($responseType == 'json') {
+                return $this->json(array(
+                    'result' => "true",
+                ));
+            }
+        }
+        if (is_null($browser) || (!is_null($browser) && $browser == true)) {
+            return $this->redirect($request->server->get('HTTP_REFERER'), 302);
+        } else {
+            return '';
+        }
+    }
+
+    public function storeDoRemoveFromCartAction()
+    {
+        // Does the store even exist?
+        if (!Store::urlExists($this->parameters['store'])) {
+            return $this->render('error/error404.html.twig');
+        }
+
+        Account::updateSession();
+        $currentUser = new UserInfo(USER_ID);
+        $request = Kernel::getIntent()->getRequest();
+
+        if (LOGGED_IN) {
+            $checkout = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
+        } else {
+            $checkout = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
+        }
+
+        $product = !is_null($request->query->get('product')) ? $request->query->get('product') : (!is_null($request->request->get('product')) ? $request->request->get('product') : null);
+        $count = !is_null($request->query->get('product_count')) ? $request->query->get('product_count') : (!is_null($request->request->get('product_count')) ? $request->request->get('product_count') : null);
+        $responseType = !is_null($request->query->get('response')) ? $request->query->get('response') : (!is_null($request->request->get('response')) ? $request->request->get('response') : null);
+        $checkout->removeFromCart($product, $count);
+
+        $browser = !is_null($request->query->get('browser')) ? $request->query->get('browser') : (!is_null($request->request->get('browser')) ? $request->request->get('browser') : null);
+        if (!is_null($responseType)) {
+            if ($responseType == 'json') {
+                return $this->json(array(
+                    'result' => "true",
+                ));
+            }
+        }
+        if (is_null($browser) || (!is_null($browser) && $browser == true)) {
+            return $this->redirect($request->server->get('HTTP_REFERER'), 302);
+        } else {
+            return '';
+        }
     }
 
     public function storeAdminAction()
