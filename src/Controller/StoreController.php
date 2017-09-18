@@ -414,21 +414,37 @@ class StoreController extends Controller
             ))
             ->getForm();
 
+        if($store->getVar('braintree_mode') == 'sandbox') {
+            \Braintree_Configuration::environment('sandbox');
+            \Braintree_Configuration::merchantId($store->getVar('braintree_sandbox_merchant_id'));
+            \Braintree_Configuration::publicKey($store->getVar('braintree_sandbox_public_key'));
+            \Braintree_Configuration::privateKey($store->getVar('braintree_sandbox_private_key'));
+        } elseif($store->getVar('braintree_mode') == 'production') {
+            \Braintree_Configuration::environment('production');
+            \Braintree_Configuration::merchantId($store->getVar('braintree_production_merchant_id'));
+            \Braintree_Configuration::publicKey($store->getVar('braintree_production_public_key'));
+            \Braintree_Configuration::privateKey($store->getVar('braintree_production_private_key'));
+        }
+
+        $payment['client_token'] = \Braintree_ClientToken::generate();
+
         /** @var Request $request */
         $request = $this->get('kernel')->getRequest();
         $checkoutForm->handleRequest($request);
         if ($checkoutForm->isSubmitted() && $checkoutForm->isValid()) {
             $formData = $checkoutForm->getData();
 
+            $nonceFromTheClient = $_POST["payment_method_nonce"];
+
             $productUnavailable = array();
             $newProductsStock = array();
             foreach ($cart as $key => $productInfo) {
                 $product = new StoreProduct($productInfo['id']);
 
-                if($product->getVar('stock_available') >= $productInfo['count']) {
-                    $newProductsStock[$product->getVar('id')] = $product->getVar('stock_available') - $productInfo['count'];
+                if($product->getVar('stock_available') >= $productInfo['in_cart']) {
+                    $newProductsStock[$product->getVar('id')] = $product->getVar('stock_available') - $productInfo['in_cart'];
                 } else {
-                    $product->productData['count'] = $productInfo['count'];
+                    $product->productData['count'] = $productInfo['in_cart'];
                     $productUnavailable[$key] = $product->productData;
                 }
             }
@@ -438,32 +454,48 @@ class StoreController extends Controller
                     $this->addFlash('products_unavailable', $item['name'].' has only '.$item['stock_available'].' left! You wanted '.$item['count']);
                 }
             } else {
-                $message = Swift_Message::newInstance();
-                $imgDir1 = $message->embed(Swift_Image::fromPath(Kernel::getIntent()->getRootDir().'/web/assets/logo-long.png'));
-                $message->setSubject('Order confirmation')
-                    ->setFrom(array($store->getVar('email') => $store->getVar('name')))
-                    ->setTo(array(trim($formData['email']) => trim($formData['name'])))
-                    ->setBcc(array($store->getVar('email')))
-                    ->setReplyTo(array($store->getVar('email') => $store->getVar('name')))
-                    ->setBody($this->renderView('store/mail/order-confirmation.html.twig', array(
-                        'current_store' => $store->storeData,
-                        'order_form' => $formData,
-                        'header_image' => $imgDir1,
-                        'ordered_time' => time(),
-                        'cart' => $cart,
-                    )), 'text/html');
 
-                /** @var \Swift_Mailer $mailer */
-                $mailer = $this->get('mailer');
-                $mailSent = $mailer->send($message);
+                $cart2 = $rawCart->getCart($store->getVar('id'), true, true);
+                $result = \Braintree_Transaction::sale([
+                    'amount' => $cart2['system']['total_price'],
+                    'paymentMethodNonce' => $nonceFromTheClient,
+                    'options' => [
+                        'submitForSettlement' => true,
+                    ]
+                ]);
 
-                if($mailSent) {
-                    $formData['delivery_type'] = @$_POST['shipping']; // TODO: Integrate this into the form
-                    $rawCart->makeOrder($store->getVar('id'), $formData);
+                if ($result->success === true) {
+                    $message = Swift_Message::newInstance();
+                    $imgDir1 = $message->embed(Swift_Image::fromPath(Kernel::getIntent()->getRootDir().'/web/assets/logo-long.png'));
+                    $message->setSubject('Order confirmation')
+                        ->setFrom(array($store->getVar('email') => $store->getVar('name')))
+                        ->setTo(array(trim($formData['email']) => trim($formData['name'])))
+                        ->setBcc(array($store->getVar('email')))
+                        ->setReplyTo(array($store->getVar('email') => $store->getVar('name')))
+                        ->setBody($this->renderView('store/mail/order-confirmation.html.twig', array(
+                            'current_store' => $store->storeData,
+                            'order_form' => $formData,
+                            'header_image' => $imgDir1,
+                            'ordered_time' => time(),
+                            'cart' => $cart,
+                        )), 'text/html');
 
-                    $this->addFlash('order_sent', 'Your order has been sent! Thanks!');
+                    /** @var \Swift_Mailer $mailer */
+                    $mailer = $this->get('mailer');
+                    $mailSent = $mailer->send($message);
+
+                    if($mailSent) {
+                        $formData['delivery_type'] = @$_POST['shipping']; // TODO: Integrate this into the form
+                        $rawCart->makeOrder($store->getVar('id'), $formData);
+                        $rawCart->clearCart();
+                        $cart = $rawCart->getCart($store->getVar('id'), true, true);
+
+                        $this->addFlash('order_sent', 'We saved your order in our system, and sent you a confirmation. We will deliver you the products as soon as possible.');
+                    } else {
+                        $this->addFlash('order_not_sent', 'Your order was not sent. Try again!');
+                    }
                 } else {
-                    $this->addFlash('order_not_sent', 'Your order was not sent. Try again!');
+                    $this->addFlash('order_not_sent', 'It looks like, we couldn\'t create a transaction with your given credit card information. Try again!');
                 }
             }
         }
@@ -473,6 +505,7 @@ class StoreController extends Controller
             'current_store' => $store->storeData,
             'checkout_form' => $checkoutForm->createView(),
             'cart' => $cart,
+            'payment' => $payment,
         ));
     }
 

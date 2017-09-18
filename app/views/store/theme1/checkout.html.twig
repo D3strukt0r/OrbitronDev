@@ -367,6 +367,46 @@
                             {% endif %}
                         </div><!-- /.panel-body -->
                     </div><!-- /#cart -->
+                    <div id="payment-method" class="panel panel-default">
+                        <div class="panel-body">
+                            <script src="https://js.braintreegateway.com/web/dropin/1.7.0/js/dropin.min.js"></script>
+                            <input type="hidden" name="payment_method_nonce" value="fake-valid-nonce" />
+                            <div id="dropin-container"></div>
+                            <button id="submit-button" class="btn btn-success btn-block">{{ 'Validate payment method' }}</button>
+                            <script>
+                                var button = $('#submit-button');
+
+                                $(document).ready(function () {
+                                    $('#form_send').attr("disabled", true);
+                                });
+
+                                braintree.dropin.create({
+                                    authorization: '{{ payment.client_token }}',
+                                    container: '#dropin-container',
+                                    paypal: {
+                                        flow: 'vault'
+                                    }
+                                }, function (createErr, instance) {
+                                    button.click(function (event) {
+                                        event.preventDefault();
+                                        instance.requestPaymentMethod(function (err, payload) {
+                                            if (err) {
+                                                // Handle error in Hosted Fields tokenization
+                                                console.log('Error', err);
+                                                return;
+                                            }
+                                            // Submit payload.nonce to your server
+                                            // Put `payload.nonce` into the `payment-method-nonce` input, and then
+                                            // submit the form. Alternatively, you could send the nonce to your server
+                                            // with AJAX.
+                                            document.querySelector('input[name="payment_method_nonce"]').value = payload.nonce;
+                                            $('#form_send').attr("disabled", false);
+                                        });
+                                    });
+                                });
+                            </script>
+                        </div><!-- /.panel-body -->
+                    </div><!-- /#order-button -->
                     <div id="order-button" class="panel panel-default">
                         <div class="panel-body">
                             {% set fullPrice = productPrice + deliveryPrice %}

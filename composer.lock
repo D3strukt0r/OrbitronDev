@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8a80c6aaa5f0b72d400f0e4f6fc55e7",
+    "content-hash": "170a4756b06bf322d47a8a796bd0d317",
     "packages": [
         {
             "name": "braintree/braintree_php",
-            "version": "3.23.1",
+            "version": "3.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/braintree/braintree_php.git",
-                "reference": "8a66302c0ae9d4be120f8c4e02603027f2067196"
+                "reference": "8c8785b8876d5b2f4b4f78c5768ad245a7c43feb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/braintree/braintree_php/zipball/8a66302c0ae9d4be120f8c4e02603027f2067196",
-                "reference": "8a66302c0ae9d4be120f8c4e02603027f2067196",
+                "url": "https://api.github.com/repos/braintree/braintree_php/zipball/8c8785b8876d5b2f4b4f78c5768ad245a7c43feb",
+                "reference": "8c8785b8876d5b2f4b4f78c5768ad245a7c43feb",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                 }
             ],
             "description": "Braintree PHP Client Library",
-            "time": "2017-05-05T21:51:18+00:00"
+            "time": "2017-08-25T19:38:09+00:00"
         },
         {
             "name": "bshaffer/oauth2-server-php",
