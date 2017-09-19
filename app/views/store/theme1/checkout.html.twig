@@ -104,6 +104,93 @@
         // [END region_geolocation]
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSO1fpoQuukeVKiueZxzqhLCFlkgP0IMM&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>
+    <script type="text/javascript">
+        function checkoutSubtractQuantity(element) {
+            var elemPrice = $("#" + element + "_price");
+            var elemTotal = $("#" + element + "_total");
+            var elemInput = $("#" + element);
+            var number = parseInt(elemInput.val());
+            if(number - 1 < 0) {
+            } else {
+                var newTotal = --number;
+                var newTotalPrice = parseFloat(elemPrice.text()) * newTotal;
+                elemInput.val(newTotal);
+
+                if (elemPrice.text() !== '{{ 'Free'|trans }}') {
+                    updateTotal(newTotalPrice, elemTotal);
+                }
+            }
+        }
+
+        function checkoutAddQuantity(element) {
+            var elemPrice = $("#" + element + "_price");
+            var elemTotal = $("#" + element + "_total");
+            var elemInput = $("#" + element);
+            var number = parseInt(elemInput.val());
+            var newTotal = ++number;
+            var newTotalPrice = parseFloat(elemPrice.text()) * newTotal;
+            elemInput.val(newTotal);
+
+            if (elemPrice.text() !== '{{ 'Free'|trans }}') {
+                updateTotal(newTotalPrice, elemTotal);
+            }
+        }
+
+        function updateTotal(newProductTotal, elem) {
+            var oldProductTotal = parseFloat(elem.text());
+            elem.text(number_format(newProductTotal, 2, '.', '\''));
+
+            var elemSubtotal = $("#subtotal-price");
+            var subtotal = parseFloat(elemSubtotal.text());
+            var newSubtotal = (subtotal - oldProductTotal) + newProductTotal;
+            elemSubtotal.text(number_format(newSubtotal, 2, '.', '\''));
+
+            var elemTotal = $("#output-price");
+            var total = parseFloat(elemTotal.text());
+            var newTotal = (total - oldProductTotal) + newProductTotal;
+            elemTotal.text(number_format(newTotal, 2, '.', '\''));
+
+        }
+
+
+        function checkoutDisableTransport() {
+            $(".billing-info-inputs :input").prop("disabled", false);
+        }
+        function checkoutEnableTransport() {
+            $(".billing-info-inputs :input").prop("disabled", true);
+        }
+        function checkoutToggleTransport() {
+            if(this.checked) {
+                checkoutDisableTransport();
+            } else {
+                checkoutEnableTransport();
+            }
+        }
+
+        function checkoutRemoveProduct(productName, count) {
+            count = count || 0;
+
+            $.ajax({
+                method: "POST",
+                url: "/remove-from-cart?product=arepa_con_carne_mechada",
+                data: { product: productName, product_count: count, response: "json" },
+                async: true,
+                beforeSend: function( xhr ) {
+                    xhr.overrideMimeType("text/plain; charset=x-user-defined");
+                }
+            }).done(function(data) {
+                var response = JSON.parse(data);
+                if(response["result"] === "true") {
+                    console.log(response);
+                    console.info("[Checkout] Product deleted");
+                } else {
+                    alert("Product couldn't be removed, try again.");
+                }
+            }).fail(function() {
+                alert("Product couldn't be removed, try again.");
+            });
+        }
+    </script>
 {% endblock %}
 
 {% block title %}{{ 'Checkout'|trans }} | {{ service.page_name }}{% endblock %}
@@ -211,7 +298,8 @@
                     <div id="voucher" class="panel panel-default">
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-md-8"><label>{{ 'Voucher'|trans }}</label>
+                                <div class="col-md-8">
+                                    <label for="js-voucher-code">{{ 'Voucher'|trans }}</label>
                                     <div class="input-group">
                                         <input type="text" id="js-voucher-code" class="form-control" name="voucher" value />
                                         <span class="input-group-btn">
@@ -283,90 +371,6 @@
                             </script>
                         </div><!-- /.panel-body -->
                     </div><!-- /#transport -->
-                    <div id="cart" class="panel panel-default">
-                        <div class="panel-body">
-                            <label>{{ 'Cart'|trans }}</label>
-                            <span class="pull-right"><a id="js-clear-checkout" style="cursor:pointer">{{ 'Clear cart'|trans }}</a></span>
-                            <script type="text/javascript">
-                                $("#js-clear-checkout").click(function() {
-                                    $.ajax({
-                                        url: "{{ path('app_store_store_do_clear_cart', {'store': current_store.url}) }}",
-                                        type: "GET"
-                                    }).done(function(data) {
-                                        location.reload();
-                                    }).fail(function() {
-                                        console.log("Ajax failed!");
-                                    });
-                                });
-                            </script>
-                            {% if cart|length > 0 %}
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>{{ 'Picture'|trans }}</th>
-                                                <th>{{ 'Name'|trans }}</th>
-                                                <th>{{ 'Price'|trans }}</th>
-                                                <th>{{ 'Amount'|trans }}</th>
-                                                <th>{{ 'Total price'|trans }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% set productPrice = 0 %}
-                                            {% for product in cart %}
-                                                <tr>
-                                                    <td><img src="{{ asset('app/store/products_img/' ~ product.id ~ '/' ~ product.small_icon) }}" height="50" width="50" /></td>
-                                                    <td>{{ product.name }}</td>
-                                                    <td>
-                                                        {% if product.in_sale %}<span style="text-decoration:line-through">{% endif %}
-                                                        {% if product.price == 0 %}
-                                                            {{ 'Free'|trans }}
-                                                        {% else %}
-                                                            {{ product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
-                                                        {% endif %}
-                                                        {% if product.in_sale %}</span>{% endif %}
-                                                        <br />
-                                                        {% if product.price_sale == 0 %}
-                                                            {{ 'Free'|trans }}
-                                                        {% else %}
-                                                            {{ product.price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>{{ product.in_cart }}</td>
-                                                    <td>
-                                                        {% set product_total_price = product.price * product.in_cart %}
-                                                        {% set product_total_price_sale = product.price_sale * product.in_cart %}
-                                                        {% if product.in_sale %}<span style="text-decoration:line-through">{% endif %}
-                                                            {% if product_total_price == 0 %}
-                                                                {{ 'Free'|trans }}
-                                                            {% else %}
-                                                                {{ product_total_price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
-                                                            {% endif %}
-                                                            {% if product.in_sale %}</span>{% endif %}
-                                                        <br />
-                                                        {% if product_total_price_sale == 0 %}
-                                                            {{ 'Free'|trans }}
-                                                        {% else %}
-                                                            {{ product_total_price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                {% if product.in_sale %}
-                                                    {% set productPrice = productPrice + product_total_price_sale %}
-                                                {% else %}
-                                                    {% set productPrice = productPrice + product_total_price %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                    <!-- /.table .table-hover -->
-                                </div>
-                                <!-- /.table-responsive -->
-                            {% else %}
-                                <p class="text-center text-warning"><b>{{ 'Your cart is empty!'|trans }}</b></p>
-                            {% endif %}
-                        </div><!-- /.panel-body -->
-                    </div><!-- /#cart -->
                     <div id="payment-method" class="panel panel-default">
                         <div class="panel-body">
                             <script src="https://js.braintreegateway.com/web/dropin/1.7.0/js/dropin.min.js"></script>
@@ -406,28 +410,145 @@
                                 });
                             </script>
                         </div><!-- /.panel-body -->
-                    </div><!-- /#order-button -->
-                    <div id="order-button" class="panel panel-default">
+                    </div><!-- /#payment-method -->
+                    <div id="cart" class="panel panel-default">
                         <div class="panel-body">
-                            {% set fullPrice = productPrice + deliveryPrice %}
-                            <span class="pull-right">
-								<input type="hidden" id="hidden-output-price" name="output-price" value="{{ fullPrice }}" />
-                                {% if productPrice > 0 %}
-                                    <b><span id="output-price">{{ fullPrice|number_format(2, '.', '\'') }}</span> $</b> {# TODO: Make this editable by the user #}
-                                {% endif %}
-                                {{ form_widget(checkout_form.send, {'attr': {'class': 'btn btn-success', 'data-count': 'product-count', 'style': 'margin-left: 10px'}}) }}
-                            </span>
+                            <label>{{ 'Cart'|trans }}</label>
+                            <span class="pull-right"><a id="js-clear-checkout" style="cursor:pointer">{{ 'Clear cart'|trans }}</a></span>
                             <script type="text/javascript">
-                                var productPrice = {{ productPrice|default(0) }};
-                                if(productPrice === 0) {
-                                    $('#form_send').attr("disabled", true);
-                                }
-
-                                $('#product-count').change(function() {
-                                    var value = number_format(25 * $('#product-count').val(), 2, '.', '\'');
-                                    $("#output-price").html(value);
+                                $("#js-clear-checkout").click(function() {
+                                    $.ajax({
+                                        url: "{{ path('app_store_store_do_clear_cart', {'store': current_store.url}) }}",
+                                        type: "GET"
+                                    }).done(function(data) {
+                                        location.reload();
+                                    }).fail(function() {
+                                        console.log("Ajax failed!");
+                                    });
                                 });
                             </script>
+                            {% if cart|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ 'Product'|trans }}</th>
+                                                <th>{{ 'Quantity'|trans }}</th>
+                                                <th>{{ 'Price'|trans }}</th>
+                                                <th>{{ 'Total'|trans }}</th>
+                                                <th> </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% set productPrice = 0 %}
+                                            {% for product in cart %}
+                                                <tr>
+                                                    <td class="col-md-4">
+                                                        <div class="media">
+                                                            {#<a class="thumbnail pull-left" style="border: 0;" href="#"> <img class="media-object" src="{{ asset('app/store/products_img/' ~ product.id ~ '/' ~ product.small_icon) }}" style="width: 72px; height: 72px;"> </a>#}
+                                                            <a class="thumbnail pull-left" style="border: 0;margin-bottom: 0;" href="#"> <img class="media-object" src="http://icons.iconarchive.com/icons/custom-icon-design/flatastic-2/72/product-icon.png" style="width: 72px; height: 72px;"> </a>
+                                                            <div class="media-body" style="padding-left:5px;padding-top:5px;">
+                                                                <h4 class="media-heading"><a href="#">{{ product.name }}</a></h4>
+                                                                {#<h5 class="media-heading"> by <a href="#">Brand name</a></h5>#}
+                                                                <span>{{ 'Status'|trans }}: </span><span class="text-success"><strong>{% if product.stock_available > 0 %}{{ 'In Stock'|trans }} ({{ product.stock_available }}){% endif %}</strong></span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    {#<td class="col-sm-1"><input type="number" class="form-control" id="product_quantity_{{ product.id }}" value="{{ product.in_cart }}" /></td>#}
+                                                    <td class="col-sm-2">
+                                                        <div class="input-group">
+                                                            <span class="input-group-btn">
+                                                                <button class="btn btn-secondary" type="button" name="subtract" onclick="checkoutSubtractQuantity('product_quantity_{{ product.id }}')" value="-">-</button>
+                                                            </span>
+                                                            <input type="text" class="form-control text-center" name="product_quantity_{{ product.id }}" value="{{ product.in_cart }}" id="product_quantity_{{ product.id }}" title="quantity" />
+                                                            <span class="input-group-btn">
+                                                                <button class="btn btn-secondary" type="button" name="add" onclick="checkoutAddQuantity('product_quantity_{{ product.id }}')" value="+">+</button>
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {% if product.in_sale %}
+                                                            <span style="text-decoration:line-through">
+                                                                {% if product.price == 0 %}{{ 'Free'|trans }}{% else %}{{ product.price|number_format(2, '.', '\'') }} ${% endif %}
+                                                            </span>
+                                                            <br />
+                                                            {% if product.price_sale == 0 %}{{ 'Free'|trans }}{% else %}<span id="product_quantity_{{ product.id }}_price">{{ product.price_sale|number_format(2, '.', '\'') }}</span> ${% endif %}
+                                                        {% else %}
+                                                            {% if product.price == 0 %}{{ 'Free'|trans }}{% else %}<span id="product_quantity_{{ product.id }}_price">{{ product.price|number_format(2, '.', '\'') }}</span> ${% endif %}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% set product_total_price = product.price * product.in_cart %}
+                                                        {% set product_total_price_sale = product.price_sale * product.in_cart %}
+
+                                                        {% if product.in_sale %}
+                                                            <span style="text-decoration:line-through">
+                                                                {% if product_total_price == 0 %}{{ 'Free'|trans }}{% else %}{{ product_total_price|number_format(2, '.', '\'') }} ${% endif %}
+                                                            </span>
+                                                            <br />
+                                                            <b>{% if product_total_price_sale == 0 %}{{ 'Free'|trans }}{% else %}<span id="product_quantity_{{ product.id }}_total">{{ product_total_price_sale|number_format(2, '.', '\'') }}</span> ${% endif %}</b>
+                                                        {% else %}
+                                                            <b>{% if product_total_price == 0 %}{{ 'Free'|trans }}{% else %}<span id="product_quantity_{{ product.id }}_total">{{ product_total_price|number_format(2, '.', '\'') }}</span> ${% endif %}</b>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="col-sm-1 col-md-1">
+                                                        <a href="{{ path('app_store_store_do_remove_from_cart', {'store': current_store.url, 'product': product.id}) }}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> {{ 'Remove'|trans }}</a>
+                                                    </td>
+                                                </tr>
+                                                {% if product.in_sale %}
+                                                    {% set productPrice = productPrice + product_total_price_sale %}
+                                                {% else %}
+                                                    {% set productPrice = productPrice + product_total_price %}
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {% set fullPrice = productPrice + deliveryPrice %}
+                                            <tr>
+                                                <td> </td>
+                                                <td> </td>
+                                                <td> </td>
+                                                <td><h5>{{ 'Subtotal'|trans }}</h5></td>
+                                                <td class="text-right"><h5><strong><span id="subtotal-price">{{ productPrice|number_format(2, '.', '\'') }}</span> $</strong></h5></td> {# TODO: Make this editable by the user #}
+                                            </tr>
+                                            <tr>
+                                                <td> </td>
+                                                <td> </td>
+                                                <td> </td>
+                                                <td><h5>{{ 'Estimated shipping'|trans }}</h5></td>
+                                                <td class="text-right"><h5><strong>{{ deliveryPrice|number_format(2, '.', '\'') }} $</strong></h5></td> {# TODO: Make this editable by the user #}
+                                            </tr>
+                                            <tr>
+                                                <td> </td>
+                                                <td> </td>
+                                                <td> </td>
+                                                <td><h3>{{ 'Total'|trans }}</h3></td>
+                                                <td class="text-right"><h3><strong><span id="output-price">{{ fullPrice|number_format(2, '.', '\'') }}</span> $</strong></h3></td> {# TODO: Make this editable by the user #}
+                                            </tr>
+                                        </tbody>
+                                    </table><!-- /.table .table-hover -->
+                                </div><!-- /.table-responsive -->
+                                <input type="hidden" id="hidden-output-price" name="output-price" value="{{ fullPrice }}" />
+                                <script type="text/javascript">
+                                    var productPrice = {{ productPrice|default(0) }};
+                                    if(productPrice === 0) {
+                                        $('#form_send').attr("disabled", true);
+                                    }
+
+                                    $('#product-count').change(function() {
+                                        var value = number_format(25 * $('#product-count').val(), 2, '.', '\'');
+                                        $("#output-price").html(value);
+                                    });
+                                </script>
+                            {% else %}
+                                <p class="text-center text-warning"><b>{{ 'Your cart is empty!'|trans }}</b></p>
+                            {% endif %}
+                        </div><!-- /.panel-body -->
+                    </div><!-- /#cart -->
+                    <div id="order-button" class="panel panel-default">
+                        <div class="panel-body">
+                            <span class="pull-right">
+                                {{ form_widget(checkout_form.send, {'attr': {'class': 'btn btn-success', 'data-count': 'product-count', 'style': 'margin-left: 10px'}}) }}
+                            </span>
                         </div><!-- /.panel-body -->
                     </div><!-- /#order-button -->
                 </div><!-- /.col-md-8 -->
