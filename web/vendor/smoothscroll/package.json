@@ -1,33 +1,47 @@
 {
-  "name": "smoothscroll-for-websites",
-  "version": "1.4.4",
-  "description": "Smooth scrolling experience for websites. This is the standalone version of SmoothScroll for individual websites and themes. Mouse wheel, keyboard and touchpad scrolling all supported.",
-  "main": "SmoothScroll.js",
+  "title": "smoothscroll",
+  "name": "smoothscroll-polyfill",
+  "version": "0.4.0",
+  "author": {
+    "name": "Dustan Kasten",
+    "email": "dustan.kasten@gmail.com",
+    "url": "https://iamdustan.com"
+  },
+  "contributors": [
+    {
+      "name": "Jeremias Menichelli",
+      "email": "jmenichelli@gmail.com",
+      "url": "https://jeremenichelli.github.io"
+    }
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^4.7.1",
+    "rollup": "^0.50.0",
+    "uglify-js": "^3.1.1"
+  },
+  "description": "Polyfill for smooth scroll behavior",
+  "main": "dist/smoothscroll.js",
   "scripts": {
-    "test": "echo \"No test specified\" && exit 1",
-    "minify": "uglifyjs SmoothScroll.js --compress --mangle --output SmoothScroll.min.js"
+    "test": "eslint src/**/*.js",
+    "prebuild": "npm test",
+    "build": "rollup -c rollup.config.js",
+    "preminify": "npm run build",
+    "minify": "uglifyjs dist/smoothscroll.js -c -m -o dist/smoothscroll.min.js --verbose"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/galambalazs/smoothscroll-for-websites.git"
+    "url": "git+https://github.com/iamdustan/smoothscroll.git"
   },
   "keywords": [
     "smooth",
     "scroll",
-    "scrolling",
-    "animation",
-    "wheel",
-    "chrome",
-    "easing",
-    "nice"
+    "CSSOM",
+    "polyfill"
   ],
-  "author": "Balazs Galambosi (https://www.smoothscroll.net)",
-  "license": "SEE LICENSE IN ./LICENSE",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/galambalazs/smoothscroll-for-websites/issues"
+    "url": "https://github.com/iamdustan/smoothscroll/issues"
   },
-  "homepage": "https://github.com/galambalazs/smoothscroll-for-websites",
-  "devDependencies": {
-    "uglify-js": "^2.6.1"
-  }
+  "homepage": "https://iamdustan.github.io/smoothscroll"
 }

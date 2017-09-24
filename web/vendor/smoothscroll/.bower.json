@@ -1,38 +1,37 @@
 {
-  "name": "smoothscroll-for-websites",
-  "version": "1.4.4",
-  "title": "SmoothScroll for websites",
-  "description": "Smooth scrolling experience for websites. This is the standalone version of SmoothScroll for individual websites and themes. Mouse wheel, keyboard and touchpad scrolling all supported.",
+  "name": "smoothscroll",
+  "description": "Polyfill for smooth scroll behavior",
+  "main": "dist/smoothscroll.js",
+  "authors": [
+    "Dustan Kasten",
+    "Jeremias Menichelli"
+  ],
+  "license": "MIT",
   "keywords": [
     "smooth",
     "scroll",
-    "scrolling",
-    "animation",
-    "wheel",
-    "chrome",
-    "easing",
-    "nice"
+    "CSSOM",
+    "polyfill"
   ],
-  "homepage": "https://github.com/galambalazs/smoothscroll-for-websites",
-  "author": {
-    "name": "Balazs Galambosi",
-    "url": "https://www.smoothscroll.net"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/galambalazs/smoothscroll-for-websites.git"
-  },
-  "bugs": "https://github.com/galambalazs/smoothscroll-for-websites/issues",
-  "license": "SEE LICENSE IN ./LICENSE",
-  "main": "SmoothScroll.js",
-  "devDependencies": {},
-  "_release": "1.4.4",
+  "homepage": "https://iamdustan.github.io/smoothscroll",
+  "ignore": [
+    "**/.*",
+    "src",
+    "node_modules",
+    "bower_components",
+    "index.html",
+    "gulpfile.js",
+    "test",
+    "tests"
+  ],
+  "version": "0.4.0",
+  "_release": "0.4.0",
   "_resolution": {
     "type": "version",
-    "tag": "v1.4.4",
-    "commit": "d4bf25a4fa62c1a64f35ef15f43ab80845d5cbc9"
+    "tag": "v0.4.0",
+    "commit": "e631500e093c02f08e5039ce593b4b49ba4e3ad9"
   },
-  "_source": "git://github.com/galambalazs/smoothscroll-for-websites.git",
-  "_target": "~1.4.0",
-  "_originalSource": "smoothscroll-for-websites"
+  "_source": "https://github.com/iamdustan/smoothscroll.git",
+  "_target": "^0.4.0",
+  "_originalSource": "smoothscroll"
 }

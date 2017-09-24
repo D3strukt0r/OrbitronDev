@@ -15,6 +15,9 @@
 	.autosize img {width:100%}
 	.float-holder { overflow:hidden; }
 	.float-holder img { float: left; }
+	.no-bg-size {
+		background-image: url('?no-bg-size/300x200');
+	}
 	#holder1 {background:url('?holder.js/300x200?text=Background%20placeholder&bg=000&fg=fff');width:300px;height:200px}
 </style>
 </head>
@@ -32,19 +35,19 @@
 	</div>
 </div>
 <div class="thumb">
-	<img data-src="holder.js/300x200?random=yes&font=Droid Sans&text=Droid Sans">
+	<img data-src="holder.js/300x200?random=yes">
 	<div class="caption">
 		Placeholder with random theme
 	</div>
 </div>
 <div class="thumb">
-	<img data-src="holder.js/300x200?bg=rgb(85,98,112)&fg=rgb(78,205,196)">
+	<img data-src="holder.js/300x200?fg=rgb(230, 126, 34)&bg=rgb(44, 62, 80)">
 	<div class="caption">
 		Placeholder with rgb color values
 	</div>
 </div>
 <div class="thumb">
-	<img data-src="holder.js/300x200?bg=rgba(41, 128, 185,0.5)&fg=rgba(236, 240, 241,0.9)">
+	<img data-src="holder.js/300x200?bg=rgb(127, 140, 141)&fg=rgba(255, 255, 255, 0.7)">
 	<div class="caption">
 		Placeholder with rgba color values
 	</div>
@@ -98,7 +101,7 @@
 	</div>
 </div>
 <div class="thumb">
-	<img data-src="holder.margin/300x200?theme=lava&text=The five boxing wizards jump quickly.&align=right">
+	<img data-src="holder.js/300x200?theme=lava&text=The five boxing wizards jump quickly.&align=right&lineWrap=0.5">
 	<div class="caption">
 		 Placeholder with right-aligned text and custom margin
 	</div>
@@ -117,7 +120,12 @@
 		Placeholder with (randomly) missing image source
 	</div>
 </div>
-
+<div class="thumb">
+	<img data-src="holder.js/3x2?ratio=yes">
+	<div class="caption">
+		 Placeholder using a ratio
+	</div>
+</div>
 <div class="thumb">
 	<div class="autosize">
 		<img data-src="holder.js/200x133?bg=111&fg=ffff00&auto=yes" onclick="this.src='image.jpg'">
@@ -140,6 +148,21 @@
 		<code>&lt;div&gt;</code> with background placeholder
 	</div>
 </div>
+
+<div class="thumb">
+	<div class="holderjs" data-background-src="?no-bg-size/300x200" style="width:300px;height:200px"></div>
+	<div class="caption">
+		<code>&lt;div&gt;</code> with manually-sized background placeholder
+	</div>
+</div>
+
+<div class="thumb">
+	<div class="holderjs no-bg-size" style="width:300px;height:200px"></div>
+	<div class="caption">
+		<code>&lt;div&gt;</code> with manually-sized background placeholder with CSS
+	</div>
+</div>
+
 <div class="thumb">
 	<div class="holderjs" style="width:300px;height:200px" data-background-src="?holder.js/300x200?bg=ff8362&fg=5e422e"></div>
 	<div class="caption">
@@ -238,6 +261,18 @@
 		Placeholder added using <code>addImage</code> with a DOM node
 	</div>
 </div>
+<div class="thumb">
+	<img src="holder.js/300x200?auto=yes&bg=00AEEF&text=Add image">
+	<div class="caption">
+		Placeholder that triggers an error due to an invalid bg color
+	</div>
+</div>
+<div class="thumb">
+	<img src="holder.js/300x200?text=Holder?">
+	<div class="caption">
+		Placeholder that has a ? in text
+	</div>
+</div>
 <div class="fullpage thumb">
 	<img data-src="holder.js/90px80p?theme=sky">
 	<div class="caption">
@@ -254,6 +289,12 @@
 	<img data-src="holder.js/90px80p?theme=lava&textmode=literal">
 	<div class="caption">
 		 Full-page fluid placeholder in literal mode
+	</div>
+</div>
+<div class="fullpage thumb">
+	<img data-src="holder.js/90px80p?theme=sky&text=Placeholder dimensions: holder_dimensions">
+	<div class="caption">
+		 Full-page fluid placeholder with embedded dimension text
 	</div>
 </div>
 <div class="fullpage thumb">
@@ -293,15 +334,6 @@ Holder.run();
 Holder.addTheme("custom", {foreground: "#fff", background: "#000", size: 15}).run({
 	domain: "custom.holder",
 	renderer: "canvas"
-})
-
-Holder.addTheme("fontawesome", {foreground: "#00ccaa", background: "#002211", size: 12}).run({
-	domain: "fontawesome.holder"
-});
-
-Holder.run({
-	domain: 'holder.margin',
-	lineWrapRatio: 0.5
 });
 
 Holder.addImage("holder.js/300x200?theme=social&text=Added using addImage with a DOM node", document.querySelector('#holderAddImageDomTest')).run();
@@ -309,6 +341,11 @@ Holder.addImage("holder.js/300x200?theme=social&text=Added using addImage with a
 Holder.run({
 	domain: "holder.canvas",
 	renderer: "canvas"
+});
+
+Holder.run({
+	domain: "no-bg-size",
+	noBackgroundSize: true
 });
 
 $(function () {

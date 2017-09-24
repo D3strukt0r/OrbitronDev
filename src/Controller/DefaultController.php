@@ -144,7 +144,7 @@ class DefaultController extends Controller
             $formData = $contactForm->getData();
 
             if ($contactForm->get('send_to_own')->getData()) {
-                $message = Swift_Message::newInstance()
+                $message = (new Swift_Message())
                     ->setSubject(trim($formData['subject']))
                     ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
                     ->setTo(array('info@orbitrondev.org'))
@@ -155,7 +155,7 @@ class DefaultController extends Controller
                         'message' => $formData['message'],
                     )), 'text/html');
             } else {
-                $message = Swift_Message::newInstance()
+                $message = (new Swift_Message())
                     ->setSubject(trim($formData['subject']))
                     ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
                     ->setTo(array('info@orbitrondev.org'))

@@ -465,7 +465,7 @@ class StoreController extends Controller
                 ]);
 
                 if ($result->success === true) {
-                    $message = Swift_Message::newInstance();
+                    $message = (new Swift_Message());
                     $imgDir1 = $message->embed(Swift_Image::fromPath(Kernel::getIntent()->getRootDir().'/web/assets/logo-long.png'));
                     $message->setSubject('Order confirmation')
                         ->setFrom(array($store->getVar('email') => $store->getVar('name')))

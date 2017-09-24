@@ -1,6 +1,6 @@
 /*
 Holder.js - client side image placeholders
-(c) 2012-2015 Ivan Malopinsky - http://imsky.co
+(c) 2012-2016 Ivan Malopinsky - http://imsky.co
 */
 
 //Libraries and functions
@@ -14,7 +14,8 @@ var DOM = require('./dom');
 var Color = require('./color');
 var constants = require('./constants');
 
-var svgRenderer = require('./renderers/svg-dom');
+var svgRenderer = require('./renderers/svg-text');
+var sgCanvasRenderer = require('./renderers/canvas');
 
 var extend = utils.extend;
 var dimensionCheck = utils.dimensionCheck;
@@ -85,7 +86,6 @@ var Holder = {
 
         App.vars.preempted = true;
         App.vars.dataAttr = options.dataAttr || App.setup.dataAttr;
-        App.vars.lineWrapRatio = options.lineWrapRatio || App.setup.lineWrapRatio;
 
         engineSettings.renderer = options.renderer ? options.renderer : App.setup.renderer;
         if (App.setup.renderers.join(',').indexOf(engineSettings.renderer) === -1) {
@@ -99,7 +99,8 @@ var Holder = {
 
         engineSettings.stylesheets = [];
         engineSettings.svgXMLStylesheet = true;
-        engineSettings.noFontFallback = options.noFontFallback ? options.noFontFallback : false;
+        engineSettings.noFontFallback = !!options.noFontFallback;
+        engineSettings.noBackgroundSize = !!options.noBackgroundSize;
 
         stylenodes.forEach(function (styleNode) {
             if (styleNode.attributes.rel && styleNode.attributes.href && styleNode.attributes.rel.value == 'stylesheet') {
@@ -136,7 +137,7 @@ var Holder = {
                 }
             }
 
-            if (holderURL != null) {
+            if (holderURL) {
                 var holderFlags = parseURL(holderURL, options);
                 if (holderFlags) {
                     prepareDOMElement({
@@ -217,28 +218,28 @@ var App = {
         stylenodes: 'head link.holderjs',
         themes: {
             'gray': {
-                background: '#EEEEEE',
-                foreground: '#AAAAAA'
+                bg: '#EEEEEE',
+                fg: '#AAAAAA'
             },
             'social': {
-                background: '#3a5a97',
-                foreground: '#FFFFFF'
+                bg: '#3a5a97',
+                fg: '#FFFFFF'
             },
             'industrial': {
-                background: '#434A52',
-                foreground: '#C2F200'
+                bg: '#434A52',
+                fg: '#C2F200'
             },
             'sky': {
-                background: '#0D8FDB',
-                foreground: '#FFFFFF'
+                bg: '#0D8FDB',
+                fg: '#FFFFFF'
             },
             'vine': {
-                background: '#39DBAC',
-                foreground: '#1E292C'
+                bg: '#39DBAC',
+                fg: '#1E292C'
             },
             'lava': {
-                background: '#F8591A',
-                foreground: '#1C2846'
+                bg: '#F8591A',
+                fg: '#1C2846'
             }
         }
     },
@@ -284,7 +285,13 @@ function parseURL(url, instanceOptions) {
         instanceOptions: instanceOptions
     };
 
-    var parts = url.split('?');
+    var firstQuestionMark = url.indexOf('?');
+    var parts = [url];
+
+    if (firstQuestionMark !== -1) {
+        parts = [url.slice(0, firstQuestionMark), url.slice(firstQuestionMark + 1)];
+    }
+
     var basics = parts[0].split('/');
 
     holder.holderURL = url;
@@ -304,14 +311,30 @@ function parseURL(url, instanceOptions) {
     if (parts.length === 2) {
         var options = querystring.parse(parts[1]);
 
+        // Dimensions
+
+        if (utils.truthy(options.ratio)) {
+            holder.fluid = true;
+            var ratioWidth = parseFloat(holder.dimensions.width.replace('%', ''));
+            var ratioHeight = parseFloat(holder.dimensions.height.replace('%', ''));
+
+            ratioHeight = Math.floor(100 * (ratioHeight / ratioWidth));
+            ratioWidth = 100;
+
+            holder.dimensions.width = ratioWidth + '%';
+            holder.dimensions.height = ratioHeight + '%';
+        }
+
+        holder.auto = utils.truthy(options.auto);
+
         // Colors
 
         if (options.bg) {
-            holder.theme.background = utils.parseColor(options.bg);
+            holder.theme.bg = utils.parseColor(options.bg);
         }
 
         if (options.fg) {
-            holder.theme.foreground = utils.parseColor(options.fg);
+            holder.theme.fg = utils.parseColor(options.fg);
         }
 
         //todo: add automatic foreground to themes without foreground
@@ -345,11 +368,13 @@ function parseURL(url, instanceOptions) {
             holder.align = options.align;
         }
 
+        if (options.lineWrap) {
+            holder.lineWrap = options.lineWrap;
+        }
+
         holder.nowrap = utils.truthy(options.nowrap);
 
         // Miscellaneous
-
-        holder.auto = utils.truthy(options.auto);
 
         holder.outline = utils.truthy(options.outline);
 
@@ -378,6 +403,8 @@ function prepareDOMElement(prepSettings) {
         theme = flags.theme;
     var dimensionsCaption = dimensions.width + 'x' + dimensions.height;
     mode = mode == null ? (flags.fluid ? 'fluid' : 'image') : mode;
+    var holderTemplateRe = /holder_([a-z]+)/g;
+    var dimensionsInText = false;
 
     if (flags.text != null) {
         theme.text = flags.text;
@@ -389,6 +416,19 @@ function prepareDOMElement(prepSettings) {
                 textLines[k] = utils.encodeHtmlEntity(textLines[k]);
             }
             theme.text = textLines.join('\\n');
+        }
+    }
+
+    if (theme.text) {
+        var holderTemplateMatches = theme.text.match(holderTemplateRe);
+
+        if (holderTemplateMatches !== null) {
+            //todo: optimize template replacement
+            holderTemplateMatches.forEach(function (match) {
+                if (match === 'holder_dimensions') {
+                    theme.text = theme.text.replace(match, dimensionsCaption);
+                }
+            });
         }
     }
 
@@ -437,7 +477,7 @@ function prepareDOMElement(prepSettings) {
 
     if (mode == 'image' || mode == 'fluid') {
         DOM.setAttr(el, {
-            'alt': (theme.text ? theme.text + ' [' + dimensionsCaption + ']' : dimensionsCaption)
+            'alt': theme.text ? (dimensionsInText ? theme.text : theme.text + ' [' + dimensionsCaption + ']') : dimensionsCaption
         });
     }
 
@@ -459,7 +499,7 @@ function prepareDOMElement(prepSettings) {
         }
 
         if (engineSettings.renderer == 'html') {
-            el.style.backgroundColor = theme.background;
+            el.style.backgroundColor = theme.bg;
         } else {
             render(renderSettings);
 
@@ -491,7 +531,7 @@ function prepareDOMElement(prepSettings) {
         setInitialDimensions(el);
 
         if (engineSettings.renderer == 'html') {
-            el.style.backgroundColor = theme.background;
+            el.style.backgroundColor = theme.bg;
         } else {
             App.vars.resizableImages.push(el);
             updateResizableElements(el);
@@ -558,7 +598,10 @@ function render(renderSettings) {
     //todo: add <object> canvas rendering
     if (mode == 'background') {
         el.style.backgroundImage = 'url(' + image + ')';
-        el.style.backgroundSize = scene.width + 'px ' + scene.height + 'px';
+
+        if (!engineSettings.noBackgroundSize) {
+            el.style.backgroundSize = scene.width + 'px ' + scene.height + 'px';
+        }
     } else {
         if (el.nodeName.toLowerCase() === 'img') {
             DOM.setAttr(el, {
@@ -566,9 +609,7 @@ function render(renderSettings) {
             });
         } else if (el.nodeName.toLowerCase() === 'object') {
             DOM.setAttr(el, {
-                'data': image
-            });
-            DOM.setAttr(el, {
+                'data': image,
                 'type': 'image/svg+xml'
             });
         }
@@ -585,9 +626,7 @@ function render(renderSettings) {
                     });
                 } else if (el.nodeName.toLowerCase() === 'object') {
                     DOM.setAttr(el, {
-                        'data': image
-                    });
-                    DOM.setAttr(el, {
+                        'data': image,
                         'type': 'image/svg+xml'
                     });
                 }
@@ -639,6 +678,10 @@ function buildSceneGraph(scene) {
             break;
     }
 
+    var lineWrap = scene.flags.lineWrap || App.setup.lineWrapRatio;
+    var sceneMargin = scene.width * lineWrap;
+    var maxLineWidth = sceneMargin;
+
     var sceneGraph = new SceneGraph({
         width: scene.width,
         height: scene.height
@@ -647,7 +690,7 @@ function buildSceneGraph(scene) {
     var Shape = sceneGraph.Shape;
 
     var holderBg = new Shape.Rect('holderBg', {
-        fill: scene.theme.background
+        fill: scene.theme.bg
     });
 
     holderBg.resize(scene.width, scene.height);
@@ -662,7 +705,7 @@ function buildSceneGraph(scene) {
         };
     }
 
-    var holderTextColor = scene.theme.foreground;
+    var holderTextColor = scene.theme.fg;
 
     if (scene.flags.autoFg) {
         var holderBgColor = new Color(holderBg.properties.fill);
@@ -700,9 +743,6 @@ function buildSceneGraph(scene) {
         parent.height += line.height;
     }
 
-    var sceneMargin = scene.width * App.vars.lineWrapRatio;
-    var maxLineWidth = sceneMargin;
-
     if (tpdata.lineCount > 1) {
         var offsetX = 0;
         var offsetY = 0;
@@ -712,7 +752,7 @@ function buildSceneGraph(scene) {
 
         //Double margin so that left/right-aligned next is not flush with edge of image
         if (scene.align === 'left' || scene.align === 'right') {
-            maxLineWidth = scene.width * (1 - (1 - (App.vars.lineWrapRatio)) * 2);
+            maxLineWidth = scene.width * (1 - (1 - lineWrap) * 2);
         }
 
         for (var i = 0; i < tpdata.words.length; i++) {
@@ -1007,7 +1047,7 @@ var stagingRenderer = (function() {
             var stagingTextBBox = stagingText.getBBox();
 
             //Get line count and split the string into words
-            var lineCount = Math.ceil(stagingTextBBox.width / (rootNode.properties.width * App.vars.lineWrapRatio));
+            var lineCount = Math.ceil(stagingTextBBox.width / rootNode.properties.width);
             var words = htgProps.text.split(' ');
             var newlines = htgProps.text.match(/\\n/g);
             lineCount += newlines == null ? 0 : newlines.length;
@@ -1048,66 +1088,6 @@ var stagingRenderer = (function() {
             //todo: canvas fallback for measuring text on android 2.3
             return false;
         }
-    };
-})();
-
-var sgCanvasRenderer = (function() {
-    var canvas = DOM.newEl('canvas');
-    var ctx = null;
-
-    return function(sceneGraph) {
-        if (ctx == null) {
-            ctx = canvas.getContext('2d');
-        }
-        var root = sceneGraph.root;
-        canvas.width = App.dpr(root.properties.width);
-        canvas.height = App.dpr(root.properties.height);
-        ctx.textBaseline = 'middle';
-
-        var bg = root.children.holderBg;
-        var bgWidth = App.dpr(bg.width);
-        var bgHeight = App.dpr(bg.height);
-        //todo: parametrize outline width (e.g. in scene object)
-        var outlineWidth = 2;
-        var outlineOffsetWidth = outlineWidth / 2;
-
-        ctx.fillStyle = bg.properties.fill;
-        ctx.fillRect(0, 0, bgWidth, bgHeight);
-
-        if (bg.properties.outline) {
-            //todo: abstract this into a method
-            ctx.strokeStyle = bg.properties.outline.fill;
-            ctx.lineWidth = bg.properties.outline.width;
-            ctx.moveTo(outlineOffsetWidth, outlineOffsetWidth);
-            // TL, TR, BR, BL
-            ctx.lineTo(bgWidth - outlineOffsetWidth, outlineOffsetWidth);
-            ctx.lineTo(bgWidth - outlineOffsetWidth, bgHeight - outlineOffsetWidth);
-            ctx.lineTo(outlineOffsetWidth, bgHeight - outlineOffsetWidth);
-            ctx.lineTo(outlineOffsetWidth, outlineOffsetWidth);
-            // Diagonals
-            ctx.moveTo(0, outlineOffsetWidth);
-            ctx.lineTo(bgWidth, bgHeight - outlineOffsetWidth);
-            ctx.moveTo(0, bgHeight - outlineOffsetWidth);
-            ctx.lineTo(bgWidth, outlineOffsetWidth);
-            ctx.stroke();
-        }
-
-        var textGroup = root.children.holderTextGroup;
-        ctx.font = textGroup.properties.font.weight + ' ' + App.dpr(textGroup.properties.font.size) + textGroup.properties.font.units + ' ' + textGroup.properties.font.family + ', monospace';
-        ctx.fillStyle = textGroup.properties.fill;
-
-        for (var lineKey in textGroup.children) {
-            var line = textGroup.children[lineKey];
-            for (var wordKey in line.children) {
-                var word = line.children[wordKey];
-                var x = App.dpr(textGroup.x + line.x + word.x);
-                var y = App.dpr(textGroup.y + line.y + word.y + (textGroup.properties.leading / 2));
-
-                ctx.fillText(word.properties.text, x, y);
-            }
-        }
-
-        return canvas.toDataURL('image/png');
     };
 })();
 
@@ -1158,10 +1138,6 @@ App.setup = {
     renderers: ['html', 'canvas', 'svg']
 };
 
-App.dpr = function(val) {
-    return val * App.setup.ratio;
-};
-
 //Properties modified during runtime
 
 App.vars = {
@@ -1177,26 +1153,14 @@ App.vars = {
 //Pre-flight
 
 (function() {
-    var devicePixelRatio = 1,
-        backingStoreRatio = 1;
-
     var canvas = DOM.newEl('canvas');
-    var ctx = null;
 
     if (canvas.getContext) {
         if (canvas.toDataURL('image/png').indexOf('data:image/png') != -1) {
             App.setup.renderer = 'canvas';
-            ctx = canvas.getContext('2d');
             App.setup.supportsCanvas = true;
         }
     }
-
-    if (App.setup.supportsCanvas) {
-        devicePixelRatio = global.devicePixelRatio || 1;
-        backingStoreRatio = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1;
-    }
-
-    App.setup.ratio = devicePixelRatio / backingStoreRatio;
 
     if (!!document.createElementNS && !!document.createElementNS(SVG_NS, 'svg').createSVGRect) {
         App.setup.renderer = 'svg';

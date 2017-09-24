@@ -6,7 +6,7 @@ var jshint = require('gulp-jshint');
 var todo = require('gulp-todo');
 var gulputil = require('gulp-util');
 var replace = require('gulp-replace');
-var webpack = require('gulp-webpack');
+var webpack = require('webpack-stream');
 var beautify = require('gulp-jsbeautifier');
 var rename = require('gulp-rename');
 
@@ -32,6 +32,7 @@ var build = generateBuild();
 gulp.task('jshint', function() {
     return gulp.src([
         'src/lib/*.js',
+        'src/lib/renderers/*.js',
         'src/renderers/*.js',
         'src/index.js'
         ])
@@ -40,7 +41,12 @@ gulp.task('jshint', function() {
 });
 
 gulp.task('todo', function() {
-    return gulp.src('src/index.js')
+    return gulp.src([
+        'src/lib/*.js',
+        'src/lib/renderers/*.js',
+        'src/renderers/*.js',
+        'src/index.js'
+        ])
         .pipe(todo())
         .pipe(gulp.dest('./'));
 });

@@ -207,7 +207,7 @@ class AccountController extends Controller
 
             if (is_int($registerResult) || is_float($registerResult)) {
 
-                $message = Swift_Message::newInstance()
+                $message = (new Swift_Message())
                     ->setSubject('[Account] Email activation')
                     ->setFrom(array('no-reply-account@orbitrondev.org' => 'OrbitronDev'))
                     ->setTo(array($registerForm->get('email')->getData()))
@@ -498,7 +498,7 @@ class AccountController extends Controller
                         $token = $tokenGenerator->generateToken('reset_password', strtotime('+1 day'),
                             array('user_id' => $user->getFromUser('user_id')));
 
-                        $message = Swift_Message::newInstance()
+                        $message = (new Swift_Message())
                             ->setSubject('[Account] Reset password')
                             ->setFrom(array('info@orbitrondev.org' => 'OrbitronDev'))
                             ->setTo(array($user->getFromUser('email')))
@@ -565,7 +565,7 @@ class AccountController extends Controller
                 $tokenGenerator = new Token();
                 $token = $tokenGenerator->generateToken('confirm_email', strtotime('+1 day'));
 
-                $message = Swift_Message::newInstance()
+                $message = (new Swift_Message())
                     ->setSubject('[Account] Email activation')
                     ->setFrom(array('team-orbitron@hotmail.com' => 'OrbitronDev'))
                     ->setTo(array($currentUser->getFromUser('email')))
