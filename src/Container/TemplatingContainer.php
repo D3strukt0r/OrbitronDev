@@ -92,7 +92,9 @@ class TemplatingContainer
      */
     function translationExtension($kernel)
     {
-        $this->twig->addExtension(new TranslationExtension($kernel->get('translator')));
+        /** \Symfony\Component\Translation\Translator $translator */
+        $translator = $kernel->get('translator');
+        $this->twig->addExtension(new TranslationExtension($translator));
     }
 
     /**
@@ -116,14 +118,13 @@ class TemplatingContainer
         $defaultThemes[] = 'form_div_layout.html.twig'; // TODO: Use this (<---) one, so forms are displayed correctly
         //$defaultThemes[] = 'bootstrap_3_layout.html.twig';
         $defaultThemes[] = 'form_widget.html.twig';
-        $formEngine = new TwigRendererEngine($defaultThemes);
+        $formEngine = new TwigRendererEngine($defaultThemes, $this->twig);
         $this->twig->addRuntimeLoader(new \Twig_FactoryRuntimeLoader(array(
             TwigRenderer::class => function () use ($formEngine, $csrfManager) {
                 return new TwigRenderer($formEngine, $csrfManager);
             },
         )));
 
-        $formEngine->setEnvironment($this->twig);
         $this->twig->addExtension(new FormExtension(new TwigRenderer($formEngine, $csrfManager)));
 
         $formFactory = Forms::createFormFactoryBuilder()

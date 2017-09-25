@@ -1,4 +1,11 @@
-(($, window) ->
+((window, factory) ->
+  if typeof define is 'function' and define.amd
+    define ['jquery'], (jQuery) -> (window.Tour = factory(jQuery))
+  else if typeof exports is 'object'
+    module.exports = factory(require('jQuery'))
+  else
+    window.Tour = factory(window.jQuery)
+)(window, ($) ->
   document = window.document
 
   class Tour
@@ -97,6 +104,7 @@
           backdropPadding: @_options.backdropPadding
           redirect: @_options.redirect
           reflexElement: @_options.steps[i].element
+          backdropElement: @_options.steps[i].element
           orphan: @_options.orphan
           duration: @_options.duration
           delay: @_options.delay
@@ -145,16 +153,16 @@
 
     # Hide current step and show next step
     next: ->
-      promise = @hideStep @_current
+      promise = @hideStep @_current, @_current+1
       @_callOnPromiseDone promise, @_showNextStep
 
     # Hide current step and show prev step
     prev: ->
-      promise = @hideStep @_current
+      promise = @hideStep @_current, @_current-1
       @_callOnPromiseDone promise, @_showPrevStep
 
     goTo: (i) ->
-      promise = @hideStep @_current
+      promise = @hideStep @_current, i
       @_callOnPromiseDone promise, @showStep, i
 
     # End tour
@@ -215,7 +223,7 @@
       step.onResume @, @_duration if step.onResume? and @_duration isnt step.duration
 
     # Hide the specified step
-    hideStep: (i) ->
+    hideStep: (i, iNext) ->
       step = @getStep i
       return unless step
 
@@ -228,20 +236,32 @@
         $element = $ step.element
         $element = $('body') unless $element.data('bs.popover') or $element.data('popover')
         $element
-        .popover('destroy')
-        .removeClass "tour-#{@_options.name}-element tour-#{@_options.name}-#{i}-element"
-        $element
-        .removeData('bs.popover')
+          .popover('destroy')
+          .removeClass("tour-#{@_options.name}-element tour-#{@_options.name}-#{i}-element")
+          .removeData('bs.popover')
+          .focus()
+
         if step.reflex
           $ step.reflexElement
           .removeClass('tour-step-element-reflex')
           .off "#{@_reflexEvent(step.reflex)}.tour-#{@_options.name}"
 
-        @_hideBackdrop() if step.backdrop
+        if step.backdrop
+          next_step = iNext? and @getStep iNext
+          @_hideBackdrop() if !next_step or !next_step.backdrop or next_step.backdropElement != step.backdropElement
 
         step.onHidden(@) if step.onHidden?
 
-      @_callOnPromiseDone promise, hideStepHelper
+      hideDelay = step.delay.hide || step.delay
+
+      if ({}).toString.call(hideDelay) is '[object Number]' and hideDelay > 0
+        @_debug "Wait #{hideDelay} milliseconds to hide the step #{@_current + 1}"
+        window.setTimeout =>
+          @_callOnPromiseDone promise, hideStepHelper
+        , hideDelay
+      else
+        @_callOnPromiseDone promise, hideStepHelper
+
       promise
 
     # Show the specified step
@@ -258,21 +278,21 @@
       # If onShow returns a promise, let's wait until it's done to execute
       promise = @_makePromise(step.onShow @, i if step.onShow?)
 
+      @setCurrentStep i
+
+      # Support string or function for path
+      path = switch ({}).toString.call step.path
+        when '[object Function]' then step.path()
+        when '[object String]' then @_options.basePath + step.path
+        else step.path
+
+      # Redirect to step path if not already there
+      if step.redirect and @_isRedirect step.host, path, document.location
+        @_redirect step, i, path
+
+        return unless @_isJustPathHashDifferent(step.host, path, document.location)
+
       showStepHelper = (e) =>
-        @setCurrentStep i
-
-        # Support string or function for path
-        path = switch ({}).toString.call step.path
-          when '[object Function]' then step.path()
-          when '[object String]' then @_options.basePath + step.path
-          else step.path
-
-        # Redirect to step path if not already there
-        if @_isRedirect step.host, path, document.location
-          @_redirect step, i, path
-
-          return unless @_isJustPathHashDifferent(step.host, path, document.location)
-
         # Skip if step is orphan and orphan options is false
         if @_isOrphan step
           if step.orphan is false
@@ -289,24 +309,26 @@
         showPopoverAndOverlay = =>
           return if @getCurrentStep() isnt i or @ended()
 
-          @_showOverlayElement step if step.element? and step.backdrop
+          @_showOverlayElement step, true if step.element? and step.backdrop
           @_showPopover step, i
           step.onShown @ if step.onShown?
           @_debug "Step #{@_current + 1} of #{@_options.steps.length}"
 
         if step.autoscroll
-          @_scrollIntoView step.element, showPopoverAndOverlay
+          @_scrollIntoView step, showPopoverAndOverlay
         else
           showPopoverAndOverlay()
 
         # Play step timer
         @resume() if step.duration
 
-      if step.delay
-        @_debug "Wait #{step.delay} milliseconds to show the step #{@_current + 1}"
+      showDelay = step.delay.show || step.delay
+
+      if ({}).toString.call(showDelay) is '[object Number]' and showDelay > 0
+        @_debug "Wait #{showDelay} milliseconds to show the step #{@_current + 1}"
         window.setTimeout =>
           @_callOnPromiseDone promise, showStepHelper
-        , step.delay
+        , showDelay
       else
         @_callOnPromiseDone promise, showStepHelper
 
@@ -386,8 +408,10 @@
 
     # Check if step path equals current document path
     _isRedirect: (host, path, location) ->
-      if host isnt ''
-        return true if @_isHostDifferent(host, location.href)
+      return true if host? and host isnt '' and (
+        (({}).toString.call(host) is '[object RegExp]' and not host.test(location.origin)) or
+        (({}).toString.call(host) is '[object String]' and @_isHostDifferent(host, location))
+      )
 
       currentPath = [
         location.pathname,
@@ -400,9 +424,15 @@
         (({}).toString.call(path) is '[object String]' and @_isPathDifferent(path, currentPath))
       )
 
-    _isHostDifferent: (host, currentURL) ->
-      @_getProtocol(host) isnt @_getProtocol(currentURL) or
-      @_getHost(host) isnt @_getHost(currentURL)
+    _isHostDifferent: (host, location) ->
+      switch ({}).toString.call(host)
+        when '[object RegExp]'
+          not host.test(location.origin)
+        when '[object String]'
+          @_getProtocol(host) isnt @_getProtocol(location.href) or
+          @_getHost(host) isnt @_getHost(location.href)
+        else
+          true
 
     _isPathDifferent: (path, currentPath) ->
       @_getPath(path) isnt @_getPath(currentPath) or not
@@ -410,8 +440,8 @@
       @_equal(@_getHash(path), @_getHash(currentPath))
 
     _isJustPathHashDifferent: (host, path, location) ->
-      if host isnt ''
-        return false if @_isHostDifferent(host, location.href)
+      if host? and host isnt ''
+        return false if @_isHostDifferent(host, location)
 
       currentPath = [
         location.pathname,
@@ -430,8 +460,10 @@
     _redirect: (step, i, path) ->
       if $.isFunction step.redirect
         step.redirect.call this, path
-      else if step.redirect is true
-        @_debug "Redirect to #{step.host}#{path}"
+      else
+        href = if ({}).toString.call(step.host) is '[object String]' then "#{step.host}#{path}" else path
+        @_debug "Redirect to #{href}"
+
         if @_getState('redirect_to') is "#{i}"
           @_debug "Error redirection loop to #{path}"
           @_removeState 'redirect_to'
@@ -439,7 +471,7 @@
           step.onRedirectError @ if step.onRedirectError?
         else
           @_setState 'redirect_to', "#{i}"
-          document.location.href = "#{step.host}#{path}"
+          document.location.href = href
 
     _isOrphan: (step) ->
       # Do not check for is(':hidden') on svg elements. jQuery does not work properly on svg.
@@ -496,6 +528,8 @@
       # Tip adjustment
       $tip = if $element.data 'bs.popover' then $element.data('bs.popover').tip() else $element.data('popover').tip()
       $tip.attr 'id', step.id
+
+      @_focus $tip, $element, step.next < 0
       @_reposition $tip, step
       @_center $tip if isOrphan
 
@@ -515,17 +549,28 @@
       $template.addClass 'orphan' if @_isOrphan step
       $template.addClass "tour-#{@_options.name} tour-#{@_options.name}-#{i}"
       $template.addClass "tour-#{@_options.name}-reflex" if step.reflex
+
       if step.prev < 0
         $prev.addClass('disabled')
-        $prev.prop('disabled',true)
+          .prop('disabled', true)
+          .prop('tabindex', -1)
+
       if step.next < 0
         $next.addClass('disabled')
-        $next.prop('disabled',true)
+          .prop('disabled', true)
+          .prop('tabindex', -1)
+
       $resume.remove() unless step.duration
       $template.clone().wrap('<div>').parent().html()
 
     _reflexEvent: (reflex) ->
       if ({}).toString.call(reflex) is '[object Boolean]' then 'click' else reflex
+
+    _focus: ($tip, $element, end) ->
+      role = if end then 'end' else 'next'
+      $next = $tip.find("[data-role='#{role}']")
+
+      $element.on 'shown.bs.popover', -> $next.focus()
 
     # Prevent popover from crossing over the edge of the window
     _reposition: ($tip, step) ->
@@ -562,14 +607,23 @@
       $tip.find('.arrow').css position, if delta then 50 * (1 - delta / dimension) + '%' else ''
 
     # Scroll to the popup if it is not in the viewport
-    _scrollIntoView: (element, callback) ->
-      $element = $(element)
+    _scrollIntoView: (step, callback) ->
+      $element = $(step.element)
       return callback() unless $element.length
 
       $window = $(window)
       offsetTop = $element.offset().top
+      height = $element.outerHeight()
       windowHeight = $window.height()
-      scrollTop = Math.max(0, offsetTop - (windowHeight / 2))
+      scrollTop = 0
+
+      switch step.placement
+        when 'top'
+          scrollTop = Math.max(0, offsetTop - (windowHeight / 2))
+        when 'left', 'right'
+          scrollTop = Math.max(0, (offsetTop + height / 2) - (windowHeight / 2))
+        when 'bottom'
+          scrollTop = Math.max(0, (offsetTop + height) - (windowHeight / 2))
 
       @_debug "Scroll into view. ScrollTop: #{scrollTop}. Element offset: #{offsetTop}. Window height: #{windowHeight}."
       counter = 0
@@ -587,6 +641,7 @@
       $(window).on "resize.tour-#{@_options.name}", ->
         clearTimeout(timeout)
         timeout = setTimeout(callback, 100)
+
 
     # Event bindings for mouse navigation
     _initMouseNavigation: ->
@@ -606,7 +661,7 @@
         @next()
       .on "click.tour-#{@_options.name}", ".popover.tour-#{@_options.name} *[data-role='prev']", (e) =>
         e.preventDefault()
-        @prev()
+        @prev() if @_current > 0
       .on "click.tour-#{@_options.name}", ".popover.tour-#{@_options.name} *[data-role='end']", (e) =>
         e.preventDefault()
         @end()
@@ -631,9 +686,6 @@
           when 37
             e.preventDefault()
             @prev() if @_current > 0
-          when 27
-            e.preventDefault()
-            @end()
 
     # Checks if the result of a callback is a promise
     _makePromise: (result) ->
@@ -658,26 +710,27 @@
       @_hideBackground()
 
     _hideBackground: ->
-      if @backdrop
+      if @backdrop && @backdrop.remove
         @backdrop.remove()
         @backdrop.overlay = null
         @backdrop.backgroundShown = false
 
     _showOverlayElement: (step, force) ->
       $element = $ step.element
+      $backdropElement = $ step.backdropElement
 
       return if not $element or $element.length is 0 or @backdrop.overlayElementShown and not force
 
       if !@backdrop.overlayElementShown
-        @backdrop.$element = $element.addClass 'tour-step-backdrop'
+        @backdrop.$element = $backdropElement.addClass 'tour-step-backdrop'
         @backdrop.$background = $ '<div>', class: 'tour-step-background'
         @backdrop.$background.appendTo(step.backdropContainer)
         @backdrop.overlayElementShown = true
 
       elementData =
-        width: $element.innerWidth()
-        height: $element.innerHeight()
-        offset: $element.offset()
+        width: $backdropElement.innerWidth()
+        height: $backdropElement.innerHeight()
+        offset: $backdropElement.offset()
 
       elementData = @_applyBackdropPadding step.backdropPadding, elementData if step.backdropPadding
       @backdrop
@@ -752,15 +805,24 @@
       return paramsObject
 
     _equal: (obj1, obj2) ->
-      if ({}).toString.call(obj1) is '[object Object]' and
-      ({}).toString.call(obj2) is '[object Object]'
+      if ({}).toString.call(obj1) is '[object Object]' and ({}).toString.call(obj2) is '[object Object]'
+        obj1Keys = Object.keys(obj1)
+        obj2Keys = Object.keys(obj2)
+        return false if obj1Keys.length isnt obj2Keys.length
+
         for k,v of obj1
-          return false if obj2[k] isnt v
-        for k,v of obj2
-          return false if obj1[k] isnt v
+          return false if not @_equal(obj2[k], v)
+
         return true
+      else if ({}).toString.call(obj1) is '[object Array]' and ({}).toString.call(obj2) is '[object Array]'
+        return false if obj1.length isnt obj2.length
 
-      return obj1 is obj2
-  window.Tour = Tour
+        for v,k in obj1
+          return false if not @_equal(v, obj2[k])
 
-) jQuery, window
+        return true
+      else
+        return obj1 is obj2
+
+  Tour
+)

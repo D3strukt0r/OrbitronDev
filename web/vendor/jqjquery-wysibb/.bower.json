@@ -8,8 +8,7 @@
     "tag": "1.5.1",
     "commit": "4e3fc3fd968a2345a6b9841f4d470541782fd2d5"
   },
-  "_source": "git://github.com/wbb/WysiBB.git",
-  "_target": "~1.5.1",
-  "_originalSource": "jqjquery-wysibb",
-  "_direct": true
+  "_source": "https://github.com/wbb/WysiBB.git",
+  "_target": "^1.5.1",
+  "_originalSource": "jqjquery-wysibb"
 }
