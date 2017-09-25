@@ -29,7 +29,7 @@ class Kernel
 
     private $request = null;
 
-    function __construct($env)
+    function __construct($env, $render_response = true)
     {
         $this->components['kernel'] = $this;
         Kernel::$kernel = $this; // For external access
@@ -79,6 +79,9 @@ class Kernel
         $this->runCronJob();
 
         // Load template
+        if (!$render_response) {
+            return;
+        }
         if ($this->has('routing.error')) {
             $error = $this->get('routing.error');
             $response = new Response($this->get('twig')->render('error/error404.html.twig', array('status_code' => $error->getCode(), 'status_text' => $error->getMessage())), 404);
@@ -343,12 +346,4 @@ class Kernel
         </div>
         <?php
     }
-
-    public static function testValue($value)
-    {
-        echo '<pre>';
-        var_dump($value);
-        echo '</pre>';
-    }
-
 }

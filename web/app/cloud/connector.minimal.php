@@ -1,12 +1,27 @@
 <?php
 
-error_reporting(0); // Set E_ALL for debuging
+error_reporting(E_ALL); // Set E_ALL for debuging
 
 // load composer autoload before load elFinder autoload If you need composer
-//require './vendor/autoload.php';
+require './../../../vendor/autoload.php';
+
+define('APPLICATION_ENV', 'dev'); // Use: 'dev' or 'prod'
+define('DEV_ONLY_INTERNAL', false);
+
+$kernel = new Kernel(APPLICATION_ENV, false);
+\App\Account\Account::updateSession();
+
+if (!LOGGED_IN) {
+    echo '{}';
+    exit;
+}
+if (USER_ID != $_GET['user_id']) {
+    echo '{}';
+    exit;
+}
 
 // elFinder autoload
-require './autoload.php';
+//require './autoload.php';
 // ===============================================
 
 // Enable FTP connector netmount
@@ -99,7 +114,7 @@ $opts = array(
 		array(
 		    'alias'         => 'Home',
 			'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
-			'path'          => '../../../../app/data/cloud/storage/'.$_GET['user_id'].'/', // path to files (REQUIRED)
+			'path'          => '../../../app/data/cloud/storage/'.$_GET['user_id'].'/', // path to files (REQUIRED)
 			'URL'           => '/files/', // URL to files (REQUIRED)
 			'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
@@ -112,8 +127,8 @@ $opts = array(
 		array(
 			'id'            => '1',
 			'driver'        => 'Trash',
-			'path'          => '../../../../app/data/cloud/storage/'.$_GET['user_id'].'/.trash/',
-			'tmbURL'        => dirname($_SERVER['PHP_SELF']) . '/../../../../app/data/cloud/storage/'.$_GET['user_id'].'/.trash/.tmb/',
+			'path'          => '../../../app/data/cloud/storage/'.$_GET['user_id'].'/.trash/',
+			'tmbURL'        => dirname($_SERVER['PHP_SELF']) . '/../../../app/data/cloud/storage/'.$_GET['user_id'].'/.trash/.tmb/',
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // Recomend the same settings as the original volume that uses the trash
 			'uploadAllow'   => array('image', 'text/plain'),// Same as above

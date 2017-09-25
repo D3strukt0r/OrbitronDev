@@ -49,7 +49,7 @@
     "PACE": "pace#^1.0.2",
     "pwstrength-bootstrap": "^2.0.1",
     "qunit": "~1.12.0",
-    "scrollreveal": "scroll-reveal#~2.3.2",
+    "scrollreveal": "^3.3.6",
     "respond": "^1.4.2",
     "holderjs": "^2.9.4",
     "metisMenu": "^2.7.0",
@@ -61,7 +61,8 @@
     "sweetalert": "^2.0.3",
     "tinymce": "^4.6.7",
     "noty": "^3.1.3",
-    "smoothscroll": "^0.4.0"
+    "smoothscroll": "^0.4.0",
+    "elfinder": "^2.1.28"
   },
   "resolutions": {
     "font-awesome": "^4.7.0"

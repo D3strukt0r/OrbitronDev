@@ -9,6 +9,11 @@ composer.phar
 # composer.lock
 
 #################
+## Bower
+#################
+/web/vendor/
+
+#################
 ## Dropbox
 #################
 # Dropbox settings and caches
