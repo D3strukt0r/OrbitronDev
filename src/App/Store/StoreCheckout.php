@@ -260,7 +260,6 @@ class StoreCheckout
 
         $cart = $this->products[$store_id];
 
-        // TODO: Add additional info, like subtotal, total, etc.
         if ($additional_info) {
 
             $totalCount = 0;

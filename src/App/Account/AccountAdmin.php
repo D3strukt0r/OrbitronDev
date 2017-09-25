@@ -84,6 +84,8 @@ class AccountAdmin
      *
      * @return null
      * @throws \Exception
+     *
+     * @deprecated Use UserInfo and getVar
      */
     // TODO: Is the function "getUserVar" still needed?
     public static function getUserVar($id, $var)
@@ -105,6 +107,8 @@ class AccountAdmin
      * @param $value
      *
      * @throws \Exception
+     *
+     * @deprecated Use UserInfo and setXXXX
      */
     // TODO: Is the function "setUserVar" still needed?
     public static function setUserVar($id, $key, $value)

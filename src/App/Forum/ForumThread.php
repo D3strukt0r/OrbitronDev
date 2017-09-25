@@ -22,7 +22,6 @@ class ForumThread
     {
         $database = DatabaseContainer::getDatabase();
 
-        $thread_name = (string)$thread_name;
         $message     = (string)$message; // TODO: This should bypass the BBCode parser
         $timeAdded   = time();
 

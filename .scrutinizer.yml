@@ -4,6 +4,7 @@ filter:
         - 'web/assets/plugins/*'
         - 'web/vendor/*'
         - 'bin/*'
+        - 'bower.json'
 checks:
     php: true
     javascript: true

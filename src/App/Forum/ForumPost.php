@@ -21,7 +21,6 @@ class ForumPost
     {
         $database = DatabaseContainer::getDatabase();
 
-        $subject = (string)$subject;
         $message = (string)$message; // TODO: This should bypass the BBCode parser
 
         $addPost = $database->prepare('INSERT INTO `forum_posts`(`thread_id`,`parent_post_id`,`user_id`,`subject`,`message`,`time`) VALUES (:thread_id,:parent_post_id,:user_id,:subject,:message,:time)');
