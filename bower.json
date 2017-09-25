@@ -66,8 +66,8 @@
     "PACE": "pace#^1.0.2"
   },
   "resolutions": {
-    "get-size": "^2.0.0",
-    "masonry-layout": "^4.1.0",
-    "outlayer": "^2.1.0"
+    "get-size": "2.0.2",
+    "masonry": "4.2.0",
+    "outlayer": "2.1.1"
   }
 }

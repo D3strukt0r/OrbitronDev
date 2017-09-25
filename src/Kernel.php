@@ -29,7 +29,7 @@ class Kernel
 
     private $request = null;
 
-    function __construct($env, $render_response = true)
+    public function __construct($env, $render_response = true)
     {
         $this->components['kernel'] = $this;
         Kernel::$kernel = $this; // For external access
