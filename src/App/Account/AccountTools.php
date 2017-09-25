@@ -14,14 +14,13 @@ class AccountTools
     private static $aBlockedNameParts = array('mod', 'system', 'admin');
 
     /**
-     * @param $email
+     * @param string $email
      *
      * @return int
      */
     public static function isValidEmail($email)
     {
-        $sEmail = (string)$email;
-        return preg_match('/^[a-z0-9_\.-]+@([a-z0-9]+([\-]+[a-z0-9]+)*\.)+[a-z]{2,7}$/i', $sEmail);
+        return preg_match('/^[a-z0-9_\.-]+@([a-z0-9]+([\-]+[a-z0-9]+)*\.)+[a-z]{2,7}$/i', $email);
     }
 
     /**

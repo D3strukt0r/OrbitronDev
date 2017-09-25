@@ -186,7 +186,7 @@ class ForumThread
     }
 
     /**
-     * @param int|string $key
+     * @param string $key
      *
      * @return string
      */

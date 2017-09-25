@@ -18,6 +18,9 @@ abstract class Controller
     /** @var array $parameters */
     public $parameters;
 
+    /**
+     * @param \Kernel $container
+     */
     public function setContainer($container = null)
     {
         $this->container = $container;

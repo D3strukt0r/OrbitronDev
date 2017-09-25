@@ -66,6 +66,6 @@
     "PACE": "pace#^1.0.2"
   },
   "resolutions": {
-    "font-awesome": "^4.7.0"
+    "get-size": "2.0.2"
   }
 }
