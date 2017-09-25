@@ -9,11 +9,6 @@ composer.phar
 # composer.lock
 
 #################
-## Bower
-#################
-/web/vendor/
-
-#################
 ## Dropbox
 #################
 # Dropbox settings and caches
@@ -291,3 +286,7 @@ pip-log.txt
 #################
 /app/config/parameters.yml
 !/bin/
+/app/data/
+/web/app/store/products_img/
+/web/app/account/profile_pictures/
+/web/vendor/
