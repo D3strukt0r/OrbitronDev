@@ -24,12 +24,12 @@
 
 {% block stylesheet %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('vendor/jqjquery-wysibb/theme/default/wbbtheme.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/jqjquery-wysibb/theme/default/wbbtheme.css') }}" />
 {% endblock %}
 
 {% block javascript %}
     {{ parent() }}
-    <script type="text/javascript" src="{{ asset('vendor/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $("#form_message").wysibb();

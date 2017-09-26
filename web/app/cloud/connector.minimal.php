@@ -12,10 +12,12 @@ $kernel = new Kernel(APPLICATION_ENV, false);
 \App\Account\Account::updateSession();
 
 if (!LOGGED_IN) {
+    header('Content-Type: application/json');
     echo '{}';
     exit;
 }
 if (USER_ID != $_GET['user_id']) {
+    header('Content-Type: application/json');
     echo '{}';
     exit;
 }
