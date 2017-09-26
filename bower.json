@@ -68,6 +68,7 @@
   "resolutions": {
     "get-size": "2.0.2",
     "masonry": "4.2.0",
-    "outlayer": "2.1.1"
+    "outlayer": "2.1.1",
+    "fizzy-ui-utils": "2.0.5"
   }
 }
