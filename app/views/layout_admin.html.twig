@@ -2,32 +2,32 @@
 
 {% block stylesheets_implemeting_plugins %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/css/admin/sb-admin-2.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/css/sb-admin-2.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/admin/breadcrumb.css') }}" />
-    <link rel="stylesheet" href="{{ asset('vendor/metisMenu/dist/metisMenu.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/blueimp-file-upload/css/jquery.fileupload.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/PACE/themes/blue/pace-theme-minimal.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.7.0/metisMenu.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/css/jquery.fileupload.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
 {% endblock %}
 
 {% block javascripts_implementing_plugins %}
     {{ parent() }}
-    <script type="text/javascript" src="{{ asset('assets/js/admin/sb-admin-2.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('vendor/metisMenu/dist/metisMenu.min.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/js/sb-admin-2.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.7.0/metisMenu.min.js"></script>
     <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-    <script type="text/javascript" src="{{ asset('vendor/blueimp-file-upload/js/vendor/jquery.ui.widget.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/vendor/jquery.ui.widget.min.js"></script>
     <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-    <script type="text/javascript"  src="https://blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.17.0/load-image.all.min.js"></script>
     <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-    <script type="text/javascript"  src="https://blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js"></script>
     <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-    <script type="text/javascript" src="{{ asset('vendor/blueimp-file-upload/js/jquery.iframe-transport.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.iframe-transport.min.js"></script>
     <!-- The basic File Upload plugin -->
-    <script type="text/javascript" src="{{ asset('vendor/blueimp-file-upload/js/jquery.fileupload.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.fileupload.min.js"></script>
     <!-- The File Upload processing plugin -->
-    <script type="text/javascript"  src="{{ asset('vendor/blueimp-file-upload/js/jquery.fileupload-process.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.fileupload-process.min.js"></script>
     <!-- The File Upload image preview & resize plugin -->
-    <script type="text/javascript"  src="{{ asset('vendor/blueimp-file-upload/js/jquery.fileupload-image.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('vendor/PACE/pace.min.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.fileupload-image.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 {% endblock %}
 
 {% block stylesheets_code %}

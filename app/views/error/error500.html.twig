@@ -1,120 +1,29 @@
-<!DOCTYPE html>
-<!--[if IE 8]><html lang="en" class="ie8"><![endif]-->
-<!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
-<!--[if !IE]><!--><html lang="en"><!--<![endif]-->
-    <head>
-        <title>500 Internal Server Error | OrbitronDev</title>
+{% extends 'error/layout.html.twig' %}
 
-        <!-- Meta -->
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="The official site of OrbitronDev. Containing all projects and everything about us." />
-        <meta name="author" content="OrbitronDev" />
-        <meta name="publisher" content="OrbitronDev" />
-        <meta name="copyright" content="OrbitronDev &copy; 2013-2015" />
-        <meta name="keywords" content="orbitron, orbitrondev" />
-        <meta name="audience" content="Alle" />
-        <meta name="robots" content="INDEX,FOLLOW" />
-        <meta http-equiv="X-Frame-Options" content="deny" />
+{% block title %}500 Internal Server Error | OrbitronDev{% endblock %}
 
-        <!-- Favicon -->
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png?v=QE5RNE7RE9') }}">
-        <link rel="icon" type="image/png" href="{{ asset('favicon-32x32.png?v=QE5RNE7RE9') }}" sizes="32x32">
-        <link rel="icon" type="image/png" href="{{ asset('favicon-16x16.png?v=QE5RNE7RE9') }}" sizes="16x16">
-        <link rel="manifest" href="{{ asset('manifest.json?v=QE5RNE7RE9') }}">
-        <link rel="mask-icon" href="{{ asset('safari-pinned-tab.svg?v=QE5RNE7RE9') }}" color="#336699">
-        <link rel="shortcut icon" href="{{ asset('favicon.ico?v=QE5RNE7RE9') }}">
-        <meta name="msapplication-TileColor" content="#2b5797">
-        <meta name="msapplication-TileImage" content="{{ asset('mstile-144x144.png?v=QE5RNE7RE9') }}">
-        <meta name="theme-color" content="#2980b9">
-
-        <!-- Web Fonts -->
-        <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin" />
-
-        <!-- CSS Global Compulsory -->
-        <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
-
-        <!-- CSS Header and Footer -->
-        <link rel="stylesheet" href="{{ asset('assets/css/headers/header-default.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/css/footers/footer-v1.css') }}" />
-
-        <!-- CSS Implementing Plugins -->
-        <link rel="stylesheet" href="{{ asset('assets/plugins/animate.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/plugins/line-icons/line-icons.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/plugins/font-awesome/css/font-awesome.min.css') }}" />
-
-        <!-- CSS Page Style -->
-        <link rel="stylesheet" href="{{ asset('assets/css/pages/page_error4_404.css') }}" />
-
-        <!-- CSS Theme -->
-        <link rel="stylesheet" href="{{ asset('assets/css/theme-colors/blue.css') }}" id="style_color" />
-        <link rel="stylesheet" href="{{ asset('assets/css/theme-skins/dark.css') }}" />
-
-        <!-- CSS Customization -->
-        <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" />
-    </head>
-    <body>
-        <!--=== Error V4 ===-->
-        <div class="container content">
-            <!--Error Block-->
-            <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div class="error-v4">
-                        <a href="{{ path('app_default_index') }}">
-                            <img src="{{ asset('assets/logo-long.png') }}" alt="OrbitronDev" height="30px" />
-                        </a>
-                        <h1>500</h1>
-                        <span class="sorry">{{ 'The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there was an error in a CGI script.'|trans }}</span>
-                        <p style="color:white;margin-top:-30px;">Server message: [Code: {{ status_code }}] {{ status_text }}</p>
-                        <div class="row">
-                            <div class="col-md-6 col-md-offset-3">
-                                <a class="btn-u btn-brd btn-u-light" href="{{ path('app_default_index') }}">{{ 'Go Back to Main Page'|trans }}</a>
-                                <a class="btn-u btn-brd btn-u-light" href="javascript:window.history.back();">{{ 'Go Back'|trans }}</a>
-                            </div>
+{% block content %}
+    <!--=== Error V4 ===-->
+    <div class="container content">
+        <!--Error Block-->
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="error-v4">
+                    <a href="{{ path('app_default_index') }}">
+                        <img src="{{ asset('assets/logo-long.png') }}" alt="OrbitronDev" height="30px" />
+                    </a>
+                    <h1>500</h1>
+                    <span class="sorry">{{ 'The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there was an error in a CGI script.'|trans }}</span>
+                    <p style="color:white;margin-top:-30px;">Server message: [Code: {{ status_code }}] {{ status_text }}</p>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <a class="btn-u btn-brd btn-u-light" href="{{ path('app_default_index') }}">{{ 'Go Back to Main Page'|trans }}</a>
+                            <a class="btn-u btn-brd btn-u-light" href="javascript:window.history.back();">{{ 'Go Back'|trans }}</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div><!--/container-->
-        <!--End Error Block-->
-
-        <!--=== Sticky Footer ===-->
-        <div class="container sticky-footer">
-            <p class="copyright-space">
-                {{ '2013-2017 © OrbitronDev. All Rights Reserved.'|trans }}
-            </p>
         </div>
-        <!--=== End Sticky Footer ===-->
-
-        <!-- JS Global Compulsory -->
-        <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery-migrate.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
-
-        <!-- JS Implementing Plugins -->
-        <script type="text/javascript" src="{{ asset('assets/plugins/back-to-top.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('assets/plugins/backstretch/jquery.backstretch.min.js') }}"></script>
-
-        <!-- JS Customization -->
-        <script type="text/javascript" src="{{ asset('assets/js/custom.js') }}"></script>
-
-        <!-- JS Page Level -->
-        <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
-        <script type="text/javascript">
-            jQuery(document).ready(function() {
-                App.init();
-            });
-        </script>
-        <script type="text/javascript">
-            $.backstretch([
-                "{{ asset('assets/img/blur/img2.jpg') }}"
-            ]);
-        </script>
-        <!--[if lt IE 9]>
-            <script src="{{ asset('assets/plugins/respond.js') }}"></script>
-            <script src="{{ asset('assets/plugins/html5shiv.js') }}"></script>
-            <script src="{{ asset('assets/plugins/placeholder-IE-fixes.js') }}"></script>
-        <![endif]-->
-    </body>
-</html>
+    </div><!--/container-->
+    <!--End Error Block-->
+{% endblock %}

@@ -40,21 +40,23 @@
         </script>
 
         <!-- Favicon -->
-        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png?v=QE5RNE7RE9') }}">
-        <link rel="icon" type="image/png" href="{{ asset('favicon-32x32.png?v=QE5RNE7RE9') }}" sizes="32x32">
-        <link rel="icon" type="image/png" href="{{ asset('favicon-16x16.png?v=QE5RNE7RE9') }}" sizes="16x16">
-        <link rel="manifest" href="{{ asset('manifest.json?v=QE5RNE7RE9') }}">
-        <link rel="mask-icon" href="{{ asset('safari-pinned-tab.svg?v=QE5RNE7RE9') }}" color="#336699">
-        <link rel="shortcut icon" href="{{ asset('favicon.ico?v=QE5RNE7RE9') }}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png?v=YAoYKqWYex') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png?v=YAoYKqWYex') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('android-chrome-192x192.png?v=YAoYKqWYex') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png?v=YAoYKqWYex') }}">
+        <link rel="manifest" href="{{ asset('manifest.json?v=YAoYKqWYex') }}">
+        <link rel="mask-icon" href="{{ asset('safari-pinned-tab.svg?v=YAoYKqWYex') }}" color="#5bbad5">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico?v=YAoYKqWYex') }}">
         <meta name="msapplication-TileColor" content="#2b5797">
-        <meta name="msapplication-TileImage" content="{{ asset('mstile-144x144.png?v=QE5RNE7RE9') }}">
+        <meta name="msapplication-TileImage" content="{{ asset('mstile-144x144.png?v=YAoYKqWYex') }}">
+        <meta name="msapplication-config" content="{{ asset('browserconfig.xml?v=YAoYKqWYex') }}">
         <meta name="theme-color" content="#2980b9">
 
         <!-- Web Fonts -->
-        <link rel="stylesheet" type="text/css" href="{{ asset('https://fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin') }}" />
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin" />
 
         <!-- CSS Global Compulsory -->
-        <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
 
         <!-- CSS Header and Footer -->
@@ -65,11 +67,11 @@
 
         <!-- CSS Implementing Plugins -->
         {% block stylesheets_implemeting_plugins %}
-            <link rel="stylesheet" href="{{ asset('assets/plugins/animate.css') }}" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
             <link rel="stylesheet" href="{{ asset('assets/plugins/line-icons/line-icons.css') }}" />
-            <link rel="stylesheet" href="{{ asset('assets/plugins/font-awesome/css/font-awesome.min.css') }}" />
-            <link rel="stylesheet" href="{{ asset('vendor/sweetalert/dist/sweetalert.css') }}" />
-            <link rel="stylesheet" href="{{ asset('vendor/bootstrap-social/bootstrap-social.css') }}" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css" />
         {% endblock %}
 
         <!-- CSS Page Style -->
@@ -89,9 +91,10 @@
         {% block stylesheets_code %}{% endblock %}
 
         <!-- JS Global Compulsory -->
-        <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('assets/plugins/jquery/jquery-migrate.min.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.0/jquery-migrate.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
     <body {#class="dark"#}>
         {% block content %}{% endblock %}
@@ -110,12 +113,12 @@
         <!-- JS Implementing Plugins -->
         {% block javascripts_implementing_plugins %}
             <script type="text/javascript" src="{{ asset('assets/plugins/back-to-top.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('assets/plugins/smoothScroll.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('vendor/noty/js/noty/packaged/jquery.noty.packaged.min.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('vendor/noty/js/noty/themes/bootstrap.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('vendor/js-cookie/src/js.cookie.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('vendor/holderjs/holder.min.js') }}"></script>{# TODO: Remove as soon as all images are existing #}
-            <script type="text/javascript" src="{{ asset('vendor/sweetalert/dist/sweetalert.min.js') }}"></script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.6/SmoothScroll.min.js"></script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.4.1/packaged/jquery.noty.packaged.min.js"></script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.4.1/themes/bootstrap.min.js"></script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.4/holder.min.js"></script>{# TODO: Remove as soon as all images are existing #}
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
         {% endblock %}
 
         <!-- JS Customization -->
@@ -134,8 +137,8 @@
         {% block javascript %}{% endblock %}
 
         <!--[if lt IE 9]>
-        <script type="text/javascript" src="{{ asset('assets/plugins/respond.js') }}"></script>
-        <script type="text/javascript" src="{{ asset('assets/plugins/html5shiv.js') }}"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script type="text/javascript" src="{{ asset('assets/plugins/placeholder-IE-fixes.js') }}"></script>
         <![endif]-->
 
