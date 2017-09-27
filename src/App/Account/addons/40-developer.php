@@ -57,7 +57,6 @@ if (!isset($indirectly)) {
 
 /**
  * @param \Twig_Environment             $twig
- *
  * @param \Controller\AccountController $controller
  *
  * @return string
@@ -65,6 +64,11 @@ if (!isset($indirectly)) {
 function acp_html_developer_create_application($twig, $controller)
 {
     $currentUser = new UserInfo(USER_ID);
+
+    if ((int)$currentUser->getFromUser('developer') != 1) {
+        header('Location: '.$controller->generateUrl('app_account_panel', array('p' => 'developer-register')));
+        exit;
+    }
 
     $scope_choices = array();
     foreach (AccountDeveloper::getAllScopes() as $scope) {
@@ -106,7 +110,7 @@ function acp_html_developer_create_application($twig, $controller)
             USER_ID
         );
 
-        header('Location: ' . $controller->generateUrl('app_account_panel', array('page' => 'developer-applications')));
+        header('Location: '.$controller->generateUrl('app_account_panel', array('page' => 'developer-applications')));
         exit;
     }
 
@@ -118,11 +122,19 @@ function acp_html_developer_create_application($twig, $controller)
 
 /**
  * @param \Twig_Environment             $twig
+ * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_developer_applications($twig)
+function acp_html_developer_applications($twig, $controller)
 {
+    $currentUser = new UserInfo(USER_ID);
+
+    if ((int)$currentUser->getFromUser('developer') != 1) {
+        header('Location: '.$controller->generateUrl('app_account_panel', array('p' => 'developer-register')));
+        exit;
+    }
+
     return $twig->render('account/panel/developer-list-applications.html.twig', array(
         'current_user_dev_apps' => AccountDeveloper::getApps(USER_ID),
     ));
@@ -130,7 +142,6 @@ function acp_html_developer_applications($twig)
 
 /**
  * @param \Twig_Environment             $twig
- *
  * @param \Controller\AccountController $controller
  *
  * @return string
@@ -138,9 +149,15 @@ function acp_html_developer_applications($twig)
  */
 function acp_html_developer_show_applications($twig, $controller)
 {
-    // TODO: Send message when user is not a developer
+    $currentUser = new UserInfo(USER_ID);
+
+    if ((int)$currentUser->getFromUser('developer') != 1) {
+        header('Location: '.$controller->generateUrl('app_account_panel', array('p' => 'developer-register')));
+        exit;
+    }
+
     if (!isset($_GET['app'])) {
-        header('Location: ' . $controller->generateUrl('app_account_panel', array('p' => 'developer-applications')));
+        header('Location: '.$controller->generateUrl('app_account_panel', array('p' => 'developer-applications')));
         exit;
     }
     $database = DatabaseContainer::getDatabase();
@@ -151,35 +168,41 @@ function acp_html_developer_show_applications($twig, $controller)
     ));
     if ($oApplicationData->rowCount() > 0) {
         $appData = $oApplicationData->fetchAll(\PDO::FETCH_ASSOC);
+
         return $twig->render('account/panel/developer-show-app.html.twig', array(
             'app' => $appData[0],
         ));
     }
-    return 'App not found'; // TODO: Create better page
+
+    return $twig->render('account/panel/developer-app-not-found.html.twig');
 }
 
 /**
  * @param \Twig_Environment             $twig
- *
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
 function acp_html_developer_register($twig, $controller)
 {
+    $currentUser = new UserInfo(USER_ID);
+
+    if ((int)$currentUser->getFromUser('developer') == 1) {
+        header('Location: '.$controller->generateUrl('app_account_panel', array('p' => 'developer-applications')));
+        exit;
+    }
+
     $developerForm = $controller->createFormBuilder()
         ->add('send', SubmitType::class, array(
             'label' => 'Register developer account',
         ))
         ->getForm();
 
-    $currentUser = new UserInfo(USER_ID);
-
     $request = Kernel::getIntent()->getRequest();
     $developerForm->handleRequest($request);
     if ($developerForm->isSubmitted()) {
         $currentUser->updateUserDeveloper(true);
-        header('Location: ' . $controller->generateUrl('app_account_panel', array('page' => 'developer-applications')));
+        header('Location: '.$controller->generateUrl('app_account_panel', array('page' => 'developer-applications')));
         exit;
     }
 

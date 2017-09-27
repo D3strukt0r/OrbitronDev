@@ -4,6 +4,7 @@ namespace App\Forum;
 
 use Container\DatabaseContainer;
 use PDO;
+use RuntimeException;
 
 class ForumThread
 {
@@ -22,8 +23,7 @@ class ForumThread
     {
         $database = DatabaseContainer::getDatabase();
 
-        $message     = (string)$message; // TODO: This should bypass the BBCode parser
-        $timeAdded   = time();
+        $timeAdded = time();
 
         $addThread = $database->prepare('INSERT INTO `forum_threads`(`user_id`,`board_id`,`topic`,`time`,`last_post_user_id`,`last_post_time`) VALUES (:user_id,:board_id,:topic,:time,:user_id,:time)');
         $addThread->bindValue(':user_id', $user_id, PDO::PARAM_INT);
@@ -32,7 +32,7 @@ class ForumThread
         $addThread->bindValue(':time', $timeAdded, PDO::PARAM_INT);
         $addThread->execute();
 
-        $iNewThreadId = $database->lastInsertId();
+        $iNewThreadId = (int)$database->lastInsertId();
 
         // Add Post for the new thread
         $addPost = $database->prepare('INSERT INTO `forum_posts`(`thread_id`,`parent_post_id`,`user_id`,`subject`,`message`,`time`) VALUES (:thread_id,0,:user_id,:subject,:message,:time)');
@@ -46,9 +46,7 @@ class ForumThread
         self::addThreadCount($board_id);
         self::updatePost($board_id, $user_id, $timeAdded);
 
-        $new_thread_id = (float)$iNewThreadId;
-
-        return $new_thread_id;
+        return $iNewThreadId;
     }
 
     /**
@@ -77,23 +75,21 @@ class ForumThread
      */
     private static function addThreadCount($board_id)
     {
-        $iBoardId = (int)$board_id;
-
-        $aBoards  = array();
+        $aBoards = array();
         $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
 
-        array_push($aBoards, $iBoardId);
+        array_push($aBoards, $board_id);
         while ($iParentId != 0) {
             $iNext = (int)$iParentId;
             array_push($aBoards, $iNext);
-            $board_id  = $iNext;
+            $board_id = $iNext;
             $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
 
         foreach ($aBoards as $iBoard) {
             // Update threads count in boards
-            $board       = new ForumBoard($iBoard);
-            $iThreads    = $board->getVar('threads');
+            $board = new ForumBoard($iBoard);
+            $iThreads = $board->getVar('threads');
             $iNewThreads = $iThreads + 1;
             $board->setThreads($iNewThreads);
         }
@@ -106,14 +102,14 @@ class ForumThread
      */
     public static function updatePost($board_id, $user_id, $time)
     {
-        $aBoards  = array();
+        $aBoards = array();
         $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
 
         array_push($aBoards, $board_id);
         while ($iParentId != 0) {
             $iNext = (int)$iParentId;
             array_push($aBoards, $iNext);
-            $board_id  = $iNext;
+            $board_id = $iNext;
             $iParentId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
 
@@ -130,7 +126,7 @@ class ForumThread
 
     private $threadId;
     private $notFound = false;
-    public  $threadData;
+    public $threadData;
 
     /**
      * Forum constructor.
@@ -164,14 +160,14 @@ class ForumThread
         $dbSync = $database->prepare('SELECT * FROM `forum_threads` WHERE `id`=:thread_id LIMIT 1');
         $dbSync->bindValue(':thread_id', $this->threadId, PDO::PARAM_INT);
         if (!$dbSync->execute()) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             if ($dbSync->rowCount() > 0) {
-                $data             = $dbSync->fetchAll(PDO::FETCH_ASSOC);
+                $data = $dbSync->fetchAll(PDO::FETCH_ASSOC);
                 $this->threadData = $data[0];
             } else {
                 $this->threadData = null;
-                $this->notFound   = true;
+                $this->notFound = true;
             }
         }
     }
@@ -210,7 +206,7 @@ class ForumThread
         }
 
         $currentViews = (int)$this->getVar('views');
-        $newViews     = $currentViews + 1;
+        $newViews = $currentViews + 1;
 
         $database = DatabaseContainer::getDatabase();
 
@@ -220,8 +216,7 @@ class ForumThread
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            // TODO: Send a message to an admin that views are not being updated
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -248,8 +243,7 @@ class ForumThread
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            // TODO: Send a message to an admin that views are not being updated
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -276,8 +270,7 @@ class ForumThread
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            // TODO: Send a message to an admin that views are not being updated
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -304,8 +297,7 @@ class ForumThread
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            // TODO: Send a message to an admin that views are not being updated
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }

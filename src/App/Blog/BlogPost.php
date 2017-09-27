@@ -3,7 +3,9 @@
 namespace App\Blog;
 
 use Container\DatabaseContainer;
+use Exception;
 use PDO;
+use RuntimeException;
 
 class BlogPost
 {
@@ -22,9 +24,9 @@ class BlogPost
         $sqlSuccess = $getAllPosts->execute();
 
         if (!$sqlSuccess) {
-            throw new \Exception('Cannot get list with all posts');
+            throw new Exception('Cannot get list with all posts');
         } else {
-            $aPosts    = array();
+            $aPosts = array();
             $aPostData = $getAllPosts->fetchAll();
             foreach ($aPostData as $aBlogData) {
                 array_push($aPosts, $aBlogData);
@@ -49,7 +51,7 @@ class BlogPost
         $sqlSuccess = $postExists->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('[Database]: '.'Could not execute sql');
+            throw new RuntimeException('[Database]: '.'Could not execute sql');
         } else {
             if ($postExists->rowCount() > 0) {
                 return true;
@@ -62,7 +64,7 @@ class BlogPost
     /******************************************************************************/
 
     private $postId;
-    public  $postData;
+    public $postData;
 
     /**
      * BlogPost constructor.
@@ -82,10 +84,10 @@ class BlogPost
         $sqlSuccess = $getData->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('[Database]: '.'Could not execute sql');
+            throw new RuntimeException('[Database]: '.'Could not execute sql');
         } else {
             if ($getData->rowCount() > 0) {
-                $data           = $getData->fetchAll(PDO::FETCH_ASSOC);
+                $data = $getData->fetchAll(PDO::FETCH_ASSOC);
                 $this->postData = $data[0];
             } else {
                 $this->postData = null;
@@ -123,7 +125,7 @@ class BlogPost
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('[Database]: '.'Could not execute sql');
+            throw new RuntimeException('[Database]: '.'Could not execute sql');
         } else {
             $this->postData['story'] = $value;
         }

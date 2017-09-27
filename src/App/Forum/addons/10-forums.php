@@ -3,7 +3,6 @@
 use App\Forum\Forum;
 use App\Forum\ForumAcp;
 use App\Forum\ForumBoard;
-use Container\DatabaseContainer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -39,13 +38,8 @@ ForumAcp::addMenu(array(
  */
 function acp_html_board_list($twig, $controller)
 {
-    $database = DatabaseContainer::$database;
-    if (is_null($database)) {
-        throw new Exception('A database connection is required');
-    }
-
     $forumId = Forum::url2Id($controller->parameters['forum']);
-    $forum   = new Forum($forumId);
+    $forum = new Forum($forumId);
 
     $boardList = ForumBoard::listBoardsTree($forum->getVar('id'), 0);
 
@@ -64,13 +58,8 @@ function acp_html_board_list($twig, $controller)
  */
 function acp_html_new_board($twig, $controller)
 {
-    $database = DatabaseContainer::$database;
-    if (is_null($database)) {
-        throw new \Exception('A database connection is required');
-    }
-
     $forumId = Forum::url2Id($controller->parameters['forum']);
-    $forum   = new Forum($forumId);
+    $forum = new Forum($forumId);
 
     $createBoardForm = $controller->createFormBuilder()
         ->add('name', TextType::class, array(

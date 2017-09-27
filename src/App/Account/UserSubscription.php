@@ -41,6 +41,7 @@ class UserSubscription
         if ($this->getSubscriptionDays() == -1 || $this->getSubscriptionDays() > 0) {
             return true;
         }
+
         return false;
     }
 
@@ -73,6 +74,7 @@ class UserSubscription
         if ($this->oUser->isNormal()) {
             return true;
         }
+
         return false;
     }
 
@@ -84,6 +86,7 @@ class UserSubscription
         if ($this->oUser->isPremium()) {
             return true;
         }
+
         return false;
     }
 
@@ -95,6 +98,7 @@ class UserSubscription
         if ($this->oUser->isEnterprise()) {
             return true;
         }
+
         return false;
     }
 }

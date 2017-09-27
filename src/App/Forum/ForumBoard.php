@@ -5,6 +5,7 @@ namespace App\Forum;
 use App\Account\UserInfo;
 use Container\DatabaseContainer;
 use PDO;
+use RuntimeException;
 
 class ForumBoard
 {
@@ -25,7 +26,7 @@ class ForumBoard
         $sqlSuccess = $getSubBoardCount->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute SQL');
+            throw new RuntimeException('Could not execute SQL');
         } else {
             if ($getSubBoardCount->rowCount() > 0) {
                 return true;
@@ -52,7 +53,7 @@ class ForumBoard
         $sqlSuccess = $getBoards->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute SQL');
+            throw new RuntimeException('Could not execute SQL');
         } else {
             if ($getBoards->rowCount() == 0) {
                 return array(); // Means that there is no sub-forum
@@ -70,41 +71,24 @@ class ForumBoard
      * @param int $forum_id
      * @param int $board_id
      *
-     * @return string
-     *
-     * TODO: This should return an array, so we can define the style in twig (see "App/Forum/addons/10-forums.php", and "app/views/forum/theme_admin1/board-list.html.twig")
+     * @return array
      */
     public static function listBoardsTree($forum_id, $board_id)
     {
         $boardList = self::scanForum($forum_id, $board_id);
 
-        $text = '';
+        $list = array();
         foreach ($boardList as $currentBoardId) {
             $board = new ForumBoard($currentBoardId);
-
-            $text
-                .= '
-				<div class="media">
-					<div class="media-left">
-						<a href="#">
-							<img class="media-object" src="//placehold.it/64x64" alt="" style="width:64px;height:64px;" />
-						</a>
-					</div>
-					<div class="media-body">
-						<h4 class="media-heading" id="media-heading">
-                            '.$board->getVar('title').' (ID: '.$board->getVar('id').')
-                            <a class="anchorjs-link" href="#media-heading"><span class="anchorjs-icon"></span></a>
-						</h4>
-						'.$board->getVar('description');
+            $data = $board->boardData;
 
             if (self::hasSubBoards($forum_id, $currentBoardId)) {
-                $text .= self::listBoardsTree($forum_id, $currentBoardId);
+                $data['sub_boards'] = self::listBoardsTree($forum_id, $currentBoardId);
             }
-
-            $text .= '</div></div>';
+            $list[] = $data;
         }
 
-        return $text;
+        return $list;
     }
 
     /**
@@ -129,7 +113,7 @@ class ForumBoard
                 $line .= '-';
             }
 
-            $title        = $line.' '.self::id2Board($currentBoardId).' (ID: '.$currentBoardId.')';
+            $title = $line.' '.self::id2Board($currentBoardId).' (ID: '.$currentBoardId.')';
             $list[$title] = $currentBoardId;
 
             if (self::hasSubBoards($forum_id, $currentBoardId)) {
@@ -156,7 +140,7 @@ class ForumBoard
         $sqlSuccess = $getBoardTitle->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $boardData = $getBoardTitle->fetchAll(PDO::FETCH_ASSOC);
 
@@ -179,7 +163,7 @@ class ForumBoard
         $sqlSuccess = $forumExists->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             if ($forumExists->rowCount() > 0) {
                 return true;
@@ -219,7 +203,7 @@ class ForumBoard
 
     private $boardId;
     private $notFound = false;
-    public  $boardData;
+    public $boardData;
 
     /**
      * Forum constructor.
@@ -250,14 +234,14 @@ class ForumBoard
         $sqlSuccess = $dbSync->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             if ($dbSync->rowCount() > 0) {
-                $data            = $dbSync->fetchAll(PDO::FETCH_ASSOC);
+                $data = $dbSync->fetchAll(PDO::FETCH_ASSOC);
                 $this->boardData = $data[0];
             } else {
                 $this->boardData = null;
-                $this->notFound  = true;
+                $this->notFound = true;
             }
         }
     }
@@ -302,7 +286,7 @@ class ForumBoard
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -331,7 +315,7 @@ class ForumBoard
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -357,7 +341,7 @@ class ForumBoard
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -383,7 +367,7 @@ class ForumBoard
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -409,7 +393,7 @@ class ForumBoard
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }

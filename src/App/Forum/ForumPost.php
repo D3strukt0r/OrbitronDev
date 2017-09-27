@@ -4,6 +4,7 @@ namespace App\Forum;
 
 use Container\DatabaseContainer;
 use PDO;
+use RuntimeException;
 
 class ForumPost
 {
@@ -21,8 +22,6 @@ class ForumPost
     {
         $database = DatabaseContainer::getDatabase();
 
-        $message = (string)$message; // TODO: This should bypass the BBCode parser
-
         $addPost = $database->prepare('INSERT INTO `forum_posts`(`thread_id`,`parent_post_id`,`user_id`,`subject`,`message`,`time`) VALUES (:thread_id,:parent_post_id,:user_id,:subject,:message,:time)');
         $addPost->bindValue(':thread_id', $thread_id, PDO::PARAM_INT);
         $addPost->bindValue(':parent_post_id', $parent_post_id, PDO::PARAM_INT);
@@ -32,7 +31,7 @@ class ForumPost
         $addPost->bindValue(':time', time(), PDO::PARAM_INT);
         $addPost->execute();
 
-        $iNewPostId       = $database->lastInsertId();
+        $iNewPostId = $database->lastInsertId();
         $iThreadInBoardId = ForumThread::intent($thread_id)->getVar('board_id');
 
         ForumThread::updatePost($iThreadInBoardId, USER_ID, time());
@@ -71,7 +70,7 @@ class ForumPost
         $thread = new ForumThread($thread_id);
 
         $iActualRepliesCount = (int)$thread->getVar('replies');
-        $iNewRepliesCount    = $iActualRepliesCount + 1;
+        $iNewRepliesCount = $iActualRepliesCount + 1;
 
         $thread->setReplies($iNewRepliesCount);
     }
@@ -83,25 +82,25 @@ class ForumPost
      */
     public static function updatePostsCountInForum($thread_id, $user_id, $last_post_time)
     {
-        $thread   = new ForumThread($thread_id);
+        $thread = new ForumThread($thread_id);
         $iBoardId = $thread->getVar('board_id');
 
         $boardsList = array();
-        $iParentId  = (int)ForumBoard::intent($iBoardId)->getVar('parent_id');
+        $iParentId = (int)ForumBoard::intent($iBoardId)->getVar('parent_id');
 
         array_push($boardsList, $iBoardId);
         while ($iParentId != 0) {
             $iNext = (int)$iParentId;
             array_push($boardsList, $iNext);
-            $iBoardId  = $iNext;
+            $iBoardId = $iNext;
             $iParentId = (int)ForumBoard::intent($iBoardId)->getVar('parent_id');
         }
 
         foreach ($boardsList as $iBoard) {
             // Update last post
-            $board             = new ForumBoard($iBoard);
+            $board = new ForumBoard($iBoard);
             $iActualPostsCount = $board->getVar('posts');
-            $iNewPostsCount    = $iActualPostsCount + 1;
+            $iNewPostsCount = $iActualPostsCount + 1;
 
             $board = new ForumBoard($iBoard);
             $board->setPosts($iNewPostsCount);
@@ -119,7 +118,7 @@ class ForumPost
 
     private $postId;
     private $notFound = false;
-    public  $postData;
+    public $postData;
 
     /**
      * ForumPost constructor.
@@ -150,14 +149,14 @@ class ForumPost
         $sqlSuccess = $dbSync->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             if ($dbSync->rowCount() > 0) {
-                $data            = $dbSync->fetchAll(PDO::FETCH_ASSOC);
+                $data = $dbSync->fetchAll(PDO::FETCH_ASSOC);
                 $this->postData = $data[0];
             } else {
                 $this->postData = null;
-                $this->notFound  = true;
+                $this->notFound = true;
             }
         }
     }
@@ -184,7 +183,6 @@ class ForumPost
         return $this->postData[$key];
     }
 
-
     /**
      * @param string $message
      *
@@ -203,7 +201,7 @@ class ForumPost
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }

@@ -3,7 +3,9 @@
 namespace App\Blog;
 
 use Container\DatabaseContainer;
+use Exception;
 use PDO;
+use RuntimeException;
 
 class Blog
 {
@@ -18,10 +20,10 @@ class Blog
         $database = DatabaseContainer::getDatabase();
 
         $getAllBlogs = $database->prepare('SELECT `name`,`url`,`owner_id` FROM `blogs`');
-        $sqlSuccess  = $getAllBlogs->execute();
+        $sqlSuccess = $getAllBlogs->execute();
 
         if (!$sqlSuccess) {
-            throw new \Exception('Cannot get list with all blogs');
+            throw new Exception('Cannot get list with all blogs');
         } else {
             return $getAllBlogs->fetchAll(PDO::FETCH_ASSOC);
         }
@@ -44,9 +46,9 @@ class Blog
         $sqlSuccess = $getAllBlogs->execute();
 
         if (!$sqlSuccess) {
-            throw new \Exception('Cannot get list with all blogs you own');
+            throw new Exception('Cannot get list with all blogs you own');
         } else {
-            $blogList      = array();
+            $blogList = array();
             $forumDataList = $getAllBlogs->fetchAll(PDO::FETCH_ASSOC);
             foreach ($forumDataList as $currentForumData) {
                 array_push($blogList, $currentForumData);
@@ -73,7 +75,7 @@ class Blog
         $sqlSuccess = $getUrl->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('[DATABASE]: Could not execute sql');
+            throw new RuntimeException('[DATABASE]: Could not execute sql');
         } else {
             if ($getUrl->rowCount()) {
                 return true;
@@ -100,7 +102,7 @@ class Blog
         $sqlSuccess = $blogExists->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('[DATABASE]: Could not execute sql');
+            throw new RuntimeException('[DATABASE]: Could not execute sql');
         } else {
             if ($blogExists->rowCount() > 0) {
                 return true;
@@ -128,7 +130,7 @@ class Blog
         $sqlSuccess = $getBlogId->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('[Database]: Could not execute sql');
+            throw new RuntimeException('[Database]: Could not execute sql');
         } else {
             $blogData = $getBlogId->fetchAll(PDO::FETCH_ASSOC);
 
@@ -139,7 +141,7 @@ class Blog
     /******************************************************************************/
 
     private $blogId;
-    public  $blogData;
+    public $blogData;
 
     /**
      * Blog constructor.
@@ -159,10 +161,10 @@ class Blog
         $sqlSuccess = $getData->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('[Database]: '.'Could not execute sql');
+            throw new RuntimeException('[Database]: '.'Could not execute sql');
         } else {
             if ($getData->rowCount() > 0) {
-                $data           = $getData->fetchAll(PDO::FETCH_ASSOC);
+                $data = $getData->fetchAll(PDO::FETCH_ASSOC);
                 $this->blogData = $data[0];
             } else {
                 $this->blogData = null;
@@ -204,7 +206,7 @@ class Blog
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->blogData['name'] = $name;
         }
@@ -232,7 +234,7 @@ class Blog
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->blogData['url'] = $url;
         }

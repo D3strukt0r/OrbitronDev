@@ -344,7 +344,6 @@ class ForumController extends Controller
             $posts[$index]['username'] = AccountTools::formatUsername($post['user_id'], false, false);
         }
         foreach ($posts as $index => $post) {
-            // TODO: Fix! URL must be posted like "[url]http://example.com[/url]" instead of "[url=http://example.com]Link[/url]""
             $bbParser = new Decoda($post['message']);
             $bbParser->defaults();
             $posts[$index]['formatted_message'] = nl2br($bbParser->parse());

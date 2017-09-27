@@ -95,7 +95,7 @@ function acp_html_account($twig, $controller)
 
     $request = Kernel::getIntent()->getRequest();
     $editAccountForm->handleRequest($request);
-    if ($editAccountForm->isSubmitted()) {
+    if ($editAccountForm->isSubmitted() && $editAccountForm->isValid()) {
         if (strlen($newUsername = $editAccountForm->get('new_username')->getData()) > 0) {
             $changeUsername = true;
         } else {
@@ -172,6 +172,7 @@ function acp_html_account($twig, $controller)
         }
     }
 
+    $currentUser = new UserInfo(USER_ID); // Update
     return $twig->render('account/panel/account.html.twig', array(
         'edit_account_form'    => $editAccountForm->createView(),
         'current_user'         => $currentUser->aUser,
@@ -338,6 +339,8 @@ function acp_html_profile($twig, $controller)
             $aErrorMessages['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
         }
     }
+
+    $currentUser = new UserInfo(USER_ID); // Update
     return $twig->render('account/panel/profile.html.twig', array(
         'edit_profile_form'    => $editProfileForm->createView(),
         'current_user'         => $currentUser->aUser,

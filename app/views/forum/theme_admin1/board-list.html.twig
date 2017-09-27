@@ -1,3 +1,29 @@
+{# Reference: https://stackoverflow.com/questions/40707461/recursive-macro-in-twig #}
+{% macro recursiveCategory(category) %}
+    {% import _self as self %}
+    <div class="media">
+        <div class="media-left">
+            <a href="#">
+                <img class="media-object" src="//placehold.it/64x64" alt="" style="width:64px;height:64px;" />
+            </a>
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading" id="media-heading">
+                {{ category.title }} (ID: {{ category.id }})
+                <a class="anchorjs-link" href="#media-heading"><span class="anchorjs-icon"></span></a>
+            </h4>
+            {{ category.description }}
+            {% if category.sub_boards|length %}
+                {% for child in category.sub_boards %}
+                    {{ self.recursiveCategory(child) }}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+{% from _self import recursiveCategory %}
+
 <section id="header">
     <div class="col-lg-12">
         <h1 class="page-header">{{ 'List all boards'|trans }}</h1>
@@ -13,7 +39,9 @@
         <hr />
         <div class="panel panel-info">
             <div class="panel-body">
-                {{ board_list|raw }}
+                {% for board in board_list %}
+                    {{ recursiveCategory(board) }}
+                {% endfor %}
             </div>
         </div>
         <hr />

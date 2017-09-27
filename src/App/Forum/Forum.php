@@ -3,7 +3,9 @@
 namespace App\Forum;
 
 use Container\DatabaseContainer;
+use Exception;
 use PDO;
+use RuntimeException;
 
 class Forum
 {
@@ -18,10 +20,10 @@ class Forum
         $database = DatabaseContainer::getDatabase();
 
         $getAllForums = $database->prepare('SELECT `name`,`url`,`owner_id` FROM `forums`');
-        $sqlSuccess   = $getAllForums->execute();
+        $sqlSuccess = $getAllForums->execute();
 
         if (!$sqlSuccess) {
-            throw new \Exception('Cannot get list with all forums');
+            throw new Exception('Cannot get list with all forums');
         } else {
             return $getAllForums->fetchAll(PDO::FETCH_ASSOC);
         }
@@ -44,9 +46,9 @@ class Forum
         $sqlSuccess = $getAllForums->execute();
 
         if (!$sqlSuccess) {
-            throw new \Exception('Cannot get list with all forums you own');
+            throw new Exception('Cannot get list with all forums you own');
         } else {
-            $forumList     = array();
+            $forumList = array();
             $forumDataList = $getAllForums->fetchAll(PDO::FETCH_ASSOC);
             foreach ($forumDataList as $currentForumData) {
                 array_push($forumList, $currentForumData);
@@ -96,7 +98,7 @@ class Forum
         $sqlSuccess = $forumExists->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             if ($forumExists->rowCount() > 0) {
                 return true;
@@ -124,7 +126,7 @@ class Forum
         $sqlSuccess = $getForumId->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $forumData = $getForumId->fetchAll(PDO::FETCH_ASSOC);
 
@@ -135,7 +137,7 @@ class Forum
     /******************************************************************************/
 
     private $forumId;
-    public  $forumData;
+    public $forumData;
 
     /**
      * Forum constructor.
@@ -155,10 +157,10 @@ class Forum
         $sqlSuccess = $getData->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             if ($getData->rowCount() > 0) {
-                $data            = $getData->fetchAll(PDO::FETCH_ASSOC);
+                $data = $getData->fetchAll(PDO::FETCH_ASSOC);
                 $this->forumData = $data[0];
             } else {
                 $this->forumData = null;
@@ -200,7 +202,7 @@ class Forum
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->forumData['name'] = $name;
         }
@@ -228,7 +230,7 @@ class Forum
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->forumData['url'] = $url;
         }
@@ -256,7 +258,7 @@ class Forum
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->forumData['owner_id'] = $owner_id;
         }
@@ -284,7 +286,7 @@ class Forum
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->forumData['page_gaid'] = $ga_id;
         }
@@ -304,13 +306,13 @@ class Forum
      */
     public static function getBreadcrumb($board_id)
     {
-        $boardsList    = array();
+        $boardsList = array();
         $parentBoardId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
 
         while ($parentBoardId != 0) {
             $next = (int)$parentBoardId;
             array_unshift($boardsList, $next);
-            $board_id      = $next;
+            $board_id = $next;
             $parentBoardId = (int)ForumBoard::intent($board_id)->getVar('parent_id');
         }
 

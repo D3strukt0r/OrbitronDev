@@ -5,6 +5,7 @@ namespace App\Account;
 use Container\DatabaseContainer;
 use Exception;
 use PDO;
+use RuntimeException;
 
 class AccountDeveloper
 {
@@ -104,7 +105,7 @@ class AccountDeveloper
 
     private $appId;
     private $notFound = false;
-    public  $appData;
+    public $appData;
 
     /**
      * AccountDeveloper constructor.
@@ -135,13 +136,13 @@ class AccountDeveloper
         $sqlSuccess = $dbSync->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             if ($dbSync->rowCount() > 0) {
-                $data          = $dbSync->fetchAll(PDO::FETCH_ASSOC);
+                $data = $dbSync->fetchAll(PDO::FETCH_ASSOC);
                 $this->appData = $data[0];
             } else {
-                $this->appData  = null;
+                $this->appData = null;
                 $this->notFound = true;
             }
         }
@@ -187,7 +188,7 @@ class AccountDeveloper
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -213,7 +214,7 @@ class AccountDeveloper
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }
@@ -240,7 +241,7 @@ class AccountDeveloper
         $sqlSuccess = $update->execute();
 
         if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
+            throw new RuntimeException('Could not execute sql');
         } else {
             $this->sync();
         }

@@ -7,6 +7,7 @@ use Container\TranslatingContainer;
 use Exception;
 use Kernel;
 use PDO;
+use RuntimeException;
 
 class AccountTools
 {
@@ -33,6 +34,7 @@ class AccountTools
         if (preg_match('/^[a-z0-9_]+$/i', $username) && strlen($username) >= 3 && strlen($username) <= 32) {
             return true;
         }
+
         return false;
     }
 
@@ -48,9 +50,11 @@ class AccountTools
 
         $oIsTaken = $database->prepare('SELECT NULL FROM `users` WHERE `username`=:username');
         $oIsTaken->bindValue(':username', $username, PDO::PARAM_STR);
-        if (!$oIsTaken->execute()) {
-            throw new \RuntimeException('[Database]: Cannot execute sql (' . $oIsTaken->queryString . ')');
+        $sqlSuccessful = $oIsTaken->execute();
+        if (!$sqlSuccessful) {
+            throw new RuntimeException('[Database]: Cannot execute sql ('.$oIsTaken->queryString.')');
         }
+
         return ($oIsTaken->rowCount() > 0 ? true : false);
     }
 
@@ -66,9 +70,11 @@ class AccountTools
 
         $oIdExists = $database->prepare('SELECT NULL FROM `users` WHERE `user_id`=:id LIMIT 1');
         $oIdExists->bindValue(':id', $user_id, PDO::PARAM_INT);
-        if (!$oIdExists->execute()) {
-            throw new \RuntimeException('[Database]: Cannot execute sql (' . $oIdExists->queryString . ')');
+        $sqlSuccessful = $oIdExists->execute();
+        if (!$sqlSuccessful) {
+            throw new RuntimeException('[Database]: Cannot execute sql ('.$oIdExists->queryString.')');
         }
+
         return ($oIdExists->rowCount() ? true : false);
     }
 
@@ -90,6 +96,7 @@ class AccountTools
                 return true;
             }
         }
+
         return false;
     }
 
@@ -115,6 +122,7 @@ class AccountTools
             if ($oUserExists->rowCount()) {
                 return true;
             }
+
             return false;
         }
     }
@@ -155,10 +163,12 @@ class AccountTools
 
         $oGetId = $database->prepare('SELECT `user_id` FROM `users` WHERE `username`=:username LIMIT 1');
         $oGetId->bindValue(':username', $username, PDO::PARAM_STR);
-        if (!$oGetId->execute()) {
-            throw new \RuntimeException('[Database]: Cannot execute sql (' . $oGetId->queryString . ')');
+        $sqlSuccessful = $oGetId->execute();
+        if (!$sqlSuccessful) {
+            throw new RuntimeException('[Database]: Cannot execute sql ('.$oGetId->queryString.')');
         }
         $aUserData = $oGetId->fetchAll(PDO::FETCH_ASSOC);
+
         return (float)$aUserData[0]['user_id'];
     }
 
@@ -174,13 +184,15 @@ class AccountTools
 
         $oGetId = $database->prepare('SELECT `user_id` FROM `users` WHERE `email`=:email LIMIT 1');
         $oGetId->bindValue(':email', $email, PDO::PARAM_STR);
-        if (!$oGetId->execute()) {
-            throw new \RuntimeException('[Database]: Cannot execute sql (' . $oGetId->queryString . ')');
+        $sqlSuccessful = $oGetId->execute();
+        if (!$sqlSuccessful) {
+            throw new RuntimeException('[Database]: Cannot execute sql ('.$oGetId->queryString.')');
         }
         if ($oGetId->rowCount() == 0) {
             return 0;
         }
         $aUserData = $oGetId->fetchAll(PDO::FETCH_ASSOC);
+
         return (int)$aUserData[0]['user_id'];
     }
 
@@ -197,7 +209,7 @@ class AccountTools
         $translator = TranslatingContainer::$translator;
 
         if (!self::idExists($user_id)) {
-            return '<s>' . $translator->trans('Unknown user') . '</s>';
+            return '<s>'.$translator->trans('Unknown user').'</s>';
         }
         $oUser = new UserInfo($user_id);
 
@@ -207,7 +219,7 @@ class AccountTools
 
         if ($link) {
             $user = new UserInfo($user_id);
-            $sPrefix .= '<a href="' . Kernel::getIntent()->get('router')->generate('app_account_user', array('username' => $user->getFromUser('username'))) . '">';
+            $sPrefix .= '<a href="'.Kernel::getIntent()->get('router')->generate('app_account_user', array('username' => $user->getFromUser('username'))).'">';
             $sSuffix .= '</a>';
         }
 
@@ -220,6 +232,7 @@ class AccountTools
                 $sSuffix .= '</span>';
             }
         }
-        return stripslashes(trim($sPrefix . $username . $sSuffix));
+
+        return stripslashes(trim($sPrefix.$username.$sSuffix));
     }
 }

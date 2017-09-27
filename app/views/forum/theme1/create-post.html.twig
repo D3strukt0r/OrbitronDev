@@ -32,7 +32,16 @@
     <script type="text/javascript" src="{{ asset('assets/plugins/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#form_message").wysibb();
+            $("#form_message").wysibb({
+                allButtons: {
+                    link: {
+                        transform: {
+                            '<a href="{URL}">{SELTEXT}</a>':"[url=\"{URL}\"]{SELTEXT}[/url]",
+                            '<a href="{URL}">{URL}</a>':"[url]{URL}[/url]"
+                        }
+                    }
+                }
+            });
         })
     </script>
 {% endblock %}

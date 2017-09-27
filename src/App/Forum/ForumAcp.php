@@ -54,7 +54,7 @@ class ForumAcp
 
         $aGetLibs = scandir($sLibDir);
         foreach ($aGetLibs as $ACPLibrary) {
-            $sLibFile = $sLibDir . '/' . $ACPLibrary;
+            $sLibFile = $sLibDir.'/'.$ACPLibrary;
 
             if ($ACPLibrary !== '.' && $ACPLibrary !== '..' && is_file($sLibFile)) {
                 include_once($sLibFile);
@@ -83,6 +83,7 @@ class ForumAcp
                 $aReturnMenus[] = self::$aAcpMenuElements[$sMenu];
             }
         }
+
         return $aReturnMenus;
     }
 }

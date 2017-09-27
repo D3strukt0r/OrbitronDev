@@ -29,15 +29,15 @@ class AccountApi
         $width = !is_null($request->query->get('width')) ? (int)$request->query->get('width') : 1000;
         $height = !is_null($request->query->get('height')) ? (int)$request->query->get('height') : 1000;
 
-        $rootPictureDir = Kernel::getIntent()->getRootDir() . '/web/app/account/profile_pictures/';
+        $rootPictureDir = Kernel::getIntent()->getRootDir().'/web/app/account/profile_pictures/';
 
         if (AccountTools::idExists($userId)) {
-            if (!is_null($selectedUser->getFromProfile('profile_picture')) && file_exists($filename = $rootPictureDir . $selectedUser->getFromProfile('profile_picture'))) {
+            if (!is_null($selectedUser->getFromProfile('profile_picture')) && file_exists($filename = $rootPictureDir.$selectedUser->getFromProfile('profile_picture'))) {
                 $oImage = new SimpleImage($filename);
                 $oImage->resize($width, $height);
                 $oImage->output();
             } else {
-                $oImage = new SimpleImage(Kernel::getIntent()->getRootDir() . '/web/assets/img/user.jpg');
+                $oImage = new SimpleImage(Kernel::getIntent()->getRootDir().'/web/assets/img/user.jpg');
                 $oImage->resize($width, $height);
                 $oImage->output();
             }
@@ -59,7 +59,7 @@ class AccountApi
 
         // Simple path resolver, where uploads will be put
         Account::buildPaths();
-        $pathresolver = new \FileUpload\PathResolver\Simple(Account::$publicDir . '/profile_pictures');
+        $pathresolver = new \FileUpload\PathResolver\Simple(Account::$publicDir.'/profile_pictures');
 
         // The machine's filesystem
         $filesystem = new \FileUpload\FileSystem\Simple();
@@ -78,7 +78,7 @@ class AccountApi
 
         // Outputting it, for example like this
         foreach ($headers as $header => $value) {
-            header($header . ': ' . $value);
+            header($header.': '.$value);
         }
 
         if (isset($files[0]->error) && !is_string($files[0]->error)) {
@@ -93,12 +93,13 @@ class AccountApi
     {
         // Assuming default values for session.upload_progress.prefix
         // and session.upload_progress.name:
-        $s = $_SESSION['upload_progress_' . intval($_GET['PHP_SESSION_UPLOAD_PROGRESS'])];
+        $s = $_SESSION['upload_progress_'.intval($_GET['PHP_SESSION_UPLOAD_PROGRESS'])];
         $progress = array(
             'lengthComputable' => true,
             'loaded'           => $s['bytes_processed'],
             'total'            => $s['content_length'],
         );
+
         return $progress;
     }
 
@@ -110,10 +111,10 @@ class AccountApi
         $view = new \App\Template\Template();
 
         $template = new \App\Template\TemplateLoad($page);
-        $template->setHtml(function($page) {
+        $template->setHtml(function ($page) {
             \App\Account\AccountAcp::includeLibs();
             $functionForPage = str_replace('-', '_', $page);
-            $functionName = 'acp_html_' . $functionForPage;
+            $functionName = 'acp_html_'.$functionForPage;
             call_user_func($functionName);
         });
 

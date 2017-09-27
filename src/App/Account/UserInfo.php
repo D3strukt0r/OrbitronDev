@@ -3,7 +3,6 @@
 namespace App\Account;
 
 use Container\DatabaseContainer;
-use Exception;
 use PDO;
 
 class UserInfo
@@ -22,10 +21,7 @@ class UserInfo
      */
     public function __construct($fUserId)
     {
-        $database = DatabaseContainer::$database;
-        if (is_null($database)) {
-            throw new Exception('A database connection is required');
-        }
+        $database = DatabaseContainer::getDatabase();
 
         // Save user id
         $this->userId = $fUserId;
@@ -37,9 +33,8 @@ class UserInfo
 
         // Save user data
         $oGetUserData = $database->prepare('SELECT * FROM `users` WHERE `user_id`=:user_id LIMIT 1');
-        $oGetUserData->execute(array(
-            ':user_id' => $fUserId,
-        ));
+        $oGetUserData->bindValue(':user_id', $fUserId, PDO::PARAM_INT);
+        $oGetUserData->execute();
         $aUserData = $oGetUserData->fetchAll(PDO::FETCH_ASSOC);
         if (count($aUserData) !== 0) {
             foreach ($aUserData[0] as $key => $value) {
@@ -49,9 +44,8 @@ class UserInfo
 
         // Save user profile
         $oGetProfile = $database->prepare('SELECT * FROM `user_profiles` WHERE `user_id`=:user_id LIMIT 1');
-        $oGetProfile->execute(array(
-            ':user_id' => $fUserId,
-        ));
+        $oGetProfile->bindValue(':user_id', $fUserId, PDO::PARAM_INT);
+        $oGetProfile->execute();
         $aProfileData = $oGetProfile->fetchAll(PDO::FETCH_ASSOC);
         if (count($aProfileData) !== 0) {
             foreach ($aProfileData[0] as $key => $value) {
@@ -61,9 +55,8 @@ class UserInfo
 
         // Save user subscription
         $oGetSubscription = $database->prepare('SELECT * FROM `user_subscriptions` WHERE `user_id`=:user_id LIMIT 1');
-        $oGetSubscription->execute(array(
-            ':user_id' => $fUserId,
-        ));
+        $oGetSubscription->bindValue(':user_id', $fUserId, PDO::PARAM_INT);
+        $oGetSubscription->execute();
         $aSubscriptionData = $oGetSubscription->fetchAll(PDO::FETCH_ASSOC);
         if (count($aSubscriptionData) !== 0) {
             foreach ($aSubscriptionData[0] as $key => $value) {
@@ -111,13 +104,12 @@ class UserInfo
      */
     public function updateUsername($username)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `users` SET `username`=:value WHERE `user_id`=:id');
-        $update->execute(array(
-            ':id'    => $this->getFromUser('user_id'),
-            ':value' => $username,
-        ));
+        $update->bindValue(':id', $this->getFromUser('user_id'), PDO::PARAM_INT);
+        $update->bindValue(':value', $username, PDO::PARAM_STR);
+        $update->execute();
     }
 
     /**
@@ -125,13 +117,12 @@ class UserInfo
      */
     public function updatePassword($password)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `users` SET `password`=:value WHERE `user_id`=:id');
-        $update->execute(array(
-            ':id'    => $this->getFromUser('user_id'),
-            ':value' => $password,
-        ));
+        $update->bindValue(':id', $this->getFromUser('user_id'), PDO::PARAM_INT);
+        $update->bindValue(':value', $password, PDO::PARAM_STR);
+        $update->execute();
     }
 
     /**
@@ -139,19 +130,17 @@ class UserInfo
      */
     public function updateEmail($email)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `users` SET `email`=:value WHERE `user_id`=:id');
-        $update->execute(array(
-            ':id'    => $this->getFromUser('user_id'),
-            ':value' => $email,
-        ));
+        $update->bindValue(':id', $this->getFromUser('user_id'), PDO::PARAM_INT);
+        $update->bindValue(':value', $email, PDO::PARAM_STR);
+        $update->execute();
 
         $update = $database->prepare('UPDATE `users` SET `email_verified`=:value WHERE `user_id`=:id');
-        $update->execute(array(
-            ':id'    => $this->getFromUser('user_id'),
-            ':value' => 0,
-        ));
+        $update->bindValue(':id', $this->getFromUser('user_id'), PDO::PARAM_INT);
+        $update->bindValue(':value', '0', PDO::PARAM_STR);
+        $update->execute();
     }
 
     /**
@@ -159,13 +148,12 @@ class UserInfo
      */
     public function updateEmailVerification($state)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `users` SET `email_verified`=:value WHERE `user_id`=:id');
-        $update->execute(array(
-            ':id'    => $this->getFromUser('user_id'),
-            ':value' => $state ? 1 : 0,
-        ));
+        $update->bindValue(':id', $this->getFromUser('user_id'), PDO::PARAM_INT);
+        $update->bindValue(':value', ($state ? '1' : '0'), PDO::PARAM_STR);
+        $update->execute();
     }
 
     /**
@@ -173,7 +161,7 @@ class UserInfo
      */
     public function updateProfilePicture($pictureName)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `profile_picture`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -187,7 +175,7 @@ class UserInfo
      */
     public function updateFirstName($name)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `firstname`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -201,7 +189,7 @@ class UserInfo
      */
     public function updateLastName($name)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `lastname`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -215,7 +203,7 @@ class UserInfo
      */
     public function updateGender($gender)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `gender`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -229,7 +217,7 @@ class UserInfo
      */
     public function updateBirthday($birthday)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `birthday`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -243,7 +231,7 @@ class UserInfo
      */
     public function updateWebsite($website)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `website`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -257,7 +245,7 @@ class UserInfo
      */
     public function updateUsage($usage)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `usages`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -271,7 +259,7 @@ class UserInfo
      */
     public function updateStreet($street)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `location_street`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -285,7 +273,7 @@ class UserInfo
      */
     public function updateStreetNumber($streetnumber)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `location_street_number`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -299,7 +287,7 @@ class UserInfo
      */
     public function updatePostalCode($postalcode)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `location_zip`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -313,7 +301,7 @@ class UserInfo
      */
     public function updateCity($city)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `location_city`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -327,7 +315,7 @@ class UserInfo
      */
     public function updateCountry($country)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `user_profiles` SET `location_country`=:value WHERE `user_id`=:id');
         $update->execute(array(
@@ -341,7 +329,7 @@ class UserInfo
      */
     public function updateUserDeveloper($state)
     {
-        $database = DatabaseContainer::$database;
+        $database = DatabaseContainer::getDatabase();
 
         $update = $database->prepare('UPDATE `users` SET `developer`=:value WHERE `user_id`=:id');
         $update->execute(array(
