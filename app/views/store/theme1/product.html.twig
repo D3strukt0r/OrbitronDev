@@ -211,7 +211,11 @@
                                         {% if current_product.in_sale %}
                                             </del>
                                             <span id="output-price-sale" style="margin-left: 10px">
-                                                <b>{{ current_product.price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}</b>
+                                                {% if current_product.price_sale == 0 %}
+                                                    <b>{{ 'Free'|trans }}</b>
+                                                {% else %}
+                                                    <b>{{ current_product.price_sale|number_format(2, '.', '\'') }} $</b> {# TODO: Make this editable by the user #}
+                                                {% endif %}
                                             </span>
                                         {% endif %}
                                         {{ form_widget(add_to_cart_form.send, {'attr': {'class': 'btn btn-primary', 'style': 'margin-left: 10px'}}) }}

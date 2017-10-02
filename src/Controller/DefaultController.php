@@ -24,14 +24,6 @@ class DefaultController extends Controller
         return $this->redirectToRoute('homepage');
     }
 
-    public function testAction()
-    {
-        $request = Kernel::getIntent()->getRequest();
-        echo $request->server->get('REMOTE_ADDR');
-
-        return '';
-    }
-
     public function indexAction()
     {
         Account::updateSession();

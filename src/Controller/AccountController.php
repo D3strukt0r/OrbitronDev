@@ -51,7 +51,10 @@ class AccountController extends Controller
         if (LOGGED_IN) {
             Account::logout();
         }
-        return $this->redirectToRoute('app_account_login');
+        $request = $this->getRequest();
+        $redirectUrl = strlen($request->query->get('redir')) > 0 ? $request->query->get('redir') : $this->generateUrl('app_account_login');
+
+        return $this->redirect($redirectUrl);
     }
 
     public function loginAction()
@@ -215,14 +218,13 @@ class AccountController extends Controller
                         'username' => $registerForm->get('username')->getData(),
                         'email'    => $registerForm->get('email')->getData(),
                     )), 'text/html');
-                $this->get('mailer')->send($message);
+                $mailSent = $this->get('mailer')->send($message);
 
-                // TODO: As soon as the user arrives the panel, he should see the error
-                //if(!$mail->send()) {
-                //$_SESSION['Register']['ErrorMessage'] = _('Could not send email. TRY AGAIN!');
-                //} else {
-                //$_SESSION['Register']['SuccessMessage'] = _('Your email has been send! Check also your Junk-Folder!');
-                //}
+                if ($mailSent) {
+                    $this->addFlash('successful', 'Your email has been send! Also check your Junk-Folder!');
+                } else {
+                    $this->addFlash('failed', 'Could not send email. Please send the confirmation mail for you E-Mail address again at you account settings');
+                }
 
                 Account::login($registerForm->get('email')->getData(), $registerForm->get('password')->getData());
                 if (isset($_POST['page'])) {

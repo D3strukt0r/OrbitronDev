@@ -171,7 +171,7 @@ class StoreController extends Controller
             $productList[$index]['short_description'] = $product['short_description_' . $userLanguage];
             $productList[$index]['price'] = $product['price_' . $userCurrency];
             $productList[$index]['in_sale'] = is_null($product['price_sale_' . $userCurrency]) ? false : true;
-            $productList[$index]['price_sale'] = $productList[$index]['in_sale'] ? $product['price_sale_' . $userCurrency] : null; // TODO: Show it when there is a sale
+            $productList[$index]['price_sale'] = $productList[$index]['in_sale'] ? $product['price_sale_' . $userCurrency] : null;
         }
 
         // Shopping cart widget

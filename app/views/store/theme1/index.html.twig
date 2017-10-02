@@ -120,10 +120,31 @@
                                 </a>
                                 <div class="caption-full">
                                     <h4 class="pull-right">
-                                        {% if product.price == 0 %}
-                                            {{ 'Free'|trans }}
-                                        {% else %}
-                                            {{ product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+
+                                        {% if product.in_sale %}
+                                            <span class="text-danger" style="margin-right: 10px"><b>{{ 'SALE!'|trans }}</b></span>
+                                            <br />
+                                            <del>
+                                        {% endif %}
+                                        <span id="output-price">
+                                            <b>
+                                                {% if product.price == 0 %}
+                                                    {{ 'Free'|trans }}
+                                                {% else %}
+                                                    {{ product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                {% endif %}
+                                            </b>
+                                        </span>
+                                        {% if product.in_sale %}
+                                            </del>
+                                            <br />
+                                            <span id="output-price-sale" style="margin-left: 10px">
+                                                {% if product.price_sale == 0 %}
+                                                    <b>{{ 'Free'|trans }}</b>
+                                                {% else %}
+                                                    <b>{{ product.price_sale|number_format(2, '.', '\'') }} $</b> {# TODO: Make this editable by the user #}
+                                                {% endif %}
+                                            </span>
                                         {% endif %}
                                     </h4>
                                     <h4>

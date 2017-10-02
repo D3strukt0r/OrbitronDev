@@ -21,35 +21,84 @@
                                 <i class="fa fa-globe"></i>
                                 <a href="javascript:void(0);">{{ 'header.language.base'|trans }} ({{ app.request.getLocale()|upper }})</a>
                                 <ul class="languages hoverSelectorBlock">
-                                    {# TODO: Maybe add images from "web/assets/img/icons/flags" #}
                                     {% if app.request.getLocale() == "en" %}
-                                         <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">English <i class="fa fa-check"></i></a></li>
+                                         <li class="active">
+                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">
+                                                 <img src="{{ asset('assets/img/icons/flags/United-States-of-America.png') }}" style="height:1em" />
+                                                 English <i class="fa fa-check"></i>
+                                             </a>
+                                         </li>
                                     {% else %}
-                                        <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">English</a></li>
+                                        <li>
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/United-States-of-America.png') }}" style="height:1em" />
+                                                English
+                                            </a>
+                                        </li>
                                     {% endif %}
 
                                     {% if app.request.getLocale() == "fr" %}
-                                        <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">French <i class="fa fa-check"></i></a></li>
+                                        <li class="active">
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/France.png') }}" style="height:1em" />
+                                                French <i class="fa fa-check"></i>
+                                            </a>
+                                        </li>
                                     {% else %}
-                                        <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">French</a></li>
+                                        <li>
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/France.png') }}" style="height:1em" />
+                                                French
+                                            </a>
+                                        </li>
                                     {% endif %}
 
                                     {% if app.request.getLocale() == "de" %}
-                                        <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}">German <i class="fa fa-check"></i></a></li>
+                                        <li class="active">
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/Germany.png') }}" style="height:1em" />
+                                                German <i class="fa fa-check"></i>
+                                            </a>
+                                        </li>
                                     {% else %}
-                                        <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}">German</a></li>
+                                        <li>
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/Germany.png') }}" style="height:1em" />
+                                                German
+                                            </a>
+                                        </li>
                                     {% endif %}
 
                                     {% if app.request.getLocale() == "it" %}
-                                        <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}">Italian <i class="fa fa-check"></i></a></li>
+                                        <li class="active">
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/Italy.png') }}" style="height:1em" />
+                                                Italian <i class="fa fa-check"></i>
+                                            </a>
+                                        </li>
                                     {% else %}
-                                        <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}">Italian</a></li>
+                                        <li>
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/Italy.png') }}" style="height:1em" />
+                                                Italian
+                                            </a>
+                                        </li>
                                     {% endif %}
 
                                     {% if app.request.getLocale() == "es" %}
-                                        <li class="active"><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}">Spanish <i class="fa fa-check"></i></a></li>
+                                        <li class="active">
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/Spain.png') }}" style="height:1em" />
+                                                Spanish <i class="fa fa-check"></i>
+                                            </a>
+                                        </li>
                                     {% else %}
-                                        <li><a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}">Spanish</a></li>
+                                        <li>
+                                            <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}">
+                                                <img src="{{ asset('assets/img/icons/flags/Spain.png') }}" style="height:1em" />
+                                                Spanish
+                                            </a>
+                                        </li>
                                     {% endif %}
                                 </ul>
                             </li>
@@ -60,8 +109,9 @@
                                 <li><a href="{{ path('app_account_index') }}">{{ 'header.account.account'|trans }}</a></li>
                             {% else %}
                                 {% if current_user.user_id > -1 %}
-                                    {# TODO: Maybe add links (Account and Logout) and username #}
                                     <li><a href="{{ path('app_account_index') }}">{{ 'header.account.account'|trans }}</a></li>
+                                    <li class="topbar-devider"></li>
+                                    <li><a href="{{ path('app_account_logout', {'redir': app.request.uri}) }}">{{ 'Logout'|trans }}</a></li>
                                 {% else %}
                                     <li><a href="{{ path('app_account_login', {'redir': app.request.uri}) }}">{{ 'header.account.login'|trans }}</a></li>
                                     <li class="topbar-devider"></li>

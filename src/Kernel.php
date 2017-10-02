@@ -104,8 +104,10 @@ class Kernel
                 $response->send();
                 //echo $response->getContent();
             } elseif (is_string($response)) {
-                // TODO: Use Symfony Response
-                echo $response;
+                $responseObj = new Response();
+                $responseObj->setContent($response);
+                $responseObj->prepare($this->getRequest());
+                $responseObj->send();
             }
         }
     }

@@ -2,13 +2,14 @@ default:
     resource: 'default/routing.yml'
     host:     www.orbitrondev.org
 #    schemes:  [https]
+#    defaults:  { _locale: en }
 #    prefix:   /{_locale} # TODO: Prefix lets the Framework not find route on request!
 #    requirements:
 #        _locale: "|en|fr|de|it|es" # put a pipe "|" first
 
-# Just for testing purposes. For unknown reasons /test-page doesn't work
+# Just for testing purposes.
 app_test:
-    path:     /test-page2
+    path:     /test-page
     defaults: { _controller: 'TestController::indexAction' }
 
 account:

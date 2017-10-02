@@ -11,10 +11,9 @@ app_account_register:
 app_account_forgot:
     path:     /forgot
     defaults: { _controller: 'AccountController::forgotAction' }
-# TODO: Reset URL was included in /forget, move the function to /reset...
 app_account_reset:
     path:     /reset-password
-    defaults: { _controller: 'AccountController::resetAction' }
+    defaults: { _controller: 'AccountController::forgotAction' }
 app_account_logout:
     path:     /logout
     defaults: { _controller: 'AccountController::logoutAction' }

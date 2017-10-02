@@ -56,4 +56,23 @@
 
 {% block navigation %}{{ view_navigation|raw }}{% endblock %}
 
+{% block body_notification %}
+    {% for message in app.session.flashbag.get('successful') %}
+        <div class="col-xs-12">
+            <div id="successful" class="alert alert-success alert-dismissible" role="alert" style="margin-top:20px;margin-bottom:0">
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'Close'|trans }}</span></button>
+                {{ message }}
+            </div>
+        </div>
+    {% endfor %}
+    {% for message in app.session.flashbag.get('failed') %}
+        <div class="col-xs-12">
+            <div id="failed" class="alert alert-danger alert-dismissible" role="alert" style="margin-top:20px;margin-bottom:0">
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'Close'|trans }}</span></button>
+                {{ message }}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
 {% block body %}{{ view_body|raw }}{% endblock %}
