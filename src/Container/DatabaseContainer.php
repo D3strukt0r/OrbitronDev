@@ -22,7 +22,6 @@ class DatabaseContainer
     {
         $config = $kernel->get('config');
 
-        // TODO: Only access database if required
         try {
             $dbSetup = $config['parameters']['database_driver'];
             $dbSetup .= ':host=' . $config['parameters']['database_host'];

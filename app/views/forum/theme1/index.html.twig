@@ -39,31 +39,68 @@
             </div>
         {% else %}
             {% for board in board_tree %}
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover table-condensed">
-                    <thead>
+                {% if board.type == 2 and board.parent_id == 0 %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover table-condensed">
+                            <thead>
+                            <tr>
+                                <th class="text-center" width="56%">{{ board.title }}</th>
+                                <th class="text-center" width="7%" >{{ 'Topics'|trans }}</th>
+                                <th class="text-center" width="7%">{{ 'Posts'|trans }}</th>
+                                <th class="text-center" width="30%">{{ 'Last post'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if board.subboards|length > 0 %}
+                                {% for subboard in board.subboards %}
+                                    <tr>
+                                        <td class="forum-category"><p><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': subboard.id}) }}">{{ subboard.title }}</a></p><p>{{ subboard.description }}</p></td>
+                                        <td class="text-center"><br /><span class="badge">{{ subboard.threads }}</span></td>
+                                        <td class="text-center"><br /><span class="badge">{{ subboard.posts }}</span></td>
+                                        <td><p><i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }} {{ subboard.last_post_username|raw }}</p><p>{{ subboard.last_post_time|date('d/m/Y H:i') }}</p></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {# Check if there is a board without a category #}
+            {% set counter = 0 %}
+            {% for board in board_tree %}
+                {% if board.type == 1  %}
+                    {% set counter = counter + 1 %}
+                {% endif %}
+            {% endfor %}
+            {# Get all boards without category #}
+            {% if counter > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover table-condensed">
+                        <thead>
                         <tr>
-                            <th class="text-center" width="56%">{{ board.title }}</th>
+                            <th class="text-center" width="56%">{{ 'Boards'|trans }}</th>
                             <th class="text-center" width="7%" >{{ 'Topics'|trans }}</th>
                             <th class="text-center" width="7%">{{ 'Posts'|trans }}</th>
                             <th class="text-center" width="30%">{{ 'Last post'|trans }}</th>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% if board.subboards|length > 0 %}
-                            {% for subboard in board.subboards %}
+                        </thead>
+                        <tbody>
+                        {% for board in board_tree %}
+                            {% if board.type == 1 %}
                                 <tr>
-                                    <td class="forum-category"><p><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': subboard.id}) }}">{{ subboard.title }}</a></p><p>{{ subboard.description }}</p></td>
-                                    <td class="text-center"><br /><span class="badge">{{ subboard.threads }}</span></td>
-                                    <td class="text-center"><br /><span class="badge">{{ subboard.posts }}</span></td>
-                                    <td><p><i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }} {{ subboard.last_post_username|raw }}</p><p>{{ subboard.last_post_time|date('d/m/Y H:i') }}</p></td>
+                                    <td class="forum-category"><p><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': board.id}) }}">{{ board.title }}</a></p><p>{{ board.description }}</p></td>
+                                    <td class="text-center"><br /><span class="badge">{{ board.threads }}</span></td>
+                                    <td class="text-center"><br /><span class="badge">{{ board.posts }}</span></td>
+                                    <td><p><i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }} {{ board.last_post_username|raw }}</p><p>{{ board.last_post_time|date('d/m/Y H:i') }}</p></td>
                                 </tr>
-                            {% endfor %}
-                        {% endif %}
-                    </tbody>
-                </table><!-- /.table -->
-            </div><!-- /.table-responsive -->
-            {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
         {% endif %}
     </div><!-- /.container -->
 {% endblock %}

@@ -2,6 +2,7 @@
 
 namespace Container;
 
+use App\Template\Language;
 use Symfony\Component\Translation\Loader\CsvFileLoader;
 use Symfony\Component\Translation\Loader\IcuDatFileLoader;
 use Symfony\Component\Translation\Loader\IcuResFileLoader;
@@ -18,12 +19,6 @@ use Symfony\Component\Translation\MessageSelector;
 
 class TranslatingContainer
 {
-    /**
-     * TODO: Should get locale if somewhere defined
-     *
-     */
-
-
     /** @var \Symfony\Component\Translation\Translator $translator */
     public static $translator = null;
 
@@ -41,7 +36,7 @@ class TranslatingContainer
     {
         $this->kernel = $kernel;
 
-        $this->initLocaleListener(); // TODO: This is doing an error
+        $this->initLocaleListener();
 
         $translator = new Translator('en_US', new MessageSelector());
         $translator->addLoader('php', new PhpFileLoader());
@@ -57,12 +52,12 @@ class TranslatingContainer
         $translator->addLoader('ini', new IniFileLoader());
         $translator->addLoader('json', new JsonFileLoader());
 
-        $directory = __DIR__ . '/../../app/translation';
+        $directory = __DIR__.'/../../app/translation';
         $files = scandir($directory);
         foreach ($files as $file) {
             if (!in_array($file, array('.', '..'))) {
                 $fileParts = explode('.', $file); // "0" is the name, "1" is the locale, "2" is the type (php ect.)
-                $translator->addResource($fileParts[2], $directory . '/' . $file, $fileParts[1], $fileParts[0]);
+                $translator->addResource($fileParts[2], $directory.'/'.$file, $fileParts[1], $fileParts[0]);
             }
         }
         $translator->setFallbackLocales(array('en_US'));
@@ -82,8 +77,13 @@ class TranslatingContainer
         if ($locale = $request->attributes->get('_locale')) {
             $request->getSession()->set('_locale', $locale);
         } else {
+            Language::setupCookie($request->query->get('_locale'), array(
+                'path'   => '/',
+                'domain' => 'orbitrondev.org',
+            ));
             // if no explicit locale has been set on this request, use one from the session
-            $request->setLocale($request->getSession()->get('_locale', $this->defaultLocale));
+            $lang = defined('TEMPLATE_LANGUAGE') ? TEMPLATE_LANGUAGE : $this->defaultLocale;
+            $request->setLocale($request->getSession()->get('_locale', $lang));
         }
     }
 }

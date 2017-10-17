@@ -163,10 +163,9 @@ class ForumController extends Controller
 
         // Get all boards
         /** @var \PDOStatement $getBoards */
-        $getBoards = $this->get('database')->prepare('SELECT * FROM `forum_boards` WHERE `forum_id`=:forum_id AND `type`=2 AND `parent_id`=0');
-        $getBoards->execute(array(
-            ':forum_id' => $forum->getVar('id'),
-        ));
+        $getBoards = $this->get('database')->prepare('SELECT * FROM `forum_boards` WHERE `forum_id`=:forum_id AND `parent_id`=0');
+        $getBoards->bindValue(':forum_id', $forum->getVar('id'), PDO::PARAM_INT);
+        $getBoards->execute();
         $boardTree = $getBoards->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($boardTree as $index => $board) {
@@ -184,8 +183,6 @@ class ForumController extends Controller
             }
             $boardTree[$index]['subboards'] = $subboards;
         }
-
-        // TODO: Show also boards which aren't in a category
 
         return $this->render('forum/theme1/index.html.twig', array(
             'current_user'  => $currentUser->aUser,

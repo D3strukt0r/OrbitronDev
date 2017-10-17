@@ -13,7 +13,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RecaptchaType extends AbstractType
 {
-
     /**
      * The reCAPTCHA server URL's
      */
@@ -91,6 +90,6 @@ class RecaptchaType extends AbstractType
 
     function resolveLocale()
     {
-        return 'en'; // TODO: Add a better way to get language
+        return (strlen(@TEMPLATE_LANGUAGE) > 0) ? TEMPLATE_LANGUAGE : 'en';
     }
 }

@@ -1,9 +1,9 @@
 app_default_robot:
     path:     /robots.txt
-    defaults: { _controller: 'DefaultController::indexAction' }
+    defaults: { _controller: 'DefaultController::robotsAction', 'database': false }
 app_default_sitemap:
     path:     /sitemap.xml
-    defaults: { _controller: 'DefaultController::indexAction' }
+    defaults: { _controller: 'DefaultController::siteMapAction', 'database': false }
 app_default_index:
     path:     /
     defaults: { _controller: 'DefaultController::indexAction' }

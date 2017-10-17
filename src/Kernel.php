@@ -19,10 +19,6 @@ class Kernel
 {
     public $components = array();
     public $environment = null;
-    // TODO: Pages should define whether they need the database. Loads faster if not needed
-    private $config = array(
-        'database' => true,
-    );
 
     /** @var Kernel $kernel */
     private static $kernel = null;
@@ -68,12 +64,10 @@ class Kernel
         // Load components
         $this->set('kernel', $this);
         $this->loadLogger();
-        if($this->config['database']) {
-            $this->loadDatabase();
-        }
         $this->loadSession();
         $this->loadTranslation();
         $this->loadRouting();
+        $this->loadDatabase();
         $this->loadTemplating();
         $this->loadMailer();
         $this->runCronJob();
@@ -150,6 +144,11 @@ class Kernel
      */
     function loadDatabase()
     {
+        if ($this->has('router') && !$this->has('routing.error')) {
+            if (isset($this->get('routing')['database']) && $this->get('routing')['database'] == false) {
+                return;
+            }
+        }
         new DatabaseContainer($this);
         return;
 
