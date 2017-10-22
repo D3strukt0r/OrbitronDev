@@ -267,6 +267,7 @@ class ForumController extends Controller
         }
 
         // Pagination
+        // Reference: http://www.strangerstudios.com/sandbox/pagination/diggstyle.php
         /** @var \PDOStatement $getThreadCount */
         $getThreadCount = $this->get('database')->prepare('SELECT NULL FROM `forum_threads` WHERE `board_id`=:board_id');
         $getThreadCount->bindValue(':board_id', $board->getVar('id'), PDO::PARAM_INT);

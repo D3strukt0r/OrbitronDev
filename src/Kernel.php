@@ -107,17 +107,17 @@ class Kernel
     }
 
 
-    function has(string $component)
+    public function has(string $component)
     {
         return isset($this->components[$component]);
     }
 
-    function get(string $component)
+    public function get(string $component)
     {
         return $this->components[$component];
     }
 
-    function set(string $component, $value)
+    public function set(string $component, $value)
     {
         return $this->components[$component] = $value;
     }
@@ -126,7 +126,7 @@ class Kernel
     /**
      * Cron Job
      */
-    function runCronJob()
+    public function runCronJob()
     {
         \App\Core\CronJob::execute();
     }
@@ -134,7 +134,7 @@ class Kernel
     /**
      * Database
      */
-    function loadMailer()
+    public function loadMailer()
     {
         new SwiftMailerContainer($this);
     }
@@ -142,7 +142,7 @@ class Kernel
     /**
      * Database
      */
-    function loadDatabase()
+    public function loadDatabase()
     {
         if ($this->has('router') && !$this->has('routing.error')) {
             if (isset($this->get('routing')['database']) && $this->get('routing')['database'] == false) {
@@ -151,17 +151,12 @@ class Kernel
         }
         new DatabaseContainer($this);
         return;
-
-        // Database by Manuele Vaccari
-        echo '';
-        \App\Core\DatabaseConnection::createConnection();
-        $database = \App\Core\DatabaseConnection::$database;
     }
 
     /**
      * Logger
      */
-    function loadLogger()
+    public function loadLogger()
     {
         $log = new Logger('Root');
         $log->pushHandler(new StreamHandler($this->getRootDir() . '/var/debug.log', Logger::DEBUG));
@@ -171,7 +166,7 @@ class Kernel
     /**
      * Session
      */
-    function loadSession()
+    public function loadSession()
     {
         new SessionContainer($this);
         return;
@@ -192,7 +187,7 @@ class Kernel
     /**
      * Templating
      */
-    function loadTemplating()
+    public function loadTemplating()
     {
         // Symfony Templating
         new TemplatingContainer($this);
@@ -238,7 +233,7 @@ class Kernel
     /**
      * Translation
      */
-    function loadRouting()
+    public function loadRouting()
     {
         new RoutingContainer($this);
     }
@@ -246,7 +241,7 @@ class Kernel
     /**
      * Translation
      */
-    function loadTranslation()
+    public function loadTranslation()
     {
         // Symfony Translator
         new TranslatingContainer($this);
@@ -262,17 +257,17 @@ class Kernel
         // No translating service created by myself
     }
 
-    function getRootDir()
+    public function getRootDir()
     {
         return realpath(dirname(__DIR__));
     }
 
-    function getCacheDir()
+    public function getCacheDir()
     {
         return realpath(dirname(__DIR__) . '/var/cache/');
     }
 
-    function getLogDir()
+    public function getLogDir()
     {
         return realpath(dirname(__DIR__) . '/var/logs');
     }
@@ -293,7 +288,7 @@ class Kernel
     /**
      * @return null|Request
      */
-    function getRequest()
+    public function getRequest()
     {
         $request = is_null($this->request) ? Request::createFromGlobals() : $this->request;
         /** @var Session $session */

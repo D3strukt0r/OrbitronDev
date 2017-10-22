@@ -67,7 +67,7 @@
             <div class="col-md-8">
                 {% if pagination.pages_count > 1 %}
                     <ul class="pagination" style="margin:0">
-
+                        {# Reference: http://www.strangerstudios.com/sandbox/pagination/diggstyle.php #}
                         {# Previous Page #}
                         {% if pagination.current_page > 1 %}
                             <li><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': current_thread.id, 'page': pagination.previous_page, 'show': pagination.item_limit}) }}" aria-label="{{ 'Previous'|trans }}"><span aria-hidden="true">&laquo;</span></a></li>

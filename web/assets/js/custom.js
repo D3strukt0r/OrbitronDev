@@ -45,7 +45,7 @@ $(document).ready(function(){
      * Checks if cookies are working
      */
     Cookies.set('cookiesEnabled', true);
-    if(typeof Cookies.get('cookiesEnabled') == 'undefined') {
+    if(typeof Cookies.get('cookiesEnabled') === 'undefined') {
         noty({
             layout: 'topCenter',
             theme: 'bootstrapTheme',
@@ -60,23 +60,4 @@ $(document).ready(function(){
         });
     }
     Cookies.remove('cookiesEnabled');
-
-    /**
-     * Cookie usage reminder
-     */
-    if(typeof Cookies.get('acceptCookies') == 'undefined') {
-        Cookies.set('acceptCookies', 'true', { expires: 365, domain: 'orbitrondev.org' });
-        noty({
-            layout: 'topCenter',
-            theme: 'bootstrapTheme',
-            type: 'info',
-            text: 'We use cookies to give you the best experience on our website. By continuing to use our site you consent to our cookies.',
-            animation: {
-                open: 'animated bounceInLeft',
-                close: 'animated bounceOutRight'
-            },
-            timeout: false,
-            closeWith: ['button']
-        });
-    }
 });

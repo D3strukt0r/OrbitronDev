@@ -97,12 +97,13 @@ class ECBCurrencyConverter
     }
 
     /**
+     * Perform the actual conversion
      * Hint: Base is EUR, so everything is converted to EUR and then to the given currency
      *
-     * @param float  $amount
-     * @param string $from
-     * @param string $to
-     * @param int    $decimals
+     * @param float  $amount   (Required) How much should be converted.
+     * @param string $from     (Required) From which currency should be converted.
+     * @param string $to       (Optional) To which currency should be converted. Default is USD.
+     * @param int    $decimals (Optional) How much decimals should the number have.
      *
      * @return float
      */

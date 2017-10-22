@@ -72,6 +72,7 @@
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.css" />
         {% endblock %}
 
         <!-- CSS Page Style -->
@@ -119,6 +120,7 @@
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.4/holder.min.js"></script>{# TODO: Remove as soon as all images are existing #}
             <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.js"></script>
         {% endblock %}
 
         <!-- JS Customization -->
@@ -131,6 +133,54 @@
         <script type="text/javascript">
             jQuery(document).ready(function() {
                 App.init();
+
+                window.cookieconsent.initialise({
+                    "palette": {
+                        "popup": {
+                            "background": "#252e39"
+                        },
+                        "button": {
+                            "background": "#14a7d0"
+                        }
+                    },
+
+                    onInitialise: function (status) {
+                        var type = this.options.type;
+                        var didConsent = this.hasConsented();
+                        if (type === 'opt-in' && didConsent) {
+                            // enable cookies
+                        }
+                        if (type === 'opt-out' && !didConsent) {
+                            // disable cookies
+                        }
+                    },
+
+                    onStatusChange: function(status, chosenBefore) {
+                        var type = this.options.type;
+                        var didConsent = this.hasConsented();
+                        if (type === 'opt-in' && didConsent) {
+                            // enable cookies
+                        }
+                        if (type === 'opt-out' && !didConsent) {
+                            // disable cookies
+                        }
+                    },
+
+                    onRevokeChoice: function() {
+                        var type = this.options.type;
+                        if (type === 'opt-in') {
+                            // disable cookies
+                        }
+                        if (type === 'opt-out') {
+                            // enable cookies
+                        }
+                    },
+                    law: {
+                        regionalLaw: false
+                    },
+                    location: true
+                });
+
                 {% block javascripts_code %}{% endblock %}
             });
         </script>

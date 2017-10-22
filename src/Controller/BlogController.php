@@ -177,6 +177,7 @@ class BlogController extends Controller
         }
 
         // Pagination
+        // Reference: http://www.strangerstudios.com/sandbox/pagination/diggstyle.php
         /** @var \PDOStatement $getPostCount */
         $getPostCount = $this->get('database')->prepare('SELECT NULL FROM `blog_posts` WHERE `blog_id`=:blog_id');
         $getPostCount->bindValue(':blog_id', $blog->getVar('id'), PDO::PARAM_INT);
