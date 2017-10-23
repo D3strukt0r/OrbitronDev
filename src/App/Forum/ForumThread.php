@@ -16,7 +16,7 @@ class ForumThread
      * @param string $message
      * @param int    $user_id
      *
-     * @return float
+     * @return int
      * @throws \Exception
      */
     static function createThread($board_id, $thread_name, $message, $user_id)

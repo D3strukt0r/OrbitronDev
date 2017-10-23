@@ -50,6 +50,7 @@
         "league/oauth2-client": "^2.2",
         "sabre/dav": "^3.2",
         "symfony/debug": "^3.3",
-        "studio-42/elfinder": "^2.1"
+        "studio-42/elfinder": "^2.1",
+        "doctrine/orm": "^2.5"
     }
 }

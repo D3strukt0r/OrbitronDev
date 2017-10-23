@@ -12,6 +12,7 @@ use App\Forum\ForumPost;
 use App\Forum\ForumThread;
 use Controller;
 use Decoda\Decoda;
+use Decoda\Hook\EmoticonHook;
 use Form\RecaptchaType;
 use PDO;
 use ReCaptcha\ReCaptcha;
@@ -344,6 +345,7 @@ class ForumController extends Controller
         foreach ($posts as $index => $post) {
             $bbParser = new Decoda($post['message']);
             $bbParser->defaults();
+            $bbParser->addHook(new EmoticonHook());
             $posts[$index]['formatted_message'] = nl2br($bbParser->parse());
         }
 

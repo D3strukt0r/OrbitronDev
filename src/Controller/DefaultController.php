@@ -6,7 +6,6 @@ use App\Account\Account;
 use App\Account\UserInfo;
 use Controller;
 use Form\RecaptchaType;
-use Kernel;
 use Swift_Message;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;

@@ -1,6 +1,7 @@
 <?php
 
 use Container\DatabaseContainer;
+use Container\DoctrineContainer;
 use Container\RoutingContainer;
 use Container\SessionContainer;
 use Container\SwiftMailerContainer;
@@ -149,6 +150,7 @@ class Kernel
                 return;
             }
         }
+        new DoctrineContainer($this);
         new DatabaseContainer($this);
         return;
     }
