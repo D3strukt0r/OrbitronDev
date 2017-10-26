@@ -45,11 +45,12 @@ class Template
      */
     public static function templateExists($template_name)
     {
-        $sTemplateFileDir = self::VIEWS_DIR . '/' . $template_name . '.phtml';
+        $sTemplateFileDir = self::VIEWS_DIR.'/'.$template_name.'.phtml';
 
         if (file_exists($sTemplateFileDir)) {
             return true;
         }
+
         return false;
     }
 
@@ -64,10 +65,10 @@ class Template
      *
      * @param string $include_set
      */
-    function addIncludeSet($include_set)
+    public function addIncludeSet($include_set)
     {
-        if (file_exists(self::INCLUDE_SETS_DIR . '/' . $include_set . '.txt')) {
-            $includes = file(self::INCLUDE_SETS_DIR . '/' . $include_set . '.txt');
+        if (file_exists(self::INCLUDE_SETS_DIR.'/'.$include_set.'.txt')) {
+            $includes = file(self::INCLUDE_SETS_DIR.'/'.$include_set.'.txt');
             foreach ($includes as $include_info) {
                 $include_info = explode(';', $include_info);
                 $this->addIncludeFile($include_info[0], $include_info[1], $include_info[2], $include_info[3]);
@@ -81,32 +82,28 @@ class Template
      * @param string $rel
      * @param string $name
      */
-    function addIncludeFile($type, $src, $rel = '', $name = '')
+    public function addIncludeFile($type, $src, $rel = '', $name = '')
     {
         $this->include_files[] = array('type' => $type, 'src' => $src, 'rel' => $rel, 'name' => $name);
     }
 
-    function writeIncludeFiles()
+    public function writeIncludeFiles()
     {
         foreach ($this->include_files as $inc) {
             switch ($inc['type']) {
                 case 'application/rss+xml':
-
-                    $this->write('<link rel="' . $inc['rel'] . '" href="' . $inc['src'] . '" type="' . $inc['type'] . '" title="' . $inc['name'] . '" />');
+                    $this->write('<link rel="'.$inc['rel'].'" href="'.$inc['src'].'" type="'.$inc['type'].'" title="'.$inc['name'].'" />');
                     break;
 
                 case 'text/javascript':
-
-                    $this->write('<script src="' . $inc['src'] . '" type="text/javascript"></script>');
+                    $this->write('<script src="'.$inc['src'].'" type="text/javascript"></script>');
                     break;
 
                 case 'text/css':
-
-                    $this->write('<link rel="' . $inc['rel'] . '" href="' . $inc['src'] . '" type="' . $inc['type'] . '" />');
+                    $this->write('<link rel="'.$inc['rel'].'" href="'.$inc['src'].'" type="'.$inc['type'].'" />');
                     break;
 
                 default:
-
                     break;
             }
         }
@@ -117,7 +114,7 @@ class Template
      * @param string $param
      * @param string $value
      */
-    function setParam($param, $value)
+    public function setParam($param, $value)
     {
         $this->params[$param] = (is_object($value) ? $value->fetch() : $value);
     }
@@ -125,7 +122,7 @@ class Template
     /**
      * @param string $param
      */
-    function unsetParam($param)
+    public function unsetParam($param)
     {
         unset($this->params[$param]);
     }
@@ -133,7 +130,7 @@ class Template
     /**
      * @param string $string
      */
-    function write($string)
+    public function write($string)
     {
         $this->output_data .= $string;
     }
@@ -143,21 +140,22 @@ class Template
      *
      * @return mixed
      */
-    function filterParams($string)
+    public function filterParams($string)
     {
         foreach ($this->params as $param => $value) {
             if (!is_string($value) || !is_numeric($value)) {
                 continue;
             }
-            $string = str_ireplace('{{' . $param . '}}', $value, $string);
+            $string = str_ireplace('{{'.$param.'}}', $value, $string);
         }
+
         return $string;
     }
 
     /**
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return (string)$this->filterParams($this->output_data);
     }

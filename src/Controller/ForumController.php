@@ -250,6 +250,7 @@ class ForumController extends Controller
         // Get all threads
         /** @var Request $request */
         $request                    = $this->get('kernel')->getRequest();
+        $pagination                 = array();
         $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
@@ -326,6 +327,7 @@ class ForumController extends Controller
         // Get all posts
         /** @var Request $request */
         $request                    = $this->get('kernel')->getRequest();
+        $pagination                 = array();
         $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 

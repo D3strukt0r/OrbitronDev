@@ -2,6 +2,8 @@
 
 namespace App\Store\Entity;
 
+use App\Account\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -28,7 +30,7 @@ class Store
     protected $url;
 
     /**
-     * @ORM\Column(type=json_array)
+     * @ORM\Column(type=json)
      */
     protected $keywords;
 
@@ -60,10 +62,14 @@ class Store
     protected $activePaymentMethod;
 
     /**
-     * @ORM\Column(type=string)
-     * @ORM\OneToMany(targetEntity="StorePaymentMethods", mappedBy="store")
+     * @ORM\OneToMany(targetEntity="StorePaymentMethods", mappedBy="store", cascade={"persist", "remove"}, orphanRemoval=TRUE)
      */
-    protected $savedPaymentMethods;
+    protected $paymentMethods;
+
+    public function __construct()
+    {
+        $this->paymentMethods = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -78,6 +84,7 @@ class Store
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 
     public function getUrl()
@@ -88,6 +95,7 @@ class Store
     public function setUrl($url)
     {
         $this->url = $url;
+        return $this;
     }
 
     public function getKeywords()
@@ -98,6 +106,7 @@ class Store
     public function setKeywords($keywords)
     {
         $this->keywords = $keywords;
+        return $this;
     }
 
     public function getDescription()
@@ -108,6 +117,7 @@ class Store
     public function setDescription($description)
     {
         $this->description = $description;
+        return $this;
     }
 
     public function getGoogleAnalyticsId()
@@ -118,6 +128,7 @@ class Store
     public function setGoogleAnalyticsId($googleAnalyticsId)
     {
         $this->googleAnalyticsId = $googleAnalyticsId;
+        return $this;
     }
 
     public function getGoogleWebDeveloper()
@@ -128,6 +139,7 @@ class Store
     public function setGoogleWebDeveloper($googleWebDeveloper)
     {
         $this->googleWebDeveloper = $googleWebDeveloper;
+        return $this;
     }
 
     public function getOwner()
@@ -135,9 +147,10 @@ class Store
         return $this->owner;
     }
 
-    public function setOwner($owner)
+    public function setOwner(User $owner)
     {
         $this->owner = $owner;
+        return $this;
     }
 
     public function getActivePaymentMethod()
@@ -148,15 +161,27 @@ class Store
     public function setActivePaymentMethod($activePaymentMethod)
     {
         $this->activePaymentMethod = $activePaymentMethod;
+        return $this;
     }
 
-    public function getSavedPaymentMethods()
+    public function getPaymentMethods()
     {
-        return $this->savedPaymentMethods;
+        return $this->paymentMethods->toArray();
     }
 
-    public function setSavedPaymentMethods($savedPaymentMethods)
+    public function addPaymentMethod(StorePaymentMethods $paymentMethod)
     {
-        $this->savedPaymentMethods = $savedPaymentMethods;
+        $this->paymentMethods->add($paymentMethod);
+        $paymentMethod->setUser($this);
+        return $this;
+    }
+
+    public function removePaymentMethod(StorePaymentMethods $paymentMethod)
+    {
+        if ($this->paymentMethods->contains($paymentMethod)) {
+            $this->paymentMethods->removeElement($paymentMethod);
+            $paymentMethod->setUser(null);
+        }
+        return $this;
     }
 }

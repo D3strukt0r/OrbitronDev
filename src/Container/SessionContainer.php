@@ -22,7 +22,7 @@ class SessionContainer
      *
      * @param \Kernel $kernel
      */
-    function __construct($kernel)
+    public function __construct($kernel)
     {
         $sessionHandler = new NativeFileSessionHandler(realpath('/../var/sessions'));
         $kernel->set('session.handler', $sessionHandler);

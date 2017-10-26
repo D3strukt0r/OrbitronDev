@@ -44,10 +44,7 @@ class Kernel
             }
 
             Debug::enable();
-            //ini_set('display_errors', '1');
             //ini_set('display_startup_errors', '1');
-            //ini_set('error_reporting', E_ALL);
-            //error_reporting(E_ALL);
             //set_exception_handler('\\Kernel::exception');
         } elseif ($this->environment == 'production' || $this->environment == 'prod') {
             error_reporting(0);
@@ -97,7 +94,6 @@ class Kernel
             if (is_object($response) && $response instanceof Response) {
                 $response->prepare($this->getRequest());
                 $response->send();
-                //echo $response->getContent();
             } elseif (is_string($response)) {
                 $responseObj = new Response();
                 $responseObj->setContent($response);
@@ -248,15 +244,6 @@ class Kernel
         // Symfony Translator
         new TranslatingContainer($this);
         return;
-
-        // Translator by Manuele Vaccari
-        echo '';
-        $default_cookie = array(
-            'path'   => '/',
-            'domain' => 'orbitrondev.org',
-        );
-        \App\Template\Language::setupCookie($default_cookie);
-        // No translating service created by myself
     }
 
     public function getRootDir()
@@ -288,7 +275,7 @@ class Kernel
     }
 
     /**
-     * @return null|Request
+     * @return Request
      */
     public function getRequest()
     {

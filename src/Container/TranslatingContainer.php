@@ -32,7 +32,7 @@ class TranslatingContainer
      *
      * @param \Kernel $kernel
      */
-    function __construct($kernel)
+    public function __construct($kernel)
     {
         $this->kernel = $kernel;
 
@@ -66,7 +66,7 @@ class TranslatingContainer
         $kernel->set('translator', $translator);
     }
 
-    function initLocaleListener()
+    public function initLocaleListener()
     {
         $request = $this->kernel->getRequest();
         if (!$request->hasPreviousSession()) {

@@ -4,16 +4,13 @@
 
 {% block stylesheets_implemeting_plugins %}
     {{ parent() }}
-    <link rel="stylesheet"
-          href="{{ asset('assets/plugins/cube-portfolio/cubeportfolio/css/cubeportfolio.min.css') }}" />
-    <link rel="stylesheet"
-          href="{{ asset('assets/plugins/cube-portfolio/cubeportfolio/custom/custom-cubeportfolio.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/cube-portfolio/cubeportfolio/css/cubeportfolio.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/cube-portfolio/cubeportfolio/custom/custom-cubeportfolio.css') }}" />
 {% endblock %}
 
 {% block javascripts_implementing_plugins %}
     {{ parent() }}
-    <script type="text/javascript"
-            src="{{ asset('assets/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/cube-portfolio/cubeportfolio/js/jquery.cubeportfolio.min.js') }}"></script>
 {% endblock %}
 
 {% block javascripts_page_level %}
@@ -23,7 +20,7 @@
 
 {% block breadcrumb %}
     <!--=== Breadcrumbs v3 ===-->
-    <div class="breadcrumbs-v3 img-v1">
+    <div class="breadcrumbs-v3 img-v1" style="background: url({{ asset('assets/img/projects/header.jpg') }}) no-repeat center center; background-size: cover;">
         <div class="container text-center">
             <p>{{ 'All our'|trans }}</p>
             <h1>{{ 'Projects'|trans }}</h1>
@@ -35,15 +32,15 @@
 {% block header %}{% endblock %}
 
 {% block body %}
-    <!--=== Cube-Portfdlio ===-->
+    {#<!--=== Cube-Portfdlio ===-->
     <div class="cube-portfolio container">
-        {#<div class="content-xs">
+        #}{#<div class="content-xs">
             <div id="filters-container" class="cbp-l-filters-text content-xs">
                 <div data-filter="*" class="cbp-filter-item-active cbp-filter-item"> All </div> |
                 <div data-filter=".web-service" class="cbp-filter-item"> Web Service </div> |
                 <div data-filter=".software" class="cbp-filter-item"> Software </div>
             </div><!--/end Filters Container-->
-        </div>#}
+        </div>#}{#
         <div class="content">
             <div class="heading heading-v1 margin-bottom-10">
                 <h2>Main Projects</h2>
@@ -122,7 +119,7 @@
             </div>
         </div><!--/end Grid Container-->
     </div>
-    <!--=== End Cube-Portfdlio ===-->
+    <!--=== End Cube-Portfdlio ===-->#}
 
     <div class="container content">
         <div class="heading heading-v1 margin-bottom-10">

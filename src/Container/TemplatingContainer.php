@@ -39,7 +39,7 @@ class TemplatingContainer
      * @param \Kernel $kernel
      * @param bool    $cache
      */
-    function __construct($kernel, $cache = false)
+    public function __construct($kernel, $cache = false)
     {
         ///////// Form extension //////
         // the path to TwigBridge library so Twig can locate the
@@ -82,7 +82,7 @@ class TemplatingContainer
         $kernel->set('twig', $this->twig);
     }
 
-    function yamlExtension()
+    public function yamlExtension()
     {
         $this->twig->addExtension(new YamlExtension());
     }
@@ -90,7 +90,7 @@ class TemplatingContainer
     /**
      * @param \Kernel $kernel
      */
-    function translationExtension($kernel)
+    public function translationExtension($kernel)
     {
         /** \Symfony\Component\Translation\Translator $translator */
         $translator = $kernel->get('translator');
@@ -100,7 +100,7 @@ class TemplatingContainer
     /**
      * @param \Kernel $kernel
      */
-    function formExtension($kernel)
+    public function formExtension($kernel)
     {
         // CSRF
         $session = $kernel->get('session');
@@ -135,7 +135,7 @@ class TemplatingContainer
         $kernel->set('form.factory', $formFactory);
     }
 
-    function assetExtension()
+    public function assetExtension()
     {
         $requestStack = new RequestStack();
         $assetContext = new RequestStackContext($requestStack);
@@ -146,7 +146,7 @@ class TemplatingContainer
     /**
      * @param \Kernel $kernel
      */
-    function routingExtension($kernel)
+    public function routingExtension($kernel)
     {
         $generator = new UrlGenerator($kernel->get('routing.routes'), $kernel->get('routing.context'));
         $this->twig->addExtension(new RoutingExtension($generator));

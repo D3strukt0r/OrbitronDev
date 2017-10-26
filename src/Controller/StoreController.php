@@ -329,8 +329,6 @@ class StoreController extends Controller
 
         $storeId      = Store::url2Id($this->parameters['store']);
         $store        = new Store($storeId);
-        $userLanguage = 'en'; // TODO: Make this editable by the user
-        $userCurrency = 'dollar';  // TODO: Make this editable by the user
 
         if (LOGGED_IN) {
             $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
@@ -426,6 +424,7 @@ class StoreController extends Controller
             \Braintree_Configuration::privateKey($store->getVar('braintree_production_private_key'));
         }
 
+        $payment = array();
         $payment['client_token'] = \Braintree_ClientToken::generate();
 
         /** @var Request $request */
@@ -434,7 +433,7 @@ class StoreController extends Controller
         if ($checkoutForm->isSubmitted() && $checkoutForm->isValid()) {
             $formData = $checkoutForm->getData();
 
-            $nonceFromTheClient = $_POST["payment_method_nonce"];
+            $nonceFromTheClient = $request->request->get('payment_method_nonce');
 
             $productUnavailable = array();
             $newProductsStock = array();
@@ -485,7 +484,7 @@ class StoreController extends Controller
                     $mailSent = $mailer->send($message);
 
                     if($mailSent) {
-                        $formData['delivery_type'] = @$_POST['shipping']; // TODO: Integrate this into the form
+                        $formData['delivery_type'] = @$request->request->get('shipping'); // TODO: Integrate this into the form
                         $rawCart->makeOrder($store->getVar('id'), $formData);
                         $rawCart->clearCart();
                         $cart = $rawCart->getCart($store->getVar('id'), true, true);

@@ -2,6 +2,7 @@
 
 namespace App\Account\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -13,7 +14,7 @@ class User
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @ORM\Column(type=integer, name="user_id")
      */
     protected $id;
 
@@ -35,7 +36,7 @@ class User
     /**
      * @ORM\Column(type=boolean)
      */
-    protected $emailVerified;
+    protected $emailVerified = false;
 
     /**
      * @ORM\Column(type=datetime)
@@ -60,12 +61,12 @@ class User
     /**
      * @ORM\Column(type=boolean)
      */
-    protected $developerStatus;
+    protected $developerStatus = false;
 
     /**
      * @ORM\Column(type=integer)
      */
-    protected $credits;
+    protected $credits = 0;
 
     /**
      * @ORM\Column(type=string)
@@ -73,8 +74,7 @@ class User
     protected $preferredPaymentMethod;
 
     /**
-     * @ORM\Column(type=string)
-     * @ORM\OneToMany(targetEntity="UserPaymentMethods", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="UserPaymentMethods", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=TRUE)
      */
     protected $paymentMethods;
 
@@ -90,6 +90,11 @@ class User
      */
     protected $subscription;
 
+    public function __construct()
+    {
+        $this->paymentMethods = new ArrayCollection();
+    }
+
     public function getId()
     {
         return $this->id;
@@ -103,6 +108,7 @@ class User
     public function setUsername($username)
     {
         $this->username = $username;
+        return $this;
     }
 
     public function getPassword()
@@ -113,6 +119,7 @@ class User
     public function setPassword($password)
     {
         $this->password = $password;
+        return $this;
     }
 
     public function getEmail()
@@ -123,6 +130,7 @@ class User
     public function setEmail($email)
     {
         $this->email = $email;
+        return $this;
     }
 
     public function getEmailVerified()
@@ -133,6 +141,7 @@ class User
     public function setEmailVerified($emailVerified)
     {
         $this->emailVerified = $emailVerified;
+        return $this;
     }
 
     public function getCreatedOn()
@@ -140,9 +149,10 @@ class User
         return $this->createdOn;
     }
 
-    public function setCreatedOn($createdOn)
+    public function setCreatedOn(\DateTime $createdOn)
     {
         $this->createdOn = $createdOn;
+        return $this;
     }
 
     public function getCreatedIp()
@@ -153,6 +163,7 @@ class User
     public function setCreatedIp($createdIp)
     {
         $this->createdIp = $createdIp;
+        return $this;
     }
 
     public function getLastOnlineAt()
@@ -160,9 +171,10 @@ class User
         return $this->lastOnlineAt;
     }
 
-    public function setLastOnlineAt($lastOnlineAt)
+    public function setLastOnlineAt(\DateTime $lastOnlineAt)
     {
         $this->lastOnlineAt = $lastOnlineAt;
+        return $this;
     }
 
     public function getLastIp()
@@ -173,6 +185,7 @@ class User
     public function setLastIp($lastIp)
     {
         $this->lastIp = $lastIp;
+        return $this;
     }
 
     public function getDeveloperStatus()
@@ -183,6 +196,7 @@ class User
     public function setDeveloperStatus($developerStatus)
     {
         $this->developerStatus = $developerStatus;
+        return $this;
     }
 
     public function getCredits()
@@ -193,6 +207,7 @@ class User
     public function setCredits($credits)
     {
         $this->credits = $credits;
+        return $this;
     }
 
     public function getPreferredPaymentMethod()
@@ -203,16 +218,28 @@ class User
     public function setPreferredPaymentMethod($preferredPaymentMethod)
     {
         $this->preferredPaymentMethod = $preferredPaymentMethod;
+        return $this;
     }
 
     public function getPaymentMethods()
     {
-        return $this->paymentMethods;
+        return $this->paymentMethods->toArray();
     }
 
-    public function setPaymentMethods($paymentMethods)
+    public function addPaymentMethod(UserPaymentMethods $paymentMethod)
     {
-        $this->paymentMethods = $paymentMethods;
+        $this->paymentMethods->add($paymentMethod);
+        $paymentMethod->setUser($this);
+        return $this;
+    }
+
+    public function removePaymentMethod(UserPaymentMethods $paymentMethod)
+    {
+        if ($this->paymentMethods->contains($paymentMethod)) {
+            $this->paymentMethods->removeElement($paymentMethod);
+            $paymentMethod->setUser(null);
+        }
+        return $this;
     }
 
     public function getProfile()
@@ -220,8 +247,20 @@ class User
         return $this->profile;
     }
 
-    public function setProfile($profile)
+    public function setProfile(UserProfiles $profile)
     {
         $this->profile = $profile;
+        return $this;
+    }
+
+    public function getSubscription()
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(UserSubscription $subscription)
+    {
+        $this->subscription = $subscription;
+        return $this;
     }
 }

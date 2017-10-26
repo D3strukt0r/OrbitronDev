@@ -15,7 +15,7 @@ class SwiftMailerContainer
      *
      * @throws Exception
      */
-    function __construct($kernel)
+    public function __construct($kernel)
     {
         $config = $kernel->get('config');
 

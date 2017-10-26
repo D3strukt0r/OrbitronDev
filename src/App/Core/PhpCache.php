@@ -50,7 +50,7 @@ class PhpCache
      * @param $cacheTime
      *
      */
-    function __construct($key, $cacheTime)
+    public function __construct($key, $cacheTime)
     {
         $this->file = $this->cachePath . '/' . md5($key) . '.txt';
         $this->fileLock = $this->file . '.lock';
@@ -60,7 +60,7 @@ class PhpCache
     /**
      * @return bool
      */
-    function check()
+    public function check()
     {
         if (file_exists($this->fileLock)) {
             return true;
@@ -71,7 +71,7 @@ class PhpCache
     /**
      * @return bool
      */
-    function exists()
+    public function exists()
     {
         return (file_exists($this->file) || file_exists($this->fileLock));
     }
@@ -82,7 +82,7 @@ class PhpCache
      * @return bool
      *
      */
-    function set($content)
+    public function set($content)
     {
         if (!file_exists($this->fileLock)) {
             if (file_exists($this->file)) {
@@ -102,7 +102,7 @@ class PhpCache
     /**
      * @return mixed
      */
-    function get()
+    public function get()
     {
         if (file_exists($this->fileLock)) {
             return unserialize(file_get_contents($this->fileLock));
@@ -114,7 +114,7 @@ class PhpCache
     /**
      *
      */
-    function reValidate()
+    public function reValidate()
     {
         touch($this->file);
     }

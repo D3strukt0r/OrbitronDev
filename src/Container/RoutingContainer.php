@@ -17,7 +17,7 @@ class RoutingContainer
      *
      * @param \Kernel $kernel
      */
-    function __construct($kernel)
+    public function __construct($kernel)
     {
         // look inside *this* directory
         $configLocations = array(

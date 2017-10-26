@@ -20,12 +20,12 @@ class Oauth2Clients
     /**
      * @ORM\Column(type=string)
      */
-    protected $name;
+    protected $name = null;
 
     /**
      * @ORM\Column(type=string)
      */
-    protected $secret;
+    protected $secret = null;
 
     /**
      * @ORM\Column(type=string)
@@ -35,18 +35,18 @@ class Oauth2Clients
     /**
      * @ORM\Column(type=string)
      */
-    protected $grantTypes;
+    protected $grantTypes = null;
 
     /**
      * @ORM\Column(type=string)
      */
-    protected $scope;
+    protected $scope = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    protected $user;
+    protected $user = null;
 
     public function getId()
     {
@@ -56,6 +56,7 @@ class Oauth2Clients
     public function setId($id)
     {
         $this->id = $id;
+        return $this;
     }
 
     public function getName()
@@ -66,6 +67,7 @@ class Oauth2Clients
     public function setName($name)
     {
         $this->name = $name;
+        return $this;
     }
 
     public function getSecret()
@@ -76,6 +78,7 @@ class Oauth2Clients
     public function setSecret($secret)
     {
         $this->secret = $secret;
+        return $this;
     }
 
     public function getRedirectUri()
@@ -86,6 +89,7 @@ class Oauth2Clients
     public function setRedirectUri($redirectUri)
     {
         $this->redirectUri = $redirectUri;
+        return $this;
     }
 
     public function getGrantTypes()
@@ -96,6 +100,7 @@ class Oauth2Clients
     public function setGrantTypes($grantTypes)
     {
         $this->grantTypes = $grantTypes;
+        return $this;
     }
 
     public function getScope()
@@ -106,6 +111,7 @@ class Oauth2Clients
     public function setScope($scope)
     {
         $this->scope = $scope;
+        return $this;
     }
 
     public function getUser()
@@ -113,8 +119,9 @@ class Oauth2Clients
         return $this->user;
     }
 
-    public function setUser($user)
+    public function setUser(User $user)
     {
         $this->user = $user;
+        return $this;
     }
 }
