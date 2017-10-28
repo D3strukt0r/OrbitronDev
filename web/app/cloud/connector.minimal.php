@@ -5,10 +5,9 @@ error_reporting(E_ALL); // Set E_ALL for debuging
 // load composer autoload before load elFinder autoload If you need composer
 require './../../../vendor/autoload.php';
 
-define('APPLICATION_ENV', 'dev'); // Use: 'dev' or 'prod'
 define('DEV_ONLY_INTERNAL', false);
 
-$kernel = new Kernel(APPLICATION_ENV, false);
+$kernel = new Kernel(Kernel::ENVIRONMENT_DEVELOPMENT, false);
 \App\Account\Account::updateSession();
 
 if (!LOGGED_IN) {

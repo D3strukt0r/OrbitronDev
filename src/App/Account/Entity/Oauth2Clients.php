@@ -2,49 +2,47 @@
 
 namespace App\Account\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity
- * @ORM\Table(name=oauth_clients)
+ * @Entity
+ * @Table(name="oauth_clients")
  */
 class Oauth2Clients
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $name = null;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $secret = null;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $redirectUri;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $grantTypes = null;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $scope = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="User")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id")
      */
     protected $user = null;
 

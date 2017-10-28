@@ -2,49 +2,47 @@
 
 namespace App\Account\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity
- * @ORM\Table(name=user_addresses)
+ * @Entity
+ * @Table(name="user_addresses")
  */
 class UserAddress
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer", name="user_id")
      */
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="UserProfiles", inversedBy="addresses")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=FALSE)
+     * @ManyToOne(targetEntity="UserProfiles", inversedBy="addresses")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
      */
     protected $userProfile;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $street;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $houseNumber;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $zipCode;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $city;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $country;
 

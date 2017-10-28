@@ -4,65 +4,64 @@ namespace App\Store\Entity;
 
 use App\Account\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="stores")
+ * @Entity
+ * @Table(name="stores")
  */
 class Store
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $name;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $url;
 
     /**
-     * @ORM\Column(type=json)
+     * @Column(type="json_array")
      */
     protected $keywords;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $description;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $googleAnalyticsId;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $googleWebDeveloper;
 
     /**
-     * @ORM\Column(type=string)
-     * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+     * @Column(type="string")
+     * @ManyToOne(targetEntity="User")
+     * @JoinColumn(name="owner_id", referencedColumnName="id")
      */
     protected $owner;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $activePaymentMethod;
 
     /**
-     * @ORM\OneToMany(targetEntity="StorePaymentMethods", mappedBy="store", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @OneToMany(targetEntity="StorePaymentMethods", mappedBy="store", cascade={"persist", "remove"}, orphanRemoval=TRUE)
      */
     protected $paymentMethods;
 

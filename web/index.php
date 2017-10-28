@@ -35,7 +35,6 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . parse_url($_SERVER['RE
 
 define('EXEC_START', microtime(true));
 define('MAINTENANCE', false);
-define('APPLICATION_ENV', 'dev'); // Use: 'dev' or 'prod'
 define('DEV_ONLY_INTERNAL', false);
 
 if (MAINTENANCE) {
@@ -45,4 +44,4 @@ if (MAINTENANCE) {
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
 
-$kernel = new Kernel(APPLICATION_ENV);
+$kernel = new Kernel(Kernel::ENVIRONMENT_DEVELOPMENT);

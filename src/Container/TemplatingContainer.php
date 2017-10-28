@@ -62,7 +62,7 @@ class TemplatingContainer
         $this->twig = new Twig_Environment($loader, $twigVariables);
 
         $globalVariable = new AppVariable();
-        $globalVariable->setEnvironment(APPLICATION_ENV);
+        $globalVariable->setEnvironment($kernel->environment);
         $globalVariable->setDebug(true);
         $requestStack = new RequestStack();
         $requestStack->push($kernel->getRequest());

@@ -3,64 +3,63 @@
 namespace App\Account\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name=user_profiles)
+ * @Entity
+ * @Table(name="user_profiles")
  */
 class UserProfiles
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer", name="user_id")
      */
     protected $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="User", inversedBy="profile")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=FALSE)
+     * @OneToOne(targetEntity="User", inversedBy="profile")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
      */
     protected $user;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $name = null;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $surname = null;
 
     /**
-     * @ORM\Column(type=smallint)
+     * @Column(type="smallint")
      */
     protected $gender = null;
 
     /**
-     * @ORM\Column(type=date)
+     * @Column(type="date")
      */
     protected $birthday = null;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $website = null;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $picture = null;
 
     /**
-     * @ORM\Column(type=integer)
+     * @Column(type="integer")
      */
     protected $activeAddress = null;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserAddress", mappedBy="userProfile", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @OneToMany(targetEntity="UserAddress", mappedBy="userProfile", cascade={"persist", "remove"}, orphanRemoval=TRUE)
      */
     protected $addresses;
 

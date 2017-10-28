@@ -33,14 +33,13 @@ class Server
         if (!is_null($params) && count($params) !== 0) {
             if (is_array($params)) {
                 // get current query (if $get_current is false it wont get any data - just a clear string)
+                $current_query = array();
                 if ($get_current && count($new_query) > 0) {
                     $query_vars = explode('&', $new_query);
                     foreach ($query_vars as $string) {
                         $var_string = explode('=', $string);
                         $current_query[$var_string[0]] = $var_string[1]; // "page=example" now $current_query["page"] = "example"
                     }
-                } else {
-                    $current_query = array();
                 }
 
                 // insert new query
@@ -61,7 +60,7 @@ class Server
         //TODO: use options
 
         // build url
-        $new_uri = $new_path . '?' . $new_query;
+        $new_uri = $new_scheme . $new_host . ':' . $new_port . $new_path . '?' . $new_query . '#' . $new_fragment;
         return $new_uri;
     }
 }

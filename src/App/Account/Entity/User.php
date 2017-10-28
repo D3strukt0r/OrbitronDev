@@ -3,90 +3,89 @@
 namespace App\Account\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name=users)
+ * @Entity
+ * @Table(name="users")
  */
 class User
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer, name="user_id")
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer", name="user_id")
      */
     protected $id;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $username;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $password;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $email;
 
     /**
-     * @ORM\Column(type=boolean)
+     * @Column(type="boolean")
      */
     protected $emailVerified = false;
 
     /**
-     * @ORM\Column(type=datetime)
+     * @Column(type="datetime")
      */
     protected $createdOn;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $createdIp;
 
     /**
-     * @ORM\Column(type=datetime)
+     * @Column(type="datetime")
      */
     protected $lastOnlineAt;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $lastIp;
 
     /**
-     * @ORM\Column(type=boolean)
+     * @Column(type="boolean")
      */
     protected $developerStatus = false;
 
     /**
-     * @ORM\Column(type=integer)
+     * @Column(type="integer")
      */
     protected $credits = 0;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $preferredPaymentMethod;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserPaymentMethods", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @OneToMany(targetEntity="UserPaymentMethods", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=TRUE)
      */
     protected $paymentMethods;
 
     /**
-     * @ORM\OneToOne(targetEntity="UserProfiles")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @OneToOne(targetEntity="UserProfiles", mappedBy="user")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id")
      */
     protected $profile;
 
     /**
-     * @ORM\OneToOne(targetEntity="UserSubscription")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @OneToOne(targetEntity="UserSubscription", mappedBy="user")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id")
      */
     protected $subscription;
 

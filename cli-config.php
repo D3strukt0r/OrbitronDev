@@ -1,9 +1,8 @@
 <?php
 
-$loader = require __DIR__ . '/vendor/autoload.php';
+$loader = require __DIR__.'/vendor/autoload.php';
 
-define('APPLICATION_ENV', 'dev'); // Use: 'dev' or 'prod'
-$kernel = new Kernel(APPLICATION_ENV);
+$kernel = new Kernel(Kernel::ENVIRONMENT_DEVELOPMENT);
 
 use Container\DoctrineContainer;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;

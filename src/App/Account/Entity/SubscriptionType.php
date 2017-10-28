@@ -2,39 +2,37 @@
 
 namespace App\Account\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity
- * @ORM\Table(name=user_subscriptions)
+ * @Entity
+ * @Table(name="user_subscription_type")
  */
 class SubscriptionType
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="UserSubscription", inversedBy="subscription")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=FALSE)
+     * @ManyToOne(targetEntity="UserSubscription", inversedBy="subscription")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
      */
     protected $userSubscription;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $title;
 
     /**
-     * @ORM\Column(type=float)
+     * @Column(type="decimal")
      */
     protected $price;
 
     /**
-     * @ORM\Column(type=json)
+     * @Column(type="json_array")
      */
     protected $permissions;
 

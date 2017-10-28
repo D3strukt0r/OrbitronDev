@@ -152,8 +152,7 @@ class Account
         ));
         $data = $validate->fetchAll(PDO::FETCH_ASSOC);
         $rows = $validate->rowCount();
-        if ($rows > 0 && password_verify($password, $data[0]['password'])) {
-        } else {
+        if ($rows > 0 && !password_verify($password, $data[0]['password'])) {
             $rows = 0;
         }
         return $rows;
@@ -168,7 +167,7 @@ class Account
     public static function validateLogin($user_mail, $password)
     {
         if ($user = self::validateUser($user_mail, $password)) {
-            return array(1, 0, 1);
+            return array(1, 0, $user);
         } elseif ($emails = self::validateUserByEmail($user_mail, $password)) {
             return array(1, 1, $emails);
         } else {

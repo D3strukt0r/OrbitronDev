@@ -4,86 +4,85 @@ namespace App\Store\Entity;
 
 use App\Account\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="store_products")
+ * @Entity
+ * @Table(name="store_products")
  */
 class Product
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
-     * @ORM\Column(type=string)
-     * @ORM\ManyToOne(targetEntity="Store")
-     * @ORM\JoinColumn(name="store_id", referencedColumnName="id")
+     * @Column(type="string")
+     * @ManyToOne(targetEntity="Store")
+     * @JoinColumn(name="store_id", referencedColumnName="id")
      */
     protected $store;
 
     /**
-     * @ORM\Column(type=string)
-     * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+     * @Column(type="string")
+     * @ManyToOne(targetEntity="User")
+     * @JoinColumn(name="owner_id", referencedColumnName="id")
      */
     protected $author;
 
     /**
-     * @ORM\Column(type=json)
+     * @Column(type="json_array")
      */
     protected $name;
 
     /**
-     * @ORM\Column(type=json)
+     * @Column(type="json_array")
      */
     protected $description;
     /**
-     * @ORM\Column(type=json)
+     * @Column(type="json_array")
      */
     protected $price;
 
     /**
-     * @ORM\OneToMany(targetEntity="ProductImages", mappedBy="product", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @OneToMany(targetEntity="ProductImages", mappedBy="product", cascade={"persist", "remove"}, orphanRemoval=TRUE)
      */
     protected $images;
 
     /**
-     * @ORM\Column(type=boolean)
+     * @Column(type="boolean")
      */
     protected $downloadable;
 
     /**
-     * @ORM\OneToMany(targetEntity="ProductFiles", mappedBy="product", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @OneToMany(targetEntity="ProductFiles", mappedBy="product", cascade={"persist", "remove"}, orphanRemoval=TRUE)
      */
     protected $files;
 
     /**
-     * @ORM\Column(type=integer)
+     * @Column(type="integer")
      */
     protected $stock;
 
     /**
-     * @ORM\Column(type=datetime)
+     * @Column(type="datetime")
      */
     protected $lastEdited;
 
     /**
-     * @ORM\Column(type=integer)
+     * @Column(type="integer")
      */
     protected $ratingCount;
 
     /**
-     * @ORM\Column(type=float)
+     * @Column(type="decimal")
      */
     protected $ratingAverage;
 
     /**
-     * @ORM\OneToMany(targetEntity="ProductRating", mappedBy="product", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @OneToMany(targetEntity="ProductRating", mappedBy="product", cascade={"persist", "remove"}, orphanRemoval=TRUE)
      */
     protected $ratings;
 

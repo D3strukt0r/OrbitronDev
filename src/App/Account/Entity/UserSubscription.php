@@ -2,40 +2,38 @@
 
 namespace App\Account\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity
- * @ORM\Table(name=user_subscriptions)
+ * @Entity
+ * @Table(name="user_subscriptions")
  */
 class UserSubscription
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer", name="user_id")
      */
     protected $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="User", inversedBy="subscription")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=FALSE)
+     * @OneToOne(targetEntity="User", inversedBy="subscription")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
      */
     protected $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="SubscriptionType")
-     * @ORM\JoinColumn(name="subscription_id", referencedColumnName="id")
+     * @OneToMany(targetEntity="SubscriptionType", mappedBy="userSubscription")
+     * @JoinColumn(name="subscription_id", referencedColumnName="id")
      */
     protected $subscription;
 
     /**
-     * @ORM\Column(type=datetime)
+     * @Column(type="datetime")
      */
     protected $activatedAt;
 
     /**
-     * @ORM\Column(type=datetime)
+     * @Column(type="datetime")
      */
     protected $expiresAt;
 

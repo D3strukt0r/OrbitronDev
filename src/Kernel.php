@@ -18,6 +18,9 @@ use Symfony\Component\Yaml\Yaml;
 
 class Kernel
 {
+    const ENVIRONMENT_DEVELOPMENT = 'dev';
+    const ENVIRONMENT_PRODUCTION = 'prod';
+
     public $components = array();
     public $environment = null;
 

@@ -2,34 +2,32 @@
 
 namespace App\Store\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
- * @ORM\Entity
- * @ORM\Table(name="store_payment_methods")
+ * @Entity
+ * @Table(name="store_payment_methods")
  */
 class StorePaymentMethods
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type=integer)
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Store", inversedBy="paymentMethods")
-     * @ORM\JoinColumn(name="store_id", referencedColumnName="id", nullable=FALSE)
+     * @ManyToOne(targetEntity="Store", inversedBy="paymentMethods")
+     * @JoinColumn(name="store_id", referencedColumnName="id", nullable=FALSE)
      */
     protected $store;
 
     /**
-     * @ORM\Column(type=string)
+     * @Column(type="string")
      */
     protected $type;
 
     /**
-     * @ORM\Column(type=json)
+     * @Column(type="json_array")
      */
     protected $data;
 
