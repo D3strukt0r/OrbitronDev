@@ -2,6 +2,14 @@
 
 namespace App\Account\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
+
 /**
  * @Entity
  * @Table(name="user_payment_methods")
@@ -17,17 +25,17 @@ class UserPaymentMethods
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="paymentMethods")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
      */
     protected $user;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="payment_type")
      */
     protected $type;
 
     /**
-     * @Column(type="json_array")
+     * @Column(type="json_array", name="data")
      */
     protected $data;
 

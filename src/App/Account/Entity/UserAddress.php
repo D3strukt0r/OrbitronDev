@@ -2,6 +2,14 @@
 
 namespace App\Account\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
+
 /**
  * @Entity
  * @Table(name="user_addresses")
@@ -17,32 +25,32 @@ class UserAddress
 
     /**
      * @ManyToOne(targetEntity="UserProfiles", inversedBy="addresses")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
      */
     protected $userProfile;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="street", nullable=true)
      */
     protected $street;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="house_number", nullable=true)
      */
     protected $houseNumber;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="zip_code", nullable=true)
      */
     protected $zipCode;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="city", nullable=true)
      */
     protected $city;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="country", nullable=true)
      */
     protected $country;
 

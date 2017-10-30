@@ -12,6 +12,8 @@ class Account
     public static $srcDir;
     public static $twigDir;
 
+    const LOGIN_COOKIE = 'account';
+
     public static function buildPaths()
     {
         self::$publicDir = Kernel::getIntent()->getRootDir() . '/web/app/account';

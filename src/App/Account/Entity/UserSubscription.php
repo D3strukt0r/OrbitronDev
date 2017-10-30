@@ -2,6 +2,15 @@
 
 namespace App\Account\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
+
 /**
  * @Entity
  * @Table(name="user_subscriptions")
@@ -17,7 +26,7 @@ class UserSubscription
 
     /**
      * @OneToOne(targetEntity="User", inversedBy="subscription")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
      */
     protected $user;
 
@@ -28,12 +37,12 @@ class UserSubscription
     protected $subscription;
 
     /**
-     * @Column(type="datetime")
+     * @Column(type="datetime", name="activated_at")
      */
     protected $activatedAt;
 
     /**
-     * @Column(type="datetime")
+     * @Column(type="datetime", name="expires_at")
      */
     protected $expiresAt;
 

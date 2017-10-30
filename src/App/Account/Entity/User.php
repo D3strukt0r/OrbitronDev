@@ -3,6 +3,14 @@
 namespace App\Account\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -18,57 +26,57 @@ class User
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="username")
      */
     protected $username;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="password")
      */
     protected $password;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="email")
      */
     protected $email;
 
     /**
-     * @Column(type="boolean")
+     * @Column(type="boolean", name="email_verified", options={"default":false})
      */
-    protected $emailVerified = false;
+    protected $emailVerified;
 
     /**
-     * @Column(type="datetime")
+     * @Column(type="datetime", name="created_on")
      */
     protected $createdOn;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="created_ip")
      */
     protected $createdIp;
 
     /**
-     * @Column(type="datetime")
+     * @Column(type="datetime", name="last_online_at")
      */
     protected $lastOnlineAt;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="last_ip")
      */
     protected $lastIp;
 
     /**
-     * @Column(type="boolean")
+     * @Column(type="boolean", name="developer_status", options={"default":false})
      */
-    protected $developerStatus = false;
+    protected $developerStatus;
 
     /**
-     * @Column(type="integer")
+     * @Column(type="integer", name="credits", options={"default":0})
      */
-    protected $credits = 0;
+    protected $credits;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="preferred_payment_method")
      */
     protected $preferredPaymentMethod;
 
@@ -79,13 +87,13 @@ class User
 
     /**
      * @OneToOne(targetEntity="UserProfiles", mappedBy="user")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @JoinColumn(name="profile_id", referencedColumnName="user_id")
      */
     protected $profile;
 
     /**
      * @OneToOne(targetEntity="UserSubscription", mappedBy="user")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @JoinColumn(name="subscription_id", referencedColumnName="user_id")
      */
     protected $subscription;
 

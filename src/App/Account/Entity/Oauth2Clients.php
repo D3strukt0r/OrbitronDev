@@ -2,6 +2,14 @@
 
 namespace App\Account\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
+
 /**
  * @Entity
  * @Table(name="oauth_clients")
@@ -11,40 +19,40 @@ class Oauth2Clients
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="integer")
+     * @Column(type="integer", name="client_id")
      */
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="client_name", nullable=true)
      */
-    protected $name = null;
+    protected $name;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="client_secret", nullable=true)
      */
-    protected $secret = null;
+    protected $secret;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="redirect_uri")
      */
     protected $redirectUri;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="grant_types", nullable=true)
      */
-    protected $grantTypes = null;
+    protected $grantTypes;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="scope", nullable=true)
      */
-    protected $scope = null;
+    protected $scope;
 
     /**
      * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=true)
      */
-    protected $user = null;
+    protected $user;
 
     public function getId()
     {

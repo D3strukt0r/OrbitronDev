@@ -2,6 +2,14 @@
 
 namespace App\Account\Entity;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
+
 /**
  * @Entity
  * @Table(name="user_subscription_type")
@@ -22,17 +30,17 @@ class SubscriptionType
     protected $userSubscription;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="title")
      */
     protected $title;
 
     /**
-     * @Column(type="decimal")
+     * @Column(type="decimal", name="price")
      */
     protected $price;
 
     /**
-     * @Column(type="json_array")
+     * @Column(type="json_array", name="permissions")
      */
     protected $permissions;
 

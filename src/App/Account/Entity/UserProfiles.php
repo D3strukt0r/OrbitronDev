@@ -3,6 +3,14 @@
 namespace App\Account\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -19,47 +27,47 @@ class UserProfiles
 
     /**
      * @OneToOne(targetEntity="User", inversedBy="profile")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
+     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
      */
     protected $user;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="name", nullable=true)
      */
-    protected $name = null;
+    protected $name;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="surname", nullable=true)
      */
-    protected $surname = null;
+    protected $surname;
 
     /**
-     * @Column(type="smallint")
+     * @Column(type="smallint", name="gender", nullable=true)
      */
-    protected $gender = null;
+    protected $gender;
 
     /**
-     * @Column(type="date")
+     * @Column(type="date", name="birthday", nullable=true)
      */
-    protected $birthday = null;
+    protected $birthday;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="website", nullable=true)
      */
-    protected $website = null;
+    protected $website;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="picture", nullable=true)
      */
-    protected $picture = null;
+    protected $picture;
 
     /**
-     * @Column(type="integer")
+     * @Column(type="integer", name="active_address", nullable=true)
      */
-    protected $activeAddress = null;
+    protected $activeAddress;
 
     /**
-     * @OneToMany(targetEntity="UserAddress", mappedBy="userProfile", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @OneToMany(targetEntity="UserAddress", mappedBy="userProfile", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $addresses;
 

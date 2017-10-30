@@ -40,7 +40,7 @@ class DoctrineContainer
             'driver'   => 'pdo_mysql',
             'user'     => $config['parameters']['database_user'],
             'password' => $config['parameters']['database_password'],
-            'dbname'   => $config['parameters']['database_name'],
+            'dbname'   => $config['parameters']['database_name_2'],
         );
 
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);

@@ -4,6 +4,14 @@ namespace App\Store\Entity;
 
 use App\Account\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -14,37 +22,37 @@ class Store
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="integer")
+     * @Column(type="integer", name="store_id")
      */
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="name")
      */
     protected $name;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="url")
      */
     protected $url;
 
     /**
-     * @Column(type="json_array")
+     * @Column(type="json_array", name="keywords", nullable=true)
      */
     protected $keywords;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="description", nullable=true)
      */
     protected $description;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="google_analytics_id", nullable=true)
      */
     protected $googleAnalyticsId;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", name="google_web_developer", nullable=true)
      */
     protected $googleWebDeveloper;
 
@@ -56,12 +64,12 @@ class Store
     protected $owner;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", options={"default":0})
      */
     protected $activePaymentMethod;
 
     /**
-     * @OneToMany(targetEntity="StorePaymentMethods", mappedBy="store", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @OneToMany(targetEntity="StorePaymentMethods", mappedBy="store", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $paymentMethods;
 
