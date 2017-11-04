@@ -31,7 +31,7 @@ class UserSubscription
     protected $user;
 
     /**
-     * @OneToMany(targetEntity="SubscriptionType", mappedBy="userSubscription")
+     * @OneToOne(targetEntity="SubscriptionType")
      * @JoinColumn(name="subscription_id", referencedColumnName="id")
      */
     protected $subscription;

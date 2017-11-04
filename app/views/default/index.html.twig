@@ -28,6 +28,15 @@
     ParallaxSlider.initParallaxSlider();
 {% endblock %}
 
+{% block stylesheets_code %}
+    <style type="text/css">
+        .no-padding {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    </style>
+{% endblock %}
+
 {% block header %}
     <!--=== Slider ===-->
     <div class="slider-inner">
@@ -56,6 +65,121 @@
 {% endblock %}
 
 {% block body %}
+    <!--=== Account Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 animated fadeInLeft">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 margin-top-20 animated fadeInRight">
+                    <h3>{{ 'Account'|trans }}</h3>
+                    <p>{{ 'Save all you information in one place. There is no need for 20 different websites.'|trans }}</p>
+                    <a href="{{ path('app_account_register') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create an Account'|trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Account Block -->
+
+    <!--=== Blog Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 margin-top-20 animated fadeInLeft">
+                    <h3>{{ 'Blog'|trans }}</h3>
+                    <p>{{ 'The slim easy-to-use weblog for anyone.' }}</p>
+                    <a href="{{ path('app_blog_new') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create an blog'|trans }}</a>
+                </div>
+                <div class="col-md-6 animated fadeInRight">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Blog Block -->
+
+    <!--=== Cloud Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 animated fadeInLeft">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 margin-top-20 animated fadeInRight">
+                    <h3>{{ 'Cloud'|trans }}</h3>
+                    <p>{{ 'When creating an account you will also get an unlimited large storage.'|trans }}</p>
+                    <a href="{{ path('app_account_register') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create an Account'|trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Cloud Block -->
+
+    <!--=== Forum Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 margin-top-20 animated fadeInLeft">
+                    <h3>{{ 'Forum'|trans }}</h3>
+                    <p>{{ 'The slim easy-to-use forum/board for anyone.' }}</p>
+                    <a href="{{ path('app_forum_new') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create a forum'|trans }}</a>
+                </div>
+                <div class="col-md-6 animated fadeInRight">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Forum Block -->
+
+    <!--=== Cloud Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 animated fadeInLeft">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 margin-top-20 animated fadeInRight">
+                    <h3>{{ 'Store'|trans }}</h3>
+                    <p>{{ 'Sell all your products/services as easily as possible.'|trans }}</p>
+                    <a href="{{ path('app_store_new') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create a store'|trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Cloud Block -->
+{#
     <!--=== Purchase Block ===-->
     <div class="purchase">
         <div class="container">
@@ -65,7 +189,7 @@
                     <p>With only one account you can have your unlimited large cloud, create blogs, forums, online shops, and many others. But we also offer simple tools like calculator.</p>
                 </div>
                 <div class="col-md-3 btn-buy animated fadeInRight">
-                    <a href="{# {{ path('fos_user_registration_register') }} #}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> Create an Account</a>
+                    <a href="{{ path('fos_user_registration_register') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> Create an Account</a>
                 </div>
             </div>
         </div>
@@ -171,7 +295,6 @@
         <!-- Info Blokcs -->
         <div class="row margin-bottom-30">
             <!-- Welcome Block -->
-            {#<div class="col-md-8 md-margin-bottom-40">#}
             <div class="col-md-12 md-margin-bottom-40">
                 <div class="headline"><h2>Welcome To OrbitronDev</h2></div>
                 <div class="row">
@@ -194,7 +317,7 @@
                 </blockquote>
             </div><!--/col-md-8-->
 
-            {#<!-- Latest Shots -->
+            <!-- Latest Shots -->
             <div class="col-md-4">
                 <div class="headline"><h2>Latest Shots</h2></div>
                 <div id="myCarousel" class="carousel slide carousel-v1">
@@ -228,9 +351,9 @@
                         </a>
                     </div>
                 </div>
-            </div><!--/col-md-4-->#}
+            </div><!--/col-md-4-->
         </div>
         <!-- End Info Blokcs -->
     </div><!--/container-->
-    <!-- End Content Part -->
+    <!-- End Content Part -->#}
 {% endblock %}

@@ -41,7 +41,7 @@ class User
     protected $email;
 
     /**
-     * @Column(type="boolean", name="email_verified", options={"default":false})
+     * @Column(type="boolean", name="email_verified", options={"default":0})
      */
     protected $emailVerified;
 
@@ -76,7 +76,7 @@ class User
     protected $credits;
 
     /**
-     * @Column(type="string", name="preferred_payment_method")
+     * @Column(type="string", name="preferred_payment_method", nullable=true)
      */
     protected $preferredPaymentMethod;
 
@@ -86,13 +86,13 @@ class User
     protected $paymentMethods;
 
     /**
-     * @OneToOne(targetEntity="UserProfiles", mappedBy="user")
+     * @OneToOne(targetEntity="UserProfiles", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      * @JoinColumn(name="profile_id", referencedColumnName="user_id")
      */
     protected $profile;
 
     /**
-     * @OneToOne(targetEntity="UserSubscription", mappedBy="user")
+     * @OneToOne(targetEntity="UserSubscription", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      * @JoinColumn(name="subscription_id", referencedColumnName="user_id")
      */
     protected $subscription;

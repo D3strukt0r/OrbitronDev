@@ -290,6 +290,16 @@ class Kernel
     }
 
     /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager()
+    {
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = $this->get('doctrine.entitymanager');
+        return $em;
+    }
+
+    /**
      * @param \Exception $exception
      */
     public static function exception($exception)

@@ -24,12 +24,6 @@ class SubscriptionType
     protected $id;
 
     /**
-     * @ManyToOne(targetEntity="UserSubscription", inversedBy="subscription")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=FALSE)
-     */
-    protected $userSubscription;
-
-    /**
      * @Column(type="string", name="title")
      */
     protected $title;

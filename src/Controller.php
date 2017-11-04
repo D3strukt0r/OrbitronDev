@@ -39,6 +39,16 @@ abstract class Controller
     }
 
     /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager()
+    {
+        /** @var \Doctrine\ORM\EntityManager $em */
+        $em = $this->get('doctrine.entitymanager');
+        return $em;
+    }
+
+    /**
      * Generates a URL from the given parameters.
      *
      * @param string $route         The name of the route
@@ -64,8 +74,6 @@ abstract class Controller
      */
     public function redirect($url, $status = 302)
     {
-        //header('Location: '.$url, true, $status);
-        //return null;
         return new RedirectResponse($url, $status);
     }
 
@@ -230,12 +238,7 @@ abstract class Controller
      */
     public function createFormBuilder($data = null, array $options = array())
     {
-        ///** @var FormFactory $formFactoryBuilder */
-        $formFactoryBuilder = $this->container->get('form.factory');
-
-        $builder = $formFactoryBuilder->createBuilder(FormType::class, $data, $options);
-
-        return $builder;
+        return $this->container->get('form.factory')->createBuilder(FormType::class, $data, $options);
     }
 
     /**
