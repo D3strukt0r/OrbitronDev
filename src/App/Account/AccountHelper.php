@@ -144,7 +144,7 @@ class AccountHelper
         /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
         $session = \Kernel::getIntent()->get('session');
         $session->set(self::$settings['login']['session_email'], $user->getEmail());
-        $session->set(self::$settings['login']['session_password'], $user->getPassword());
+        $session->set(self::$settings['login']['session_password'], $password); // TODO: Password is published FIX THAT
 
         if ($remember) {
             $response->headers->setCookie(new Cookie(
@@ -172,8 +172,13 @@ class AccountHelper
         $session->remove(self::$settings['login']['session_email']);
         $session->remove(self::$settings['login']['session_password']);
 
-        $response->headers->clearCookie(self::$settings['login']['cookie_name']);
-        $response->headers->removeCookie(self::$settings['login']['cookie_name']);
+        setcookie(
+            self::$settings['login']['cookie_name'],
+            "",
+            0,
+            self::$settings['login']['cookie_path'],
+            self::$settings['login']['cookie_domain']
+        );
     }
 
     /**
@@ -258,6 +263,26 @@ class AccountHelper
     }
 
     /**
+     * Checks whether the email is already existing in the database. Returns
+     * true when the email is already existing once in the database.
+     *
+     * @param string $email
+     *
+     * @return bool
+     */
+    public static function emailExists($email)
+    {
+        $em = \Kernel::getIntent()->getEntityManager();
+        $user = $em->getRepository(User::class)->findOneBy(array('email' => $email));
+
+        if (is_null($user)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Checks whether the email corresponds the desired pattern. Returns
      * true when the string matches the pattern.
      *
@@ -308,6 +333,17 @@ class AccountHelper
         if (!is_null($password)) {
             $session->set(self::$settings['login']['session_password'], $password);
         }
+
+        setcookie(
+            self::$settings['login']['cookie_name'],
+            base64_encode(json_encode(array(
+                'email' => $session->get(self::$settings['login']['session_email']),
+                'password' => $session->get(self::$settings['login']['session_password']),
+            ))),
+            strtotime(self::$settings['login']['cookie_expire']),
+            self::$settings['login']['cookie_path'],
+            self::$settings['login']['cookie_domain']
+        );
     }
 
     public static function updateSession()
@@ -334,11 +370,16 @@ class AccountHelper
                     define('USER_ID', $user->getId());
                     define('USER_NAME', $user->getEmail());
                     define('USER_HASH', $user->getPassword());
+
+                    $user
+                        ->setLastOnlineAt(new \DateTime())
+                        ->setLastIp($request->getClientIp());
+                    $em->flush();
                 } else {
-                    self::logout($response);
+                    return null;
                 }
             } else {
-                self::logout($response);
+                return null;
             }
         } else {
             define('LOGGED_IN', false);
@@ -348,5 +389,6 @@ class AccountHelper
             define('USER_SUBSCRIPTION', null);
         }
         define('ACCOUNT_SESSION_UPDATED', true);
+        return true;
     }
 }

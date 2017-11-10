@@ -19,7 +19,7 @@ class UserAddress
     /**
      * @Id
      * @GeneratedValue
-     * @Column(type="integer", name="user_id")
+     * @Column(type="integer", name="id")
      */
     protected $id;
 

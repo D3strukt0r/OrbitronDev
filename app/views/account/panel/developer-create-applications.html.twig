@@ -22,7 +22,7 @@
 </section><!-- /#header -->
 <section id="page">
     <div class="col-md-4">
-        {% if current_user.developer == 1 %}
+        {% if current_user.developerStatus == 1 %}
             {{ form_start(create_app_form, {'attr': {'class': 'sky-form sky-changes-3'}}) }}
                 {{ form_row(create_app_form._token) }}
                 <fieldset>

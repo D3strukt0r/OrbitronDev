@@ -1,7 +1,7 @@
 <?php
 
 use App\Account\AccountAcp;
-use App\Account\UserInfo;
+use App\Account\Entity\User;
 use App\Blog\Blog;
 use App\Forum\Forum;
 use App\Store\Store;
@@ -15,22 +15,22 @@ AccountAcp::addMenu(array(
 ));
 
 /**
- * @param \Twig_Environment $twig
+ * @param \Twig_Environment             $twig
+ * @param \Controller\AccountController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_home($twig)
+function acp_html_home($twig, $controller)
 {
-    $currentUser = new UserInfo(USER_ID);
+    /** @var \App\Account\Entity\User $user */
+    $user = $controller->getEntityManager()->find(User::class, USER_ID);
 
     return $twig->render('account/panel/home.html.twig', array(
-        'current_user'         => $currentUser->aUser,
-        'current_user_profile' => $currentUser->aProfile,
-        'current_user_sub'     => $currentUser->aSubscription,
-        'service_allowed'      => $currentUser->serviceAllowed() ? true : false,
-        'blogs'                => Blog::getOwnerBlogList($currentUser->getFromUser('user_id')),
-        'forums'               => Forum::getOwnerForumList($currentUser->getFromUser('user_id')),
-        'stores'               => Store::getOwnerStoreList($currentUser->getFromUser('user_id')),
+        'current_user'    => $user,
+        'service_allowed' => in_array('web_service', $user->getSubscription()->getSubscription()->getPermissions()) ? true : false,
+        'blogs'           => Blog::getOwnerBlogList($user->getId()),
+        'forums'          => Forum::getOwnerForumList($user->getId()),
+        'stores'          => Store::getOwnerStoreList($user->getId()),
     ));
 }

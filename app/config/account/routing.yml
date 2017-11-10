@@ -1,44 +1,41 @@
 app_account_index:
     path:     /
-    defaults: { _controller: 'AccountController::indexAction' }
+    defaults: { _controller: 'Accountv2Controller::indexAction' }
 
 app_account_login:
     path:     /login
-    defaults: { _controller: 'AccountController::loginAction' }
+    defaults: { _controller: 'Accountv2Controller::loginAction' }
 app_account_register:
     path:     /register
-    defaults: { _controller: 'AccountController::registerAction' }
+    defaults: { _controller: 'Accountv2Controller::registerAction' }
 app_account_forgot:
     path:     /forgot
-    defaults: { _controller: 'AccountController::forgotAction' }
-app_account_reset:
-    path:     /reset-password
-    defaults: { _controller: 'AccountController::forgotAction' }
+    defaults: { _controller: 'Accountv2Controller::forgotAction' }
 app_account_logout:
     path:     /logout
-    defaults: { _controller: 'AccountController::logoutAction' }
+    defaults: { _controller: 'Accountv2Controller::logoutAction' }
 app_account_confirm:
     path:     /confirm-email
-    defaults: { _controller: 'AccountController::confirmAction' }
+    defaults: { _controller: 'Accountv2Controller::confirmAction' }
 
 app_account_user:
     path:     /user/{username}
-    defaults: { _controller: 'AccountController::usersAction' }
+    defaults: { _controller: 'Accountv2Controller::usersAction' }
 
 app_account_panel:
     path:     /p/{page}
-    defaults: { _controller: 'AccountController::panelAction' }
+    defaults: { _controller: 'Accountv2Controller::panelAction' }
 
 app_account_api:
     path:     /api/{function}/{parameters}
-    defaults: { _controller: 'AccountController::apiAction', parameters: '' }
+    defaults: { _controller: 'Accountv2Controller::apiAction', parameters: '' }
 
 app_account_oauth_authorize:
     path:     /oauth/authorize
-    defaults: { _controller: 'AccountController::oauthAuthorizeAction' }
+    defaults: { _controller: 'Accountv2Controller::oauthAuthorizeAction' }
 app_account_oauth_token:
     path:     /oauth/token
-    defaults: { _controller: 'AccountController::oauthTokenAction' }
+    defaults: { _controller: 'Accountv2Controller::oauthTokenAction' }
 app_account_oauth_resource:
     path:     /oauth/resource
-    defaults: { _controller: 'AccountController::oauthResourceAction' }
+    defaults: { _controller: 'Accountv2Controller::oauthResourceAction' }

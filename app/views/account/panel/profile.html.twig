@@ -70,48 +70,18 @@
                 </section>
                 <section>
                     <div class="row">
-                        {{ form_label(edit_profile_form.location_street, null, {'label_attr': {'class': 'label col col-4'}}) }}
+                        <label class="label col col-4">{{ 'Addresses'|trans }}</label>
                         <div class="col col-8">
-                            <div class="row">
-                                <div class="col col-12">
-                                    <label class="input">
-                                        <div id="locationField">
-                                            <input id="autocomplete" placeholder="{{ 'Enter your address (Autocomplete)'|trans }}" onfocus="geolocate()" />
-                                        </div>
-                                    </label>
+                            <a href="{{ path('app_account_panel', {'page': 'add-address'}) }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Add address'|trans }}</a>
+                            <br />
+                            {% for address in current_user.profile.addresses %}
+                                <br />
+                                <div style="padding:10px;border: #337ab7 1px solid;">
+                                    {{ address.street }} {{ address.housenumber }}<br />
+                                    {{ address.zipcode }} {{ address.city }}<br />
+                                    {{ address.country }}
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col col-4">
-                                    <label class="input">
-                                        {{ form_widget(edit_profile_form.location_street) }}
-                                    </label>
-                                </div>
-                                <div class="col col-3">
-                                    <label class="input">
-                                        {{ form_widget(edit_profile_form.location_street_number) }}
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col col-3">
-                                    <label class="input">
-                                        {{ form_widget(edit_profile_form.location_postal_code) }}
-                                    </label>
-                                </div>
-                                <div class="col col-4">
-                                    <label class="input">
-                                        {{ form_widget(edit_profile_form.location_city) }}
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col col-7">
-                                    <label class="input">
-                                        {{ form_widget(edit_profile_form.location_country) }}
-                                    </label>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </section>
@@ -124,18 +94,6 @@
                                 {{ form_widget(edit_profile_form.website) }}
                             </label>
                         </div>
-                    </div>
-                </section>
-                <section>
-                    <div class="row">
-                        {{ form_label(edit_profile_form.usage, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                        <div class="col col-4">
-                            <label class="select">
-                                {{ form_widget(edit_profile_form.usage) }}
-                                <i></i>
-                            </label>
-                        </div>
-                        <div class="col col-4"></div>
                     </div>
                 </section>
             </fieldset>
@@ -157,7 +115,7 @@
                 <section>
                     <div class="row">
                         <div id="profile-picture" class="col col-3">
-                            <img class="img-thumbnail" src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.user_id}) }}" />
+                            <img class="img-thumbnail" src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.id}) }}" />
                             {# TODO: OLD CODE
                             {% if current_user_profile.profile_picture|length > 0 %}
                                 <img class="img-thumbnail" src="/app/account/profile_pictures/{{ current_user_profile.profile_picture }}" />
@@ -191,7 +149,7 @@
         </form>
     </div>
 </section>
-{% set params %}user_id={{ current_user.user_id }}{% endset %}
+{% set params %}user_id={{ current_user.id }}{% endset %}
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -201,7 +159,7 @@
         fileUploadObject.fileupload({
             // Uncomment the following to send cross-domain cookies:
             //xhrFields: {withCredentials: true},
-            url: '{{ path('app_account_api', {'function': 'update_profile_pic', 'parameters': params}) }}',
+            url: '{{ path('app_account_api', {'function': 'update_profile_pic', 'user_id': current_user.id}) }}',
             // Enable image resizing, except for Android and Opera,
             // which actually support image resizing, but fail to
             // send Blob objects via XHR requests:
@@ -246,78 +204,3 @@
         });
     });
 </script>
-<script type="text/javascript">
-    var placeSearch, autocomplete;
-    var componentForm = {
-        street_number: 'short_name',
-        route: 'long_name',
-        locality: 'long_name',
-        //administrative_area_level_1: 'short_name',
-        country: 'long_name',
-        postal_code: 'short_name'
-    };
-    var input_ids = {
-        street_number: 'form_location_street_number',
-        route: 'form_location_street',
-        locality: 'form_location_city',
-        country: 'form_location_country',
-        postal_code: 'form_location_postal_code'
-    };
-
-    function initAutocomplete() {
-        // Create the autocomplete object, restricting the search to geographical
-        // location types.
-        autocomplete = new google.maps.places.Autocomplete(
-            /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
-            {types: ['geocode']});
-
-        // When the user selects an address from the dropdown, populate the address
-        // fields in the form.
-        autocomplete.addListener('place_changed', fillInAddress);
-    }
-
-    // [START region_fillform]
-    function fillInAddress() {
-        // Get the place details from the autocomplete object.
-        var place = autocomplete.getPlace();
-
-        /** Not Required as can be predefined by user
-         for (var component in componentForm) {
-                document.getElementById(component).value = '';
-                document.getElementById(component).disabled = false;
-            }
-         */
-        // Get each component of the address from the place details
-        // and fill the corresponding field on the form.
-        for (var i = 0; i < place.address_components.length; i++) {
-            var addressType = place.address_components[i].types[0];
-            if (componentForm[addressType]) {
-                var val = place.address_components[i][componentForm[addressType]];
-                console.log(input_ids[addressType]);
-                document.getElementById(input_ids[addressType]).value = val;
-            }
-        }
-    }
-    // [END region_fillform]
-
-    // [START region_geolocation]
-    // Bias the autocomplete object to the user's geographical location,
-    // as supplied by the browser's 'navigator.geolocation' object.
-    function geolocate() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var geolocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                var circle = new google.maps.Circle({
-                    center: geolocation,
-                    radius: position.coords.accuracy
-                });
-                autocomplete.setBounds(circle.getBounds());
-            });
-        }
-    }
-    // [END region_geolocation]
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSO1fpoQuukeVKiueZxzqhLCFlkgP0IMM&signed_in=true&libraries=places&callback=initAutocomplete" async defer></script>

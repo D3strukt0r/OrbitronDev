@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 /**
@@ -43,16 +41,6 @@ class SubscriptionType
         return $this->id;
     }
 
-    public function getUserSubscription()
-    {
-        return $this->userSubscription;
-    }
-
-    public function setUserSubscription(UserSubscription $userSubscription)
-    {
-        $this->userSubscription = $userSubscription;
-    }
-
     public function getTitle()
     {
         return $this->title;
@@ -80,7 +68,7 @@ class SubscriptionType
         return $this->permissions;
     }
 
-    public function setPermissions($permissions)
+    public function setPermissions(array $permissions)
     {
         $this->permissions = $permissions;
         return $this;

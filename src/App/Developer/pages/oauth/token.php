@@ -16,11 +16,12 @@ $resultFormatted = json_decode($result, true);
 curl_close($ch);
 
 if(array_key_exists('error', $resultFormatted)) {
-    header('Location: /unauthorized.php?message=Token could not be received');
+    header('Location: unauthorized.php?message=Token could not be received. '.$resultFormatted['error_description']);
+    //exit;
 }
 
 ?>
-<pre><?php echo $result; ?></pre>
+<pre><?php var_dump($resultFormatted); ?></pre>
 <a href="resource.php?token=<?php echo $resultFormatted['refresh_token']; ?>">GET RESOURCES</a>
 <br />
 <br />

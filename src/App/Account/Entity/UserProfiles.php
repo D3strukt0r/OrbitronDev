@@ -125,6 +125,9 @@ class UserProfiles
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getBirthday()
     {
         return $this->birthday;
@@ -174,6 +177,11 @@ class UserProfiles
         return $this->addresses->toArray();
     }
 
+    /**
+     * @param \App\Account\Entity\UserAddress $address
+     *
+     * @return $this
+     */
     public function addAddress(UserAddress $address)
     {
         $this->addresses->add($address);

@@ -12,20 +12,20 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="thumbnail">
-                        <img src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.user_id, 'height': 280, 'width': 280}) }}" alt="" width="100%">
+                        <img src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.id, 'height': 280, 'width': 280}) }}" alt="" width="100%">
                         <div class="caption">
                             <h3>{{ current_user.username }}</h3>
                             <hr />
-                            {% if current_user_profile.firstname|length == 0 and current_user_profile.lastname|length == 0 %}
+                            {% if current_user.profile.name|length == 0 and current_user.profile.surname|length == 0 %}
                                 <p>{{ 'No name set'|trans }}</p>
                             {% else %}
-                            <p>{{ current_user_profile.firstname }} {{ current_user_profile.lastname }}</p>
+                            <p>{{ current_user.profile.name }} {{ current_user.profile.surname }}</p>
                             {% endif %}
-                            <p>{% if current_user_profile.gender == 0 %}{{ 'No gender set'|trans }}
-                                {% elseif current_user_profile.gender == 1 %}{{ 'Male'|trans }}
-                                {% elseif current_user_profile.gender == 2 %}{{ 'Female'|trans }}
+                            <p>{% if current_user.profile.gender == 0 %}{{ 'No gender set'|trans }}
+                                {% elseif current_user.profile.gender == 1 %}{{ 'Male'|trans }}
+                                {% elseif current_user.profile.gender == 2 %}{{ 'Female'|trans }}
                                 {% endif %}</p>
-                            <p>{{ current_user_profile.birthday }}</p>
+                            <p>{{ current_user.profile.birthday|date('d.m.Y') }}</p>
                         </div>
                     </div>
                 </div><!-- /.col-lg-3 -->
@@ -34,7 +34,7 @@
                         <div id="service-blog" class="panel panel-default">
                             <div class="panel-heading">
                                 {{ 'Blog'|trans }}
-                                {% if logged_in_user_id == current_user.user_id %}
+                                {% if logged_in_user_id == current_user.id %}
                                 <span class="pull-right">
                                     <a href="{{ path('app_blog_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
                                     <a href="{{ path('app_blog_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new blog'|trans }}</a>
@@ -46,7 +46,7 @@
                                     {% for blog in blogs %}
                                         <div class="well well-sm">
                                             {{ blog.name }}
-                                            {% if logged_in_user_id == current_user.user_id %}
+                                            {% if logged_in_user_id == current_user.id %}
                                             <div class="pull-right">
                                                 <a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
                                                 <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
@@ -57,7 +57,7 @@
                                 </div>
                             {% endif %}
                         </div>
-                        {% if logged_in_user_id == current_user.user_id %}
+                        {% if logged_in_user_id == current_user.id %}
                             <div id="service-cloud" class="panel panel-default">
                                 <div class="panel-heading">
                                     {{ 'Cloud'|trans }}
@@ -70,7 +70,7 @@
                         <div id="service-forum" class="panel panel-default">
                             <div class="panel-heading">
                                 {{ 'Forum'|trans }}
-                                {% if logged_in_user_id == current_user.user_id %}
+                                {% if logged_in_user_id == current_user.id %}
                                 <span class="pull-right">
                                     <a href="{{ path('app_forum_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
                                     <a href="{{ path('app_forum_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new forum'|trans }}</a>
@@ -82,7 +82,7 @@
                                     {% for forum in forums %}
                                         <div class="well well-sm">
                                             {{ forum.name }}
-                                            {% if logged_in_user_id == current_user.user_id %}
+                                            {% if logged_in_user_id == current_user.id %}
                                             <div class="pull-right">
                                                 <a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
                                                 <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
@@ -101,7 +101,7 @@
                         <div id="service-store" class="panel panel-default">
                             <div class="panel-heading">
                                 {{ 'Store'|trans }}
-                                {% if logged_in_user_id == current_user.user_id %}
+                                {% if logged_in_user_id == current_user.id %}
                                 <span class="pull-right">
                                     <a href="{{ path('app_store_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
                                     <a href="{{ path('app_store_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new store'|trans }}</a>
@@ -113,7 +113,7 @@
                                     {% for store in stores %}
                                         <div class="well well-sm">
                                             {{ store.name }}
-                                            {% if logged_in_user_id == current_user.user_id %}
+                                            {% if logged_in_user_id == current_user.id %}
                                             <div class="pull-right">
                                                 <a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
                                                 <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>

@@ -4,32 +4,36 @@
         <ol class="breadcrumb">
             <li><a href="{{ path('app_account_panel', {'page': 'developer-applications'}) }}">{{ 'Developer'|trans }}</a></li>
             <li><a href="{{ path('app_account_panel', {'page': 'developer-applications'}) }}">{{ 'Applications'|trans }}</a></li>
-            <li class="active">{{ app.client_name }}</li>
+            <li class="active">{{ app.name }}</li>
         </ol><!-- /.breadcrumb -->
         <hr />
     </div><!-- /.col-lg-12 -->
 </section><!-- /#header -->
 <section id="page">
     <div class="col-md-12">
-        <h4>{{ app.client_name }}</h4>
+        <h4>{{ app.name }}</h4>
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover">
                 <tbody>
                     <tr>
                         <td>{{ 'App ID'|trans }}</td>
-                        <td>{{ app.client_id }}</td>
+                        <td>{{ app.clientIdentifier }}</td>
                     </tr>
                     <tr>
                         <td>{{ 'Secret Key'|trans }}</td>
-                        <td><code>{{ app.client_secret }}</code></td>
+                        <td><code>{{ app.clientSecret }}</code></td>
                     </tr>
                     <tr>
                         <td>{{ 'Redirect URI'|trans }}</td>
-                        <td>{{ app.redirect_uri }}</td>
+                        <td>{{ app.redirectUri }}</td>
                     </tr>
                     <tr>
                         <td>{{ 'Permissions'|trans }}</td>
-                        <td>{{ app.scope }}</td>
+                        <td>
+                            {% for scope in app.scopes %}
+                                {{ scope }}{% if not loop.last %} |{% endif %}
+                            {% endfor %}
+                        </td>
                     </tr>
                 </tbody>
             </table><!-- /.table -->

@@ -38,7 +38,7 @@
                 </li>
             </ul>
             <div class="panel-footer">
-                {% if current_user_sub.subscription_id == 1 %}
+                {% if current_user.subscription.subscription.id == 1 %}
                     <p class="btn btn-lg btn-block btn-default">{{ 'Your plan'|trans }}</p>
                 {% else %}
                     <a class="btn btn-lg btn-block btn-success">{{ 'Set this plan'|trans }}</a>
@@ -76,7 +76,7 @@
                 </li>
             </ul>
             <div class="panel-footer">
-                {% if current_user_sub.subscription_id == 2 %}
+                {% if current_user.subscription.subscription.id == 2 %}
                     <p class="btn btn-lg btn-block btn-default">{{ 'Your plan'|trans }}</p>
                 {% else %}
                     <a class="btn btn-lg btn-block btn-success">{{ 'Set this plan'|trans }}</a>
@@ -87,7 +87,7 @@
     <div class="col-md-4">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h4 class="text-center">{{ 'Enterprise'|trans }}</h4>
+                <h4 class="text-center" style="color: white;">{{ 'Enterprise'|trans }}</h4>
             </div><!-- /.panel-heading -->
             <div class="panel-body text-center">
                 <p class="lead">
@@ -113,7 +113,7 @@
                 </li>
             </ul>
             <div class="panel-footer">
-                {% if current_user_sub.subscription_id == 3 %}
+                {% if current_user.subscription.subscription.id == 3 %}
                     <p class="btn btn-lg btn-block btn-default">{{ 'Your plan'|trans }}</p>
                 {% else %}
                     <a class="btn btn-lg btn-block btn-success">{{ 'Set this plan'|trans }}</a>

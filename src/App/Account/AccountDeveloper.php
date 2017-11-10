@@ -2,6 +2,8 @@
 
 namespace App\Account;
 
+use App\Account\Entity\OAuthClient;
+use App\Account\Entity\User;
 use Container\DatabaseContainer;
 use Exception;
 use PDO;
@@ -12,23 +14,15 @@ class AccountDeveloper
     /**
      * @param int $user_id
      *
-     * @return array|bool
-     * @throws \Exception
+     * @return \App\Account\Entity\OAuthClient
      */
     public static function getApps($user_id)
     {
-        $database = DatabaseContainer::getDatabase();
+        $em = \Kernel::getIntent()->getEntityManager();
+        /** @var \App\Account\Entity\OAuthClient $clients */
+        $clients = $em->getRepository(OAuthClient::class)->findBy(array('users' => $user_id));
 
-        $oGetApps = $database->prepare('SELECT * FROM `oauth_clients` WHERE `user_id`=:user_id');
-        $oGetApps->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $oGetApps->execute();
-        if ($oGetApps->rowCount() > 0) {
-            $aAppList = $oGetApps->fetchAll(PDO::FETCH_ASSOC);
-
-            return $aAppList;
-        }
-
-        return false;
+        return $clients;
     }
 
     /**
@@ -50,27 +44,17 @@ class AccountDeveloper
     /**
      * @param int $clientId
      *
-     * @return bool
+     * @return \App\Account\Entity\OAuthClient
      */
     public static function getClientInformation($clientId)
     {
-        $database = DatabaseContainer::getDatabase();
-
-        $getClient = $database->prepare('SELECT * FROM `oauth_clients` WHERE `client_id`=:client_id LIMIT 1');
-        $getClient->bindValue(':client_id', $clientId, PDO::PARAM_INT);
-        $getClient->execute();
-
-        if ($getClient->rowCount() > 0) {
-            $clientInfo = $getClient->fetchAll(PDO::FETCH_ASSOC);
-
-            return $clientInfo[0];
-        }
-
-        return false;
+        $em = \Kernel::getIntent()->getEntityManager();
+        /** @var \App\Account\Entity\OAuthClient $client */
+        $client = $em->getRepository(OAuthClient::class)->findOneBy(array('client_identifier' => $clientId));
+        return $client;
     }
 
     /**
-     * @param int    $clientId
      * @param string $clientName
      * @param string $clientSecret
      * @param string $redirectUri
@@ -79,26 +63,22 @@ class AccountDeveloper
      *
      * @return bool
      */
-    public static function addApp($clientId, $clientName, $clientSecret, $redirectUri, $scopes = array(), $userId)
+    public static function addApp($clientName, $clientSecret, $redirectUri, $scopes, $userId)
     {
-        $database = DatabaseContainer::getDatabase();
+        /** @var \App\Account\Entity\User $user */
+        $user = \Kernel::getIntent()->getEntityManager()->find(User::class, $userId);
+        $addClient = new OauthClient();
+        $addClient
+            ->setClientIdentifier($clientName)
+            ->setClientSecret($clientSecret)
+            ->setRedirectUri($redirectUri)
+            ->setScopes($scopes)
+            ->setUsers($user->getId());
 
-        $getClient = $database->prepare('INSERT INTO `oauth_clients`(`client_id`, `client_name`, `client_secret`, `redirect_uri`, `scope`, `user_id`) VALUES (:client_id, :client_name, :client_secret, :redirect_uri, :scopes, :user_id)');
-        $getClient->bindValue(':client_id', $clientId, PDO::PARAM_INT);
-        $getClient->bindValue(':client_name', $clientName, PDO::PARAM_STR);
-        $getClient->bindValue(':client_secret', $clientSecret, PDO::PARAM_STR);
-        $getClient->bindValue(':redirect_uri', $redirectUri, PDO::PARAM_STR);
-        $getClient->bindValue(':scopes', implode(' ', $scopes), PDO::PARAM_STR);
-        $getClient->bindValue(':user_id', $userId, PDO::PARAM_INT);
-        $getClient->execute();
+        \Kernel::getIntent()->getEntityManager()->persist($addClient);
+        \Kernel::getIntent()->getEntityManager()->flush();
 
-        if ($getClient->rowCount() > 0) {
-            $clientInfo = $getClient->fetchAll(PDO::FETCH_ASSOC);
-
-            return $clientInfo[0];
-        }
-
-        return false;
+        return $addClient->getId();
     }
 
     /*************************************************************************************************/

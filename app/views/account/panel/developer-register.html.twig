@@ -10,7 +10,7 @@
 </section><!-- /#header -->
 <section id="page">
     <div class="col-md-12">
-        {% if not current_user.developer == 1 %}
+        {% if not current_user.developerStatus == 1 %}
             {{ form_start(developer_form) }}
                 {{ form_widget(developer_form.send, {'attr': {'class': 'btn btn-success'}}) }}
             {{ form_end(developer_form) }}

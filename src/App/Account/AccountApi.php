@@ -2,6 +2,7 @@
 
 namespace App\Account;
 
+use App\Account\Entity\User;
 use Kernel;
 
 class AccountApi
@@ -24,7 +25,9 @@ class AccountApi
         $request = Kernel::getIntent()->getRequest();
 
         $userId = (int)$request->query->get('user_id');
-        $selectedUser = new UserInfo($userId);
+
+        /** @var \App\Account\Entity\User $selectedUser */
+        $selectedUser = Kernel::getIntent()->getEntityManager()->find(User::class, $userId);
 
         $width = !is_null($request->query->get('width')) ? (int)$request->query->get('width') : 1000;
         $height = !is_null($request->query->get('height')) ? (int)$request->query->get('height') : 1000;
@@ -32,7 +35,7 @@ class AccountApi
         $rootPictureDir = Kernel::getIntent()->getRootDir().'/web/app/account/profile_pictures/';
 
         if (AccountTools::idExists($userId)) {
-            if (!is_null($selectedUser->getFromProfile('profile_picture')) && file_exists($filename = $rootPictureDir.$selectedUser->getFromProfile('profile_picture'))) {
+            if (!is_null($selectedUser->getProfile()->getPicture()) && file_exists($filename = $rootPictureDir.$selectedUser->getProfile()->getPicture())) {
                 $oImage = new SimpleImage($filename);
                 $oImage->resize($width, $height);
                 $oImage->output();
@@ -50,7 +53,10 @@ class AccountApi
 
     public static function update_profile_pic($parameters)
     {
-        $current_user = new UserInfo($parameters['user_id']);
+        $request = Kernel::getIntent()->getRequest();
+
+        /** @var \App\Account\Entity\User $current_user */
+        $current_user = Kernel::getIntent()->getEntityManager()->find(User::class, $request->query->get('user_id'));
 
         // Simple validation (max file size 2MB and only two allowed mime types)
         $validator = new \FileUpload\Validator\Simple('10M', array('image/png', 'image/jpg', 'image/jpeg'));
@@ -81,8 +87,10 @@ class AccountApi
             header($header.': '.$value);
         }
 
+
         if (isset($files[0]->error) && !is_string($files[0]->error)) {
-            $current_user->updateProfilePicture($files[0]->getFileName());
+            $current_user->getProfile()->setPicture($files[0]->getFileName());
+            Kernel::getIntent()->getEntityManager()->flush();
         }
 
         //return array('files' => $files);

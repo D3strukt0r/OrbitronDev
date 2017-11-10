@@ -7,7 +7,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
@@ -62,6 +61,9 @@ class UserSubscription
         return $this;
     }
 
+    /**
+     * @return \App\Account\Entity\SubscriptionType
+     */
     public function getSubscription()
     {
         return $this->subscription;

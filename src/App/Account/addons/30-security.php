@@ -6,13 +6,13 @@ if (!isset($indirectly)) {
     AccountAcp::addGroup(array(
         'parent' => 'root',
         'id'     => 'security',
-        'title'  => _('Security'),
+        'title'  => 'Security',
     ));
 
     AccountAcp::addMenu(array(
         'parent' => 'security',
         'id'     => 'inactivity',
-        'title'  => _('Inactivity'),
+        'title'  => 'Inactivity',
         'href'   => 'inactivity',
         'screen' => 'acp_html_inactivity',
     ));
@@ -20,7 +20,7 @@ if (!isset($indirectly)) {
     AccountAcp::addMenu(array(
         'parent' => 'security',
         'id'     => 'log',
-        'title'  => _('Login log'),
+        'title'  => 'Login log',
         'href'   => 'login-log',
         'screen' => 'acp_html_login_log',
     ));
@@ -28,7 +28,7 @@ if (!isset($indirectly)) {
     AccountAcp::addMenu(array(
         'parent' => 'security',
         'id'     => 'delete',
-        'title'  => sprintf(_('%sDelete Account%s'), '<b><span class="text-danger">', '</span></b>'),
+        'title'  => sprintf('%sDelete Account%s', '<b><span class="text-danger">', '</span></b>'),
         'href'   => 'delete-account',
         'screen' => 'acp_html_delete_account',
     ));

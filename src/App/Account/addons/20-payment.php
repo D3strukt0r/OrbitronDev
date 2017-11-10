@@ -1,19 +1,19 @@
 <?php
 
 use App\Account\AccountAcp;
-use App\Account\UserInfo;
+use App\Account\Entity\User;
 
 if (!isset($indirectly)) {
     AccountAcp::addGroup(array(
         'parent' => 'root',
         'id'     => 'payment',
-        'title'  => _('Billing'),
+        'title'  => 'Billing',
     ));
 
     AccountAcp::addMenu(array(
         'parent' => 'payment',
         'id'     => 'buy_credits',
-        'title'  => _('Buy credits'),
+        'title'  => 'Buy credits',
         'href'   => 'buy-credits',
         'screen' => 'acp_html_buy_credits',
     ));
@@ -21,7 +21,7 @@ if (!isset($indirectly)) {
     AccountAcp::addMenu(array(
         'parent' => 'payment',
         'id'     => 'plans',
-        'title'  => _('Plans'),
+        'title'  => 'Plans',
         'href'   => 'plans',
         'screen' => 'acp_html_plans',
     ));
@@ -29,7 +29,7 @@ if (!isset($indirectly)) {
     AccountAcp::addMenu(array(
         'parent' => 'payment',
         'id'     => 'payment_methods',
-        'title'  => _('Payment methods'),
+        'title'  => 'Payment methods',
         'href'   => 'payment',
         'screen' => 'acp_html_payment',
     ));
@@ -46,15 +46,17 @@ function acp_html_buy_credits($twig)
 }
 
 /**
- * @param \Twig_Environment $twig
+ * @param \Twig_Environment             $twig
+ * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_plans($twig)
+function acp_html_plans($twig, $controller)
 {
-    $currentUser = new UserInfo(USER_ID);
+    $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
+
     return $twig->render('account/panel/plans.html.twig', array(
-        'current_user_sub' => $currentUser->aSubscription,
+        'current_user' => $currentUser,
     ));
 }
 

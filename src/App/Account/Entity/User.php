@@ -249,6 +249,9 @@ class User
         return $this;
     }
 
+    /**
+     * @return \App\Account\Entity\UserProfiles
+     */
     public function getProfile()
     {
         return $this->profile;
@@ -260,6 +263,9 @@ class User
         return $this;
     }
 
+    /**
+     * @return \App\Account\Entity\UserSubscription
+     */
     public function getSubscription()
     {
         return $this->subscription;

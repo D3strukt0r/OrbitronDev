@@ -2,35 +2,42 @@
 
 namespace Controller;
 
+use App\Account\AccountAcp;
+use App\Account\AccountApi;
+use App\Account\AccountDeveloper;
 use App\Account\AccountHelper;
+use App\Account\Entity\OAuthAccessToken;
+use App\Account\Entity\OAuthAuthorizationCode;
+use App\Account\Entity\OAuthClient;
+use App\Account\Entity\OAuthRefreshToken;
+use App\Account\Entity\OAuthUser;
+use App\Account\Entity\User;
+use App\Account\Form\ConfirmEmailType;
+use App\Account\Form\ForgotType;
 use App\Account\Form\LoginType;
 use App\Account\Form\RegisterType;
+use App\Account\Form\ResetPasswordType;
 use App\Blog\Blog;
 use App\Core\Token;
 use App\Forum\Forum;
 use App\Store\Store;
 use Container\DatabaseContainer;
 use Controller;
-use Form\RecaptchaType;
-use Kernel;
 use OAuth2\GrantType\AuthorizationCode;
 use OAuth2\GrantType\ClientCredentials;
 use OAuth2\GrantType\RefreshToken;
 use ReCaptcha\ReCaptcha;
 use Swift_Message;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class Accountv2Controller extends Controller
 {
     public function indexAction()
     {
-        AccountHelper::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
 
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login');
@@ -41,9 +48,9 @@ class Accountv2Controller extends Controller
 
     public function logoutAction()
     {
-        AccountHelper::updateSession();
+        $update = AccountHelper::updateSession();
 
-        if (LOGGED_IN) {
+        if (is_null($update) || (defined('LOGGED_IN') && LOGGED_IN)) {
             $response = new RedirectResponse($this->getRequest()->getUri());
             AccountHelper::logout($response);
             return $response;
@@ -56,13 +63,15 @@ class Accountv2Controller extends Controller
 
     public function loginAction()
     {
-        AccountHelper::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
 
         if (LOGGED_IN) {
             return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
         }
 
-        $request = Kernel::getIntent()->getRequest();
+        $request = $this->getRequest();
         $loginForm = $this->createForm(LoginType::class);
         $loginForm->handleRequest($request);
         if ($loginForm->isSubmitted() && $loginForm->isValid()) {
@@ -70,7 +79,7 @@ class Accountv2Controller extends Controller
                 'wrong_password'   => $this->container->get('translator')->trans('Incorrect password'),
                 'insert_username'  => $this->container->get('translator')->trans('Please enter your username'),
                 'insert_password'  => $this->container->get('translator')->trans('Please enter your password'),
-                'user_dont_exists' => $this->container->get('translator')->trans('This user doesn\'t exist'),
+                'user_does_not_exist' => $this->container->get('translator')->trans('This user doesn\'t exist'),
                 'unknown_error'    => $this->container->get('translator')->trans('Unknown error'),
             );
             $loginData = $loginForm->getData();
@@ -103,7 +112,9 @@ class Accountv2Controller extends Controller
 
     public function registerAction()
     {
-        AccountHelper::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
 
         if (LOGGED_IN) {
             return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
@@ -122,7 +133,7 @@ class Accountv2Controller extends Controller
                 'email_not_valid'      => $this->container->get('translator')->trans('This E-Mail is not valid. The format has to be example@example.com'),
                 'insert_password'      => $this->container->get('translator')->trans('You have to insert a password'),
                 'password_too_short'   => $this->container->get('translator')->trans('Your password is too short (min. 7 characters)'),
-                'passwords_dont_match' => $this->container->get('translator')->trans('Your passwords don\'t match'),
+                'passwords_do_not_match' => $this->container->get('translator')->trans('Your passwords don\'t match'),
                 'captcha_error'        => $this->container->get('translator')->trans('The captcha was not correct'),
             );
 
@@ -141,7 +152,6 @@ class Accountv2Controller extends Controller
             }
 
             if (is_int($registerResult)) {
-
                 $message = (new Swift_Message())
                     ->setSubject('[Account] Email activation')
                     ->setFrom(array('no-reply-account@orbitrondev.org' => 'OrbitronDev'))
@@ -185,11 +195,14 @@ class Accountv2Controller extends Controller
 
     public function panelAction()
     {
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
+
         $params = array();
-        Account::updateSession();
         $params['user_id'] = USER_ID;
-        $currentUser = new UserInfo(USER_ID);
-        $params['current_user'] = $currentUser->aUser;
+        $entityManager = $this->getEntityManager();
+        $params['current_user'] = $entityManager->find(User::class, USER_ID);
         $params['view_navigation'] = '';
 
         if (!LOGGED_IN) {
@@ -281,21 +294,22 @@ class Accountv2Controller extends Controller
 
     public function usersAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
+
         $username = $this->parameters['username'];
-        if (AccountTools::userExist($this->parameters['username'])) {
-            $userId = AccountTools::name2Id($username);
-            $currentUser = new UserInfo($userId);
+        if (AccountHelper::usernameExists($this->parameters['username'])) {
+            /** @var \App\Account\Entity\User $currentUser */
+            $currentUser = $this->getEntityManager()->getRepository(User::class)->findOneBy(array('username' => $username));
             return $this->render('account/user.html.twig', array(
                 'logged_in_user_id'    => USER_ID,
                 'user_exists'          => true,
-                'current_user'         => $currentUser->aUser,
-                'current_user_profile' => $currentUser->aProfile,
-                'current_user_sub'     => $currentUser->aSubscription,
-                'service_allowed'      => $currentUser->serviceAllowed() ? true : false,
-                'blogs'                => Blog::getOwnerBlogList($currentUser->getFromUser('user_id')),
-                'forums'               => Forum::getOwnerForumList($currentUser->getFromUser('user_id')),
-                'stores'               => Store::getOwnerStoreList($currentUser->getFromUser('user_id')),
+                'current_user'         => $currentUser,
+                'service_allowed'      => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
+                'blogs'                => Blog::getOwnerBlogList($currentUser->getId()),
+                'forums'               => Forum::getOwnerForumList($currentUser->getId()),
+                'stores'               => Store::getOwnerStoreList($currentUser->getId()),
             ));
         } else {
             return $this->render('account/user.html.twig', array(
@@ -306,39 +320,16 @@ class Accountv2Controller extends Controller
 
     public function forgotAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
+
         $request = $this->getRequest();
         if (LOGGED_IN) {
             return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
         }
 
-        $forgotForm = $this->createFormBuilder()
-            ->add('email', EmailType::class, array(
-                'label'       => 'E-mail',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email address')),
-                    new Email(array('message' => 'Please enter a VALID email address')),
-                ),
-            ))
-            ->add('recaptcha', RecaptchaType::class, array(
-                'private_key'    => '6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll',
-                'public_key'     => '6Ldec_4SAAAAAJ_TnvICnltNqgNaBPCbXp-wN48B',
-                'recaptcha_ajax' => false,
-                'attr'           => array(
-                    'options' => array(
-                        'theme' => 'light',
-                        'type'  => 'image',
-                        'size'  => 'normal',
-                        'defer' => true,
-                        'async' => true,
-                    ),
-                ),
-                'mapped'         => false,
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Send',
-            ))
-            ->getForm();
+        $forgotForm = $this->createForm(ForgotType::class);
 
         if (!is_null($token = $request->query->get('token'))) {
             $token = new Token($token);
@@ -354,24 +345,7 @@ class Accountv2Controller extends Controller
                     'forgot_form' => $forgotForm->createView(),
                 ));
             } else {
-                $resetForm = $this->createFormBuilder()
-                    ->add('password', PasswordType::class, array(
-                        'label'       => 'Password',
-                        'constraints' => array(
-                            new NotBlank(array('message' => 'Please enter your password')),
-                        ),
-                    ))
-                    ->add('password_verify', PasswordType::class, array(
-                        'label'       => 'Repeat Password',
-                        'constraints' => array(
-                            new NotBlank(array('message' => 'Please enter your password')),
-                        ),
-                    ))
-                    ->add('send', SubmitType::class, array(
-                        'label' => 'Change password',
-                    ))
-                    ->getForm();
-
+                $resetForm = $this->createForm(ResetPasswordType::class);
                 $resetForm->handleRequest($request);
                 if ($resetForm->isSubmitted()) {
                     // Reset Email
@@ -396,10 +370,13 @@ class Accountv2Controller extends Controller
                     }
 
                     $userId = $token->getInformation()['user_id'];
-                    $user = new UserInfo($userId);
+                    /** @var \App\Account\Entity\User $user */
+                    $user = $this->getEntityManager()->find(User::class, $userId);
+                    $user->setPassword(AccountHelper::hashPassword($password));
+                    $this->getEntityManager()->flush();
 
-                    $user->updatePassword(AccountTools::hash($password));
                     $token->remove();
+
                     return $this->render('account/forgot-password-form.html.twig', array(
                         'reset_form'      => $resetForm->createView(),
                         'success_message' => 'Successfully changed your password',
@@ -422,19 +399,19 @@ class Accountv2Controller extends Controller
                     $forgotForm->get('recaptcha')->addError(new FormError('The captcha was not correct'));
                 } else {
 
-                    $userId = AccountTools::email2Id($forgotForm->get('email')->getData());
-                    if (AccountTools::idExists($userId)) {
-                        $user = new UserInfo($userId);
+                    if (AccountHelper::emailExists($forgotForm->get('email')->getData())) {
+                        /** @var \App\Account\Entity\User $user */
+                        $user = $this->getEntityManager()->getRepository(User::class)->findOneBy(array('email' => $forgotForm->get('email')->getData()));
                         $tokenGenerator = new Token();
                         $token = $tokenGenerator->generateToken('reset_password', strtotime('+1 day'),
-                            array('user_id' => $user->getFromUser('user_id')));
+                            array('user_id' => $user->getId()));
 
                         $message = (new Swift_Message())
                             ->setSubject('[Account] Reset password')
                             ->setFrom(array('info@orbitrondev.org' => 'OrbitronDev'))
-                            ->setTo(array($user->getFromUser('email')))
+                            ->setTo(array($user->getEmail()))
                             ->setBody($this->renderView('account/mail/reset-password.html.twig', array(
-                                'email' => $user->getFromUser('email'),
+                                'email' => $user->getEmail(),
                                 'token' => $token,
                             )), 'text/html');
                         $this->get('mailer')->send($message);
@@ -462,14 +439,14 @@ class Accountv2Controller extends Controller
 
     public function confirmAction()
     {
-        Account::updateSession();
-        $currentUser = new UserInfo(USER_ID);
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
+
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
         $request = $this->getRequest();
-        $sendEmailForm = $this->createFormBuilder()
-            ->add('send', SubmitType::class, array(
-                'label' => 'Send Email',
-            ))
-            ->getForm();
+        $sendEmailForm = $this->createForm(ConfirmEmailType::class);
 
         if (!is_null($token = $request->query->get('token'))) {
             $token = new Token($token);
@@ -484,7 +461,8 @@ class Accountv2Controller extends Controller
                     'send_email_form' => $sendEmailForm->createView(),
                 ));
             } else {
-                $currentUser->updateEmailVerification(true);
+                $currentUser->setEmailVerified(true);
+                $this->getEntityManager()->flush();
                 $successMessage = 'Successful verified your email';
                 return $this->render('account/confirm-email.html.twig', array(
                     'success_message' => $successMessage,
@@ -499,10 +477,10 @@ class Accountv2Controller extends Controller
                 $message = (new Swift_Message())
                     ->setSubject('[Account] Email activation')
                     ->setFrom(array('team-orbitron@hotmail.com' => 'OrbitronDev'))
-                    ->setTo(array($currentUser->getFromUser('email')))
+                    ->setTo(array($currentUser->getEmail()))
                     ->setBody($this->renderView('account/mail/confirm-email.html.twig', array(
-                        'username' => $currentUser->getFromUser('username'),
-                        'email'    => $currentUser->getFromUser('email'),
+                        'username' => $currentUser->getUsername(),
+                        'email'    => $currentUser->getEmail(),
                         'token'    => $token,
                     )), 'text/html');
                 $this->get('mailer')->send($message);
@@ -522,27 +500,32 @@ class Accountv2Controller extends Controller
         }
     }
 
-    /** @var \OAuth2\Storage\Pdo $oauthStorage */
-    private $oauthStorage = null;
     /** @var \OAuth2\Server $oauthServer */
     private $oauthServer = null;
 
     public function oauthServer()
     {
-        $config = $this->get('config');
+        /** @var \App\Account\Repository\OAuthClientRepository $clientStorage */
+        $clientStorage  = $this->getEntityManager()->getRepository(OAuthClient::class);
+        /** @var \App\Account\Repository\OAuthUserRepository $userStorage */
+        $userStorage = $this->getEntityManager()->getRepository(OAuthUser::class);
+        /** @var \App\Account\Repository\OAuthAccessTokenRepository $accessTokenStorage */
+        $accessTokenStorage  = $this->getEntityManager()->getRepository(OAuthAccessToken::class);
+        /** @var \App\Account\Repository\OAuthAuthorizationCodeRepository $authorizationCodeStorage */
+        $authorizationCodeStorage = $this->getEntityManager()->getRepository(OAuthAuthorizationCode::class);
+        /** @var \App\Account\Repository\OAuthRefreshTokenRepository $refreshTokenStorage */
+        $refreshTokenStorage = $this->getEntityManager()->getRepository(OAuthRefreshToken::class);
 
-        // $dsn is the Data Source Name for your database, for exmaple "mysql:dbname=my_oauth2_db;host=localhost"
-        $dsn = 'mysql:dbname=' . $config['parameters']['database_name'] . ';host=' . $config['parameters']['database_host'];
-        $this->oauthStorage = new \OAuth2\Storage\Pdo(array(
-            'dsn'      => $dsn,
-            'username' => $config['parameters']['database_user'],
-            'password' => $config['parameters']['database_password'],
-        ));
-
-        // Pass a storage object or array of storage objects to the OAuth2 server class
-        $this->oauthServer = new \OAuth2\Server($this->oauthStorage, array(
-            'always_issue_new_refresh_token' => true,
-            'refresh_token_lifetime'         => 2419200,
+        // Pass the doctrine storage objects to the OAuth2 server class
+        $this->oauthServer = new \OAuth2\Server(array(
+            'client_credentials' => $clientStorage,
+            'user_credentials'   => $userStorage,
+            'access_token'       => $accessTokenStorage,
+            'authorization_code' => $authorizationCodeStorage,
+            'refresh_token'      => $refreshTokenStorage,
+        ), array(
+            'auth_code_lifetime' => 30,
+            'refresh_token_lifetime' => 2419200,
         ));
 
         // Get all SCOPES
@@ -564,16 +547,19 @@ class Accountv2Controller extends Controller
         $scopeUtil = new \OAuth2\Scope($memory);
         $this->oauthServer->setScopeUtil($scopeUtil);
 
+        // Add all grant types
         // Add the "Client Credentials" grant type (it is the simplest of the grant types)
-        $this->oauthServer->addGrantType(new ClientCredentials($this->oauthStorage));
-
-        // Add the "Refresh Token" grant type
-        $this->oauthServer->addGrantType(new RefreshToken($this->oauthStorage, array(
-            'always_issue_new_refresh_token' => true,
-        )));
+        $this->oauthServer->addGrantType(new ClientCredentials($clientStorage));
 
         // Add the "Authorization Code" grant type (this is where the oauth magic happens)
-        $this->oauthServer->addGrantType(new AuthorizationCode($this->oauthStorage));
+        $this->oauthServer->addGrantType(new AuthorizationCode($authorizationCodeStorage));
+
+        // Add the "Refresh Token" grant type
+        $this->oauthServer->addGrantType(new RefreshToken($refreshTokenStorage, array(
+            // the refresh token grant request will have a "refresh_token" field
+            // with a new refresh token on each request
+            'always_issue_new_refresh_token' => true,
+        )));
     }
 
     public function oauthAuthorizeAction()
@@ -591,11 +577,12 @@ class Accountv2Controller extends Controller
             die;
         }
         // display an authorization form
-        $clientInfo = AccountDeveloper::getClientInformation($request2->query->get('client_id')); // Get all information about the Client requesting an Auth code
+        // Get all information about the Client requesting an Auth code
+        $clientInfo = AccountDeveloper::getClientInformation($request2->query->get('client_id'));
 
         $database = DatabaseContainer::getDatabase();
         $scopes = array();
-        foreach (explode(' ', trim($clientInfo['scope'])) as $scope) {
+        foreach ($clientInfo->getScopes() as $scope) {
             $getScope = $database->prepare('SELECT * FROM `oauth_scopes` WHERE `scope`=:scope LIMIT 1');
             $getScope->execute(array(
                 ':scope' => $scope,
@@ -613,7 +600,9 @@ class Accountv2Controller extends Controller
         }
 
         // print the authorization code if the user has authorized your client
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $is_authorized = ($_POST['authorized'] === 'Yes');
         $this->oauthServer->handleAuthorizeRequest($request, $response, $is_authorized, USER_ID);
         // if ($is_authorized) {
@@ -630,7 +619,8 @@ class Accountv2Controller extends Controller
         $this->oauthServer();
 
         // Handle a request for an OAuth2.0 Access Token and send the response to the client
-        $this->oauthServer->handleTokenRequest(\OAuth2\Request::createFromGlobals())->send();
+        $request = \OAuth2\Request::createFromGlobals();
+        $this->oauthServer->handleTokenRequest($request)->send();
     }
 
     // curl https://account.orbitrondev.org/oauth/resource -d 'access_token=YOUR_TOKEN'

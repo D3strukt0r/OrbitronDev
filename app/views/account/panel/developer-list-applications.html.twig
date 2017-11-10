@@ -23,9 +23,9 @@
                     {% if current_user_dev_apps|length > 0 %}
                         {% for app in current_user_dev_apps %}
                             <tr>
-                                <td><a href="{{ path('app_account_panel', {'page': 'developer-show-application', 'app': app.client_id }) }}">{{ app.client_name }} ({{ app.client_id }})</a></td>
-                                <td>{{ app.client_secret }}</td>
-                                <td>{{ app.redirect_uri }}</td>
+                                <td><a href="{{ path('app_account_panel', {'page': 'developer-show-application', 'app': app.clientIdentifier }) }}">{{ app.clientIdentifier }}</a></td>
+                                <td>{{ app.clientSecret }}</td>
+                                <td>{{ app.redirectUri }}</td>
                             </tr>
                         {% endfor %}
                     {% endif %}

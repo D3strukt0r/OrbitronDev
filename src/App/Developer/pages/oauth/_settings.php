@@ -5,8 +5,8 @@ ini_set('display_startup_errors', '1');
 ini_set('error_reporting', E_ALL);
 error_reporting(E_ALL);
 
-$client_id = 'oauth2_test';
-$client_secret = 'd32d89dzh2379dzh23fzhd23p98hzfr23tfz2t90phzq4tgh4398qzh49qzg';
+$client_id = 'Oauth_Test';
+$client_secret = '$2y$11$vU17IE6KTzW9n';
 $redirect_uri = 'https://developer.orbitrondev.org/oauth/authorized.php';
 
 $message = @$_GET['message'];

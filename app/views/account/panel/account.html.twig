@@ -16,7 +16,7 @@
                     <div class="row">
                         <label class="label col col-4">{{ 'User ID'|trans }}</label>
                         <div class="col col-8">
-                            <p>{{ current_user.user_id }}</p>
+                            <p>{{ current_user.id }}</p>
                         </div>
                     </div>
                 </section>
@@ -54,7 +54,7 @@
                                 <i class="icon-prepend fa fa-envelope"></i>
                                 {{ form_widget(edit_account_form.new_email) }}
                             </label>
-                            {% if current_user.email_verified %}
+                            {% if current_user.emailVerified %}
                                 <span class="pull-right">
                                     <span class="text-success">{{ 'Verified'|trans }}</span>&nbsp;&nbsp;
                                 </span>
@@ -106,9 +106,9 @@
                         <label class="label col col-4">{{ 'Subscription'|trans }}</label>
                         <div class="label col col-4">
                             <span>
-                                {% if current_user_sub.subscription_id == 1 %}{{ 'Normal'|trans }}
-                                {% elseif current_user_sub.subscription_id == 2 %}{{ 'Premium'|trans }}
-                                {% elseif current_user_sub.subscription_id == 3 %}{{ 'Enterprise'|trans }}
+                                {% if current_user.subscription.subscription.id == 1 %}{{ 'Normal'|trans }}
+                                {% elseif current_user.subscription.subscription.id == 2 %}{{ 'Premium'|trans }}
+                                {% elseif current_user.subscription.subscription.id == 3 %}{{ 'Enterprise'|trans }}
                                 {% endif %}
                             </span>
                         </div>

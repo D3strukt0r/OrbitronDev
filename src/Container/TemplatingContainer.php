@@ -10,6 +10,8 @@ use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Bridge\Twig\Extension\YamlExtension;
 use Symfony\Bridge\Twig\Form\TwigRenderer;
 use Symfony\Bridge\Twig\Form\TwigRendererEngine;
+use Symfony\Component\Asset\Package;
+use Symfony\Component\Asset\UrlPackage;
 use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
@@ -139,8 +141,15 @@ class TemplatingContainer
     {
         $requestStack = new RequestStack();
         $assetContext = new RequestStackContext($requestStack);
-        $assetPackage = new Packages(new PathPackage('', new EmptyVersionStrategy(), $assetContext));
-        $this->twig->addExtension(new AssetExtension($assetPackage));
+        $defaultPackage = new PathPackage('/', new EmptyVersionStrategy(), $assetContext);
+
+        $namedPackage = array(
+            'cdnjs' => new UrlPackage('https://cdnjs.cloudflare.com/ajax/libs/', new EmptyVersionStrategy(), $assetContext),
+            'local' => new UrlPackage('https://web-assets.orbitrondev.org/', new EmptyVersionStrategy(), $assetContext)
+        );
+        $packages = new Packages($defaultPackage, $namedPackage);
+
+        $this->twig->addExtension(new AssetExtension($packages));
     }
 
     /**
