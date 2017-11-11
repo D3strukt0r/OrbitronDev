@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Table;
 class UserPaymentMethods
 {
     /**
+     * @var integer
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -25,55 +26,87 @@ class UserPaymentMethods
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="paymentMethods")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
+     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
      */
     protected $user;
 
     /**
-     * @Column(type="string", name="payment_type")
+     * @var string
+     * @Column(type="string")
      */
-    protected $type;
+    protected $payment_type;
 
     /**
-     * @Column(type="json_array", name="data")
+     * @var array
+     * @Column(type="json_array")
      */
     protected $data;
 
+    /**
+     * @return integer
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * @return \App\Account\Entity\User
+     */
     public function getUser()
     {
         return $this->user;
     }
 
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return $this
+     */
     public function setUser(User $user)
     {
         $this->user = $user;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
-        return $this->type;
+        return $this->payment_type;
     }
 
+    /**
+     * @param string $type
+     *
+     * @return $this
+     */
     public function setType($type)
     {
-        $this->type = $type;
+        $this->payment_type = $type;
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getData()
     {
         return $this->data;
     }
 
+    /**
+     * @param array $data
+     *
+     * @return $this
+     */
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 }

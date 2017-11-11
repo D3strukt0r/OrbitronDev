@@ -2,19 +2,12 @@
 
 namespace Controller;
 
-use App\Account\Account;
-use App\Account\UserInfo;
+use App\Account\AccountHelper;
+use App\Account\Entity\User;
+use App\Core\Form\ContactType;
+use App\Core\Form\SearchType;
 use Controller;
-use Form\RecaptchaType;
 use Swift_Message;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class DefaultController extends Controller
 {
@@ -25,11 +18,14 @@ class DefaultController extends Controller
 
     public function indexAction()
     {
-        Account::updateSession();
-        $currentUser = new UserInfo(USER_ID);
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         return $this->render('default/index.html.twig', array(
-            'current_user' => $currentUser->aUser,
+            'current_user' => $currentUser,
         ));
     }
 
@@ -45,92 +41,10 @@ class DefaultController extends Controller
 
     public function contactAction()
     {
-        $contactForm = $this->createFormBuilder()
-            ->add('name', TextType::class, array(
-                'label'       => 'Name',
-                'attr'        => array(
-                    'pattern' => '.{1,}', //minlength
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your name')),
-                    new Length(array('min' => 4, 'max' => 255)),
-                ),
-            ))
-            ->add('email', EmailType::class, array(
-                'label'       => 'E-mail',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email address')),
-                    new Email(array('message' => 'Please enter a VALID email address')),
-                    new Length(array('max' => 255)),
-                ),
-            ))
-            ->add('subject', TextType::class, array(
-                'label'       => 'Subject',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your subject')),
-                    new Length(array('min' => 10, 'max' => 255)),
-                ),
-            ))
-            ->add('message', TextareaType::class, array(
-                'label'       => 'Message',
-                'attr'        => array(
-                    'rows' => 6,
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your message')),
-                    new Length(array('min' => 10, 'max' => 255)),
-                ),
-            ))
-            ->add('recaptcha', RecaptchaType::class, array(
-                'private_key'    => '6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll',
-                'public_key'     => '6Ldec_4SAAAAAJ_TnvICnltNqgNaBPCbXp-wN48B',
-                'recaptcha_ajax' => false,
-                'attr'           => array(
-                    'options' => array(
-                        'theme' => 'light',
-                        'type'  => 'image',
-                        'size'  => 'normal',
-                        'defer' => true,
-                        'async' => true,
-                    ),
-                ),
-                /*
-                'constraints' => array(
-                    new RecaptchaConstraint(null, array(
-                        'enabled' => true,
-                        'privateKey' => '6LcFPwcUAAAAAP2vo5xPbUoVRAyq9VmyLEfXmazU',
-                        'requestStack' => $requestStack,
-                        'httpProxy' => array(
-                            'host' => null,
-                            'port' => null,
-                            'auth' => null,
-                        )
-                    )),
-                ),
-                */
-            ))
-            ->add('send_to_own', CheckboxType::class, array(
-                'label'    => 'Send a copy to my e-mail address',
-                'required' => false,
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Send message',
-            ))
-            ->getForm();
-        /*
-                if (isset($_POST[$form->getName()])) {
-                    $form->submit($_POST[$form->getName()]);
-                    if ($form->isValid()) {
-                        //$request->getSession()->getFlashBag()->add('success', 'Your email has been sent! Thanks!');
-                        var_dump('VALID', $form->getData());
-                        die;
-                    }
-                }
-        */
+        $contactForm = $this->createForm(ContactType::class);
 
         $request = $this->getRequest();
         $contactForm->handleRequest($request);
-
         if ($contactForm->isSubmitted() && $contactForm->isValid()) {
             $formData = $contactForm->getData();
 
@@ -205,20 +119,7 @@ class DefaultController extends Controller
 
     private function searchHandler()
     {
-        $searchForm = $this->createFormBuilder()
-            ->setMethod('GET')
-            ->add('search', TextType::class, array(
-                'label'    => 'Search',
-                'required' => true,
-                'attr'     => array(
-                    'pattern'     => '.{1,}',
-                    'placeholder' => 'Search',
-                ),
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Go',
-            ))
-            ->getForm();
+        $searchForm = $this->createForm(SearchType::class);
 
         $request = $this->getRequest();
         if ($request->isMethod('POST')) {

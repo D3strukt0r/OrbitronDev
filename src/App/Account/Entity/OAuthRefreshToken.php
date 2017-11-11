@@ -33,7 +33,7 @@ class OAuthRefreshToken
 
     /**
      * @var string
-     * @Column(type="integer")
+     * @Column(type="string")
      */
     protected $client_id;
 
@@ -58,13 +58,13 @@ class OAuthRefreshToken
     /**
      * @var OAuthClient
      * @ManyToOne(targetEntity="OAuthClient")
-     * @JoinColumn(name="client_id", referencedColumnName="id")
+     * @JoinColumn(name="client_id", referencedColumnName="client_identifier")
      */
     protected $client;
 
     /**
-     * @var OAuthUser
-     * @ManyToOne(targetEntity="OAuthUser")
+     * @var User
+     * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $user;
@@ -83,6 +83,7 @@ class OAuthRefreshToken
      * Set refresh_token
      *
      * @param string $refresh_token
+     *
      * @return OAuthRefreshToken
      */
     public function setRefreshToken($refresh_token)
@@ -106,6 +107,7 @@ class OAuthRefreshToken
      * Set client_id
      *
      * @param string $clientId
+     *
      * @return OAuthRefreshToken
      */
     public function setClientId($clientId)
@@ -129,6 +131,7 @@ class OAuthRefreshToken
      * Set user_id
      *
      * @param string $userId
+     *
      * @return OAuthRefreshToken
      */
     public function setUserId($userId)
@@ -152,6 +155,7 @@ class OAuthRefreshToken
      * Set expires
      *
      * @param \DateTime $expires
+     *
      * @return OAuthRefreshToken
      */
     public function setExpires($expires)
@@ -175,6 +179,7 @@ class OAuthRefreshToken
      * Set scope
      *
      * @param string $scope
+     *
      * @return OAuthRefreshToken
      */
     public function setScope($scope)
@@ -198,6 +203,7 @@ class OAuthRefreshToken
      * Set client
      *
      * @param OAuthClient $client
+     *
      * @return OAuthRefreshToken
      */
     public function setClient(OAuthClient $client = null)
@@ -220,10 +226,11 @@ class OAuthRefreshToken
     /**
      * Set user
      *
-     * @param OAuthUser $user
+     * @param User $user
+     *
      * @return OAuthRefreshToken
      */
-    public function setUser(OAuthUser $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -233,7 +240,7 @@ class OAuthRefreshToken
     /**
      * Get user
      *
-     * @return OAuthUser
+     * @return User
      */
     public function getUser()
     {
@@ -242,13 +249,13 @@ class OAuthRefreshToken
 
     public function toArray()
     {
-        return [
+        return array(
             'refresh_token' => $this->refresh_token,
-            'client_id' => $this->client_id,
-            'user_id' => $this->user_id,
-            'expires' => $this->expires,
-            'scope' => $this->scope,
-        ];
+            'client_id'     => $this->client_id,
+            'user_id'       => $this->user_id,
+            'expires'       => $this->expires,
+            'scope'         => $this->scope,
+        );
     }
 
     public static function fromArray($params)
@@ -257,6 +264,7 @@ class OAuthRefreshToken
         foreach ($params as $property => $value) {
             $token->$property = $value;
         }
+
         return $token;
     }
 }

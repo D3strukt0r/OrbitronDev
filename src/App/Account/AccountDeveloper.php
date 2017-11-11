@@ -20,7 +20,7 @@ class AccountDeveloper
     {
         $em = \Kernel::getIntent()->getEntityManager();
         /** @var \App\Account\Entity\OAuthClient $clients */
-        $clients = $em->getRepository(OAuthClient::class)->findBy(array('users' => $user_id));
+        $clients = $em->getRepository(OAuthClient::class)->findBy(array('user_id' => $user_id));
 
         return $clients;
     }
@@ -67,7 +67,7 @@ class AccountDeveloper
     {
         /** @var \App\Account\Entity\User $user */
         $user = \Kernel::getIntent()->getEntityManager()->find(User::class, $userId);
-        $addClient = new OauthClient();
+        $addClient = new OAuthClient();
         $addClient
             ->setClientIdentifier($clientName)
             ->setClientSecret($clientSecret)

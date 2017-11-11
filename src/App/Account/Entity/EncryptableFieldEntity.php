@@ -4,7 +4,7 @@ namespace App\Account\Entity;
 
 class EncryptableFieldEntity
 {
-    protected $hashOptions = ['cost' => 11];
+    protected $hashOptions = array('cost' => 11);
 
     protected function encryptField($value)
     {

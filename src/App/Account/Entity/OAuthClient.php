@@ -2,10 +2,8 @@
 
 namespace App\Account\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
@@ -17,15 +15,8 @@ use Doctrine\ORM\Mapping\Table;
 class OAuthClient extends EncryptableFieldEntity
 {
     /**
-     * @var integer
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
-    protected $id;
-
-    /**
      * @var string
+     * @Id
      * @Column(type="string", length=50, unique=true)
      */
     protected $client_identifier;
@@ -43,16 +34,16 @@ class OAuthClient extends EncryptableFieldEntity
     protected $redirect_uri = '';
 
     /**
-     * @var array
+     * @var string
      * @Column(type="string", options={"default":""})
      */
-    protected $scopes = '';
+    protected $scope = '';
 
     /**
-     * @var array
-     * @Column(type="string", options={"default":""})
+     * @var integer
+     * @Column(type="integer", options={"default":-1})
      */
-    protected $users = '';
+    protected $user_id = '';
 
     /**
      * Get id
@@ -61,24 +52,20 @@ class OAuthClient extends EncryptableFieldEntity
      */
     public function getId()
     {
-        return $this->id;
-    }
-
-    public function __construct()
-    {
-        $this->scopes = new ArrayCollection();
-        $this->users = new ArrayCollection();
+        return $this->getClientIdentifier();
     }
 
     /**
      * Set client_identifier
      *
      * @param string $clientIdentifier
+     *
      * @return OAuthClient
      */
     public function setClientIdentifier($clientIdentifier)
     {
         $this->client_identifier = $clientIdentifier;
+
         return $this;
     }
 
@@ -107,6 +94,7 @@ class OAuthClient extends EncryptableFieldEntity
         } else {
             $this->client_secret = $clientSecret;
         }
+
         return $this;
     }
 
@@ -124,22 +112,30 @@ class OAuthClient extends EncryptableFieldEntity
      * Verify client's secret
      *
      * @param string $clientSecret
-     * @return boolean
+     * @param bool   $encrypt
+     *
+     * @return bool
      */
-    public function verifyClientSecret($clientSecret)
+    public function verifyClientSecret($clientSecret, $encrypt = false)
     {
-        return $this->verifyEncryptedFieldValue($this->getClientSecret(), $clientSecret);
+        if ($encrypt) {
+            return $this->verifyEncryptedFieldValue($this->getClientSecret(), $clientSecret);
+        } else {
+            return $this->getClientSecret() == $clientSecret;
+        }
     }
 
     /**
      * Set redirect_uri
      *
      * @param string $redirectUri
+     *
      * @return OAuthClient
      */
     public function setRedirectUri($redirectUri)
     {
         $this->redirect_uri = $redirectUri;
+
         return $this;
     }
 
@@ -157,11 +153,13 @@ class OAuthClient extends EncryptableFieldEntity
      * Set scopes
      *
      * @param array $scopes
+     *
      * @return OAuthClient
      */
     public function setScopes($scopes)
     {
-        $this->scopes = implode(' ', $scopes);
+        $this->scope = implode(' ', $scopes);
+
         return $this;
     }
 
@@ -172,7 +170,8 @@ class OAuthClient extends EncryptableFieldEntity
      */
     public function getScopes()
     {
-        $scopes = explode(' ', $this->scopes);
+        $scopes = explode(' ', $this->scope);
+
         return $scopes;
     }
 
@@ -181,6 +180,7 @@ class OAuthClient extends EncryptableFieldEntity
         $scopes = $this->getScopes();
         $scopes[] = $scope;
         $this->setScopes($scopes);
+
         return $this;
     }
 
@@ -191,38 +191,42 @@ class OAuthClient extends EncryptableFieldEntity
             $key = array_search($scope, $scopes);
             unset($scopes[$key]);
         }
+
         return $this;
     }
 
     /**
      * Set users (in charge)
      *
-     * @param array $users
+     * @param integer $users
+     *
      * @return OAuthClient
      */
     public function setUsers($users)
     {
-        $this->users = $users;
+        $this->user_id = $users;
+
         return $this;
     }
 
     /**
      * Get users (in charge)
      *
-     * @return array
+     * @return integer
      */
     public function getUsers()
     {
-        return $this->users;
+        return $this->user_id;
     }
 
     public function toArray()
     {
-        return [
-            'client_id' => $this->client_identifier,
+        return array(
+            'client_id'     => $this->client_identifier,
             'client_secret' => $this->client_secret,
-            'redirect_uri' => $this->redirect_uri,
-            'scopes' => $this->scopes
-        ];
+            'redirect_uri'  => $this->redirect_uri,
+            'scope'         => $this->scope,
+            'user_id'       => $this->user_id,
+        );
     }
 }

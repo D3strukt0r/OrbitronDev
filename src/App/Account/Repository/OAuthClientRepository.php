@@ -13,15 +13,17 @@ class OAuthClientRepository extends EntityRepository implements ClientCredential
         if ($client) {
             $client = $client->toArray();
         }
+
         return $client;
     }
 
-    public function checkClientCredentials($clientIdentifier, $clientSecret = NULL)
+    public function checkClientCredentials($clientIdentifier, $clientSecret = null)
     {
         $client = $this->findOneBy(['client_identifier' => $clientIdentifier]);
         if ($client) {
             return $client->verifyClientSecret($clientSecret);
         }
+
         return false;
     }
 

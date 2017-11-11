@@ -86,7 +86,7 @@ class AccountHelper
         $user = new User();
         $user
             ->setUsername($username)
-            ->setPassword(self::hashPassword($password))
+            ->setPassword($password)
             ->setEmail($email)
             ->setEmailVerified(false)
             ->setCreatedOn(new \DateTime())
@@ -98,14 +98,15 @@ class AccountHelper
 
 
         $userProfile = new UserProfiles();
+        $userProfile->setUser($user);
         $user->setProfile($userProfile);
 
         /** @var SubscriptionType $defaultSubscription */
-        $defaultSubscription = $entityManager->find(SubscriptionType::class,
-            self::$settings['subscription']['default']);
+        $defaultSubscription = $entityManager->find(SubscriptionType::class, self::$settings['subscription']['default']);
 
         $userSubscription = new UserSubscription();
         $userSubscription
+            ->setUser($user)
             ->setSubscription($defaultSubscription)
             ->setActivatedAt(new \DateTime())
             ->setExpiresAt(new \DateTime());
@@ -115,6 +116,15 @@ class AccountHelper
         $entityManager->flush();
 
         return (int)$user->getId();
+    }
+
+    public static function removeUser(User $user)
+    {
+        // TODO: Removing user function does not work yet
+        \Kernel::getIntent()->getEntityManager()->remove($user);
+        \Kernel::getIntent()->getEntityManager()->remove($user->getProfile());
+        \Kernel::getIntent()->getEntityManager()->remove($user->getSubscription());
+        \Kernel::getIntent()->getEntityManager()->flush();
     }
 
     public static function login(Response &$response, $usernameOrEmail, $password, $remember = false)
@@ -165,7 +175,7 @@ class AccountHelper
     /**
      * @param \Symfony\Component\HttpFoundation\Response $response
      */
-    public static function logout(Response &$response)
+    public static function logout(Response &$response = null)
     {
         /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
         $session = \Kernel::getIntent()->get('session');
@@ -296,18 +306,6 @@ class AccountHelper
     }
 
     /**
-     * Hashes the string. Returns the hashed string.
-     *
-     * @param string $password
-     *
-     * @return bool|string
-     */
-    public static function hashPassword($password)
-    {
-        return password_hash($password, PASSWORD_DEFAULT);
-    }
-
-    /**
      * Checks if the given password matches the one of the user. A user
      * entity of User is required for that. Returns true if it matches
      * or false if not
@@ -390,5 +388,31 @@ class AccountHelper
         }
         define('ACCOUNT_SESSION_UPDATED', true);
         return true;
+    }
+
+    public static function addDefaultSubscriptionTypes()
+    {
+        $basicSubscription = new SubscriptionType();
+        $basicSubscription
+            ->setTitle('Basic')
+            ->setPrice('0')
+            ->setPermissions(array());
+
+        $premiumSubscription = new SubscriptionType();
+        $premiumSubscription
+            ->setTitle('Premium')
+            ->setPrice('10')
+            ->setPermissions(array('web_service', 'support'));
+
+        $enterpriseSubscription = new SubscriptionType();
+        $enterpriseSubscription
+            ->setTitle('Enterprise')
+            ->setPrice('30')
+            ->setPermissions(array('web_service', 'web_service_multiple', 'support'));
+
+        \Kernel::getIntent()->getEntityManager()->persist($basicSubscription);
+        \Kernel::getIntent()->getEntityManager()->persist($premiumSubscription);
+        \Kernel::getIntent()->getEntityManager()->persist($enterpriseSubscription);
+        \Kernel::getIntent()->getEntityManager()->flush();
     }
 }

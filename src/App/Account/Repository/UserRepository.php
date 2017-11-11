@@ -5,7 +5,7 @@ namespace App\Account\Repository;
 use Doctrine\ORM\EntityRepository;
 use OAuth2\Storage\UserCredentialsInterface;
 
-class OAuthUserRepository extends EntityRepository implements UserCredentialsInterface
+class UserRepository extends EntityRepository implements UserCredentialsInterface
 {
     public function checkUserCredentials($email, $password)
     {
@@ -13,12 +13,14 @@ class OAuthUserRepository extends EntityRepository implements UserCredentialsInt
         if ($user) {
             return $user->verifyPassword($password);
         }
+
         return false;
     }
 
     /**
-     * @return
-     * ARRAY the associated "user_id" and optional "scope" values
+     * @param $email
+     *
+     * @return array the associated "user_id" and optional "scope" values
      * This function MUST return FALSE if the requested user does not exist or is
      * invalid. "scope" is a space-separated list of restricted scopes.
      * @code
@@ -34,6 +36,7 @@ class OAuthUserRepository extends EntityRepository implements UserCredentialsInt
         if ($user) {
             $user = $user->toArray();
         }
+
         return $user;
     }
 }

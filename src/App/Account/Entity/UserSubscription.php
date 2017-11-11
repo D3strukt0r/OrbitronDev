@@ -17,15 +17,16 @@ use Doctrine\ORM\Mapping\Table;
 class UserSubscription
 {
     /**
+     * @var integer
      * @Id
      * @GeneratedValue
-     * @Column(type="integer", name="user_id")
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
      * @OneToOne(targetEntity="User", inversedBy="subscription")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
+     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
      */
     protected $user;
 
@@ -36,28 +37,42 @@ class UserSubscription
     protected $subscription;
 
     /**
-     * @Column(type="datetime", name="activated_at")
+     * @var \DateTime
+     * @Column(type="datetime")
      */
-    protected $activatedAt;
+    protected $activated_at;
 
     /**
-     * @Column(type="datetime", name="expires_at")
+     * @var \DateTime|null
+     * @Column(type="datetime", nullable=true)
      */
-    protected $expiresAt;
+    protected $expires_at;
 
+    /**
+     * @return integer
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * @return \App\Account\Entity\User
+     */
     public function getUser()
     {
         return $this->user;
     }
 
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return $this
+     */
     public function setUser(User $user)
     {
         $this->user = $user;
+
         return $this;
     }
 
@@ -69,31 +84,81 @@ class UserSubscription
         return $this->subscription;
     }
 
+    /**
+     * @param \App\Account\Entity\SubscriptionType $subscription
+     *
+     * @return $this
+     */
     public function setSubscription(SubscriptionType $subscription)
     {
         $this->subscription = $subscription;
+
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getActivatedAt()
     {
-        return $this->activatedAt;
+        return $this->activated_at;
     }
 
+    /**
+     * @param \DateTime $activatedAt
+     *
+     * @return $this
+     */
     public function setActivatedAt(\DateTime $activatedAt)
     {
-        $this->activatedAt = $activatedAt;
+        $this->activated_at = $activatedAt;
+
         return $this;
     }
 
+    /**
+     * @return \DateTime|null
+     */
     public function getExpiresAt()
     {
-        return $this->expiresAt;
+        return $this->expires_at;
     }
 
+    /**
+     * @param \DateTime $expiresAt
+     *
+     * @return $this
+     */
     public function setExpiresAt(\DateTime $expiresAt)
     {
-        $this->expiresAt = $expiresAt;
+        $this->expires_at = $expiresAt;
+
         return $this;
+    }
+
+    /**
+     * @return float|int|null
+     */
+    public function getRemainingDays()
+    {
+        if (is_null($this->getExpiresAt())) {
+            return null;
+        }
+
+        $difference = $this->getExpiresAt()->getTimestamp() - time();
+        if ($difference <= 0) {
+            return 0;
+        }
+
+        return ceil($difference / 86400);
+    }
+
+    public function hasSubscription()
+    {
+        if (is_null($days = $this->getRemainingDays()) || $days > 0) {
+            return true;
+        }
+
+        return false;
     }
 }

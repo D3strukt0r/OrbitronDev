@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\Table;
 class SubscriptionType
 {
     /**
+     * @var integer
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -22,55 +23,88 @@ class SubscriptionType
     protected $id;
 
     /**
-     * @Column(type="string", name="title")
+     * @var string
+     * @Column(type="string")
      */
     protected $title;
 
     /**
-     * @Column(type="decimal", name="price")
+     * @var integer
+     * @Column(type="decimal")
      */
     protected $price;
 
     /**
-     * @Column(type="json_array", name="permissions")
+     * @var array
+     * @Column(type="json_array")
      */
     protected $permissions;
 
+    /**
+     * @return integer
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function getTitle()
     {
         return $this->title;
     }
 
+    /**
+     * @param string $title
+     *
+     * @return $this
+     */
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
+    /**
+     * @return integer
+     */
     public function getPrice()
     {
         return $this->price;
     }
 
+    /**
+     * @param integer $price
+     *
+     * @return $this
+     */
     public function setPrice($price)
     {
         $this->price = $price;
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getPermissions()
     {
         return $this->permissions;
     }
 
-    public function setPermissions(array $permissions)
+    /**
+     * @param array $permissions
+     *
+     * @return $this
+     */
+    public function setPermissions($permissions)
     {
         $this->permissions = $permissions;
+
         return $this;
     }
 }

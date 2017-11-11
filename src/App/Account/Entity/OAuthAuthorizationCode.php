@@ -33,7 +33,7 @@ class OAuthAuthorizationCode
 
     /**
      * @var string
-     * @Column(type="integer")
+     * @Column(type="string")
      */
     protected $client_id;
 
@@ -64,13 +64,13 @@ class OAuthAuthorizationCode
     /**
      * @var OAuthClient
      * @ManyToOne(targetEntity="OAuthClient")
-     * @JoinColumn(name="client_id", referencedColumnName="id")
+     * @JoinColumn(name="client_id", referencedColumnName="client_identifier")
      */
     protected $client;
 
     /**
-     * @var OAuthUser
-     * @ManyToOne(targetEntity="OAuthUser")
+     * @var User
+     * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $user;
@@ -89,6 +89,7 @@ class OAuthAuthorizationCode
      * Set code
      *
      * @param string $code
+     *
      * @return OAuthAuthorizationCode
      */
     public function setCode($code)
@@ -112,6 +113,7 @@ class OAuthAuthorizationCode
      * Set client_id
      *
      * @param string $clientId
+     *
      * @return OAuthAuthorizationCode
      */
     public function setClientId($clientId)
@@ -135,6 +137,7 @@ class OAuthAuthorizationCode
      * Set user_id
      *
      * @param string $userId
+     *
      * @return OAuthAuthorizationCode
      */
     public function setUserId($userId)
@@ -158,6 +161,7 @@ class OAuthAuthorizationCode
      * Set expires
      *
      * @param \DateTime $expires
+     *
      * @return OAuthAuthorizationCode
      */
     public function setExpires($expires)
@@ -181,6 +185,7 @@ class OAuthAuthorizationCode
      * Set redirect_uri
      *
      * @param string $redirectUri
+     *
      * @return OAuthAuthorizationCode
      */
     public function setRedirectUri($redirectUri)
@@ -204,6 +209,7 @@ class OAuthAuthorizationCode
      * Set scope
      *
      * @param string $scope
+     *
      * @return OAuthAuthorizationCode
      */
     public function setScope($scope)
@@ -227,6 +233,7 @@ class OAuthAuthorizationCode
      * Set client
      *
      * @param OAuthClient $client
+     *
      * @return OAuthAuthorizationCode
      */
     public function setClient(OAuthClient $client = null)
@@ -249,10 +256,11 @@ class OAuthAuthorizationCode
     /**
      * Set user
      *
-     * @param OAuthUser $user
+     * @param User $user
+     *
      * @return OAuthAuthorizationCode
      */
-    public function setUser(OAuthUser $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -262,7 +270,7 @@ class OAuthAuthorizationCode
     /**
      * Get user
      *
-     * @return OAuthUser
+     * @return User
      */
     public function getUser()
     {
@@ -271,13 +279,13 @@ class OAuthAuthorizationCode
 
     public function toArray()
     {
-        return [
-            'code' => $this->code,
+        return array(
+            'code'      => $this->code,
             'client_id' => $this->client_id,
-            'user_id' => $this->user_id,
-            'expires' => $this->expires,
-            'scope' => $this->scope,
-        ];
+            'user_id'   => $this->user_id,
+            'expires'   => $this->expires,
+            'scope'     => $this->scope,
+        );
     }
 
     public static function fromArray($params)
@@ -286,6 +294,7 @@ class OAuthAuthorizationCode
         foreach ($params as $property => $value) {
             $code->$property = $value;
         }
+
         return $code;
     }
 }

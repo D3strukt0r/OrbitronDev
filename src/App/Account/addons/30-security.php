@@ -1,6 +1,9 @@
 <?php
 
 use App\Account\AccountAcp;
+use App\Account\AccountHelper;
+use App\Account\Entity\User;
+use App\Account\Form\DeleteAccountType;
 
 if (!isset($indirectly)) {
     AccountAcp::addGroup(array(
@@ -45,11 +48,25 @@ function acp_html_login_log()
 }
 
 /**
- * @param \Twig_Environment $twig
+ * @param \Twig_Environment             $twig
+ * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_delete_account($twig)
+function acp_html_delete_account($twig, $controller)
 {
-    return $twig->render('account/panel/delete-account.html.twig');
+    /** @var \App\Account\Entity\User $currentUser */
+    $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
+
+    $deleteAccountForm = $controller->createForm(DeleteAccountType::class);
+
+    $request = $controller->getRequest();
+    $deleteAccountForm->handleRequest($request);
+    if ($deleteAccountForm->isSubmitted() && $deleteAccountForm->isValid()) {
+        //AccountHelper::logout();
+        AccountHelper::removeUser($currentUser);
+    }
+    return $twig->render('account/panel/delete-account.html.twig', array(
+        'delete_account_form' => $deleteAccountForm->createView(),
+    ));
 }

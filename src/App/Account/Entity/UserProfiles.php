@@ -19,52 +19,60 @@ use Doctrine\ORM\Mapping\Table;
 class UserProfiles
 {
     /**
+     * @var integer
      * @Id
      * @GeneratedValue
-     * @Column(type="integer", name="user_id")
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
      * @OneToOne(targetEntity="User", inversedBy="profile")
-     * @JoinColumn(name="user_id", referencedColumnName="user_id", nullable=false)
+     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
      */
     protected $user;
 
     /**
-     * @Column(type="string", name="name", nullable=true)
+     * @var string
+     * @Column(type="string", nullable=true)
      */
     protected $name;
 
     /**
-     * @Column(type="string", name="surname", nullable=true)
+     * @var string
+     * @Column(type="string", nullable=true)
      */
     protected $surname;
 
     /**
-     * @Column(type="smallint", name="gender", nullable=true)
+     * @var integer
+     * @Column(type="smallint", nullable=true)
      */
     protected $gender;
 
     /**
-     * @Column(type="date", name="birthday", nullable=true)
+     * @var \DateTime
+     * @Column(type="date", nullable=true)
      */
     protected $birthday;
 
     /**
-     * @Column(type="string", name="website", nullable=true)
+     * @var string
+     * @Column(type="string", nullable=true)
      */
     protected $website;
 
     /**
-     * @Column(type="string", name="picture", nullable=true)
+     * @var string
+     * @Column(type="string", nullable=true)
      */
     protected $picture;
 
     /**
-     * @Column(type="integer", name="active_address", nullable=true)
+     * @var integer
+     * @Column(type="integer", nullable=true)
      */
-    protected $activeAddress;
+    protected $active_address;
 
     /**
      * @OneToMany(targetEntity="UserAddress", mappedBy="userProfile", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -76,52 +84,91 @@ class UserProfiles
         $this->addresses = new ArrayCollection();
     }
 
+    /**
+     * @return integer
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * @return \App\Account\Entity\User
+     */
     public function getUser()
     {
         return $this->user;
     }
 
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return $this
+     */
     public function setUser(User $user)
     {
         $this->user = $user;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getSurname()
     {
         return $this->surname;
     }
 
+    /**
+     * @param string $surname
+     *
+     * @return $this
+     */
     public function setSurname($surname)
     {
         $this->surname = $surname;
+
         return $this;
     }
 
+    /**
+     * @return integer
+     */
     public function getGender()
     {
         return $this->gender;
     }
 
+    /**
+     * @param integer $gender
+     *
+     * @return $this
+     */
     public function setGender($gender)
     {
         $this->gender = $gender;
+
         return $this;
     }
 
@@ -133,45 +180,81 @@ class UserProfiles
         return $this->birthday;
     }
 
+    /**
+     * @param \DateTime $birthday
+     *
+     * @return $this
+     */
     public function setBirthday(\DateTime $birthday)
     {
         $this->birthday = $birthday;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getWebsite()
     {
         return $this->website;
     }
 
+    /**
+     * @param string $website
+     *
+     * @return $this
+     */
     public function setWebsite($website)
     {
         $this->website = $website;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getPicture()
     {
         return $this->picture;
     }
 
+    /**
+     * @param string $picture
+     *
+     * @return $this
+     */
     public function setPicture($picture)
     {
         $this->picture = $picture;
+
         return $this;
     }
 
+    /**
+     * @return integer
+     */
     public function getActiveAddress()
     {
-        return $this->activeAddress;
+        return $this->active_address;
     }
 
+    /**
+     * @param integer $activeAddress
+     *
+     * @return $this
+     */
     public function setActiveAddress($activeAddress)
     {
-        $this->activeAddress = $activeAddress;
+        $this->active_address = $activeAddress;
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getAddresses()
     {
         return $this->addresses->toArray();
@@ -190,6 +273,11 @@ class UserProfiles
         return $this;
     }
 
+    /**
+     * @param \App\Account\Entity\UserAddress $address
+     *
+     * @return $this
+     */
     public function removeAddress(UserAddress $address)
     {
         if ($this->addresses->contains($address)) {

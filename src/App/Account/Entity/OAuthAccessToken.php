@@ -33,7 +33,7 @@ class OAuthAccessToken
 
     /**
      * @var string
-     * @Column(type="integer")
+     * @Column(type="string")
      */
     protected $client_id;
 
@@ -58,13 +58,13 @@ class OAuthAccessToken
     /**
      * @var OAuthClient
      * @ManyToOne(targetEntity="OAuthClient")
-     * @JoinColumn(name="client_id", referencedColumnName="id")
+     * @JoinColumn(name="client_id", referencedColumnName="client_identifier")
      */
     protected $client;
 
     /**
-     * @var OAuthUser
-     * @ManyToOne(targetEntity="OAuthUser")
+     * @var User
+     * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $user;
@@ -83,11 +83,13 @@ class OAuthAccessToken
      * Set token
      *
      * @param string $token
+     *
      * @return OAuthAccessToken
      */
     public function setToken($token)
     {
         $this->token = $token;
+
         return $this;
     }
 
@@ -105,11 +107,13 @@ class OAuthAccessToken
      * Set client_id
      *
      * @param string $clientId
+     *
      * @return OAuthAccessToken
      */
     public function setClientId($clientId)
     {
         $this->client_id = $clientId;
+
         return $this;
     }
 
@@ -127,11 +131,13 @@ class OAuthAccessToken
      * Set user_id
      *
      * @param string $userId
+     *
      * @return OAuthAccessToken
      */
     public function setUserId($userId)
     {
         $this->user_id = $userId;
+
         return $this;
     }
 
@@ -149,11 +155,13 @@ class OAuthAccessToken
      * Set expires
      *
      * @param \DateTime $expires
+     *
      * @return OAuthAccessToken
      */
     public function setExpires($expires)
     {
         $this->expires = $expires;
+
         return $this;
     }
 
@@ -171,11 +179,13 @@ class OAuthAccessToken
      * Set scope
      *
      * @param string $scope
+     *
      * @return OAuthAccessToken
      */
     public function setScope($scope)
     {
         $this->scope = $scope;
+
         return $this;
     }
 
@@ -193,11 +203,13 @@ class OAuthAccessToken
      * Set client
      *
      * @param OAuthClient $client
+     *
      * @return OAuthAccessToken
      */
     public function setClient(OAuthClient $client = null)
     {
         $this->client = $client;
+
         return $this;
     }
 
@@ -217,25 +229,28 @@ class OAuthAccessToken
         foreach ($params as $property => $value) {
             $token->$property = $value;
         }
+
         return $token;
     }
 
     /**
      * Set user
      *
-     * @param OAuthUser $user
+     * @param User $user
+     *
      * @return OAuthAccessToken
      */
-    public function setUser(OAuthUser $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
+
         return $this;
     }
 
     /**
      * Get user
      *
-     * @return OAuthUser
+     * @return User
      */
     public function getUser()
     {
@@ -244,12 +259,12 @@ class OAuthAccessToken
 
     public function toArray()
     {
-        return [
-            'token' => $this->token,
+        return array(
+            'token'     => $this->token,
             'client_id' => $this->client_id,
-            'user_id' => $this->user_id,
-            'expires' => $this->expires,
-            'scope' => $this->scope,
-        ];
+            'user_id'   => $this->user_id,
+            'expires'   => $this->expires,
+            'scope'     => $this->scope,
+        );
     }
 }

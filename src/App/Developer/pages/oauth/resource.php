@@ -35,7 +35,7 @@ if(array_key_exists('error', $resultFormatted)) {
 }
 
 ?>
-<pre><?php echo $result; ?></pre>
+<pre><?php var_dump($result); ?></pre>
 <a href="resource.php?token=<?php echo $refreshToken; ?>">GET RESOURCES AGAIN</a>
 <br />
 <br />

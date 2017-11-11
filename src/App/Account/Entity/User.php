@@ -13,87 +13,102 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
 /**
- * @Entity
+ * @Entity(repositoryClass="App\Account\Repository\UserRepository")
  * @Table(name="users")
  */
-class User
+class User extends EncryptableFieldEntity
 {
     /**
+     * @var integer
      * @Id
      * @GeneratedValue
-     * @Column(type="integer", name="user_id")
+     * @Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column(type="string", name="username")
+     * @var string
+     * @Column(type="string", unique=true)
      */
     protected $username;
 
     /**
-     * @Column(type="string", name="password")
+     * @var string
+     * @Column(type="string")
      */
     protected $password;
 
     /**
-     * @Column(type="string", name="email")
+     * @var string
+     * @Column(type="string", unique=true)
      */
     protected $email;
 
     /**
-     * @Column(type="boolean", name="email_verified", options={"default":0})
+     * @var boolean
+     * @Column(type="boolean", options={"default":0})
      */
-    protected $emailVerified;
+    protected $email_verified;
 
     /**
-     * @Column(type="datetime", name="created_on")
+     * @var \DateTime
+     * @Column(type="datetime")
      */
-    protected $createdOn;
+    protected $created_on;
 
     /**
-     * @Column(type="string", name="created_ip")
+     * @var string
+     * @Column(type="string")
      */
-    protected $createdIp;
+    protected $created_ip;
 
     /**
-     * @Column(type="datetime", name="last_online_at")
+     * @var \DateTime
+     * @Column(type="datetime")
      */
-    protected $lastOnlineAt;
+    protected $last_online_at;
 
     /**
-     * @Column(type="string", name="last_ip")
+     * @var string
+     * @Column(type="string")
      */
-    protected $lastIp;
+    protected $last_ip;
 
     /**
+     * @var boolean
      * @Column(type="boolean", name="developer_status", options={"default":false})
      */
     protected $developerStatus;
 
     /**
-     * @Column(type="integer", name="credits", options={"default":0})
+     * @var integer
+     * @Column(type="integer", options={"default":0})
      */
     protected $credits;
 
     /**
+     * @var string
      * @Column(type="string", name="preferred_payment_method", nullable=true)
      */
     protected $preferredPaymentMethod;
 
     /**
-     * @OneToMany(targetEntity="UserPaymentMethods", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=TRUE)
+     * @var UserPaymentMethods
+     * @OneToMany(targetEntity="UserPaymentMethods", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $paymentMethods;
 
     /**
+     * @var UserProfiles
      * @OneToOne(targetEntity="UserProfiles", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @JoinColumn(name="profile_id", referencedColumnName="user_id")
+     * @JoinColumn(name="profile_id", referencedColumnName="id")
      */
     protected $profile;
 
     /**
+     * @var UserSubscription
      * @OneToOne(targetEntity="UserSubscription", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @JoinColumn(name="subscription_id", referencedColumnName="user_id")
+     * @JoinColumn(name="subscription_id", referencedColumnName="id")
      */
     protected $subscription;
 
@@ -102,150 +117,272 @@ class User
         $this->paymentMethods = new ArrayCollection();
     }
 
+    /**
+     * @return integer
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function getUsername()
     {
         return $this->username;
     }
 
+    /**
+     * @param string $username
+     *
+     * @return $this
+     */
     public function setUsername($username)
     {
         $this->username = $username;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getPassword()
     {
         return $this->password;
     }
 
+    /**
+     * @param string $password
+     *
+     * @return $this
+     */
     public function setPassword($password)
     {
-        $this->password = $password;
+        $this->password = $this->encryptField($password);
+
         return $this;
     }
 
+    public function verifyPassword($password)
+    {
+        return $this->verifyEncryptedFieldValue($this->getPassword(), $password);
+    }
+
+    /**
+     * @return string
+     */
     public function getEmail()
     {
         return $this->email;
     }
 
+    /**
+     * @param string $email
+     *
+     * @return $this
+     */
     public function setEmail($email)
     {
         $this->email = $email;
+
         return $this;
     }
 
+    /**
+     * @return boolean
+     */
     public function getEmailVerified()
     {
-        return $this->emailVerified;
+        return $this->email_verified;
     }
 
+    /**
+     * @param boolean $emailVerified
+     *
+     * @return $this
+     */
     public function setEmailVerified($emailVerified)
     {
-        $this->emailVerified = $emailVerified;
+        $this->email_verified = $emailVerified;
+
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getCreatedOn()
     {
-        return $this->createdOn;
+        return $this->created_on;
     }
 
+    /**
+     * @param \DateTime $createdOn
+     *
+     * @return $this
+     */
     public function setCreatedOn(\DateTime $createdOn)
     {
-        $this->createdOn = $createdOn;
+        $this->created_on = $createdOn;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getCreatedIp()
     {
-        return $this->createdIp;
+        return $this->created_ip;
     }
 
+    /**
+     * @param string $createdIp
+     *
+     * @return $this
+     */
     public function setCreatedIp($createdIp)
     {
-        $this->createdIp = $createdIp;
+        $this->created_ip = $createdIp;
+
         return $this;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getLastOnlineAt()
     {
-        return $this->lastOnlineAt;
+        return $this->last_online_at;
     }
 
+    /**
+     * @param \DateTime $lastOnlineAt
+     *
+     * @return $this
+     */
     public function setLastOnlineAt(\DateTime $lastOnlineAt)
     {
-        $this->lastOnlineAt = $lastOnlineAt;
+        $this->last_online_at = $lastOnlineAt;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getLastIp()
     {
-        return $this->lastIp;
+        return $this->last_ip;
     }
 
+    /**
+     * @param string $lastIp
+     *
+     * @return $this
+     */
     public function setLastIp($lastIp)
     {
-        $this->lastIp = $lastIp;
+        $this->last_ip = $lastIp;
+
         return $this;
     }
 
+    /**
+     * @return boolean
+     */
     public function getDeveloperStatus()
     {
         return $this->developerStatus;
     }
 
+    /**
+     * @param boolean $developerStatus
+     *
+     * @return $this
+     */
     public function setDeveloperStatus($developerStatus)
     {
         $this->developerStatus = $developerStatus;
+
         return $this;
     }
 
+    /**
+     * @return integer
+     */
     public function getCredits()
     {
         return $this->credits;
     }
 
+    /**
+     * @param integer $credits
+     *
+     * @return $this
+     */
     public function setCredits($credits)
     {
         $this->credits = $credits;
+
         return $this;
     }
 
+    /**
+     * @return integer
+     */
     public function getPreferredPaymentMethod()
     {
         return $this->preferredPaymentMethod;
     }
 
+    /**
+     * @param integer $preferredPaymentMethod
+     *
+     * @return $this
+     */
     public function setPreferredPaymentMethod($preferredPaymentMethod)
     {
         $this->preferredPaymentMethod = $preferredPaymentMethod;
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getPaymentMethods()
     {
         return $this->paymentMethods->toArray();
     }
 
+    /**
+     * @param \App\Account\Entity\UserPaymentMethods $paymentMethod
+     *
+     * @return $this
+     */
     public function addPaymentMethod(UserPaymentMethods $paymentMethod)
     {
         $this->paymentMethods->add($paymentMethod);
         $paymentMethod->setUser($this);
+
         return $this;
     }
 
+    /**
+     * @param \App\Account\Entity\UserPaymentMethods $paymentMethod
+     *
+     * @return $this
+     */
     public function removePaymentMethod(UserPaymentMethods $paymentMethod)
     {
         if ($this->paymentMethods->contains($paymentMethod)) {
             $this->paymentMethods->removeElement($paymentMethod);
             $paymentMethod->setUser(null);
         }
+
         return $this;
     }
 
@@ -257,9 +394,15 @@ class User
         return $this->profile;
     }
 
+    /**
+     * @param \App\Account\Entity\UserProfiles $profile
+     *
+     * @return $this
+     */
     public function setProfile(UserProfiles $profile)
     {
         $this->profile = $profile;
+
         return $this;
     }
 
@@ -271,9 +414,31 @@ class User
         return $this->subscription;
     }
 
+    /**
+     * @param \App\Account\Entity\UserSubscription $subscription
+     *
+     * @return $this
+     */
     public function setSubscription(UserSubscription $subscription)
     {
         $this->subscription = $subscription;
+
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'user_id'        => $this->id,
+            'username'       => $this->username,
+            'email'          => $this->email,
+            'email_verified' => $this->email_verified,
+            'password'       => $this->password,
+            'credits'        => $this->credits,
+            'scope'          => null,
+        ];
     }
 }

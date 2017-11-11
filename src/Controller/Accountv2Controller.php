@@ -10,7 +10,6 @@ use App\Account\Entity\OAuthAccessToken;
 use App\Account\Entity\OAuthAuthorizationCode;
 use App\Account\Entity\OAuthClient;
 use App\Account\Entity\OAuthRefreshToken;
-use App\Account\Entity\OAuthUser;
 use App\Account\Entity\User;
 use App\Account\Form\ConfirmEmailType;
 use App\Account\Form\ForgotType;
@@ -152,6 +151,9 @@ class Accountv2Controller extends Controller
             }
 
             if (is_int($registerResult)) {
+                $tokenGenerator = new Token();
+                $token = $tokenGenerator->generateToken('confirm_email', strtotime('+1 day'));
+
                 $message = (new Swift_Message())
                     ->setSubject('[Account] Email activation')
                     ->setFrom(array('no-reply-account@orbitrondev.org' => 'OrbitronDev'))
@@ -159,13 +161,14 @@ class Accountv2Controller extends Controller
                     ->setBody($this->renderView('account/mail/register.html.twig', array(
                         'username' => $registerForm->get('username')->getData(),
                         'email'    => $registerForm->get('email')->getData(),
+                        'token'    => $token,
                     )), 'text/html');
                 $mailSent = $this->get('mailer')->send($message);
 
                 if ($mailSent) {
-                    $this->addFlash('successful', 'Your email has been send! Also check your Junk-Folder!');
+                    $this->addFlash('successful', 'Your confirmation email has been send! Also check your Junk-Folder!');
                 } else {
-                    $this->addFlash('failed', 'Could not send email. Please send the confirmation mail for you E-Mail address again at you account settings');
+                    $this->addFlash('failed', 'Could not send confirmation email. Please send the confirmation mail for you E-Mail address again trough your account settings');
                 }
                 $url = $request->query->has('page') ? urldecode($request->query->get('page')) : $this->generateUrl('app_account_panel', array('page' => 'home'));
                 $response = new RedirectResponse($url);
@@ -372,7 +375,7 @@ class Accountv2Controller extends Controller
                     $userId = $token->getInformation()['user_id'];
                     /** @var \App\Account\Entity\User $user */
                     $user = $this->getEntityManager()->find(User::class, $userId);
-                    $user->setPassword(AccountHelper::hashPassword($password));
+                    $user->setPassword($password);
                     $this->getEntityManager()->flush();
 
                     $token->remove();
@@ -507,8 +510,8 @@ class Accountv2Controller extends Controller
     {
         /** @var \App\Account\Repository\OAuthClientRepository $clientStorage */
         $clientStorage  = $this->getEntityManager()->getRepository(OAuthClient::class);
-        /** @var \App\Account\Repository\OAuthUserRepository $userStorage */
-        $userStorage = $this->getEntityManager()->getRepository(OAuthUser::class);
+        /** @var \App\Account\Repository\UserRepository $userStorage */
+        $userStorage = $this->getEntityManager()->getRepository(User::class);
         /** @var \App\Account\Repository\OAuthAccessTokenRepository $accessTokenStorage */
         $accessTokenStorage  = $this->getEntityManager()->getRepository(OAuthAccessToken::class);
         /** @var \App\Account\Repository\OAuthAuthorizationCodeRepository $authorizationCodeStorage */
@@ -620,7 +623,7 @@ class Accountv2Controller extends Controller
 
         // Handle a request for an OAuth2.0 Access Token and send the response to the client
         $request = \OAuth2\Request::createFromGlobals();
-        $this->oauthServer->handleTokenRequest($request)->send();
+        return $this->oauthServer->handleTokenRequest($request)->send();
     }
 
     // curl https://account.orbitrondev.org/oauth/resource -d 'access_token=YOUR_TOKEN'

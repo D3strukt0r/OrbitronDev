@@ -6,7 +6,6 @@ use App\Account\Entity\User;
 use App\Account\Form\CreateDevAccount;
 use App\Account\Form\CreateDevApp;
 use App\Core\Token;
-use Container\DatabaseContainer;
 
 if (!isset($indirectly)) {
     /** @var \App\Account\Entity\User $currentUser */
