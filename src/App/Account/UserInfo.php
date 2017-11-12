@@ -13,8 +13,6 @@ class UserInfo
     public $aSubscription = array();
 
     /**
-     * UserInfo constructor.
-     *
      * @param $fUserId
      *
      * @throws \Exception

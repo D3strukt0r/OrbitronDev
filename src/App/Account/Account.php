@@ -22,49 +22,6 @@ class Account
     }
 
     /**
-     * @param string $username
-     * @param string $email
-     * @param string $password
-     * @param string $confirm_password
-     *
-     * @return bool|string
-     * @throws \Exception
-     */
-    public static function register($username, $email, $password, $confirm_password)
-    {
-        // Check username
-        if (strlen($username) == 0) {
-            return 'username:insert_username';
-        } elseif (strlen($username) < 3 || strlen($username) > 50) {
-            return 'username:username_short_long';
-        } elseif (AccountTools::isNameTaken($username)) {
-            return 'username:user_exists';
-        } elseif (AccountTools::isNameBlocked($username)) {
-            return 'username:blocked_name';
-        } elseif (!AccountTools::isValidName($username)) {
-            return 'username:not_valid_name'; // This username is not valid. Just use a-z, A-Z, 1-9 and _
-        } // Check E-Mail
-        elseif (strlen($email) == 0) {
-            return 'email:insert_email';
-        } elseif (!AccountTools::isValidEmail($email)) {
-            return 'email:email_not_valid';
-        } // Check password
-        elseif (strlen($password) == 0) {
-            return 'password:insert_password';
-        } elseif (strlen($password) < 8) {
-            return 'password:password_too_short';
-        } elseif ($password != $confirm_password) {
-            return 'password_verify:passwords_dont_match';
-        }
-
-        /**************************************************************************************************/
-
-        $hashed_password = AccountTools::hash($password);
-        $user_id = AccountAdmin::addUser($username, $hashed_password, $email);
-        return $user_id;
-    }
-
-    /**
      * @param string $usernameOrEmail
      * @param string $password
      * @param bool   $cookies
@@ -99,16 +56,6 @@ class Account
         } else {
             return 'password:wrong_password';
         }
-    }
-
-    /**
-     *
-     */
-    public static function logout()
-    {
-        unset($_COOKIE['account']);
-        setcookie('account', '', strtotime('-1 month'), '/', 'orbitrondev.org');
-        unset($_SESSION['USER_EM'], $_SESSION['USER_PW']);
     }
 
     /**************************************************************************************************/
