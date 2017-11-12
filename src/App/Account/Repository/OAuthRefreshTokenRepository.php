@@ -41,7 +41,12 @@ class OAuthRefreshTokenRepository extends EntityRepository implements RefreshTok
     public function unsetRefreshToken($refreshToken)
     {
         $refreshToken = $this->findOneBy(array('refresh_token' => $refreshToken));
+        if (is_null($refreshToken)) {
+            return false;
+        }
+
         $this->_em->remove($refreshToken);
         $this->_em->flush();
+        return true;
     }
 }

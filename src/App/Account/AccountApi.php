@@ -93,7 +93,6 @@ class AccountApi
             Kernel::getIntent()->getEntityManager()->flush();
         }
 
-        //return array('files' => $files);
         return array('files' => array('name' => $files[0]->getFileName()));
     }
 
@@ -101,7 +100,8 @@ class AccountApi
     {
         // Assuming default values for session.upload_progress.prefix
         // and session.upload_progress.name:
-        $s = $_SESSION['upload_progress_'.intval($_GET['PHP_SESSION_UPLOAD_PROGRESS'])];
+        $request = Kernel::getIntent()->getRequest();
+        $s = $request->getSession()->get('upload_progress_'.intval($request->query->get('PHP_SESSION_UPLOAD_PROGRESS')));
         $progress = array(
             'lengthComputable' => true,
             'loaded'           => $s['bytes_processed'],
@@ -114,7 +114,8 @@ class AccountApi
     // TODO: Is the function "panel_pages" still needed?
     public static function panel_pages()
     {
-        $page = $_GET['p'];
+        $request = Kernel::getIntent()->getRequest();
+        $page = $request->query->get('p');
 
         $view = new \App\Template\Template();
 
@@ -123,7 +124,7 @@ class AccountApi
             \App\Account\AccountAcp::includeLibs();
             $functionForPage = str_replace('-', '_', $page);
             $functionName = 'acp_html_'.$functionForPage;
-            call_user_func($functionName);
+            return call_user_func($functionName);
         });
 
         $view->addTemplate($template);

@@ -76,9 +76,9 @@ class User extends EncryptableFieldEntity
 
     /**
      * @var boolean
-     * @Column(type="boolean", name="developer_status", options={"default":false})
+     * @Column(type="boolean", options={"default":false})
      */
-    protected $developerStatus;
+    protected $developer_status;
 
     /**
      * @var integer
@@ -87,13 +87,13 @@ class User extends EncryptableFieldEntity
     protected $credits;
 
     /**
-     * @var string
-     * @Column(type="string", name="preferred_payment_method", nullable=true)
+     * @var integer
+     * @Column(type="integer", nullable=true)
      */
-    protected $preferredPaymentMethod;
+    protected $preferred_payment_method;
 
     /**
-     * @var UserPaymentMethods
+     * @var UserPaymentMethods|ArrayCollection
      * @OneToMany(targetEntity="UserPaymentMethods", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $paymentMethods;
@@ -295,7 +295,7 @@ class User extends EncryptableFieldEntity
      */
     public function getDeveloperStatus()
     {
-        return $this->developerStatus;
+        return $this->developer_status;
     }
 
     /**
@@ -305,7 +305,7 @@ class User extends EncryptableFieldEntity
      */
     public function setDeveloperStatus($developerStatus)
     {
-        $this->developerStatus = $developerStatus;
+        $this->developer_status = $developerStatus;
 
         return $this;
     }
@@ -331,11 +331,31 @@ class User extends EncryptableFieldEntity
     }
 
     /**
+     * @param integer $credits
+     *
+     * @return \App\Account\Entity\User
+     */
+    public function giveCredits($credits)
+    {
+        return $this->setCredits($this->getCredits() + $credits);
+    }
+
+    /**
+     * @param integer $credits
+     *
+     * @return \App\Account\Entity\User
+     */
+    public function takeCredits($credits)
+    {
+        return $this->setCredits($this->getCredits() - $credits);
+    }
+
+    /**
      * @return integer
      */
     public function getPreferredPaymentMethod()
     {
-        return $this->preferredPaymentMethod;
+        return $this->preferred_payment_method;
     }
 
     /**
@@ -345,7 +365,7 @@ class User extends EncryptableFieldEntity
      */
     public function setPreferredPaymentMethod($preferredPaymentMethod)
     {
-        $this->preferredPaymentMethod = $preferredPaymentMethod;
+        $this->preferred_payment_method = $preferredPaymentMethod;
 
         return $this;
     }

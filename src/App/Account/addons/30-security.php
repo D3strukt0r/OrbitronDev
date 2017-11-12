@@ -63,7 +63,7 @@ function acp_html_delete_account($twig, $controller)
     $request = $controller->getRequest();
     $deleteAccountForm->handleRequest($request);
     if ($deleteAccountForm->isSubmitted() && $deleteAccountForm->isValid()) {
-        //AccountHelper::logout();
+        AccountHelper::logout();
         AccountHelper::removeUser($currentUser);
     }
     return $twig->render('account/panel/delete-account.html.twig', array(

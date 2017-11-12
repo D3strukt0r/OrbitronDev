@@ -269,7 +269,7 @@ class AccountHelper
         }
 
         foreach (self::$settings['username']['blocked_parts'] as $bl) {
-            if (strpos(strtolower($username), strtolower($bl)) != false) {
+            if (strpos(strtolower($username), strtolower($bl)) !== false) {
                 return true;
             }
         }
@@ -307,7 +307,7 @@ class AccountHelper
         /** @var \App\Account\Entity\User $selectedUser */
         $selectedUser = Kernel::getIntent()->getEntityManager()->find(User::class, $user_id);
 
-        if (!is_null($selectedUser)) {
+        if (is_null($selectedUser)) {
             return '<s>'.$translator->trans('Unknown user').'</s>';
         }
 
@@ -499,7 +499,7 @@ class AccountHelper
      * @param array  $scopes
      * @param int    $userId
      *
-     * @return bool
+     * @return integer
      */
     public static function addApp($clientName, $clientSecret, $redirectUri, $scopes, $userId)
     {

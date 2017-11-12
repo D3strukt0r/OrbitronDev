@@ -277,6 +277,9 @@ class OAuthAuthorizationCode
         return $this->user;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return array(
@@ -288,6 +291,11 @@ class OAuthAuthorizationCode
         );
     }
 
+    /**
+     * @param array $params
+     *
+     * @return \App\Account\Entity\OAuthAuthorizationCode
+     */
     public static function fromArray($params)
     {
         $code = new self();

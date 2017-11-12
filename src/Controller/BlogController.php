@@ -3,22 +3,19 @@
 namespace Controller;
 
 use App\Account\AccountHelper;
-use App\Account\UserInfo;
+use App\Account\Entity\User;
 use App\Blog\Blog;
 use App\Blog\BlogPost;
+use App\Blog\Form\NewBlogType;
 use Container\DatabaseContainer;
 use Controller;
-use Form\RecaptchaType;
 use PDO;
 use ReCaptcha\ReCaptcha;
 use Suin\RSSWriter\Channel;
 use Suin\RSSWriter\Feed;
 use Suin\RSSWriter\Item;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class BlogController extends Controller
 {
@@ -27,16 +24,19 @@ class BlogController extends Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $blogList = Blog::getBlogList();
         foreach ($blogList as $key => $blog) {
-            $user                       = new UserInfo($blog['owner_id']);
-            $blogList[$key]['username'] = $user->getFromUser('username');
+            /** @var \App\Account\Entity\User $user */
+            $user = $this->getEntityManager()->find(User::class, $blog['owner_id']);
+            $blogList[$key]['username'] = $user->getUsername();
         }
 
         return $this->render('blog/list-blogs.html.twig', array(
-            'current_user' => $currentUser->aUser,
+            'current_user' => $currentUser,
             'blog_list'    => $blogList,
         ));
     }
@@ -46,48 +46,17 @@ class BlogController extends Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
-        $createBlogForm = $this->createFormBuilder()
-            ->add('name', TextType::class, array(
-                'label'       => 'Blog name',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a name')),
-                ),
-            ))
-            ->add('url', TextType::class, array(
-                'label'       => 'Blog url',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a url')),
-                ),
-            ))
-            ->add('recaptcha', RecaptchaType::class, array(
-                'private_key'    => '6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll',
-                'public_key'     => '6Ldec_4SAAAAAJ_TnvICnltNqgNaBPCbXp-wN48B',
-                'recaptcha_ajax' => false,
-                'attr'           => array(
-                    'options' => array(
-                        'theme' => 'light',
-                        'type'  => 'image',
-                        'size'  => 'normal',
-                        'defer' => true,
-                        'async' => true,
-                    ),
-                ),
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Create',
-            ))
-            ->getForm();
+        $createBlogForm = $this->createForm(NewBlogType::class);
 
-
-        /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
+        $request = $this->getRequest();
         $createBlogForm->handleRequest($request);
         if ($createBlogForm->isValid()) {
             $errorMessages   = array();
             $captcha         = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
-            $captchaResponse = $captcha->verify($_POST['g-recaptcha-response'], $request->getClientIp());
+            $captchaResponse = $captcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
             if (!$captchaResponse->isSuccess()) {
                 $createBlogForm->get('recaptcha')->addError(new FormError('The Captcha is not correct'));
             } else {
@@ -122,7 +91,7 @@ class BlogController extends Controller
                     $blogAdded = $addBlog->execute(array(
                         ':name'    => $blogName,
                         ':url'     => $blogUrl,
-                        ':user_id' => USER_ID,
+                        ':user_id' => $currentUser->getId(),
                     ));
 
                     if ($blogAdded) {
@@ -141,7 +110,6 @@ class BlogController extends Controller
         }
 
         return $this->render('blog/create-new-blog.html.twig', array(
-            'current_user'     => $currentUser->aUser,
             'create_blog_form' => $createBlogForm->createView(),
         ));
     }
@@ -156,7 +124,8 @@ class BlogController extends Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $blogId                           = Blog::url2Id($this->parameters['blog']);
         $blog                             = new Blog($blogId);
@@ -196,7 +165,7 @@ class BlogController extends Controller
         $pagination['last_page_m1']  = $pagination['pages_count'] - 1;
 
         return $this->render('blog/theme1/index.html.twig', array(
-            'current_user' => $currentUser->aUser,
+            'current_user' => $currentUser,
             'current_blog' => $blog->blogData,
             'posts'        => $posts,
             'pagination'   => $pagination,
@@ -218,14 +187,15 @@ class BlogController extends Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $blogId = Blog::url2Id($this->parameters['blog']);
         $blog   = new Blog($blogId);
         $post   = new BlogPost($this->parameters['post']);
 
         return $this->render('blog/theme1/post.html.twig', array(
-            'current_user' => $currentUser->aUser,
+            'current_user' => $currentUser,
             'current_blog' => $blog->blogData,
             'current_post' => $post->postData,
         ));
@@ -251,13 +221,14 @@ class BlogController extends Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $blogId = Blog::url2Id($this->parameters['blog']);
         $blog   = new Blog($blogId);
 
         return $this->render('blog/theme1/search.html.twig', array(
-            'current_user' => $currentUser->aUser,
+            'current_user' => $currentUser,
             'current_blog' => $blog->blogData,
         ));
     }

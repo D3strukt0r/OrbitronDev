@@ -73,9 +73,8 @@ function acp_html_account($twig, $controller)
             $changeEmail = false;
         }
 
+        $errorMessages = array();
         if (AccountHelper::passwordMatches($currentUser, $formData['password_verify'])) {
-            $errorMessages = array();
-
             if ($changeUsername) {
                 if (strlen($newUsername) == 0) {
                     $errorMessages['new_username'] = $controller->get('translator')->trans('You have to insert an username.');
@@ -94,16 +93,16 @@ function acp_html_account($twig, $controller)
             if ($changePassword) {
                 $verifyNewPassword = $formData['new_password_verify'];
                 if (strlen($newPassword) == 0) {
-                    $aErrorMessages['new_password'] = $controller->get('translator')->trans('You have to insert a password.');
+                    $errorMessages['new_password'] = $controller->get('translator')->trans('You have to insert a password.');
                 } elseif (strlen($newPassword) < AccountHelper::$settings['password']['min_length']) {
-                    $aErrorMessages['new_password'] = $controller->get('translator')->trans('Your password is too short. Min '.AccountHelper::$settings['password']['min_length'].' characters.');
+                    $errorMessages['new_password'] = $controller->get('translator')->trans('Your password is too short. Min '.AccountHelper::$settings['password']['min_length'].' characters.');
                 } elseif ($newPassword == $verifyNewPassword) {
-                    $aErrorMessages['new_password_verify'] = $controller->get('translator')->trans('Your inserted password do not match the password verifier.');
+                    $errorMessages['new_password_verify'] = $controller->get('translator')->trans('Your inserted password do not match the password verifier.');
                 }
             }
             if ($changeEmail) {
                 if (strlen($newEmail) == 0) {
-                    $aErrorMessages['new_email'] = $controller->get('translator')->trans('You have to insert an email.');
+                    $errorMessages['new_email'] = $controller->get('translator')->trans('You have to insert an email.');
                 }
             }
 
@@ -186,6 +185,7 @@ function acp_html_profile($twig, $controller)
     if ($editProfileForm->isSubmitted()) {
         $formData = $editProfileForm->getData();
 
+        $errorMessages = array();
         if (AccountHelper::passwordMatches($currentUser, $formData['password_verify'])) {
             if (strlen($newFirstName = $formData['first_name']) > 0) {
                 $currentUser->getProfile()->setName($newFirstName);
@@ -193,11 +193,16 @@ function acp_html_profile($twig, $controller)
             if (strlen($newLastName = $formData['last_name']) > 0) {
                 $currentUser->getProfile()->setSurname($newLastName);
             }
-            if ($newGender = $formData['gender'] > 0) {
+            if (($newGender = $formData['gender']) > 0) {
                 $currentUser->getProfile()->setGender($newGender);
             }
             if (strlen($newBirthday = $formData['birthday']) > 0) {
-                $currentUser->getProfile()->setBirthday(\DateTime::createFromFormat('d.m.Y', $newBirthday));
+                $date = \DateTime::createFromFormat('d.m.Y', $newBirthday);
+                if ($date) {
+                    $currentUser->getProfile()->setBirthday($date);
+                } else {
+                    $errorMessages['update_birthday'] = $controller->get('translator')->trans('Your birthday couldn\'t be saved.');
+                }
             }
             if (strlen($newWebsite = $formData['website']) > 0) {
                 $currentUser->getProfile()->setWebsite($newWebsite);
@@ -208,7 +213,7 @@ function acp_html_profile($twig, $controller)
             return $controller->redirectToRoute('app_account_panel', array('page' => 'profile'));
 
         } else {
-            $aErrorMessages['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
+            $errorMessages['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
         }
     }
 
@@ -236,6 +241,7 @@ function acp_html_add_address($twig, $controller)
     if ($addAddressForm->isSubmitted()) {
         $formData = $addAddressForm->getData();
 
+        $errorMessage = array();
         if (AccountHelper::passwordMatches($currentUser, $formData['password_verify'])) {
 
             $newAddress = new UserAddress();
@@ -263,7 +269,7 @@ function acp_html_add_address($twig, $controller)
             return $controller->redirectToRoute('app_account_panel', array('page' => 'profile'));
 
         } else {
-            $aErrorMessages['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
+            $errorMessage['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
         }
     }
 

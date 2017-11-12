@@ -42,7 +42,12 @@ class OAuthAuthorizationCodeRepository extends EntityRepository implements Autho
     public function expireAuthorizationCode($code)
     {
         $authCode = $this->findOneBy(array('code' => $code));
+        if (is_null($authCode)) {
+            return false;
+        }
+
         $this->_em->remove($authCode);
         $this->_em->flush();
+        return true;
     }
 }

@@ -34,7 +34,7 @@
                 <form method="post" role="form">
                     <fieldset>
                         <legend>{{ 'Comment on'|trans }} “{{ current_post.title }}”</legend>
-                        {% if current_user.user_id == -1 %}
+                        {% if current_user.id == -1 %}
                         <p>
                             <label for="comment-name">{{ 'Name'|trans }} <em>*</em></label>
                             <input name="comment-name" id="comment-name" required="">
