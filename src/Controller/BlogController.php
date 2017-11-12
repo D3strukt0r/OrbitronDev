@@ -2,8 +2,7 @@
 
 namespace Controller;
 
-use App\Account\Account;
-use App\Account\AccountTools;
+use App\Account\AccountHelper;
 use App\Account\UserInfo;
 use App\Blog\Blog;
 use App\Blog\BlogPost;
@@ -25,7 +24,9 @@ class BlogController extends Controller
 {
     public function indexAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $blogList = Blog::getBlogList();
@@ -42,7 +43,9 @@ class BlogController extends Controller
 
     public function newBlogAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $createBlogForm = $this->createFormBuilder()
@@ -150,12 +153,14 @@ class BlogController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $blogId                           = Blog::url2Id($this->parameters['blog']);
         $blog                             = new Blog($blogId);
-        $blog->blogData['owner_username'] = AccountTools::formatUsername($blog->getVar('owner_id'), false, false);
+        $blog->blogData['owner_username'] = AccountHelper::formatUsername($blog->getVar('owner_id'), false, false);
         $blog->blogData['page_links']     = json_decode($blog->getVar('page_links'), true);
 
         // Get all posts
@@ -173,7 +178,7 @@ class BlogController extends Controller
         $getPosts->execute();
         $posts = $getPosts->fetchAll(PDO::FETCH_ASSOC);
         foreach ($posts as $index => $post) {
-            $posts[$index]['username'] = AccountTools::formatUsername($post['author_id']);
+            $posts[$index]['username'] = AccountHelper::formatUsername($post['author_id']);
         }
 
         // Pagination
@@ -210,7 +215,9 @@ class BlogController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $blogId = Blog::url2Id($this->parameters['blog']);
@@ -241,7 +248,9 @@ class BlogController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $blogId = Blog::url2Id($this->parameters['blog']);

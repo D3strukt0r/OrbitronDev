@@ -8,9 +8,8 @@ require './../../../vendor/autoload.php';
 define('DEV_ONLY_INTERNAL', false);
 
 $kernel = new Kernel(Kernel::ENVIRONMENT_DEVELOPMENT, false);
-\App\Account\Account::updateSession();
 
-if (!LOGGED_IN) {
+if (is_null(\App\Account\AccountHelper::updateSession()) || !LOGGED_IN) {
     header('Content-Type: application/json');
     echo '{}';
     exit;

@@ -7,9 +7,14 @@ use OAuth2\Storage\UserCredentialsInterface;
 
 class UserRepository extends EntityRepository implements UserCredentialsInterface
 {
-    public function checkUserCredentials($email, $password)
+    public function checkUserCredentials($emailOrUsername, $password)
     {
-        $user = $this->findOneBy(['email' => $email]);
+        /** @var \App\Account\Entity\User $user */
+        $user = $this->findOneBy(array('email' => $emailOrUsername));
+        if (is_null($user)) {
+            /** @var \App\Account\Entity\User $user */
+            $user = $this->findOneBy(array('username' => $emailOrUsername));
+        }
         if ($user) {
             return $user->verifyPassword($password);
         }

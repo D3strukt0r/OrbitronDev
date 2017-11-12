@@ -2,7 +2,7 @@
 
 namespace Controller;
 
-use App\Account\Account;
+use App\Account\AccountHelper;
 use App\Account\UserInfo;
 use Controller;
 
@@ -10,7 +10,9 @@ class CloudController extends Controller
 {
     public function indexAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
 
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $this->getRequest()->getUri()));
@@ -22,7 +24,9 @@ class CloudController extends Controller
     // TODO: Add possibility to publish a website by crating a "public_html" folder in the root
     public function filesAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
 
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $this->getRequest()->getUri()));
@@ -36,7 +40,9 @@ class CloudController extends Controller
 
     public function showRawFileAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
 
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $this->getRequest()->getUri()));
@@ -65,7 +71,9 @@ class CloudController extends Controller
 
     public function shareAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
 
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $this->getRequest()->getUri()));

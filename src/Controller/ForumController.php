@@ -2,8 +2,7 @@
 
 namespace Controller;
 
-use App\Account\Account;
-use App\Account\AccountTools;
+use App\Account\AccountHelper;
 use App\Account\UserInfo;
 use App\Forum\Forum;
 use App\Forum\ForumAcp;
@@ -28,7 +27,9 @@ class ForumController extends Controller
 {
     public function indexAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $forumList = Forum::getForumList();
@@ -45,7 +46,9 @@ class ForumController extends Controller
 
     public function newForumAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $createForumForm = $this->createFormBuilder()
@@ -154,12 +157,14 @@ class ForumController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
-        $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
+        $forum->forumData['owner_username'] = AccountHelper::formatUsername($forum->getVar('owner_id'), false, false);
         $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         // Get all boards
@@ -180,7 +185,7 @@ class ForumController extends Controller
             // Get all subboards
             $subboards = $getSubBoards->fetchAll(PDO::FETCH_ASSOC);
             foreach ($subboards as $index2 => $subboard) {
-                $subboards[$index2]['last_post_username'] = AccountTools::formatUsername($subboard['last_post_user_id']);
+                $subboards[$index2]['last_post_username'] = AccountHelper::formatUsername($subboard['last_post_user_id']);
             }
             $boardTree[$index]['subboards'] = $subboards;
         }
@@ -203,12 +208,14 @@ class ForumController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
-        $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
+        $forum->forumData['owner_username'] = AccountHelper::formatUsername($forum->getVar('owner_id'), false, false);
         $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         $board = new ForumBoard((int)$this->parameters['board']);
@@ -239,12 +246,12 @@ class ForumController extends Controller
             // Get all subboards
             $subboards = $getSubBoards->fetchAll(PDO::FETCH_ASSOC);
             foreach ($subboards as $index2 => $subboard) {
-                $subboards[$index2]['last_post_username'] = AccountTools::formatUsername($subboard['last_post_user_id']);
+                $subboards[$index2]['last_post_username'] = AccountHelper::formatUsername($subboard['last_post_user_id']);
             }
             $boardTree[$index]['subboards'] = $subboards;
         }
         foreach ($boardTree as $index => $boardRoot) {
-            $boardTree[$index]['last_post_username'] = AccountTools::formatUsername($boardRoot['last_post_user_id']);
+            $boardTree[$index]['last_post_username'] = AccountHelper::formatUsername($boardRoot['last_post_user_id']);
         }
 
         // Get all threads
@@ -262,10 +269,10 @@ class ForumController extends Controller
         $getThreads->execute();
         $threads = $getThreads->fetchAll(PDO::FETCH_ASSOC);
         foreach ($threads as $index => $thread) {
-            $threads[$index]['username'] = AccountTools::formatUsername($thread['user_id']);
+            $threads[$index]['username'] = AccountHelper::formatUsername($thread['user_id']);
         }
         foreach ($threads as $index => $thread) {
-            $threads[$index]['last_post_username'] = AccountTools::formatUsername($thread['last_post_user_id']);
+            $threads[$index]['last_post_username'] = AccountHelper::formatUsername($thread['last_post_user_id']);
         }
 
         // Pagination
@@ -304,12 +311,14 @@ class ForumController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
-        $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
+        $forum->forumData['owner_username'] = AccountHelper::formatUsername($forum->getVar('owner_id'), false, false);
         $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         $thread = new ForumThread($this->parameters['thread']);
@@ -340,9 +349,9 @@ class ForumController extends Controller
         $posts = $getPosts->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($posts as $index => $post) {
-            $posts[$index]['formatted_username'] = AccountTools::formatUsername($post['user_id']);
+            $posts[$index]['formatted_username'] = AccountHelper::formatUsername($post['user_id']);
             // TODO: Remove this as soon as Usernames are added automatically in the database
-            $posts[$index]['username'] = AccountTools::formatUsername($post['user_id'], false, false);
+            $posts[$index]['username'] = AccountHelper::formatUsername($post['user_id'], false, false);
         }
         foreach ($posts as $index => $post) {
             $bbParser = new Decoda($post['message']);
@@ -387,12 +396,14 @@ class ForumController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
-        $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
+        $forum->forumData['owner_username'] = AccountHelper::formatUsername($forum->getVar('owner_id'), false, false);
         $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         $thread = new ForumThread($this->parameters['thread']);
@@ -478,12 +489,14 @@ class ForumController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
-        $forum->forumData['owner_username'] = AccountTools::formatUsername($forum->getVar('owner_id'), false, false);
+        $forum->forumData['owner_username'] = AccountHelper::formatUsername($forum->getVar('owner_id'), false, false);
         $forum->forumData['page_links']     = json_decode($forum->getVar('page_links'), true);
 
         $board = new ForumBoard($this->parameters['board']);
@@ -560,8 +573,11 @@ class ForumController extends Controller
 
     public function forumAdminAction()
     {
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
+
         $params = array();
-        Account::updateSession();
         $request                   = $this->getRequest();
         $params['user_id']         = USER_ID;
         $currentUser               = new UserInfo(USER_ID);

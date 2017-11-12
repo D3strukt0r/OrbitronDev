@@ -34,7 +34,7 @@ class AccountApi
 
         $rootPictureDir = Kernel::getIntent()->getRootDir().'/web/app/account/profile_pictures/';
 
-        if (AccountTools::idExists($userId)) {
+        if (!is_null($selectedUser)) {
             if (!is_null($selectedUser->getProfile()->getPicture()) && file_exists($filename = $rootPictureDir.$selectedUser->getProfile()->getPicture())) {
                 $oImage = new SimpleImage($filename);
                 $oImage->resize($width, $height);
@@ -51,7 +51,7 @@ class AccountApi
         return null;
     }
 
-    public static function update_profile_pic($parameters)
+    public static function update_profile_pic()
     {
         $request = Kernel::getIntent()->getRequest();
 
@@ -64,8 +64,8 @@ class AccountApi
         $filenamegenerator = new \FileUpload\FileNameGenerator\Random();
 
         // Simple path resolver, where uploads will be put
-        Account::buildPaths();
-        $pathresolver = new \FileUpload\PathResolver\Simple(Account::$publicDir.'/profile_pictures');
+        AccountHelper::buildPaths();
+        $pathresolver = new \FileUpload\PathResolver\Simple(AccountHelper::$publicDir.'/profile_pictures');
 
         // The machine's filesystem
         $filesystem = new \FileUpload\FileSystem\Simple();

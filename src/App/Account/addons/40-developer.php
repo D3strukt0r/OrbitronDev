@@ -1,7 +1,7 @@
 <?php
 
 use App\Account\AccountAcp;
-use App\Account\AccountDeveloper;
+use App\Account\AccountHelper;
 use App\Account\Entity\User;
 use App\Account\Form\CreateDevAccount;
 use App\Account\Form\CreateDevApp;
@@ -75,7 +75,7 @@ function acp_html_developer_create_application($twig, $controller)
     $createAppForm->handleRequest($request);
     if ($createAppForm->isSubmitted() && $createAppForm->isValid()) {
 
-        AccountDeveloper::addApp(
+        AccountHelper::addApp(
             $createAppForm->get('client_name')->getData(),
             Token::createRandomToken(array('use_openssl' => false)),
             $createAppForm->get('redirect_uri')->getData(),
@@ -110,7 +110,7 @@ function acp_html_developer_applications($twig, $controller)
     }
 
     return $twig->render('account/panel/developer-list-applications.html.twig', array(
-        'current_user_dev_apps' => AccountDeveloper::getApps(USER_ID),
+        'current_user_dev_apps' => AccountHelper::getDeveloperApps(USER_ID),
     ));
 }
 
@@ -136,7 +136,7 @@ function acp_html_developer_show_applications($twig, $controller)
         exit;
     }
     $appId = $controller->getRequest()->query->get('app');
-    $appData = AccountDeveloper::getClientInformation($appId);
+    $appData = AccountHelper::getAppInformation($appId);
 
     if (is_null($appData)) {
         return $twig->render('account/panel/developer-app-not-found.html.twig');

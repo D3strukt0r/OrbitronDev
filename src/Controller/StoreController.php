@@ -2,8 +2,7 @@
 
 namespace Controller;
 
-use App\Account\Account;
-use App\Account\AccountTools;
+use App\Account\AccountHelper;
 use App\Account\UserInfo;
 use App\Store\StoreAcp;
 use App\Store\Store;
@@ -31,7 +30,9 @@ class StoreController extends Controller
 
     public function indexAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $storeList = Store::getStoreList();
@@ -48,7 +49,9 @@ class StoreController extends Controller
 
     public function newStoreAction()
     {
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $createStoreForm = $this->createFormBuilder()
@@ -157,7 +160,9 @@ class StoreController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $storeId = Store::url2Id($this->parameters['store']);
@@ -202,7 +207,9 @@ class StoreController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $storeId      = Store::url2Id($this->parameters['store']);
@@ -295,7 +302,7 @@ class StoreController extends Controller
 
         $comments = StoreComments::getCommentList($product->getVar('id'));
         foreach($comments as $index => $comment) {
-            $comments[$index]['formatted_username'] = AccountTools::formatUsername($comment['user_id']);
+            $comments[$index]['formatted_username'] = AccountHelper::formatUsername($comment['user_id']);
         }
 
         // Shopping cart widget
@@ -324,7 +331,9 @@ class StoreController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $storeId      = Store::url2Id($this->parameters['store']);
@@ -546,7 +555,9 @@ class StoreController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
 
         $cart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
@@ -561,7 +572,9 @@ class StoreController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
         $request = Kernel::getIntent()->getRequest();
 
@@ -598,7 +611,9 @@ class StoreController extends Controller
             return $this->render('error/error404.html.twig');
         }
 
-        Account::updateSession();
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
         $currentUser = new UserInfo(USER_ID);
         $request = Kernel::getIntent()->getRequest();
 
@@ -630,8 +645,11 @@ class StoreController extends Controller
 
     public function storeAdminAction()
     {
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
+
         $params = array();
-        Account::updateSession();
         $request                   = $this->getRequest();
         $params['user_id']         = USER_ID;
         $currentUser               = new UserInfo(USER_ID);

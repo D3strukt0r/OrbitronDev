@@ -4,12 +4,12 @@ namespace Controller;
 
 use App\Account\AccountAcp;
 use App\Account\AccountApi;
-use App\Account\AccountDeveloper;
 use App\Account\AccountHelper;
 use App\Account\Entity\OAuthAccessToken;
 use App\Account\Entity\OAuthAuthorizationCode;
 use App\Account\Entity\OAuthClient;
 use App\Account\Entity\OAuthRefreshToken;
+use App\Account\Entity\OAuthScope;
 use App\Account\Entity\User;
 use App\Account\Form\ConfirmEmailType;
 use App\Account\Form\ForgotType;
@@ -20,7 +20,6 @@ use App\Blog\Blog;
 use App\Core\Token;
 use App\Forum\Forum;
 use App\Store\Store;
-use Container\DatabaseContainer;
 use Controller;
 use OAuth2\GrantType\AuthorizationCode;
 use OAuth2\GrantType\ClientCredentials;
@@ -531,16 +530,16 @@ class AccountController extends Controller
         ));
 
         // Get all SCOPES
-        $scopesList = AccountDeveloper::getAllScopes();
+        $scopesList = AccountHelper::getAllScopes();
 
         $defaultScope = '';
         $supportedScopes = array();
 
         foreach ($scopesList as $scope) {
-            if ($scope['is_default']) {
-                $defaultScope = $scope['scope'];
+            if ($scope->isDefault()) {
+                $defaultScope = $scope->getScope();
             }
-            $supportedScopes[] = $scope['scope'];
+            $supportedScopes[] = $scope->getScope();
         }
         $memory = new \OAuth2\Storage\Memory(array(
             'default_scope'    => $defaultScope,
@@ -580,18 +579,14 @@ class AccountController extends Controller
         }
         // display an authorization form
         // Get all information about the Client requesting an Auth code
-        $clientInfo = AccountDeveloper::getClientInformation($request2->query->get('client_id'));
+        $clientInfo = AccountHelper::getAppInformation($request2->query->get('client_id'));
 
-        $database = DatabaseContainer::getDatabase();
         $scopes = array();
         foreach ($clientInfo->getScopes() as $scope) {
-            $getScope = $database->prepare('SELECT * FROM `oauth_scopes` WHERE `scope`=:scope LIMIT 1');
-            $getScope->execute(array(
-                ':scope' => $scope,
-            ));
-            if ($getScope->rowCount() > 0) {
-                $scopeInfo = $getScope->fetchAll(\PDO::FETCH_ASSOC);
-                $scopes[] = $scopeInfo[0]['name'];
+            /** @var \App\Account\Entity\OAuthScope $getScope */
+            $getScope = $this->getEntityManager()->getRepository(OAuthScope::class)->findOneBy(array('scope' => $scope));
+            if (!is_null($getScope)) {
+                $scopes[] = $getScope->getName();
             }
         }
         if (empty($_POST)) {

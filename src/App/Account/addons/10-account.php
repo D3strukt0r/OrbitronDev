@@ -2,7 +2,6 @@
 
 use App\Account\AccountAcp;
 use App\Account\AccountHelper;
-use App\Account\AccountTools;
 use App\Account\Entity\User;
 use App\Account\Entity\UserAddress;
 use App\Account\Form\AddAddressType;
@@ -115,13 +114,11 @@ function acp_html_account($twig, $controller)
                 if ($changePassword) {
                     /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
                     $session = $controller->get('session');
-                    $session->set(AccountHelper::$settings['login']['session_password'],
-                        $newPassword); // TODO: Password is published FIX THAT
+                    $session->set(AccountHelper::$settings['login']['session_password'], $newPassword); // TODO: Password is published FIX THAT
 
-                    $hashedNewPassword = AccountTools::hash($newPassword);
-                    $currentUser->setPassword($hashedNewPassword);
+                    $currentUser->setPassword($newPassword);
 
-                    AccountHelper::changeSession(null, $hashedNewPassword);
+                    AccountHelper::changeSession(null, $newPassword);
                     if ($request->cookies->has(AccountHelper::$settings['login']['cookie_name'])) {
                         setcookie(
                             AccountHelper::$settings['login']['cookie_name'],

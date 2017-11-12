@@ -23,7 +23,7 @@ class OAuthClient extends EncryptableFieldEntity
 
     /**
      * @var string
-     * @Column(type="string", length=20)
+     * @Column(type="string", length=80)
      */
     protected $client_secret;
 
@@ -175,6 +175,11 @@ class OAuthClient extends EncryptableFieldEntity
         return $scopes;
     }
 
+    /**
+     * @param string $scope
+     *
+     * @return $this
+     */
     public function addScope($scope)
     {
         $scopes = $this->getScopes();
@@ -184,6 +189,11 @@ class OAuthClient extends EncryptableFieldEntity
         return $this;
     }
 
+    /**
+     * @param string $scope
+     *
+     * @return $this
+     */
     public function removeScope($scope)
     {
         $scopes = $this->getScopes();

@@ -2,10 +2,14 @@
 
 namespace App\Account;
 
+use App\Account\Entity\OAuthClient;
+use App\Account\Entity\OAuthScope;
 use App\Account\Entity\SubscriptionType;
 use App\Account\Entity\User;
 use App\Account\Entity\UserProfiles;
 use App\Account\Entity\UserSubscription;
+use Container\TranslatingContainer;
+use Kernel;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,6 +43,17 @@ class AccountHelper
             'cookie_domain'    => 'orbitrondev.org',
         ),
     );
+
+    public static $publicDir;
+    public static $srcDir;
+    public static $twigDir;
+
+    public static function buildPaths()
+    {
+        self::$publicDir = Kernel::getIntent()->getRootDir() . '/web/app/account';
+        self::$srcDir = Kernel::getIntent()->getRootDir() . '/src/App/Account';
+        self::$twigDir = Kernel::getIntent()->getRootDir() . '/app/views/account';
+    }
 
     /**
      * Add a new user. Username, Email, and password is required twice. Returns
@@ -137,6 +152,7 @@ class AccountHelper
             return 'email:user_does_not_exist';
         }
 
+        // TODO: Maybe add function like validateLogin()
         $em = \Kernel::getIntent()->getEntityManager();
         /** @var User $user */
         $user = $em->getRepository(User::class)->findOneBy(array('username' => $usernameOrEmail));
@@ -147,7 +163,9 @@ class AccountHelper
                 return 'email:user_does_not_exist';
             }
         }
-        if (!self::passwordMatches($user, $password)) {
+        /** @var \App\Account\Repository\UserRepository $userRepo */
+        $userRepo = $em->getRepository(User::class);
+        if (!$userRepo->checkUserCredentials($usernameOrEmail, $password)) {
             return 'password:wrong_password';
         }
 
@@ -273,6 +291,49 @@ class AccountHelper
     }
 
     /**
+     * Returns the username in a beautiful formatted way
+     *
+     * @param int  $user_id
+     * @param bool $link
+     * @param bool $styles
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function formatUsername($user_id, $link = true, $styles = true)
+    {
+        $translator = TranslatingContainer::$translator;
+
+        /** @var \App\Account\Entity\User $selectedUser */
+        $selectedUser = Kernel::getIntent()->getEntityManager()->find(User::class, $user_id);
+
+        if (!is_null($selectedUser)) {
+            return '<s>'.$translator->trans('Unknown user').'</s>';
+        }
+
+        $sPrefix = '';
+        $username = $selectedUser->getUsername();
+        $sSuffix = '';
+
+        if ($link) {
+            $sPrefix .= '<a href="'.Kernel::getIntent()->get('router')->generate('app_account_user', array('username' => $selectedUser->getUsername())).'">';
+            $sSuffix .= '</a>';
+        }
+
+        if ($styles) {
+            if ($selectedUser->getSubscription()->getSubscription()->getTitle() == 'Premium') {
+                $sPrefix .= '<span style="color:orange">';
+                $sSuffix .= '</span>';
+            } elseif ($selectedUser->getSubscription()->getSubscription()->getTitle() == 'Enterprise') {
+                $sPrefix .= '<span style="color:green">';
+                $sSuffix .= '</span>';
+            }
+        }
+
+        return stripslashes(trim($sPrefix.$username.$sSuffix));
+    }
+
+    /**
      * Checks whether the email is already existing in the database. Returns
      * true when the email is already existing once in the database.
      *
@@ -362,6 +423,7 @@ class AccountHelper
             $em = \Kernel::getIntent()->getEntityManager();
             /** @var User $user */
             $user = $em->getRepository(User::class)->findOneBy(array('email' => $session->get(self::$settings['login']['session_email'])));
+            // TODO: Replace function with something like validateLogin()
             if (!is_null($user)) {
                 if (self::passwordMatches($user, $session->get(self::$settings['login']['session_password']))) {
                     define('LOGGED_IN', true);
@@ -373,6 +435,8 @@ class AccountHelper
                         ->setLastOnlineAt(new \DateTime())
                         ->setLastIp($request->getClientIp());
                     $em->flush();
+
+                    // TODO: Maybe update cookie every time a page is requested?
                 } else {
                     return null;
                 }
@@ -384,10 +448,75 @@ class AccountHelper
             define('USER_ID', -1);
             define('USER_NAME', 'Guest');
             define('USER_HASH', null);
-            define('USER_SUBSCRIPTION', null);
         }
         define('ACCOUNT_SESSION_UPDATED', true);
         return true;
+    }
+
+    /**
+     * @return \App\Account\Entity\OAuthScope[]
+     */
+    public static function getAllScopes()
+    {
+        $em = \Kernel::getIntent()->getEntityManager();
+
+        /** @var \App\Account\Entity\OAuthScope[] $scopes */
+        $scopes = $em->getRepository(OAuthScope::class)->findAll();
+        return $scopes;
+    }
+
+    /**
+     * @param integer $user_id
+     *
+     * @return \App\Account\Entity\OAuthClient
+     */
+    public static function getDeveloperApps($user_id)
+    {
+        $em = \Kernel::getIntent()->getEntityManager();
+        /** @var \App\Account\Entity\OAuthClient $clients */
+        $clients = $em->getRepository(OAuthClient::class)->findBy(array('user_id' => $user_id));
+
+        return $clients;
+    }
+
+    /**
+     * @param integer $clientId
+     *
+     * @return \App\Account\Entity\OAuthClient
+     */
+    public static function getAppInformation($clientId)
+    {
+        $em = \Kernel::getIntent()->getEntityManager();
+        /** @var \App\Account\Entity\OAuthClient $client */
+        $client = $em->getRepository(OAuthClient::class)->findOneBy(array('client_identifier' => $clientId));
+        return $client;
+    }
+
+    /**
+     * @param string $clientName
+     * @param string $clientSecret
+     * @param string $redirectUri
+     * @param array  $scopes
+     * @param int    $userId
+     *
+     * @return bool
+     */
+    public static function addApp($clientName, $clientSecret, $redirectUri, $scopes, $userId)
+    {
+        /** @var \App\Account\Entity\User $user */
+        $user = \Kernel::getIntent()->getEntityManager()->find(User::class, $userId);
+        $addClient = new OAuthClient();
+        $addClient
+            ->setClientIdentifier($clientName)
+            ->setClientSecret($clientSecret)
+            ->setRedirectUri($redirectUri)
+            ->setScopes($scopes)
+            ->setUsers($user->getId());
+
+        \Kernel::getIntent()->getEntityManager()->persist($addClient);
+        \Kernel::getIntent()->getEntityManager()->flush();
+
+        return $addClient->getId();
     }
 
     public static function addDefaultSubscriptionTypes()
@@ -413,6 +542,18 @@ class AccountHelper
         \Kernel::getIntent()->getEntityManager()->persist($basicSubscription);
         \Kernel::getIntent()->getEntityManager()->persist($premiumSubscription);
         \Kernel::getIntent()->getEntityManager()->persist($enterpriseSubscription);
+        \Kernel::getIntent()->getEntityManager()->flush();
+    }
+
+    public static function addDefaultScopes()
+    {
+        $userInfoScope = new OAuthScope();
+        $userInfoScope
+            ->setScope('user_info')
+            ->setName('User info\'s')
+            ->setDefault(true);
+
+        \Kernel::getIntent()->getEntityManager()->persist($userInfoScope);
         \Kernel::getIntent()->getEntityManager()->flush();
     }
 }

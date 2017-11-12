@@ -2,7 +2,7 @@
 
 namespace App\Account\Form;
 
-use App\Account\AccountDeveloper;
+use App\Account\AccountHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,8 +15,8 @@ class CreateDevApp extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $scope_choices = array();
-        foreach (AccountDeveloper::getAllScopes() as $scope) {
-            $scope_choices[$scope['name']] = $scope['scope'];
+        foreach (AccountHelper::getAllScopes() as $scope) {
+            $scope_choices[$scope->getName()] = $scope->getScope();
         }
 
         $builder
