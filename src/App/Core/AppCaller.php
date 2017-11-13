@@ -12,7 +12,7 @@ class AppCaller
      *
      * @return bool
      */
-    static function call($app, $call)
+    public static function call($app, $call)
     {
         $sCallDir = 'data/' . $app . '/calls/' . $call . '.php';
         if (file_exists($sCallDir)) {
@@ -25,7 +25,7 @@ class AppCaller
     /**
      * @return bool
      */
-    static function onInit()
+    public static function onInit()
     {
         $init_name = 'APPMANAGER_CALLS_ONINIT';
         if (!isset($init_name) || isset($init_name) && !$$init_name) {

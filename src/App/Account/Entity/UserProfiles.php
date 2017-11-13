@@ -28,53 +28,54 @@ class UserProfiles
 
     /**
      * @OneToOne(targetEntity="User", inversedBy="profile")
-     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
+     * @JoinColumn(name="id", referencedColumnName="id")
      */
     protected $user;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $name;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $surname;
 
     /**
-     * @var integer
+     * @var null|integer
      * @Column(type="smallint", nullable=true)
      */
     protected $gender;
 
     /**
-     * @var \DateTime
+     * @var null|\DateTime
      * @Column(type="date", nullable=true)
      */
     protected $birthday;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $website;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $picture;
 
     /**
-     * @var integer
+     * @var null|integer
      * @Column(type="integer", nullable=true)
      */
     protected $active_address;
 
     /**
+     * @var \Doctrine\Common\Collections\ArrayCollection|\App\Account\Entity\UserAddress
      * @OneToMany(targetEntity="UserAddress", mappedBy="userProfile", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $addresses;
@@ -113,7 +114,7 @@ class UserProfiles
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getName()
     {
@@ -121,7 +122,7 @@ class UserProfiles
     }
 
     /**
-     * @param string $name
+     * @param null|string $name
      *
      * @return $this
      */
@@ -133,7 +134,7 @@ class UserProfiles
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getSurname()
     {
@@ -141,7 +142,7 @@ class UserProfiles
     }
 
     /**
-     * @param string $surname
+     * @param null|string $surname
      *
      * @return $this
      */
@@ -153,7 +154,7 @@ class UserProfiles
     }
 
     /**
-     * @return integer
+     * @return null|integer
      */
     public function getGender()
     {
@@ -161,7 +162,7 @@ class UserProfiles
     }
 
     /**
-     * @param integer $gender
+     * @param null|integer $gender
      *
      * @return $this
      */
@@ -173,7 +174,7 @@ class UserProfiles
     }
 
     /**
-     * @return \DateTime
+     * @return null|\DateTime
      */
     public function getBirthday()
     {
@@ -181,7 +182,7 @@ class UserProfiles
     }
 
     /**
-     * @param \DateTime $birthday
+     * @param null|\DateTime $birthday
      *
      * @return $this
      */
@@ -193,7 +194,7 @@ class UserProfiles
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getWebsite()
     {
@@ -201,7 +202,7 @@ class UserProfiles
     }
 
     /**
-     * @param string $website
+     * @param null|string $website
      *
      * @return $this
      */
@@ -213,7 +214,7 @@ class UserProfiles
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getPicture()
     {
@@ -221,7 +222,7 @@ class UserProfiles
     }
 
     /**
-     * @param string $picture
+     * @param null|string $picture
      *
      * @return $this
      */
@@ -233,7 +234,7 @@ class UserProfiles
     }
 
     /**
-     * @return integer
+     * @return null|integer
      */
     public function getActiveAddress()
     {
@@ -241,7 +242,7 @@ class UserProfiles
     }
 
     /**
-     * @param integer $activeAddress
+     * @param null|integer $activeAddress
      *
      * @return $this
      */

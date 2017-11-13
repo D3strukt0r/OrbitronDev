@@ -26,36 +26,36 @@ class UserAddress
 
     /**
      * @ManyToOne(targetEntity="UserProfiles", inversedBy="addresses")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     protected $userProfile;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $street;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $house_number;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $zip_code;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $city;
 
     /**
-     * @var string
+     * @var null|string
      * @Column(type="string", nullable=true)
      */
     protected $country;
@@ -89,7 +89,7 @@ class UserAddress
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getStreet()
     {
@@ -97,7 +97,7 @@ class UserAddress
     }
 
     /**
-     * @param string $street
+     * @param null|string $street
      *
      * @return $this
      */
@@ -109,7 +109,7 @@ class UserAddress
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getHouseNumber()
     {
@@ -117,7 +117,7 @@ class UserAddress
     }
 
     /**
-     * @param string $houseNumber
+     * @param null|string $houseNumber
      *
      * @return $this
      */
@@ -129,7 +129,7 @@ class UserAddress
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getZipCode()
     {
@@ -137,7 +137,7 @@ class UserAddress
     }
 
     /**
-     * @param string $zipCode
+     * @param null|string $zipCode
      *
      * @return $this
      */
@@ -149,7 +149,7 @@ class UserAddress
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getCity()
     {
@@ -157,7 +157,7 @@ class UserAddress
     }
 
     /**
-     * @param string $city
+     * @param null|string $city
      *
      * @return $this
      */
@@ -169,7 +169,7 @@ class UserAddress
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getCountry()
     {
@@ -177,7 +177,7 @@ class UserAddress
     }
 
     /**
-     * @param string $country
+     * @param null|string $country
      *
      * @return $this
      */

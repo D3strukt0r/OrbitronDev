@@ -87,7 +87,7 @@ class User extends EncryptableFieldEntity
     protected $credits;
 
     /**
-     * @var integer
+     * @var null|integer
      * @Column(type="integer", nullable=true)
      */
     protected $preferred_payment_method;
@@ -165,6 +165,11 @@ class User extends EncryptableFieldEntity
         return $this;
     }
 
+    /**
+     * @param string $password
+     *
+     * @return bool
+     */
     public function verifyPassword($password)
     {
         return $this->verifyEncryptedFieldValue($this->getPassword(), $password);
@@ -351,7 +356,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @return integer
+     * @return null|integer
      */
     public function getPreferredPaymentMethod()
     {
@@ -359,7 +364,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @param integer $preferredPaymentMethod
+     * @param null|integer $preferredPaymentMethod
      *
      * @return $this
      */

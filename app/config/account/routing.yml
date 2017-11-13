@@ -1,3 +1,7 @@
+app_account_setup:
+    path:     /setup
+    defaults: { _controller: 'AccountController::oneTimeSetupAction' }
+
 app_account_index:
     path:     /
     defaults: { _controller: 'AccountController::indexAction' }

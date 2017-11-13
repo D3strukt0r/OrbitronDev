@@ -26,7 +26,7 @@ class UserSubscription
 
     /**
      * @OneToOne(targetEntity="User", inversedBy="subscription")
-     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
+     * @JoinColumn(name="id", referencedColumnName="id")
      */
     protected $user;
 
@@ -43,7 +43,7 @@ class UserSubscription
     protected $activated_at;
 
     /**
-     * @var \DateTime|null
+     * @var null|\DateTime
      * @Column(type="datetime", nullable=true)
      */
     protected $expires_at;
@@ -117,7 +117,7 @@ class UserSubscription
     }
 
     /**
-     * @return \DateTime|null
+     * @return null|\DateTime
      */
     public function getExpiresAt()
     {
@@ -125,7 +125,7 @@ class UserSubscription
     }
 
     /**
-     * @param \DateTime $expiresAt
+     * @param null|\DateTime $expiresAt
      *
      * @return $this
      */
@@ -153,6 +153,9 @@ class UserSubscription
         return ceil($difference / 86400);
     }
 
+    /**
+     * @return bool
+     */
     public function hasSubscription()
     {
         if (is_null($days = $this->getRemainingDays()) || $days > 0) {

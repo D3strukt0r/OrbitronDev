@@ -86,6 +86,7 @@ class Router
             $request_uri = '';
         }
         $request_vars = explode('/', $request_uri);
+        $return = array();
         if (!is_null($request_host)) {
             $parsed_host_url = explode(".", $request_host);
             $return['request']['branch'] = $parsed_host_url[0];
@@ -111,6 +112,7 @@ class Router
                 $branches[] = explode(';', $value);
             }
 
+            $template = array();
             foreach ($branches as $value) {
 
                 if (ltrim($value[0], '/') == $return['request']['branch']) {
@@ -143,7 +145,7 @@ class Router
             exit;
         }
 
-
+        $_ACCESS = array();
         $_ACCESS['urlarray'] = explode('/', $template['target']);
         unset($_ACCESS['urlarray'][count($_ACCESS['urlarray']) - 1]);
         $_ACCESS['basedir'] = implode('', $_ACCESS['urlarray']);
@@ -151,7 +153,7 @@ class Router
             $return['server']['basedir'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'] . '/' . $_ACCESS['basedir'];
         }
 
-        /*
+        /**
          * Acessible:
          * - $request_data['request']['branch']
          * - $request_data['request']['var']

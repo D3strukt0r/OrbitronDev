@@ -641,4 +641,17 @@ class AccountController extends Controller
             'user_id' => $token['user_id'],
         ));
     }
+
+    public function oneTimeSetupAction()
+    {
+        if ($this->getRequest()->query->get('key') == $this->get('config')['parameters']['setup_key']) {
+            $text = '';
+            AccountHelper::addDefaultSubscriptionTypes();
+            $text .= 'Subscription types added<br />';
+            AccountHelper::addDefaultScopes();
+            $text .= 'Scopes added<br />';
+            return $text;
+        }
+        return 'No setup key given, or key not correct.';
+    }
 }

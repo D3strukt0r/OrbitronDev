@@ -9,7 +9,7 @@ class BrowserInfo
      *
      * @return string
      */
-    static function urlOrigin($bUseForwardedHost = false)
+    public static function urlOrigin($bUseForwardedHost = false)
     {
         $bSSL = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
 
@@ -29,7 +29,7 @@ class BrowserInfo
      *
      * @return string
      */
-    static function fullUrl($bUseForwardedHost = false)
+    public static function fullUrl($bUseForwardedHost = false)
     {
         return self::urlOrigin($bUseForwardedHost) . $_SERVER['REQUEST_URI'];
     }
@@ -37,7 +37,7 @@ class BrowserInfo
     /**
      * @return string
      */
-    static function checkPhoneType()
+    public static function checkPhoneType()
     {
         $bIsTablet = false;
         $bIsMobile = false;

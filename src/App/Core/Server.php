@@ -3,10 +3,11 @@
 namespace App\Core;
 
 // TODO: This file schouldn't exist in the future
+
 class Server
 {
     // URL('/example', 'page=example', false)
-    public static function URL($path, $params = array(), $get_current = false, $options = array())
+    public static function URL($path, $params = array(), $get_current = false)
     {
         $new_scheme = 'http://';
         $new_host = 'localhost';
@@ -17,7 +18,7 @@ class Server
 
         // get current uri
         if ($get_current === true) {
-            $current_uri = \App\Core\BrowserInfo::fullUrl();
+            $current_uri = BrowserInfo::fullUrl();
             $new_scheme = parse_url($current_uri, PHP_URL_SCHEME) . '://';
             $new_host = parse_url($current_uri, PHP_URL_HOST);
             $new_port = (int)parse_url($current_uri, PHP_URL_PORT);
@@ -57,7 +58,6 @@ class Server
                 $new_query = $params;
             }
         }
-        //TODO: use options
 
         // build url
         $new_uri = $new_scheme . $new_host . ':' . $new_port . $new_path . '?' . $new_query . '#' . $new_fragment;
