@@ -28,7 +28,7 @@ class UserProfiles
 
     /**
      * @OneToOne(targetEntity="User", inversedBy="profile")
-     * @JoinColumn(name="id", referencedColumnName="id")
+     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
      */
     protected $user;
 

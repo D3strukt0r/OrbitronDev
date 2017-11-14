@@ -26,7 +26,7 @@ class UserPaymentMethods
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="paymentMethods")
-     * @JoinColumn(name="id", referencedColumnName="id")
+     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
      */
     protected $user;
 

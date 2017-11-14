@@ -42,7 +42,7 @@ class Blog
     /**
      * @var \App\Account\Entity\User
      * @ManyToOne(targetEntity="\App\Account\Entity\User")
-     * @JoinColumn(name="owner_id", referencedColumnName="id")
+     * @JoinColumn(name="owner_id", referencedColumnName="id", nullable=false)
      */
     protected $owner;
 

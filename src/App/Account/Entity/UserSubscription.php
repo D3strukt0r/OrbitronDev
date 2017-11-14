@@ -25,14 +25,16 @@ class UserSubscription
     protected $id;
 
     /**
+     * @var \App\Account\Entity\User
      * @OneToOne(targetEntity="User", inversedBy="subscription")
-     * @JoinColumn(name="id", referencedColumnName="id")
+     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
      */
     protected $user;
 
     /**
+     * @var \App\Account\Entity\SubscriptionType
      * @OneToOne(targetEntity="SubscriptionType")
-     * @JoinColumn(name="subscription_id", referencedColumnName="id")
+     * @JoinColumn(name="subscription_id", referencedColumnName="id", nullable=false)
      */
     protected $subscription;
 
