@@ -85,7 +85,7 @@
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         {{ service.page_links }}
-                        {% if current_user.id == current_blog.owner_id %}
+                        {% if current_user.id == current_blog.owner.id %}
                             <li><a href="{{ path('app_blog_blog_admin', {'blog': current_blog.url, 'page': 'home'}) }}" class="admin-link">{{ 'Admin Panel'|trans }}</a></li>
                         {% endif %}
                         {% if current_user.id > -1 %}

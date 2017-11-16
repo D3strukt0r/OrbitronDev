@@ -1,16 +1,16 @@
 {% extends 'blog/theme1/layout.html.twig' %}
 
 {% set service_page_links %}
-    {% for text,link in current_blog.page_links %}
+    {% for text,link in current_blog.links %}
         <li><a href="{{ link }}">{{ text }}</a></li>
     {% endfor %}
 {% endset %}
 {% set service = {
 'page_name': current_blog.name,
 'page_logo_link': '/' ~ current_blog.url,
-'page_author': current_blog.owner_username,
-'page_description': current_blog.page_description,
-'page_keywords': current_blog.page_keywords,
+'page_author': current_blog.owner.username,
+'page_description': current_blog.description,
+'page_keywords': current_blog.keywords|join(','),
 'page_links': service_page_links
 } %}
 
@@ -22,12 +22,12 @@
             <header>
                 <h1 itemprop="headline">{{ current_post.title }}</h1>
                 <p class="meta">
-                    <time datetime="2010-06-10" itemprop="datePublished"><span class="glyphicon glyphicon-time"></span> {{ 'Posted on'|trans }} <b>{{ current_post.published|date('F t, Y') }} {{ 'at'|trans }} {{ current_post.published|date('H:i') }}</b></time>
+                    <time datetime="2010-06-10" itemprop="datePublished"><span class="glyphicon glyphicon-time"></span> {{ 'Posted on'|trans }} <b>{{ current_post.publishedOn|date('F j, Y') }} {{ 'at'|trans }} {{ current_post.publishedOn|date('H:i') }}</b></time>
                     {{ '· tagged with'|trans }} {{ current_post.categories }}
                 </p>
             </header>
             <div itemprop="articleBody">
-                {{ current_post.story|raw }}
+                {{ current_post.story|nl2br|raw }}
             </div>
             <section style="margin-top: 20px; border-top: 1px solid #e5e5e5;">
                 <h1>{{ 'Leave a comment'|trans }}</h1>

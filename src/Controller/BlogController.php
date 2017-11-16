@@ -4,18 +4,18 @@ namespace Controller;
 
 use App\Account\AccountHelper;
 use App\Account\Entity\User;
-use App\Blog\Blog;
-use App\Blog\BlogPost;
+use App\Blog\BlogHelper;
+use App\Blog\Entity\Blog;
+use App\Blog\Entity\Post;
 use App\Blog\Form\NewBlogType;
-use Container\DatabaseContainer;
 use Controller;
-use PDO;
 use ReCaptcha\ReCaptcha;
 use Suin\RSSWriter\Channel;
 use Suin\RSSWriter\Feed;
 use Suin\RSSWriter\Item;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class BlogController extends Controller
 {
@@ -24,33 +24,26 @@ class BlogController extends Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-
         /** @var \App\Account\Entity\User $currentUser */
         $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
-        $blogList = Blog::getBlogList();
-        foreach ($blogList as $key => $blog) {
-            /** @var \App\Account\Entity\User $user */
-            $user = $this->getEntityManager()->find(User::class, $blog['owner_id']);
-            $blogList[$key]['username'] = $user->getUsername();
-        }
-
         return $this->render('blog/list-blogs.html.twig', array(
             'current_user' => $currentUser,
-            'blog_list'    => $blogList,
+            'blog_list'    => BlogHelper::getBlogList(),
         ));
     }
 
     public function newBlogAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $currentUser = $em->find(User::class, USER_ID);
 
         $createBlogForm = $this->createForm(NewBlogType::class);
-
         $request = $this->getRequest();
         $createBlogForm->handleRequest($request);
         if ($createBlogForm->isValid()) {
@@ -79,31 +72,26 @@ class BlogController extends Controller
                 } elseif (in_array($blogUrl, array('new-forum', 'admin'))) {
                     $errorMessages[] = '';
                     $createBlogForm->get('url')->addError(new FormError('It\'s prohibited to use this url'));
-                } elseif (Blog::urlExists($blogUrl)) {
+                } elseif (BlogHelper::urlExists($blogUrl)) {
                     $errorMessages[] = '';
                     $createBlogForm->get('url')->addError(new FormError('This url is already in use'));
                 }
 
                 if (!count($errorMessages)) {
-                    $database = DatabaseContainer::getDatabase();
+                    try {
+                        $newBlog = new Blog();
+                        $newBlog
+                            ->setName($blogName)
+                            ->setUrl($blogUrl)
+                            ->setOwner($currentUser)
+                            ->setCreated(new \DateTime())
+                            ->setClosed(false);
+                        $em->persist($newBlog);
+                        $em->flush();
 
-                    $addBlog   = $database->prepare('INSERT INTO `blogs`(`name`,`url`,`owner_id`) VALUES (:name,:url,:user_id)');
-                    $blogAdded = $addBlog->execute(array(
-                        ':name'    => $blogName,
-                        ':url'     => $blogUrl,
-                        ':user_id' => $currentUser->getId(),
-                    ));
-
-                    if ($blogAdded) {
-                        $getBlog = $database->prepare('SELECT `url` FROM `blogs` WHERE `url`=:url LIMIT 1');
-                        $getBlog->bindValue(':url', $blogUrl, PDO::PARAM_STR);
-                        $getBlog->execute();
-                        $blogData = $getBlog->fetchAll(PDO::FETCH_ASSOC);
-
-                        return $this->redirectToRoute('app_blog_blog_index', array('blog' => $blogData[0]['url']));
-                    } else {
-                        $errorMessage = $addBlog->errorInfo();
-                        $createBlogForm->addError(new FormError('We could not create your blog. (ERROR: '.$errorMessage[2].')'));
+                        return $this->redirectToRoute('app_blog_blog_index', array('blog' => $newBlog->getUrl()));
+                    } catch (\Exception $e) {
+                        $createBlogForm->addError(new FormError('We could not create your blog. ('.$e->getMessage().')'));
                     }
                 }
             }
@@ -116,47 +104,42 @@ class BlogController extends Controller
 
     public function blogIndexAction()
     {
-        // Does the blog even exist?
-        if (!Blog::urlExists($this->parameters['blog'])) {
+        $em = $this->getEntityManager();
+
+        //////////// TEST IF BLOG EXISTS ////////////
+        /** @var \App\Blog\Entity\Blog $blog */
+        $blog = $em->getRepository(Blog::class)->findOneBy(array('url' => $this->parameters['blog']));
+        if (!BlogHelper::urlExists($this->parameters['blog'])) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF BLOG EXISTS ////////////
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
-
-        $blogId                           = Blog::url2Id($this->parameters['blog']);
-        $blog                             = new Blog($blogId);
-        $blog->blogData['owner_username'] = AccountHelper::formatUsername($blog->getVar('owner_id'), false, false);
-        $blog->blogData['page_links']     = json_decode($blog->getVar('page_links'), true);
+        $currentUser = $em->find(User::class, USER_ID);
 
         // Get all posts
         /** @var Request $request */
         $request                    = $this->get('kernel')->getRequest();
         $pagination                 = array();
-        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : 5; // TODO: Page Limit should be variable by user
+        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : 5;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
-        /** @var \PDOStatement $getPosts */
-        $getPosts = $this->get('database')->prepare('SELECT * FROM `blog_posts` WHERE `blog_id`=:blog_id ORDER BY `published` DESC LIMIT :offset,:row_count');
-        $getPosts->bindValue(':blog_id', $blog->getVar('id'), PDO::PARAM_INT);
-        $getPosts->bindValue(':offset', ($pagination['current_page'] - 1) * $pagination['item_limit'], PDO::PARAM_INT);
-        $getPosts->bindValue(':row_count', $pagination['item_limit'], PDO::PARAM_INT);
-        $getPosts->execute();
-        $posts = $getPosts->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($posts as $index => $post) {
-            $posts[$index]['username'] = AccountHelper::formatUsername($post['author_id']);
-        }
+        /** @var \App\Blog\Entity\Post[] $posts */
+        $posts = $em->getRepository(Post::class)->findBy(
+            array('blog' => $blog),
+            array('published_on' => 'DESC'),
+            $pagination['item_limit'],
+            ($pagination['current_page'] - 1) * $pagination['item_limit']
+        );
 
         // Pagination
         // Reference: http://www.strangerstudios.com/sandbox/pagination/diggstyle.php
-        /** @var \PDOStatement $getPostCount */
-        $getPostCount = $this->get('database')->prepare('SELECT NULL FROM `blog_posts` WHERE `blog_id`=:blog_id');
-        $getPostCount->bindValue(':blog_id', $blog->getVar('id'), PDO::PARAM_INT);
-        $getPostCount->execute();
-        $pagination['total_items'] = $getPostCount->rowCount();
+        /** @var \App\Blog\Entity\Post[] $getPostCount */
+        $getPostCount = $em->getRepository(Post::class)->findBy(array('blog' => $blog));
+        $pagination['total_items'] = count($getPostCount);
         $pagination['adjacents']   = 1;
 
         $pagination['next_page']     = $pagination['current_page'] + 1;
@@ -166,7 +149,7 @@ class BlogController extends Controller
 
         return $this->render('blog/theme1/index.html.twig', array(
             'current_user' => $currentUser,
-            'current_blog' => $blog->blogData,
+            'current_blog' => $blog,
             'posts'        => $posts,
             'pagination'   => $pagination,
         ));
@@ -174,30 +157,34 @@ class BlogController extends Controller
 
     public function blogPostAction()
     {
-        // Does the blog even exist?
-        if (!Blog::urlExists($this->parameters['blog'])) {
-            return $this->render('error/error404.html.twig');
-        }
+        $em = $this->getEntityManager();
 
-        // Does the post even exist?
-        if (!BlogPost::postExists($this->parameters['post'])) {
+        //////////// TEST IF BLOG EXISTS ////////////
+        /** @var \App\Blog\Entity\Blog $blog */
+        $blog = $em->getRepository(Blog::class)->findOneBy(array('url' => $this->parameters['blog']));
+        if (!BlogHelper::urlExists($this->parameters['blog'])) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF BLOG EXISTS ////////////
+
+        //////////// TEST IF POST EXISTS ////////////
+        /** @var \App\Blog\Entity\Post $post */
+        $post = $em->find(Post::class, $this->parameters['post']);
+        if (is_null($post)) {
+            return $this->render('error/error404.html.twig');
+        }
+        //////////// END TEST IF POST EXISTS ////////////
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
-
-        $blogId = Blog::url2Id($this->parameters['blog']);
-        $blog   = new Blog($blogId);
-        $post   = new BlogPost($this->parameters['post']);
+        $currentUser = $em->find(User::class, USER_ID);
 
         return $this->render('blog/theme1/post.html.twig', array(
             'current_user' => $currentUser,
-            'current_blog' => $blog->blogData,
-            'current_post' => $post->postData,
+            'current_blog' => $blog,
+            'current_post' => $post,
         ));
     }
 
@@ -213,60 +200,63 @@ class BlogController extends Controller
 
     public function blogSearchAction()
     {
-        // Does the blog even exist?
-        if (!Blog::urlExists($this->parameters['blog'])) {
+        $em = $this->getEntityManager();
+
+        //////////// TEST IF BLOG EXISTS ////////////
+        /** @var \App\Blog\Entity\Blog $blog */
+        $blog = $em->getRepository(Blog::class)->findOneBy(array('url' => $this->parameters['blog']));
+        if (!BlogHelper::urlExists($this->parameters['blog'])) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF BLOG EXISTS ////////////
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
-
-        $blogId = Blog::url2Id($this->parameters['blog']);
-        $blog   = new Blog($blogId);
+        $currentUser = $em->find(User::class, USER_ID);
 
         return $this->render('blog/theme1/search.html.twig', array(
             'current_user' => $currentUser,
-            'current_blog' => $blog->blogData,
+            'current_blog' => $blog,
         ));
     }
 
     public function blogRssAction()
     {
-        // Does the blog even exist?
-        if (!Blog::urlExists($this->parameters['blog'])) {
+        $em = $this->getEntityManager();
+
+        //////////// TEST IF BLOG EXISTS ////////////
+        /** @var \App\Blog\Entity\Blog $blog */
+        $blog = $em->getRepository(Blog::class)->findOneBy(array('url' => $this->parameters['blog']));
+        if (!BlogHelper::urlExists($this->parameters['blog'])) {
             return $this->render('error/error404.html.twig');
         }
-
-        $blogUrl = $this->parameters['blog'];
-        $blogId  = Blog::url2Id($blogUrl);
-        $blog    = new Blog($blogId);
+        //////////// END TEST IF BLOG EXISTS ////////////
 
         $feed    = new Feed();
         $channel = new Channel();
         $channel
-            ->title($blog->getVar('name'))
-            ->url('https://blog.orbitrondev.org/'.$blog->getVar('url'))
-            ->description($blog->getVar('description'))
-            ->language($blog->getVar('language'))
-            ->copyright($blog->getVar('copyright'))
-            ->pubDate(strtotime(date('D, j M Y H:i:s O', $blog->getVar('published'))))
-            ->lastBuildDate(strtotime(date('D, j M Y H:i:s O', $blog->getVar('updated'))))
+            ->title($blog->getName())
+            ->url($this->generateUrl('app_blog_blog_index', array('blog' => $blog->getUrl()), UrlGeneratorInterface::ABSOLUTE_URL))
+            ->description($blog->getDescription())
+            ->language($blog->getLanguage())
+            ->copyright($blog->getCopyright())
+            ->pubDate($blog->getCreated()->getTimestamp())
+            ->lastBuildDate($blog->getCreated()->getTimestamp())
             ->ttl(60)
             ->appendTo($feed);
 
-        $postList = BlogPost::getPostList($blog->getVar('id'));
-        foreach ($postList as $postData) {
-            $post = new BlogPost($postData['post_id']);
+        /** @var \App\Blog\Entity\Post[] $postList */
+        $postList = $em->getRepository(Post::class)->findBy(array('blog' => $blog));
+        foreach ($postList as $post) {
             $item = new Item();
             $item
-                ->title($post->getVar('title'))
-                ->url('https://blog.orbitrondev.org/'.$blog->getVar('url').'/?p='.$post->getVar('post_id'))
-                ->description('<div>'.$post->getVar('description').'</div>')
-                ->guid('https://blog.orbitrondev.org/'.$blog->getVar('url').'/?p='.$post->getVar('post_id'), true)
-                ->pubDate(strtotime(date('D, j M Y H:i:s O', $blog->getVar('published'))))
+                ->title($post->getTitle())
+                ->url($this->generateUrl('app_blog_blog_post', array('blog' => $blog->getUrl(), 'post' => $post->getId()), UrlGeneratorInterface::ABSOLUTE_URL))
+                ->description('<div>'.$post->getDescription().'</div>')
+                ->guid($this->generateUrl('app_blog_blog_post', array('blog' => $blog->getUrl(), 'post' => $post->getId()), UrlGeneratorInterface::ABSOLUTE_URL), true)
+                ->pubDate($blog->getCreated()->getTimestamp())
                 ->appendTo($channel);
         }
 

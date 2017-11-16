@@ -15,7 +15,7 @@
 
 {% block body %}
     <div class="container content">
-        {% if current_user.id != -1  %}
+        {% if current_user is not empty %}
             <section id="admin">
                 <div class="panel panel-info">
                     <div class="panel-heading">
@@ -29,7 +29,7 @@
                             <table class="table table-bordered table-striped table-hover">
                                 <tbody>
                                     {% for blog in blog_list %}
-                                        {% if current_user.id == blog.owner_id %}
+                                        {% if current_user.id == blog.owner.id %}
                                             <tr>
                                                 <td><a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}">{{ blog.name }}</a></td>
                                                 <td><a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a></td>
@@ -58,8 +58,8 @@
                         {% for blog in blog_list %}
                             <tr>
                                 <td><a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}">{{ blog.name }}</a></td>
-                                <td>{{ blog.username }}</td>
-                                <td>{% if current_user.id == blog.owner_id %}<a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
+                                <td>{{ blog.owner.username }}</td>
+                                <td>{% if current_user.id == blog.owner.id %}<a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -1,16 +1,16 @@
 {% extends 'blog/theme1/layout.html.twig' %}
 
 {% set service_page_links %}
-    {% for text,link in current_blog.page_links %}
+    {% for text,link in current_blog.links %}
         <li><a href="{{ link }}">{{ text }}</a></li>
     {% endfor %}
 {% endset %}
 {% set service = {
 'page_name': current_blog.name,
 'page_logo_link': '/' ~ current_blog.url,
-'page_author': current_blog.owner_username,
-'page_description': current_blog.page_description,
-'page_keywords': current_blog.page_keywords,
+'page_author': current_blog.owner.username,
+'page_description': current_blog.description,
+'page_keywords': current_blog.keywords|join(','),
 'page_links': service_page_links
 } %}
 
@@ -72,14 +72,14 @@
                         <div class="panel panel-info">
                             <div class="panel-body">
                                 <div class="col-xs-12">
-                                    <h2><a href="{{ path('app_blog_blog_post', {'blog': current_blog.url, 'post': post.post_id}) }}">{{ post.title }}</a></h2>
-                                    <p class="lead">{{ 'by'|trans }} {{ post.username|raw }}</p>
-                                    <p><span class="glyphicon glyphicon-time"></span> {{ 'Posted on'|trans }} <b>{{ post.published|date('F t, Y') }} {{ 'at'|trans }} {{ post.published|date('H:i') }}</b></p>
+                                    <h2><a href="{{ path('app_blog_blog_post', {'blog': current_blog.url, 'post': post.id}) }}">{{ post.title }}</a></h2>
+                                    <p class="lead">{{ 'by'|trans }} <a href="{{ path('app_account_user', {'username': post.author.username}) }}">{{ post.author.username }}</a></p>
+                                    <p><span class="glyphicon glyphicon-time"></span> {{ 'Posted on'|trans }} <b>{{ post.publishedOn|date('F j, Y') }} {{ 'at'|trans }} {{ post.publishedOn|date('H:i') }}</b></p>
                                     <hr />
                                     <img class="img-responsive" src="//placehold.it/900x300" alt="" />
                                     <hr />
                                     <p>{{ post.description }}</p>
-                                    <a class="btn btn-primary" href="{{ path('app_blog_blog_post', {'blog': current_blog.url, 'post': post.post_id}) }}">{{ 'Read More'|trans }} <span class="glyphicon glyphicon-chevron-right"></span></a>
+                                    <a class="btn btn-primary" href="{{ path('app_blog_blog_post', {'blog': current_blog.url, 'post': post.id}) }}">{{ 'Read More'|trans }} <span class="glyphicon glyphicon-chevron-right"></span></a>
                                 </div><!-- /.col-xs-12 -->
                             </div><!-- /.panel-body -->
                         </div><!-- /.panel -->

@@ -16,7 +16,7 @@ use App\Account\Form\ForgotType;
 use App\Account\Form\LoginType;
 use App\Account\Form\RegisterType;
 use App\Account\Form\ResetPasswordType;
-use App\Blog\Blog;
+use App\Blog\BlogHelper;
 use App\Core\Token;
 use App\Forum\Forum;
 use App\Store\Store;
@@ -310,7 +310,7 @@ class AccountController extends Controller
                 'user_exists'          => true,
                 'current_user'         => $currentUser,
                 'service_allowed'      => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
-                'blogs'                => Blog::getOwnerBlogList($currentUser->getId()),
+                'blogs'                => BlogHelper::getOwnerBlogList($currentUser),
                 'forums'               => Forum::getOwnerForumList($currentUser->getId()),
                 'stores'               => Store::getOwnerStoreList($currentUser->getId()),
             ));

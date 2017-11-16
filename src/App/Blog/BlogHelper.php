@@ -33,7 +33,7 @@ class BlogHelper
     {
         $em = Kernel::getIntent()->getEntityManager();
         /** @var null|\App\Blog\Entity\Blog[] $blogList */
-        $blogList = $em->getRepository(Blog::class)->findBy(array('owner_id' => $user->getId()));
+        $blogList = $em->getRepository(Blog::class)->findBy(array('owner' => $user->getId()));
 
         return $blogList;
     }

@@ -1,16 +1,16 @@
 {% extends 'blog/theme1/layout.html.twig' %}
 
 {% set service_page_links %}
-    {% for text,link in current_blog.page_links %}
+    {% for text,link in current_blog.links %}
         <li><a href="{{ link }}">{{ text }}</a></li>
     {% endfor %}
 {% endset %}
 {% set service = {
 'page_name': current_blog.name,
 'page_logo_link': '/' ~ current_blog.url,
-'page_author': current_blog.owner_username,
-'page_description': current_blog.page_description,
-'page_keywords': current_blog.page_keywords,
+'page_author': current_blog.owner.username,
+'page_description': current_blog.description,
+'page_keywords': current_blog.keywords|join(','),
 'page_links': service_page_links
 } %}
 

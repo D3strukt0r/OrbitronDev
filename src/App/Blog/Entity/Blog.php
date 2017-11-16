@@ -59,7 +59,7 @@ class Blog
     protected $closed_message;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var array
      * @Column(type="json_array")
      */
     protected $keywords;
@@ -111,11 +111,6 @@ class Blog
      * @OneToMany(targetEntity="Post", mappedBy="blog", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $posts;
-
-    public function __construct()
-    {
-        $this->keywords = new ArrayCollection();
-    }
 
     /**
      * @return integer
@@ -230,7 +225,7 @@ class Blog
      */
     public function getKeywords()
     {
-        return $this->keywords->toArray();
+        return $this->keywords;
     }
 
     /**
@@ -240,7 +235,9 @@ class Blog
      */
     public function addKeyword($keyword)
     {
-        $this->keywords->add($keyword);
+        $array = new ArrayCollection($this->keywords);
+        $array->add($keyword);
+        $this->keywords = $array->toArray();
 
         return $this;
     }
@@ -250,10 +247,12 @@ class Blog
      *
      * @return $this
      */
-    public function removePaymentMethod($keyword)
+    public function removeKeyword($keyword)
     {
-        if ($this->keywords->contains($keyword)) {
-            $this->keywords->removeElement($keyword);
+        $array = new ArrayCollection($this->keywords);
+        if ($array->contains($keyword)) {
+            $array->removeElement($keyword);
+            $this->keywords = $array->toArray();
         }
 
         return $this;
