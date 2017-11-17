@@ -2,14 +2,20 @@
 
 namespace App\Core;
 
-
-use Container\DatabaseContainer;
-use PDO;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use App\Core\Entity\Token as TokenEntity;
+use Kernel;
+use Exception;
 
 class Token
 {
+    /**
+     * @var bool
+     */
     private $isGenerated = false;
+
+    /**
+     * @var \App\Core\Entity\Token
+     */
     private $token = null;
 
     /**
@@ -25,8 +31,15 @@ class Token
     public function __construct($token = null)
     {
         if (!is_null($token) && is_string($token)) {
-            $this->isGenerated = true;
-            $this->token = $token;
+            $em = Kernel::getIntent()->getEntityManager();
+
+            /** @var \App\Core\Entity\Token $token */
+            $token = $em->getRepository(TokenEntity::class)->findOneBy(array('token' => $token));
+
+            if (!is_null($token)) {
+                $this->isGenerated = true;
+                $this->token = $token;
+            }
         }
         // determine whether to use OpenSSL
         if (defined('PHP_WINDOWS_VERSION_BUILD') && version_compare(PHP_VERSION, '5.3.4', '<')) {
@@ -39,32 +52,39 @@ class Token
     }
 
     /**
-     * @param string $job
-     * @param null   $validUntil
-     * @param array  $information
+     * @param string         $job
+     * @param null|\DateTime $validUntil
+     * @param null|array     $information
      *
      * @return string
      */
-    public function generateToken($job, $validUntil = null, $information = array())
+    public function generateToken($job, $validUntil = null, array $information = null)
     {
         if (!$this->isGenerated) {
-            $database = DatabaseContainer::$database;
             $token = rtrim(strtr(base64_encode($this->getRandomNumber()), '+/', '-_'), '=');
 
-            $addToken = $database->prepare('INSERT INTO `app_token`(`token`, `job`, `expires`, `optional_info`) VALUES (:token, :job, :expires, :info)');
-            $addToken->execute(array(
-                ':token'   => $token,
-                ':job'     => $job,
-                ':expires' => !is_null($validUntil) ? $validUntil : 0,
-                ':info'    => count($information) > 0 ? json_encode($information) : null,
-            ));
+            $newToken = new TokenEntity();
+            $newToken
+                ->setToken($token)
+                ->setJob($job)
+                ->setExpires($validUntil)
+                ->setOptionalInfo($information);
+
+            $em = Kernel::getIntent()->getEntityManager();
+            $em->persist($newToken);
+            $em->flush();
+
+            $this->token = $newToken;
+
             return $token;
         }
+
         return null;
     }
 
     /**
      * @return string
+     * @throws \Exception
      */
     private function getRandomNumber()
     {
@@ -77,9 +97,16 @@ class Token
             }
             throw new Exception('OpenSSL did not produce a secure random number.');
         }
+
         return hash('sha256', uniqid(mt_rand(), true), true);
     }
 
+    /**
+     * @param array $options
+     *
+     * @return string
+     * @throws \Exception
+     */
     public static function createRandomToken($options = array())
     {
         $defaultOptions = array(
@@ -99,74 +126,59 @@ class Token
         }
     }
 
+    /**
+     * @return bool|null|string
+     */
     public function getJob()
     {
         if ($this->isGenerated) {
-            $database = DatabaseContainer::$database;
-
-            $getJob = $database->prepare('SELECT * FROM `app_token` WHERE `token`=:token LIMIT 1');
-            $getJob->execute(array(
-                ':token' => $this->token,
-            ));
-
-            if ($getJob->rowCount() == 0) {
+            if (is_null($this->token)) {
                 return false;
-            } else {
-                $tokenData = $getJob->fetchAll(PDO::FETCH_ASSOC);
-
-                if ($tokenData[0]['expires'] < time()) {
-                    return 'expired';
-                }
-
-                return $tokenData[0]['job'];
             }
+            if ($this->token->getExpires()->getTimestamp() < time()) {
+                return 'expired';
+            }
+
+            return $this->token->getJob();
         }
+
         return null;
     }
 
     /**
-     * @return bool|mixed|null|string
+     * @return array|bool|null|string
      */
     public function getInformation()
     {
         if ($this->isGenerated) {
-            $database = DatabaseContainer::$database;
-
-            $getJob = $database->prepare('SELECT * FROM `app_token` WHERE `token`=:token LIMIT 1');
-            $getJob->execute(array(
-                ':token' => $this->token,
-            ));
-
-            if ($getJob->rowCount() == 0) {
+            if (is_null($this->token)) {
                 return false;
-            } else {
-                $tokenData = $getJob->fetchAll(PDO::FETCH_ASSOC);
-
-                if ($tokenData[0]['expires'] < time()) {
-                    return 'expired';
-                }
-
-                return json_decode($tokenData[0]['optional_info'], true);
             }
+            if ($this->token->getExpires()->getTimestamp() < time()) {
+                return 'expired';
+            }
+
+            return $this->token->getOptionalInfo();
         }
+
         return null;
     }
 
-    /**
-     *
-     */
     public function remove()
     {
         if ($this->isGenerated) {
-            $database = DatabaseContainer::$database;
+            $em = Kernel::getIntent()->getEntityManager();
 
-            $getJob = $database->prepare('DELETE FROM `app_token` WHERE `token`=:token LIMIT 1');
-            $getJob->execute(array(
-                ':token' => $this->token,
-            ));
+            if (is_null($this->token)) {
+                return false;
+            }
+
+            $em->remove($this->token);
+            $em->flush();
 
             $this->isGenerated = false;
-            $this->token = null;
         }
+
+        return null;
     }
 }

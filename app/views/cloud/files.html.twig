@@ -44,7 +44,7 @@
                     {
                         cssAutoLoad : false,               // Disable CSS auto loading
                         baseUrl : 'https://cdnjs.cloudflare.com/ajax/libs/elfinder/2.1.28', // Base URL to css/*, js/*
-                        url : 'app/cloud/connector.minimal.php?user_id={{ current_user.user_id }}'  // connector URL (REQUIRED)
+                        url : 'app/cloud/connector.php?user_id={{ current_user.id }}'  // connector URL (REQUIRED)
                         // , lang: 'ru'                    // language (OPTIONAL)
                     },
                     // 2nd Arg - before boot up function
@@ -104,13 +104,10 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="{{ path('app_cloud_files') }}">{{ 'Files'|trans }}</a></li>
                         <li><a href="{{ path('app_cloud_share') }}">{{ 'Share'|trans }}</a></li>
-                        {% if current_user.user_id == current_forum.owner_id %}
-                            <li><a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'home'}) }}" class="admin-link">{{ 'Admin Panel'|trans }}</a></li>
-                        {% endif %}
-                        {% if current_user.user_id > -1 %}
+                        {% if current_user.id > -1 %}
                             <li class="dropdown">
                                 <a href="{{ path('app_account_user', {'username': current_user.username}) }}" class="dropdown-toggle" data-toggle="dropdown" style="padding-top: 7px; padding-bottom: 7px;">
-                                    <img class="img-circle" src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.user_id, 'height': 36, 'width': 36}) }}" />
+                                    <img class="img-circle" src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.id, 'height': 36, 'width': 36}) }}" />
                                     {{ current_user.username }}
                                     <span class="caret"></span>
                                 </a>

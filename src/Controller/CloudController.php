@@ -3,8 +3,9 @@
 namespace Controller;
 
 use App\Account\AccountHelper;
-use App\Account\UserInfo;
+use App\Account\Entity\User;
 use Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class CloudController extends Controller
 {
@@ -24,49 +25,56 @@ class CloudController extends Controller
     // TODO: Add possibility to publish a website by crating a "public_html" folder in the root
     public function filesAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $this->getRequest()->getUri()));
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $em->find(User::class, USER_ID);
 
         return $this->render('cloud/files.html.twig', array(
-            'current_user'      => $currentUser->aUser,
+            'current_user' => $currentUser,
         ));
     }
 
     public function showRawFileAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $this->getRequest()->getUri()));
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $em->find(User::class, USER_ID);
 
-        $extenstionToMime = array(
-            'pdf' => 'application/pdf',
-            'zip' => 'application/zip',
-            'gif' => 'image/gif',
-            'jpg' => 'image/jpeg',
-            'png' => 'image/png',
-            'css' => 'text/css',
+        $extensionToMime = array(
+            'pdf'  => 'application/pdf',
+            'zip'  => 'application/zip',
+            'gif'  => 'image/gif',
+            'jpg'  => 'image/jpeg',
+            'png'  => 'image/png',
+            'css'  => 'text/css',
             'html' => 'text/html',
-            'js' => 'text/javascript',
-            'txt' => 'text/plain',
-            'xml' => 'text/xml',
+            'js'   => 'text/javascript',
+            'txt'  => 'text/plain',
+            'xml'  => 'text/xml',
         );
 
-        $fileDir = $this->get('kernel')->getRootDir().'/app/data/cloud/storage/'.$currentUser->getFromUser('user_id').'/'.$this->parameters['file'];
+        $fileDir = $this->get('kernel')->getRootDir().'/app/data/cloud/storage/'.$currentUser->getId().'/'.$this->parameters['file'];
         $fileInfo = pathinfo($fileDir);
-        header('Content-Type: '.$extenstionToMime[$fileInfo['extension']]);
-        echo file_get_contents($fileDir);
-        exit;
+
+        $response = new Response();
+        $response->setContent(file_get_contents($fileDir));
+        $response->headers->set('Content-Type', $extensionToMime[$fileInfo['extension']]);
+
+        return $response;
     }
 
     public function shareAction()
@@ -74,7 +82,6 @@ class CloudController extends Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $this->getRequest()->getUri()));
         }

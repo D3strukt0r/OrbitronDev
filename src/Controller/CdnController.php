@@ -6,7 +6,6 @@ use Controller;
 
 class CdnController extends Controller
 {
-
     private $libraries = array(
         'text/javascript' => array(
             'bootstrap.min.js' => 'vendor/bootstrap/dist/js/bootstrap.min.js',

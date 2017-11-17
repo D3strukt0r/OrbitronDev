@@ -152,7 +152,7 @@ class AccountController extends Controller
 
             if (is_int($registerResult)) {
                 $tokenGenerator = new Token();
-                $token = $tokenGenerator->generateToken('confirm_email', strtotime('+1 day'));
+                $token = $tokenGenerator->generateToken('confirm_email', (new \DateTime())->modify('+1 day'));
 
                 $message = (new Swift_Message())
                     ->setSubject('[Account] Email activation')
@@ -377,7 +377,6 @@ class AccountController extends Controller
                     $user = $this->getEntityManager()->find(User::class, $userId);
                     $user->setPassword($password);
                     $this->getEntityManager()->flush();
-
                     $token->remove();
 
                     return $this->render('account/forgot-password-form.html.twig', array(
@@ -406,7 +405,7 @@ class AccountController extends Controller
                         /** @var \App\Account\Entity\User $user */
                         $user = $this->getEntityManager()->getRepository(User::class)->findOneBy(array('email' => $forgotForm->get('email')->getData()));
                         $tokenGenerator = new Token();
-                        $token = $tokenGenerator->generateToken('reset_password', strtotime('+1 day'), array('user_id' => $user->getId()));
+                        $token = $tokenGenerator->generateToken('reset_password', (new \DateTime())->modify('+1 day'), array('user_id' => $user->getId()));
 
                         $message = (new Swift_Message())
                             ->setSubject('[Account] Reset password')
@@ -465,6 +464,7 @@ class AccountController extends Controller
             } else {
                 $currentUser->setEmailVerified(true);
                 $this->getEntityManager()->flush();
+                $token->remove();
                 $successMessage = 'Successful verified your email';
                 return $this->render('account/confirm-email.html.twig', array(
                     'success_message' => $successMessage,
@@ -474,7 +474,7 @@ class AccountController extends Controller
             $sendEmailForm->handleRequest($request);
             if ($sendEmailForm->isSubmitted()) {
                 $tokenGenerator = new Token();
-                $token = $tokenGenerator->generateToken('confirm_email', strtotime('+1 day'));
+                $token = $tokenGenerator->generateToken('confirm_email', (new \DateTime())->modify('+1 day'));
 
                 $message = (new Swift_Message())
                     ->setSubject('[Account] Email activation')

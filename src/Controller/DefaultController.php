@@ -132,4 +132,15 @@ class DefaultController extends Controller
 
         return null;
     }
+
+    public function oneTimeSetupAction()
+    {
+        if ($this->getRequest()->query->get('key') == $this->get('config')['parameters']['setup_key']) {
+            $text = '';
+            \App\Core\Core::addDefaultCronJobs();
+            $text .= 'Default cron jobs added<br />';
+            return $text;
+        }
+        return 'No setup key given, or key not correct.';
+    }
 }

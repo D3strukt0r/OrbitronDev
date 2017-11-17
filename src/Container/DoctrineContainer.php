@@ -23,6 +23,7 @@ class DoctrineContainer
         $config = $kernel->get('config');
 
         $paths = array(
+            __DIR__.'/../App/Core/Entity',
             __DIR__.'/../App/Account/Entity',
             __DIR__.'/../App/Blog/Entity',
             __DIR__.'/../App/Forum/Entity',

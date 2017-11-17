@@ -1,3 +1,7 @@
+app_default_setup:
+    path:     /setup
+    defaults: { _controller: 'DefaultController::oneTimeSetupAction' }
+
 app_default_robot:
     path:     /robots.txt
     defaults: { _controller: 'DefaultController::robotsAction', 'database': false }

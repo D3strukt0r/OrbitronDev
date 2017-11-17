@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Core\Entity\CronJob;
 use Container\DatabaseContainer;
 
 class Core
@@ -54,6 +55,20 @@ class Core
         $array = $new;
 
         return true;
+    }
+
+    public static function addDefaultCronJobs()
+    {
+        $cronJob = new CronJob();
+        $cronJob
+            ->setEnabled(true)
+            ->setPriority(5)
+            ->setScriptFile('update_currency.php')
+            ->setLastExec(new \DateTime())
+            ->setExecEvery(86400);
+
+        \Kernel::getIntent()->getEntityManager()->persist($cronJob);
+        \Kernel::getIntent()->getEntityManager()->flush();
     }
 
 }
