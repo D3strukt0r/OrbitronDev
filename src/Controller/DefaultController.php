@@ -7,6 +7,7 @@ use App\Account\Entity\User;
 use App\Core\Core;
 use App\Core\Form\ContactType;
 use App\Core\Form\SearchType;
+use Doctrine\ORM\Tools\SchemaTool;
 use Swift_Message;
 
 class DefaultController extends \Controller
@@ -135,11 +136,49 @@ class DefaultController extends \Controller
 
     public function oneTimeSetupAction()
     {
+        $em = $this->getEntityManager();
+        $classes = array(
+            $em->getClassMetadata('App\Account\Entity\OAuthAccessToken'),
+            $em->getClassMetadata('App\Account\Entity\OAuthAuthorizationCode'),
+            $em->getClassMetadata('App\Account\Entity\OAuthClient'),
+            $em->getClassMetadata('App\Account\Entity\OAuthRefreshToken'),
+            $em->getClassMetadata('App\Account\Entity\OAuthScope'),
+            $em->getClassMetadata('App\Account\Entity\SubscriptionType'),
+            $em->getClassMetadata('App\Account\Entity\User'),
+            $em->getClassMetadata('App\Account\Entity\UserAddress'),
+            $em->getClassMetadata('App\Account\Entity\UserPaymentMethods'),
+            $em->getClassMetadata('App\Account\Entity\UserProfiles'),
+            $em->getClassMetadata('App\Account\Entity\UserSubscription'),
+            $em->getClassMetadata('App\Blog\Entity\Blog'),
+            $em->getClassMetadata('App\Blog\Entity\Category'),
+            $em->getClassMetadata('App\Blog\Entity\Comment'),
+            $em->getClassMetadata('App\Blog\Entity\Post'),
+            $em->getClassMetadata('App\Blog\Entity\Tag'),
+            $em->getClassMetadata('App\Core\Entity\CronJob'),
+            $em->getClassMetadata('App\Core\Entity\Token'),
+        );
         if ($this->getRequest()->query->get('key') == $this->get('config')['parameters']['setup_key']) {
-            $text = '';
-            Core::addDefaultCronJobs();
-            $text .= 'Default cron jobs added<br />';
-            return $text;
+            if ($this->getRequest()->query->get('action') == 'drop-schema') {
+                $tool = new SchemaTool($em);
+                $tool->dropSchema($classes);
+                return 'Database schema dropped';
+            }
+            if ($this->getRequest()->query->get('action') == 'create-schema') {
+                $tool = new SchemaTool($em);
+                $tool->createSchema($classes);
+                return 'Database schema created';
+            }
+            if ($this->getRequest()->query->get('action') == 'update-schema') {
+                $tool = new SchemaTool($em);
+                $tool->updateSchema($classes);
+                return 'Database schema updated';
+            }
+            if ($this->getRequest()->query->get('action') == 'add-default-entries') {
+                $text = '';
+                Core::addDefaultCronJobs();
+                $text .= 'Default cron jobs added<br />';
+                return $text;
+            }
         }
         return 'No setup key given, or key not correct.';
     }

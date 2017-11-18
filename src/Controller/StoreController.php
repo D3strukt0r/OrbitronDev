@@ -10,7 +10,6 @@ use App\Store\StoreCheckout;
 use App\Store\StoreComments;
 use App\Store\StoreProduct;
 use Container\DatabaseContainer;
-use Controller;
 use Form\RecaptchaType;
 use Kernel;
 use PDO;
@@ -22,12 +21,10 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class StoreController extends Controller
+class StoreController extends \Controller
 {
-
     public function indexAction()
     {
         if (is_null(AccountHelper::updateSession())) {
@@ -86,9 +83,7 @@ class StoreController extends Controller
             ))
             ->getForm();
 
-
-        /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
+        $request = $this->getRequest();
         $createStoreForm->handleRequest($request);
         if ($createStoreForm->isValid()) {
             $errorMessages   = array();
@@ -262,8 +257,7 @@ class StoreController extends Controller
             ->getForm();
 
         // Add product to cart
-        /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
+        $request = $this->getRequest();
         $addToCartForm->handleRequest($request);
         if ($addToCartForm->isSubmitted() && $addToCartForm->isValid()) {
             $formData = $addToCartForm->getData();
@@ -292,8 +286,7 @@ class StoreController extends Controller
         }
 
         // Add a review
-        /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
+        $request = $this->getRequest();
         $addCommentForm->handleRequest($request);
         if ($addCommentForm->isSubmitted() && $addCommentForm->isValid()) {
             $formData = $addCommentForm->getData();
@@ -436,8 +429,7 @@ class StoreController extends Controller
         $payment = array();
         $payment['client_token'] = \Braintree_ClientToken::generate();
 
-        /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
+        $request = $this->getRequest();
         $checkoutForm->handleRequest($request);
         if ($checkoutForm->isSubmitted() && $checkoutForm->isValid()) {
             $formData = $checkoutForm->getData();

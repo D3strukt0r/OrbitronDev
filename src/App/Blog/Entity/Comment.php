@@ -48,7 +48,7 @@ class Comment
     protected $comment;
 
     /**
-     * @var \App\Blog\Entity\Comment
+     * @var \Doctrine\Common\Collections\Collection
      * @OneToMany(targetEntity="Comment", mappedBy="parent")
      */
     protected $responses;

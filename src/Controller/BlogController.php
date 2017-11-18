@@ -13,7 +13,6 @@ use Suin\RSSWriter\Channel;
 use Suin\RSSWriter\Feed;
 use Suin\RSSWriter\Item;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class BlogController extends \Controller
@@ -120,8 +119,7 @@ class BlogController extends \Controller
         $currentUser = $em->find(User::class, USER_ID);
 
         // Get all posts
-        /** @var Request $request */
-        $request                    = $this->get('kernel')->getRequest();
+        $request                    = $this->getRequest();
         $pagination                 = array();
         $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : 5;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;

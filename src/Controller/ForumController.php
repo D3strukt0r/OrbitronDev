@@ -9,7 +9,6 @@ use App\Forum\ForumAcp;
 use App\Forum\ForumBoard;
 use App\Forum\ForumPost;
 use App\Forum\ForumThread;
-use Controller;
 use Decoda\Decoda;
 use Decoda\Hook\EmoticonHook;
 use Form\RecaptchaType;
@@ -20,10 +19,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class ForumController extends Controller
+class ForumController extends \Controller
 {
     public function indexAction()
     {
@@ -83,9 +81,7 @@ class ForumController extends Controller
             ))
             ->getForm();
 
-
-        /** @var Request $request */
-        $request = $this->get('kernel')->getRequest();
+        $request = $this->getRequest();
         $createForumForm->handleRequest($request);
         if ($createForumForm->isValid()) {
             $errorMessages   = array();
@@ -255,8 +251,7 @@ class ForumController extends Controller
         }
 
         // Get all threads
-        /** @var Request $request */
-        $request                    = $this->get('kernel')->getRequest();
+        $request                    = $this->getRequest();
         $pagination                 = array();
         $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
@@ -334,8 +329,7 @@ class ForumController extends Controller
         }
 
         // Get all posts
-        /** @var Request $request */
-        $request                    = $this->get('kernel')->getRequest();
+        $request                    = $this->getRequest();
         $pagination                 = array();
         $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumThread::DefaultShowThreadAmount;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
