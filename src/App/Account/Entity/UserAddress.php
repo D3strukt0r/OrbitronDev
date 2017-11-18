@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\Table;
 class UserAddress
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -25,6 +25,7 @@ class UserAddress
     protected $id;
 
     /**
+     * @var \App\Account\Entity\UserProfiles
      * @ManyToOne(targetEntity="UserProfiles", inversedBy="addresses")
      * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
@@ -61,7 +62,7 @@ class UserAddress
     protected $country;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -186,5 +187,20 @@ class UserAddress
         $this->country = $country;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return array(
+            'id'           => $this->id,
+            'street'       => $this->street,
+            'house_number' => $this->house_number,
+            'zip_code'     => $this->zip_code,
+            'city'         => $this->city,
+            'country'      => $this->country,
+        );
     }
 }

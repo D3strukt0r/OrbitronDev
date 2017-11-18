@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping\Table;
 class SubscriptionType
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -29,7 +29,7 @@ class SubscriptionType
     protected $title;
 
     /**
-     * @var integer
+     * @var int
      * @Column(type="decimal")
      */
     protected $price;
@@ -41,7 +41,7 @@ class SubscriptionType
     protected $permissions;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -69,7 +69,7 @@ class SubscriptionType
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getPrice()
     {
@@ -77,7 +77,7 @@ class SubscriptionType
     }
 
     /**
-     * @param integer $price
+     * @param int $price
      *
      * @return $this
      */
@@ -106,5 +106,18 @@ class SubscriptionType
         $this->permissions = $permissions;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return array(
+            'id'          => $this->id,
+            'title'       => $this->title,
+            'price'       => $this->price,
+            'permissions' => $this->permissions,
+        );
     }
 }

@@ -10,7 +10,7 @@ default:
 # Just for testing purposes.
 app_test:
     path:     /test-page
-    defaults: { _controller: 'TestController::indexAction' }
+    defaults: { _controller: 'TestController::indexAction', 'database': true, 'cron_job': false }
 
 account:
     resource: 'account/routing.yml'

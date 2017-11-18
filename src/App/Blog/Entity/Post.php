@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping\Table;
 class Post
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -62,7 +62,7 @@ class Post
     protected $published_on;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection|\App\Blog\Entity\Category[]
+     * @var \Doctrine\Common\Collections\Collection
      * @ManyToMany(targetEntity="Category", inversedBy="posts")
      * @JoinTable(name="blog_m2m_post_categories",
      *      joinColumns={@JoinColumn(name="post_id", referencedColumnName="id")},
@@ -72,7 +72,7 @@ class Post
     protected $categories;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection|\App\Blog\Entity\Post[]
+     * @var \Doctrine\Common\Collections\Collection
      * @ManyToMany(targetEntity="Tag", inversedBy="posts")
      * @JoinTable(name="blog_m2m_post_tags",
      *      joinColumns={@JoinColumn(name="post_id", referencedColumnName="id")},
@@ -94,8 +94,8 @@ class Post
     protected $story;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection|\App\Blog\Entity\Comment[]
-     * @OneToMany(targetEntity="Comment", mappedBy="post")
+     * @var \Doctrine\Common\Collections\Collection
+     * @OneToMany(targetEntity="Comment", mappedBy="post", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $comments;
 

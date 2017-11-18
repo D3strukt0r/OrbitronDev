@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\Table;
 class UserPaymentMethods
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -25,8 +25,9 @@ class UserPaymentMethods
     protected $id;
 
     /**
+     * @var \App\Account\Entity\User
      * @ManyToOne(targetEntity="User", inversedBy="paymentMethods")
-     * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
+     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     protected $user;
 
@@ -108,5 +109,17 @@ class UserPaymentMethods
         $this->data = $data;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return array(
+            'id'           => $this->id,
+            'payment_type' => $this->payment_type,
+            'data'         => $this->data,
+        );
     }
 }

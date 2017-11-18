@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\Table;
 class Category
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

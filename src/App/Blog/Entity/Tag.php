@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\Table;
 class Tag
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -93,7 +93,7 @@ class Tag
             return;
         }
         $this->posts->add($post);
-        $post->addCategory($this);
+        $post->addTag($this);
     }
 
     /**
@@ -105,7 +105,7 @@ class Tag
             return;
         }
         $this->posts->removeElement($post);
-        $post->removeCategory($this);
+        $post->addTag($this);
     }
 
     /**

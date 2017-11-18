@@ -128,6 +128,11 @@ class Kernel
      */
     public function runCronJob()
     {
+        if ($this->has('router') && !$this->has('routing.error')) {
+            if (isset($this->get('routing')['cron_job']) && $this->get('routing')['cron_job'] == false) {
+                return;
+            }
+        }
         \App\Core\CronJob::execute();
     }
 
@@ -343,5 +348,12 @@ class Kernel
             </div>
         </div>
         <?php
+    }
+
+    public static function dump($value)
+    {
+        echo '<pre>';
+        var_dump($value);
+        echo '</pre>';
     }
 }

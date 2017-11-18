@@ -40,33 +40,19 @@ class OAuthClient extends EncryptableFieldEntity
     protected $scope = '';
 
     /**
-     * @var integer
+     * @var int
      * @Column(type="integer", options={"default":-1})
      */
-    protected $user_id = '';
+    protected $user_id = -1;
 
     /**
      * Get id
      *
-     * @return integer
+     * @return string
      */
     public function getId()
     {
         return $this->getClientIdentifier();
-    }
-
-    /**
-     * Set client_identifier
-     *
-     * @param string $clientIdentifier
-     *
-     * @return OAuthClient
-     */
-    public function setClientIdentifier($clientIdentifier)
-    {
-        $this->client_identifier = $clientIdentifier;
-
-        return $this;
     }
 
     /**
@@ -80,20 +66,15 @@ class OAuthClient extends EncryptableFieldEntity
     }
 
     /**
-     * Set client_secret
+     * Set client_identifier
      *
-     * @param string $clientSecret
-     * @param bool   $encrypt
+     * @param string $clientIdentifier
      *
-     * @return \App\Account\Entity\OAuthClient
+     * @return $this
      */
-    public function setClientSecret($clientSecret, $encrypt = false)
+    public function setClientIdentifier($clientIdentifier)
     {
-        if ($encrypt) {
-            $this->client_secret = $this->encryptField($clientSecret);
-        } else {
-            $this->client_secret = $clientSecret;
-        }
+        $this->client_identifier = $clientIdentifier;
 
         return $this;
     }
@@ -106,6 +87,32 @@ class OAuthClient extends EncryptableFieldEntity
     public function getClientSecret()
     {
         return $this->client_secret;
+    }
+
+    /**
+     * Set client_secret
+     *
+     * @param string $clientSecret
+     * @param bool   $encrypt
+     *
+     * @return \App\Account\Entity\OAuthClient
+     * @throws \Exception
+     */
+    public function setClientSecret($clientSecret, $encrypt = false)
+    {
+        if ($encrypt) {
+            $newSecret = $this->encryptField($clientSecret);
+
+            if ($newSecret === false) {
+                throw new \Exception('[Account][OAuth2] A hashed secret could not be generated');
+            }
+
+            $this->client_secret = $newSecret;
+        } else {
+            $this->client_secret = $clientSecret;
+        }
+
+        return $this;
     }
 
     /**
@@ -126,20 +133,6 @@ class OAuthClient extends EncryptableFieldEntity
     }
 
     /**
-     * Set redirect_uri
-     *
-     * @param string $redirectUri
-     *
-     * @return OAuthClient
-     */
-    public function setRedirectUri($redirectUri)
-    {
-        $this->redirect_uri = $redirectUri;
-
-        return $this;
-    }
-
-    /**
      * Get redirect_uri
      *
      * @return string
@@ -150,15 +143,15 @@ class OAuthClient extends EncryptableFieldEntity
     }
 
     /**
-     * Set scopes
+     * Set redirect_uri
      *
-     * @param array $scopes
+     * @param string $redirectUri
      *
-     * @return OAuthClient
+     * @return $this
      */
-    public function setScopes($scopes)
+    public function setRedirectUri($redirectUri)
     {
-        $this->scope = implode(' ', $scopes);
+        $this->redirect_uri = $redirectUri;
 
         return $this;
     }
@@ -173,6 +166,20 @@ class OAuthClient extends EncryptableFieldEntity
         $scopes = explode(' ', $this->scope);
 
         return $scopes;
+    }
+
+    /**
+     * Set scopes
+     *
+     * @param array $scopes
+     *
+     * @return $this
+     */
+    public function setScopes($scopes)
+    {
+        $this->scope = implode(' ', $scopes);
+
+        return $this;
     }
 
     /**
@@ -206,27 +213,27 @@ class OAuthClient extends EncryptableFieldEntity
     }
 
     /**
+     * Get users (in charge)
+     *
+     * @return int
+     */
+    public function getUsers()
+    {
+        return $this->user_id;
+    }
+
+    /**
      * Set users (in charge)
      *
-     * @param integer $users
+     * @param int $users
      *
-     * @return OAuthClient
+     * @return $this
      */
     public function setUsers($users)
     {
         $this->user_id = $users;
 
         return $this;
-    }
-
-    /**
-     * Get users (in charge)
-     *
-     * @return integer
-     */
-    public function getUsers()
-    {
-        return $this->user_id;
     }
 
     public function toArray()

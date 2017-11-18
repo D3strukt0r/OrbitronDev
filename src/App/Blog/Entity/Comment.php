@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping\Table;
 class Comment
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

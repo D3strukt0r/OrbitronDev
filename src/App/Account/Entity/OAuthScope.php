@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\Table;
 class OAuthScope
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -36,19 +36,29 @@ class OAuthScope
     protected $name;
 
     /**
-     * @var boolean
+     * @var bool
      * @Column(type="boolean", options={"default":false})
      */
-    protected $is_default;
+    protected $is_default = false;
 
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get scope
+     *
+     * @return string
+     */
+    public function getScope()
+    {
+        return $this->scope;
     }
 
     /**
@@ -66,13 +76,13 @@ class OAuthScope
     }
 
     /**
-     * Get scope
+     * Get name
      *
      * @return string
      */
-    public function getScope()
+    public function getName()
     {
-        return $this->scope;
+        return $this->name;
     }
 
     /**
@@ -90,19 +100,19 @@ class OAuthScope
     }
 
     /**
-     * Get name
+     * Get is_default
      *
-     * @return string
+     * @return bool
      */
-    public function getName()
+    public function isDefault()
     {
-        return $this->name;
+        return $this->is_default;
     }
 
     /**
      * Set is_default
      *
-     * @param boolean $is_default
+     * @param bool $is_default
      *
      * @return $this
      */
@@ -111,16 +121,6 @@ class OAuthScope
         $this->is_default = $is_default;
 
         return $this;
-    }
-
-    /**
-     * Get is_default
-     *
-     * @return boolean
-     */
-    public function isDefault()
-    {
-        return $this->is_default;
     }
 
     public function toArray()

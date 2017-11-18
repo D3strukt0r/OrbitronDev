@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\Table;
 class User extends EncryptableFieldEntity
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -45,10 +45,10 @@ class User extends EncryptableFieldEntity
     protected $email;
 
     /**
-     * @var boolean
+     * @var bool
      * @Column(type="boolean", options={"default":0})
      */
-    protected $email_verified;
+    protected $email_verified = false;
 
     /**
      * @var \DateTime
@@ -75,38 +75,38 @@ class User extends EncryptableFieldEntity
     protected $last_ip;
 
     /**
-     * @var boolean
+     * @var bool
      * @Column(type="boolean", options={"default":false})
      */
-    protected $developer_status;
+    protected $developer_status = false;
 
     /**
-     * @var integer
+     * @var int
      * @Column(type="integer", options={"default":0})
      */
-    protected $credits;
+    protected $credits = 0;
 
     /**
-     * @var null|integer
+     * @var null|int
      * @Column(type="integer", nullable=true)
      */
     protected $preferred_payment_method;
 
     /**
-     * @var UserPaymentMethods|ArrayCollection
+     * @var \Doctrine\Common\Collections\Collection
      * @OneToMany(targetEntity="UserPaymentMethods", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $paymentMethods;
 
     /**
-     * @var UserProfiles
+     * @var \App\Account\Entity\UserProfiles
      * @OneToOne(targetEntity="UserProfiles", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      * @JoinColumn(name="profile_id", referencedColumnName="id")
      */
     protected $profile;
 
     /**
-     * @var UserSubscription
+     * @var \App\Account\Entity\UserSubscription
      * @OneToOne(targetEntity="UserSubscription", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      * @JoinColumn(name="subscription_id", referencedColumnName="id")
      */
@@ -118,7 +118,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -157,10 +157,17 @@ class User extends EncryptableFieldEntity
      * @param string $password
      *
      * @return $this
+     * @throws \Exception
      */
     public function setPassword($password)
     {
-        $this->password = $this->encryptField($password);
+        $newPassword = $this->encryptField($password);
+
+        if ($newPassword === false) {
+            throw new \Exception('[Account] A hashed password could not be generated');
+        }
+
+        $this->password = $newPassword;
 
         return $this;
     }
@@ -196,15 +203,15 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function getEmailVerified()
+    public function isEmailVerified()
     {
         return $this->email_verified;
     }
 
     /**
-     * @param boolean $emailVerified
+     * @param bool $emailVerified
      *
      * @return $this
      */
@@ -296,7 +303,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getDeveloperStatus()
     {
@@ -304,7 +311,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @param boolean $developerStatus
+     * @param bool $developerStatus
      *
      * @return $this
      */
@@ -316,7 +323,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getCredits()
     {
@@ -324,7 +331,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @param integer $credits
+     * @param int $credits
      *
      * @return $this
      */
@@ -336,7 +343,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @param integer $credits
+     * @param int $credits
      *
      * @return \App\Account\Entity\User
      */
@@ -346,9 +353,9 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @param integer $credits
+     * @param int $credits
      *
-     * @return \App\Account\Entity\User
+     * @return $this
      */
     public function takeCredits($credits)
     {
@@ -356,7 +363,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @return null|integer
+     * @return null|int
      */
     public function getPreferredPaymentMethod()
     {
@@ -364,7 +371,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @param null|integer $preferredPaymentMethod
+     * @param null|int $preferredPaymentMethod
      *
      * @return $this
      */
@@ -405,7 +412,6 @@ class User extends EncryptableFieldEntity
     {
         if ($this->paymentMethods->contains($paymentMethod)) {
             $this->paymentMethods->removeElement($paymentMethod);
-            $paymentMethod->setUser(null);
         }
 
         return $this;
@@ -456,14 +462,23 @@ class User extends EncryptableFieldEntity
      */
     public function toArray()
     {
-        return [
-            'user_id'        => $this->id,
-            'username'       => $this->username,
-            'email'          => $this->email,
-            'email_verified' => $this->email_verified,
-            'password'       => $this->password,
-            'credits'        => $this->credits,
-            'scope'          => null,
-        ];
+        return array(
+            'user_id'                  => $this->id,
+            'username'                 => $this->username,
+            'password'                 => $this->password,
+            'email'                    => $this->email,
+            'email_verified'           => $this->email_verified,
+            'created_on'               => $this->created_on,
+            'created_ip'               => $this->created_ip,
+            'last_online_at'           => $this->last_online_at,
+            'last_ip'                  => $this->last_ip,
+            'developer_status'         => $this->developer_status,
+            'credits'                  => $this->credits,
+            'preferred_payment_method' => $this->preferred_payment_method,
+            'payment_methods'          => $this->paymentMethods->toArray(),
+            'profile'                  => $this->profile->toArray(),
+            'subscription'             => $this->subscription->toArray(),
+            'scope'                    => null,
+        );
     }
 }

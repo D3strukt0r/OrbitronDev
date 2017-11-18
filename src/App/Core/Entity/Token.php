@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping\Table;
 class Token
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")

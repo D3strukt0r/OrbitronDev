@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping\Table;
 class OAuthAuthorizationCode
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -38,7 +38,7 @@ class OAuthAuthorizationCode
     protected $client_id;
 
     /**
-     * @var string
+     * @var int
      * @Column(type="integer", nullable=true)
      */
     protected $user_id;
@@ -62,14 +62,14 @@ class OAuthAuthorizationCode
     protected $scope;
 
     /**
-     * @var OAuthClient
+     * @var \App\Account\Entity\OAuthClient
      * @ManyToOne(targetEntity="OAuthClient")
      * @JoinColumn(name="client_id", referencedColumnName="client_identifier")
      */
     protected $client;
 
     /**
-     * @var User
+     * @var \App\Account\Entity\User
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
@@ -78,25 +78,11 @@ class OAuthAuthorizationCode
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set code
-     *
-     * @param string $code
-     *
-     * @return OAuthAuthorizationCode
-     */
-    public function setCode($code)
-    {
-        $this->code = $code;
-
-        return $this;
     }
 
     /**
@@ -110,15 +96,15 @@ class OAuthAuthorizationCode
     }
 
     /**
-     * Set client_id
+     * Set code
      *
-     * @param string $clientId
+     * @param string $code
      *
-     * @return OAuthAuthorizationCode
+     * @return $this
      */
-    public function setClientId($clientId)
+    public function setCode($code)
     {
-        $this->client_id = $clientId;
+        $this->code = $code;
 
         return $this;
     }
@@ -134,15 +120,15 @@ class OAuthAuthorizationCode
     }
 
     /**
-     * Set user_id
+     * Set client_id
      *
-     * @param string $userId
+     * @param string $clientId
      *
-     * @return OAuthAuthorizationCode
+     * @return $this
      */
-    public function setUserId($userId)
+    public function setClientId($clientId)
     {
-        $this->user_id = $userId;
+        $this->client_id = $clientId;
 
         return $this;
     }
@@ -150,7 +136,7 @@ class OAuthAuthorizationCode
     /**
      * Get user_identifier
      *
-     * @return string
+     * @return int
      */
     public function getUserId()
     {
@@ -158,15 +144,15 @@ class OAuthAuthorizationCode
     }
 
     /**
-     * Set expires
+     * Set user_id
      *
-     * @param \DateTime $expires
+     * @param int $userId
      *
-     * @return OAuthAuthorizationCode
+     * @return $this
      */
-    public function setExpires($expires)
+    public function setUserId($userId)
     {
-        $this->expires = $expires;
+        $this->user_id = $userId;
 
         return $this;
     }
@@ -182,15 +168,15 @@ class OAuthAuthorizationCode
     }
 
     /**
-     * Set redirect_uri
+     * Set expires
      *
-     * @param string $redirectUri
+     * @param \DateTime $expires
      *
-     * @return OAuthAuthorizationCode
+     * @return $this
      */
-    public function setRedirectUri($redirectUri)
+    public function setExpires($expires)
     {
-        $this->redirect_uri = $redirectUri;
+        $this->expires = $expires;
 
         return $this;
     }
@@ -206,15 +192,15 @@ class OAuthAuthorizationCode
     }
 
     /**
-     * Set scope
+     * Set redirect_uri
      *
-     * @param string $scope
+     * @param string $redirectUri
      *
-     * @return OAuthAuthorizationCode
+     * @return $this
      */
-    public function setScope($scope)
+    public function setRedirectUri($redirectUri)
     {
-        $this->scope = $scope;
+        $this->redirect_uri = $redirectUri;
 
         return $this;
     }
@@ -230,11 +216,35 @@ class OAuthAuthorizationCode
     }
 
     /**
+     * Set scope
+     *
+     * @param string $scope
+     *
+     * @return $this
+     */
+    public function setScope($scope)
+    {
+        $this->scope = $scope;
+
+        return $this;
+    }
+
+    /**
+     * Get client
+     *
+     * @return \App\Account\Entity\OAuthClient
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
      * Set client
      *
-     * @param OAuthClient $client
+     * @param \App\Account\Entity\OAuthClient $client
      *
-     * @return OAuthAuthorizationCode
+     * @return $this
      */
     public function setClient(OAuthClient $client = null)
     {
@@ -244,37 +254,27 @@ class OAuthAuthorizationCode
     }
 
     /**
-     * Get client
+     * Get user
      *
-     * @return OAuthClient
+     * @return \App\Account\Entity\User
      */
-    public function getClient()
+    public function getUser()
     {
-        return $this->client;
+        return $this->user;
     }
 
     /**
      * Set user
      *
-     * @param User $user
+     * @param \App\Account\Entity\User $user
      *
-     * @return OAuthAuthorizationCode
+     * @return $this
      */
     public function setUser(User $user = null)
     {
         $this->user = $user;
 
         return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
     }
 
     /**
@@ -294,7 +294,7 @@ class OAuthAuthorizationCode
     /**
      * @param array $params
      *
-     * @return \App\Account\Entity\OAuthAuthorizationCode
+     * @return self
      */
     public static function fromArray($params)
     {

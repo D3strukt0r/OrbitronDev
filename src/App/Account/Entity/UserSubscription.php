@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\Table;
 class UserSubscription
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -165,5 +165,18 @@ class UserSubscription
         }
 
         return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return array(
+            'user_id'      => $this->id,
+            'subscription' => $this->subscription->toArray(),
+            'activated_at' => $this->activated_at,
+            'expires_at'   => $this->expires_at,
+        );
     }
 }

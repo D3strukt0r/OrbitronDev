@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping\Table;
 class Blog
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -47,7 +47,7 @@ class Blog
     protected $owner;
 
     /**
-     * @var boolean
+     * @var bool
      * @Column(type="boolean", options={"default":false})
      */
     protected $closed;
@@ -107,13 +107,13 @@ class Blog
     protected $created;
 
     /**
-     * @var Post|ArrayCollection
+     * @var \Doctrine\Common\Collections\Collection
      * @OneToMany(targetEntity="Post", mappedBy="blog", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $posts;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -181,7 +181,7 @@ class Blog
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isClosed()
     {
@@ -189,7 +189,7 @@ class Blog
     }
 
     /**
-     * @param boolean $closed
+     * @param bool $closed
      *
      * @return $this
      */
@@ -428,7 +428,6 @@ class Blog
     {
         if ($this->posts->contains($post)) {
             $this->posts->removeElement($post);
-            $post->setBlog(null);
         }
 
         return $this;

@@ -499,7 +499,7 @@ class AccountHelper
      * @param array  $scopes
      * @param int    $userId
      *
-     * @return integer
+     * @return string
      */
     public static function addApp($clientName, $clientSecret, $redirectUri, $scopes, $userId)
     {

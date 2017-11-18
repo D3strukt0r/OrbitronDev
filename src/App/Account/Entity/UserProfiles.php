@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\Table;
 class UserProfiles
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -27,6 +27,7 @@ class UserProfiles
     protected $id;
 
     /**
+     * @var \App\Account\Entity\User
      * @OneToOne(targetEntity="User", inversedBy="profile")
      * @JoinColumn(name="id", referencedColumnName="id", nullable=false)
      */
@@ -45,7 +46,7 @@ class UserProfiles
     protected $surname;
 
     /**
-     * @var null|integer
+     * @var null|int
      * @Column(type="smallint", nullable=true)
      */
     protected $gender;
@@ -69,13 +70,13 @@ class UserProfiles
     protected $picture;
 
     /**
-     * @var null|integer
+     * @var null|int
      * @Column(type="integer", nullable=true)
      */
     protected $active_address;
 
     /**
-     * @var \Doctrine\Common\Collections\ArrayCollection|\App\Account\Entity\UserAddress
+     * @var \Doctrine\Common\Collections\Collection
      * @OneToMany(targetEntity="UserAddress", mappedBy="userProfile", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $addresses;
@@ -86,7 +87,7 @@ class UserProfiles
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -154,7 +155,7 @@ class UserProfiles
     }
 
     /**
-     * @return null|integer
+     * @return null|int
      */
     public function getGender()
     {
@@ -162,7 +163,7 @@ class UserProfiles
     }
 
     /**
-     * @param null|integer $gender
+     * @param null|int $gender
      *
      * @return $this
      */
@@ -186,7 +187,7 @@ class UserProfiles
      *
      * @return $this
      */
-    public function setBirthday(\DateTime $birthday)
+    public function setBirthday($birthday)
     {
         $this->birthday = $birthday;
 
@@ -234,7 +235,7 @@ class UserProfiles
     }
 
     /**
-     * @return null|integer
+     * @return null|int
      */
     public function getActiveAddress()
     {
@@ -242,7 +243,7 @@ class UserProfiles
     }
 
     /**
-     * @param null|integer $activeAddress
+     * @param null|int $activeAddress
      *
      * @return $this
      */
@@ -283,9 +284,26 @@ class UserProfiles
     {
         if ($this->addresses->contains($address)) {
             $this->addresses->removeElement($address);
-            $address->setUserProfile(null);
         }
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return array(
+            'user_id'        => $this->id,
+            'name'           => $this->name,
+            'surname'        => $this->surname,
+            'gender'         => $this->gender,
+            'birthday'       => $this->birthday,
+            'website'        => $this->website,
+            'picture'        => $this->picture,
+            'active_address' => $this->active_address,
+            'addresses'      => $this->addresses->toArray(),
+        );
     }
 }

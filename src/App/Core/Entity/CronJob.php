@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping\Table;
 class CronJob
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -23,13 +23,13 @@ class CronJob
     protected $id;
 
     /**
-     * @var boolean
+     * @var bool
      * @Column(type="boolean", options={"default":true})
      */
     protected $enabled;
 
     /**
-     * @var integer
+     * @var int
      * @Column(type="smallint", options={"default":5})
      */
     protected $priority;
@@ -47,7 +47,7 @@ class CronJob
     protected $last_exec;
 
     /**
-     * @var integer
+     * @var int
      * @Column(type="bigint", options={"default":3600})
      */
     protected $exec_every;

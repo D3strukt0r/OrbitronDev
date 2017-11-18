@@ -95,7 +95,8 @@ class AccountAcp
      */
     public static function changePage($page_name)
     {
-        $page_changer = 'url_js'; // 'href', 'hash', 'url', 'url_js'
+        // Choose between 'href', 'hash', 'url' or 'url_js'
+        $page_changer = 'url_js';
 
         if ($page_changer === 'js') {
             return 'href="javascript:ControlPanel.changePage(\''.$page_name.'\')" data-toggle="page"';

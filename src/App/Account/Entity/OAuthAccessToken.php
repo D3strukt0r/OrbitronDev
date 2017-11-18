@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping\Table;
 class OAuthAccessToken
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -38,7 +38,7 @@ class OAuthAccessToken
     protected $client_id;
 
     /**
-     * @var string
+     * @var int
      * @Column(type="integer", nullable=true)
      */
     protected $user_id;
@@ -56,14 +56,14 @@ class OAuthAccessToken
     protected $scope;
 
     /**
-     * @var OAuthClient
+     * @var \App\Account\Entity\OAuthClient
      * @ManyToOne(targetEntity="OAuthClient")
      * @JoinColumn(name="client_id", referencedColumnName="client_identifier")
      */
     protected $client;
 
     /**
-     * @var User
+     * @var \App\Account\Entity\User
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
@@ -72,25 +72,11 @@ class OAuthAccessToken
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set token
-     *
-     * @param string $token
-     *
-     * @return OAuthAccessToken
-     */
-    public function setToken($token)
-    {
-        $this->token = $token;
-
-        return $this;
     }
 
     /**
@@ -104,15 +90,15 @@ class OAuthAccessToken
     }
 
     /**
-     * Set client_id
+     * Set token
      *
-     * @param string $clientId
+     * @param string $token
      *
-     * @return OAuthAccessToken
+     * @return $this
      */
-    public function setClientId($clientId)
+    public function setToken($token)
     {
-        $this->client_id = $clientId;
+        $this->token = $token;
 
         return $this;
     }
@@ -128,15 +114,15 @@ class OAuthAccessToken
     }
 
     /**
-     * Set user_id
+     * Set client_id
      *
-     * @param string $userId
+     * @param string $clientId
      *
-     * @return OAuthAccessToken
+     * @return $this
      */
-    public function setUserId($userId)
+    public function setClientId($clientId)
     {
-        $this->user_id = $userId;
+        $this->client_id = $clientId;
 
         return $this;
     }
@@ -144,7 +130,7 @@ class OAuthAccessToken
     /**
      * Get user_identifier
      *
-     * @return string
+     * @return int
      */
     public function getUserId()
     {
@@ -152,15 +138,15 @@ class OAuthAccessToken
     }
 
     /**
-     * Set expires
+     * Set user_id
      *
-     * @param \DateTime $expires
+     * @param int $userId
      *
-     * @return OAuthAccessToken
+     * @return $this
      */
-    public function setExpires($expires)
+    public function setUserId($userId)
     {
-        $this->expires = $expires;
+        $this->user_id = $userId;
 
         return $this;
     }
@@ -176,15 +162,15 @@ class OAuthAccessToken
     }
 
     /**
-     * Set scope
+     * Set expires
      *
-     * @param string $scope
+     * @param \DateTime $expires
      *
-     * @return OAuthAccessToken
+     * @return $this
      */
-    public function setScope($scope)
+    public function setExpires($expires)
     {
-        $this->scope = $scope;
+        $this->expires = $expires;
 
         return $this;
     }
@@ -200,11 +186,35 @@ class OAuthAccessToken
     }
 
     /**
+     * Set scope
+     *
+     * @param string $scope
+     *
+     * @return $this
+     */
+    public function setScope($scope)
+    {
+        $this->scope = $scope;
+
+        return $this;
+    }
+
+    /**
+     * Get client
+     *
+     * @return \App\Account\Entity\OAuthClient
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
      * Set client
      *
-     * @param OAuthClient $client
+     * @param \App\Account\Entity\OAuthClient $client
      *
-     * @return OAuthAccessToken
+     * @return $this
      */
     public function setClient(OAuthClient $client = null)
     {
@@ -214,31 +224,21 @@ class OAuthAccessToken
     }
 
     /**
-     * Get client
+     * Get user
      *
-     * @return OAuthClient
+     * @return \App\Account\Entity\User
      */
-    public function getClient()
+    public function getUser()
     {
-        return $this->client;
-    }
-
-    public static function fromArray($params)
-    {
-        $token = new self();
-        foreach ($params as $property => $value) {
-            $token->$property = $value;
-        }
-
-        return $token;
+        return $this->user;
     }
 
     /**
      * Set user
      *
-     * @param User $user
+     * @param \App\Account\Entity\User $user
      *
-     * @return OAuthAccessToken
+     * @return $this
      */
     public function setUser(User $user = null)
     {
@@ -248,15 +248,8 @@ class OAuthAccessToken
     }
 
     /**
-     * Get user
-     *
-     * @return User
+     * @return array
      */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
     public function toArray()
     {
         return array(
@@ -266,5 +259,20 @@ class OAuthAccessToken
             'expires'   => $this->expires,
             'scope'     => $this->scope,
         );
+    }
+
+    /**
+     * @param $params
+     *
+     * @return \App\Account\Entity\OAuthAccessToken
+     */
+    public static function fromArray($params)
+    {
+        $token = new self();
+        foreach ($params as $property => $value) {
+            $token->$property = $value;
+        }
+
+        return $token;
     }
 }

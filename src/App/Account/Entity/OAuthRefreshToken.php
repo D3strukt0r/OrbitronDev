@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping\Table;
 class OAuthRefreshToken
 {
     /**
-     * @var integer
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -56,14 +56,14 @@ class OAuthRefreshToken
     protected $scope;
 
     /**
-     * @var OAuthClient
+     * @var \App\Account\Entity\OAuthClient
      * @ManyToOne(targetEntity="OAuthClient")
      * @JoinColumn(name="client_id", referencedColumnName="client_identifier")
      */
     protected $client;
 
     /**
-     * @var User
+     * @var \App\Account\Entity\User
      * @ManyToOne(targetEntity="User")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
@@ -72,25 +72,11 @@ class OAuthRefreshToken
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set refresh_token
-     *
-     * @param string $refresh_token
-     *
-     * @return OAuthRefreshToken
-     */
-    public function setRefreshToken($refresh_token)
-    {
-        $this->refresh_token = $refresh_token;
-
-        return $this;
     }
 
     /**
@@ -104,15 +90,15 @@ class OAuthRefreshToken
     }
 
     /**
-     * Set client_id
+     * Set refresh_token
      *
-     * @param string $clientId
+     * @param string $refresh_token
      *
-     * @return OAuthRefreshToken
+     * @return $this
      */
-    public function setClientId($clientId)
+    public function setRefreshToken($refresh_token)
     {
-        $this->client_id = $clientId;
+        $this->refresh_token = $refresh_token;
 
         return $this;
     }
@@ -128,15 +114,15 @@ class OAuthRefreshToken
     }
 
     /**
-     * Set user_id
+     * Set client_id
      *
-     * @param string $userId
+     * @param string $clientId
      *
-     * @return OAuthRefreshToken
+     * @return $this
      */
-    public function setUserId($userId)
+    public function setClientId($clientId)
     {
-        $this->user_id = $userId;
+        $this->client_id = $clientId;
 
         return $this;
     }
@@ -152,15 +138,15 @@ class OAuthRefreshToken
     }
 
     /**
-     * Set expires
+     * Set user_id
      *
-     * @param \DateTime $expires
+     * @param string $userId
      *
-     * @return OAuthRefreshToken
+     * @return $this
      */
-    public function setExpires($expires)
+    public function setUserId($userId)
     {
-        $this->expires = $expires;
+        $this->user_id = $userId;
 
         return $this;
     }
@@ -176,15 +162,15 @@ class OAuthRefreshToken
     }
 
     /**
-     * Set scope
+     * Set expires
      *
-     * @param string $scope
+     * @param \DateTime $expires
      *
-     * @return OAuthRefreshToken
+     * @return $this
      */
-    public function setScope($scope)
+    public function setExpires($expires)
     {
-        $this->scope = $scope;
+        $this->expires = $expires;
 
         return $this;
     }
@@ -200,15 +186,15 @@ class OAuthRefreshToken
     }
 
     /**
-     * Set client
+     * Set scope
      *
-     * @param OAuthClient $client
+     * @param string $scope
      *
-     * @return OAuthRefreshToken
+     * @return $this
      */
-    public function setClient(OAuthClient $client = null)
+    public function setScope($scope)
     {
-        $this->client = $client;
+        $this->scope = $scope;
 
         return $this;
     }
@@ -216,7 +202,7 @@ class OAuthRefreshToken
     /**
      * Get client
      *
-     * @return OAuthClient
+     * @return \App\Account\Entity\OAuthClient
      */
     public function getClient()
     {
@@ -224,15 +210,15 @@ class OAuthRefreshToken
     }
 
     /**
-     * Set user
+     * Set client
      *
-     * @param User $user
+     * @param \App\Account\Entity\OAuthClient $client
      *
-     * @return OAuthRefreshToken
+     * @return $this
      */
-    public function setUser(User $user = null)
+    public function setClient(OAuthClient $client = null)
     {
-        $this->user = $user;
+        $this->client = $client;
 
         return $this;
     }
@@ -245,6 +231,20 @@ class OAuthRefreshToken
     public function getUser()
     {
         return $this->user;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \App\Account\Entity\User $user
+     *
+     * @return $this
+     */
+    public function setUser(User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     public function toArray()
