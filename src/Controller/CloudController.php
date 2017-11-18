@@ -4,10 +4,9 @@ namespace Controller;
 
 use App\Account\AccountHelper;
 use App\Account\Entity\User;
-use Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class CloudController extends Controller
+class CloudController extends \Controller
 {
     public function indexAction()
     {

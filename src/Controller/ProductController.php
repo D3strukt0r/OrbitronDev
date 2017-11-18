@@ -2,9 +2,7 @@
 
 namespace Controller;
 
-use Controller;
-
-class ProductController extends Controller
+class ProductController extends \Controller
 {
     public function indexAction()
     {
@@ -13,6 +11,6 @@ class ProductController extends Controller
 
     public function productAction()
     {
-        return $this->render('default/product/type/' . $this->parameters['type'] . '.html.twig');
+        return $this->render('default/product/type/'.$this->parameters['type'].'.html.twig');
     }
 }

@@ -8,7 +8,6 @@ use App\Blog\BlogHelper;
 use App\Blog\Entity\Blog;
 use App\Blog\Entity\Post;
 use App\Blog\Form\NewBlogType;
-use Controller;
 use ReCaptcha\ReCaptcha;
 use Suin\RSSWriter\Channel;
 use Suin\RSSWriter\Feed;
@@ -17,7 +16,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class BlogController extends Controller
+class BlogController extends \Controller
 {
     public function indexAction()
     {

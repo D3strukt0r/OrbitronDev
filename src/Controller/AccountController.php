@@ -20,7 +20,6 @@ use App\Blog\BlogHelper;
 use App\Core\Token;
 use App\Forum\Forum;
 use App\Store\Store;
-use Controller;
 use OAuth2\GrantType\AuthorizationCode;
 use OAuth2\GrantType\ClientCredentials;
 use OAuth2\GrantType\RefreshToken;
@@ -29,7 +28,7 @@ use Swift_Message;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class AccountController extends Controller
+class AccountController extends \Controller
 {
     public function indexAction()
     {

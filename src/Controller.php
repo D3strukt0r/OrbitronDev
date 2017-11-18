@@ -26,9 +26,32 @@ abstract class Controller
         $this->container = $container;
     }
 
+    /**
+     * @param array $parameters
+     */
     public function setParameters(array $parameters = array())
     {
         $this->parameters = $parameters;
+    }
+
+    /**
+     * @param string $parameter
+     *
+     * @return bool
+     */
+    public function hasParameter(string $parameter)
+    {
+        return isset($this->parameters[$parameter]);
+    }
+
+    /**
+     * @param string $parameter
+     *
+     * @return mixed
+     */
+    public function getParameter(string $parameter)
+    {
+        return $this->parameters[$parameter];
     }
 
     public function getRequest()

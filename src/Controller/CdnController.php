@@ -2,9 +2,7 @@
 
 namespace Controller;
 
-use Controller;
-
-class CdnController extends Controller
+class CdnController extends \Controller
 {
     private $libraries = array(
         'text/javascript' => array(

@@ -11,7 +11,6 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Controller;
 
-use Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +22,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class RedirectController extends Controller
+class RedirectController extends \Controller
 {
     /**
      * Redirects to another route with the given name.
@@ -121,8 +120,8 @@ class RedirectController extends Controller
             if (null === $httpPort) {
                 if ('http' === $request->getScheme()) {
                     $httpPort = $request->getPort();
-                } elseif ($this->container->hasParameter('request_listener.http_port')) {
-                    $httpPort = $this->container->getParameter('request_listener.http_port');
+                } elseif ($this->hasParameter('request_listener.http_port')) {
+                    $httpPort = $this->getParameter('request_listener.http_port');
                 }
             }
 
@@ -133,8 +132,8 @@ class RedirectController extends Controller
             if (null === $httpsPort) {
                 if ('https' === $request->getScheme()) {
                     $httpsPort = $request->getPort();
-                } elseif ($this->container->hasParameter('request_listener.https_port')) {
-                    $httpsPort = $this->container->getParameter('request_listener.https_port');
+                } elseif ($this->hasParameter('request_listener.https_port')) {
+                    $httpsPort = $this->getParameter('request_listener.https_port');
                 }
             }
 

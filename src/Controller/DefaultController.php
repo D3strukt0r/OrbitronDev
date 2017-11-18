@@ -4,12 +4,12 @@ namespace Controller;
 
 use App\Account\AccountHelper;
 use App\Account\Entity\User;
+use App\Core\Core;
 use App\Core\Form\ContactType;
 use App\Core\Form\SearchType;
-use Controller;
 use Swift_Message;
 
-class DefaultController extends Controller
+class DefaultController extends \Controller
 {
     public function redirToIndexAction()
     {
@@ -137,7 +137,7 @@ class DefaultController extends Controller
     {
         if ($this->getRequest()->query->get('key') == $this->get('config')['parameters']['setup_key']) {
             $text = '';
-            \App\Core\Core::addDefaultCronJobs();
+            Core::addDefaultCronJobs();
             $text .= 'Default cron jobs added<br />';
             return $text;
         }

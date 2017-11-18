@@ -2,13 +2,12 @@
 
 namespace App\Template;
 
-use App\Core\TranslatorService;
-
 class TemplateLoad
 {
     private $template_name = '';
     private $templateData = null;
     private $params = array();
+    private $title = '';
 
     /**
      * TemplateLoad constructor.
@@ -78,7 +77,7 @@ class TemplateLoad
 
     /**
      * @param $param
-     * @param $value
+     * @param string|object $value
      */
     public function __setParam($param, $value)
     {
@@ -101,9 +100,7 @@ class TemplateLoad
      */
     public function translate($text)
     {
-        /** @var \Symfony\Component\Translation\Translator $translator */
-        $translator = TranslatorService::$service;
-        return $translator->trans($text);
+        return \Kernel::getIntent()->get('translator')->trans($text);
     }
 
     /**

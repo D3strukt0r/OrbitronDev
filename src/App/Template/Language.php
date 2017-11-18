@@ -2,8 +2,6 @@
 
 namespace App\Template;
 
-use Kernel;
-
 class Language
 {
     private static $sLanguage = 'en';
@@ -17,7 +15,7 @@ class Language
      */
     public static function setupCookie($language = null, $default_cookie_var = null)
     {
-        if (Kernel::getIntent()->getRequest()->cookies->has(self::$cookieName)) {
+        if (\Kernel::getIntent()->getRequest()->cookies->has(self::$cookieName)) {
             self::update($language, $default_cookie_var);
         } else {
             if (!is_null($language)) {
@@ -34,7 +32,7 @@ class Language
      */
     private static function update($locale = null, $default_cookie_var = null)
     {
-        $localeInCookie = explode('-', Kernel::getIntent()->getRequest()->cookies->get(self::$cookieName));
+        $localeInCookie = explode('-', \Kernel::getIntent()->getRequest()->cookies->get(self::$cookieName));
 
         if (!is_null($locale)) {
             $localeGiven = explode('-', $locale);
