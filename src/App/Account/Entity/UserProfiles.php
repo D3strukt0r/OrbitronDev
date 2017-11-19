@@ -255,7 +255,7 @@ class UserProfiles
     }
 
     /**
-     * @return array
+     * @return \App\Account\Entity\UserAddress[]
      */
     public function getAddresses()
     {

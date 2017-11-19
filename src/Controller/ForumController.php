@@ -3,7 +3,10 @@
 namespace Controller;
 
 use App\Account\AccountHelper;
-use App\Account\UserInfo;
+use App\Account\Entity\User;
+use App\Forum\Form\NewForumType;
+use App\Forum\Form\PostType;
+use App\Forum\Form\ThreadType;
 use App\Forum\Forum;
 use App\Forum\ForumAcp;
 use App\Forum\ForumBoard;
@@ -11,15 +14,9 @@ use App\Forum\ForumPost;
 use App\Forum\ForumThread;
 use Decoda\Decoda;
 use Decoda\Hook\EmoticonHook;
-use Form\RecaptchaType;
 use PDO;
 use ReCaptcha\ReCaptcha;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ForumController extends \Controller
 {
@@ -28,16 +25,18 @@ class ForumController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $forumList = Forum::getForumList();
         foreach ($forumList as $key => $forum) {
-            $user                        = new UserInfo($forum['owner_id']);
-            $forumList[$key]['username'] = $user->getFromUser('username');
+            /** @var \App\Account\Entity\User $user */
+            $user = $this->getEntityManager()->find(User::class, $forum['owner_id']);
+            $forumList[$key]['username'] = $user->getUsername();
         }
 
         return $this->render('forum/list-forums.html.twig', array(
-            'current_user' => $currentUser->aUser,
+            'current_user' => $currentUser,
             'forums_list'  => $forumList,
         ));
     }
@@ -47,39 +46,10 @@ class ForumController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
-        $createForumForm = $this->createFormBuilder()
-            ->add('name', TextType::class, array(
-                'label'       => 'Forum name',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a name')),
-                ),
-            ))
-            ->add('url', TextType::class, array(
-                'label'       => 'Forum url',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a url')),
-                ),
-            ))
-            ->add('recaptcha', RecaptchaType::class, array(
-                'private_key'    => '6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll',
-                'public_key'     => '6Ldec_4SAAAAAJ_TnvICnltNqgNaBPCbXp-wN48B',
-                'recaptcha_ajax' => false,
-                'attr'           => array(
-                    'options' => array(
-                        'theme' => 'light',
-                        'type'  => 'image',
-                        'size'  => 'normal',
-                        'defer' => true,
-                        'async' => true,
-                    ),
-                ),
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Create',
-            ))
-            ->getForm();
+        $createForumForm = $this->createForm(NewForumType::class);
 
         $request = $this->getRequest();
         $createForumForm->handleRequest($request);
@@ -120,7 +90,7 @@ class ForumController extends \Controller
                     $forumAdded = $addForum->execute(array(
                         ':name'    => $forumName,
                         ':url'     => $forumUrl,
-                        ':user_id' => USER_ID,
+                        ':user_id' => $currentUser->getId(),
                     ));
 
                     if ($forumAdded) {
@@ -141,7 +111,7 @@ class ForumController extends \Controller
         }
 
         return $this->render('forum/create-new-forum.html.twig', array(
-            'current_user'      => $currentUser->aUser,
+            'current_user'      => $currentUser,
             'create_forum_form' => $createForumForm->createView(),
         ));
     }
@@ -156,7 +126,8 @@ class ForumController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
@@ -187,7 +158,7 @@ class ForumController extends \Controller
         }
 
         return $this->render('forum/theme1/index.html.twig', array(
-            'current_user'  => $currentUser->aUser,
+            'current_user'  => $currentUser,
             'current_forum' => $forum->forumData,
             'board_tree'    => $boardTree,
         ));
@@ -207,7 +178,8 @@ class ForumController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
@@ -285,7 +257,7 @@ class ForumController extends \Controller
         $pagination['last_page_m1']  = $pagination['pages_count'] - 1;
 
         return $this->render('forum/theme1/board.html.twig', array(
-            'current_user'  => $currentUser->aUser,
+            'current_user'  => $currentUser,
             'current_forum' => $forum->forumData,
             'current_board' => $board->boardData,
             'breadcrumb'    => $breadcrumb,
@@ -309,7 +281,8 @@ class ForumController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
@@ -369,7 +342,7 @@ class ForumController extends \Controller
         $pagination['last_page_m1']  = $pagination['pages_count'] - 1;
 
         return $this->render('forum/theme1/thread.html.twig', array(
-            'current_user'   => $currentUser->aUser,
+            'current_user'   => $currentUser,
             'current_forum'  => $forum->forumData,
             'current_board'  => $board->boardData,
             'current_thread' => $thread->threadData,
@@ -393,7 +366,8 @@ class ForumController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
@@ -410,25 +384,7 @@ class ForumController extends \Controller
             $breadcrumb{$key} = $boardData->boardData;
         }
 
-        $createPostForm = $this->createFormBuilder()
-            ->add('title', TextType::class, array(
-                'label'       => 'Post title',
-                'attr'        => array(
-                    'placeholder' => 'RE:'.$thread->getVar('topic'),
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a title')),
-                ),
-            ))
-            ->add('message', TextareaType::class, array(
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a url')),
-                ),
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Post reply',
-            ))
-            ->getForm();
+        $createPostForm = $this->createForm(PostType::class, null, array('thread' => $thread));
 
         $request = $this->getRequest();
         if ($request->isMethod('POST')) {
@@ -440,7 +396,7 @@ class ForumController extends \Controller
 
                 if (ForumPost::postExists($postId)) {
                     return $this->render('forum/theme1/create-post.html.twig', array(
-                        'current_user'     => $currentUser->aUser,
+                        'current_user'     => $currentUser,
                         'current_forum'    => $forum->forumData,
                         'current_board'    => $board->boardData,
                         'current_thread'   => $thread->threadData,
@@ -450,7 +406,7 @@ class ForumController extends \Controller
                     ));
                 } else {
                     return $this->render('forum/theme1/create-post.html.twig', array(
-                        'current_user'     => $currentUser->aUser,
+                        'current_user'     => $currentUser,
                         'current_forum'    => $forum->forumData,
                         'current_board'    => $board->boardData,
                         'current_thread'   => $thread->threadData,
@@ -463,7 +419,7 @@ class ForumController extends \Controller
         }
 
         return $this->render('forum/theme1/create-post.html.twig', array(
-            'current_user'     => $currentUser->aUser,
+            'current_user'     => $currentUser,
             'current_forum'    => $forum->forumData,
             'current_board'    => $board->boardData,
             'current_thread'   => $thread->threadData,
@@ -486,7 +442,8 @@ class ForumController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $forumId                            = Forum::url2Id($this->parameters['forum']);
         $forum                              = new Forum($forumId);
@@ -502,28 +459,7 @@ class ForumController extends \Controller
             $breadcrumb{$key} = $boardData->boardData;
         }
 
-        $createThreadForm = $this->createFormBuilder()
-            ->add('parent', HiddenType::class, array(
-                'data' => $board->getVar('id'),
-            ))
-            ->add('title', TextType::class, array(
-                'label'       => 'Thread name',
-                'attr'        => array(
-                    'placeholder' => 'e.g. I need help',
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a title')),
-                ),
-            ))
-            ->add('message', TextareaType::class, array(
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a message')),
-                ),
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Create thread',
-            ))
-            ->getForm();
+        $createThreadForm = $this->createForm(ThreadType::class, null, array('board' => $board));
 
         $request = $this->getRequest();
         if ($request->isMethod('POST')) {
@@ -535,7 +471,7 @@ class ForumController extends \Controller
 
                 if (ForumThread::threadExists($threadId)) {
                     return $this->render('forum/theme1/create-thread.html.twig', array(
-                        'current_user'       => $currentUser->aUser,
+                        'current_user'       => $currentUser,
                         'current_forum'      => $forum->forumData,
                         'current_board'      => $board->boardData,
                         'breadcrumb'         => $breadcrumb,
@@ -545,7 +481,7 @@ class ForumController extends \Controller
                     ));
                 } else {
                     return $this->render('forum/theme1/create-thread.html.twig', array(
-                        'current_user'       => $currentUser->aUser,
+                        'current_user'       => $currentUser,
                         'current_forum'      => $forum->forumData,
                         'current_board'      => $board->boardData,
                         'breadcrumb'         => $breadcrumb,
@@ -557,7 +493,7 @@ class ForumController extends \Controller
         }
 
         return $this->render('forum/theme1/create-thread.html.twig', array(
-            'current_user'       => $currentUser->aUser,
+            'current_user'       => $currentUser,
             'current_forum'      => $forum->forumData,
             'current_board'      => $board->boardData,
             'breadcrumb'         => $breadcrumb,
@@ -574,8 +510,9 @@ class ForumController extends \Controller
         $params = array();
         $request                   = $this->getRequest();
         $params['user_id']         = USER_ID;
-        $currentUser               = new UserInfo(USER_ID);
-        $params['current_user']    = $currentUser->aUser;
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $params['current_user']    = $currentUser;
         $forumId                   = Forum::url2Id($this->parameters['forum']);
         $forum                     = new Forum($forumId);
         $params['current_forum']   = $forum->forumData;

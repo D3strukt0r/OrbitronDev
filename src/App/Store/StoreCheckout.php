@@ -2,7 +2,6 @@
 
 namespace App\Store;
 
-use App\Account\UserInfo;
 use Container\DatabaseContainer;
 use Kernel;
 
@@ -17,7 +16,7 @@ class StoreCheckout
      *
      * @param float         $cartId
      * @param bool|null     $isRegisteredUser
-     * @param UserInfo|null $user
+     * @param \App\Account\Entity\User|null $user
      *
      * @throws \Exception
      */
@@ -58,7 +57,7 @@ class StoreCheckout
     /**
      * Creates a new cart in the database
      *
-     * @param UserInfo $user
+     * @param \App\Account\Entity\User $user
      *
      * @return string
      * @throws \Exception
@@ -69,7 +68,7 @@ class StoreCheckout
 
         $sql = $database->prepare('INSERT INTO `store_carts`(`user_id`, `products`) VALUES (:user_id, :products)');
         $sql->execute(array(
-            ':user_id'  => $user->getFromUser('user_id'),
+            ':user_id'  => $user->getId(),
             ':products' => '{}',
         ));
 
@@ -159,7 +158,7 @@ class StoreCheckout
     }
 
     /**
-     * @param UserInfo $user
+     * @param \App\Account\Entity\User $user
      *
      * @return array
      */
@@ -169,7 +168,7 @@ class StoreCheckout
 
         $sql = $database->prepare('SELECT * FROM `store_carts` WHERE `user_id`=:user_id');
         $sql->execute(array(
-            ':user_id' => $user->getFromUser('user_id'),
+            ':user_id' => $user->getId(),
         ));
 
         return $sql->fetchAll(\PDO::FETCH_ASSOC);
@@ -200,7 +199,7 @@ class StoreCheckout
     /**
      * Does there already exist a cart for the user?
      *
-     * @param UserInfo $user
+     * @param \App\Account\Entity\User $user
      *
      * @return bool
      * @throws \Exception
@@ -211,7 +210,7 @@ class StoreCheckout
 
         $sql = $database->prepare('SELECT NULL FROM `store_carts` WHERE `user_id`=:user_id');
         $sql->execute(array(
-            ':user_id' => $user->getFromUser('user_id'),
+            ':user_id' => $user->getId(),
         ));
 
         if ($sql->rowCount() > 0) {
@@ -221,7 +220,7 @@ class StoreCheckout
     }
 
     /**
-     * @param UserInfo $user
+     * @param \App\Account\Entity\User $user
      *
      * @return int|null
      * @throws \Exception
@@ -232,7 +231,7 @@ class StoreCheckout
 
         $sql = $database->prepare('SELECT `cart_id` FROM `store_carts` WHERE `user_id`=:user_id');
         $sql->execute(array(
-            ':user_id' => $user->getFromUser('user_id'),
+            ':user_id' => $user->getId(),
         ));
 
         if ($sql->rowCount() > 0) {

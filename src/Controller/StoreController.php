@@ -3,25 +3,24 @@
 namespace Controller;
 
 use App\Account\AccountHelper;
+use App\Account\Entity\User;
 use App\Account\UserInfo;
+use App\Forum\Form\CheckoutType;
+use App\Store\Form\AddCommentType;
+use App\Store\Form\AddToCartType;
+use App\Store\Form\NewStoreType;
 use App\Store\StoreAcp;
 use App\Store\Store;
 use App\Store\StoreCheckout;
 use App\Store\StoreComments;
 use App\Store\StoreProduct;
 use Container\DatabaseContainer;
-use Form\RecaptchaType;
 use Kernel;
 use PDO;
 use ReCaptcha\ReCaptcha;
 use Swift_Image;
 use Swift_Message;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class StoreController extends \Controller
 {
@@ -30,16 +29,18 @@ class StoreController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $storeList = Store::getStoreList();
         foreach ($storeList as $key => $store) {
-            $user                        = new UserInfo($store['owner_id']);
-            $storeList[$key]['username'] = $user->getFromUser('username');
+            /** @var \App\Account\Entity\User $user */
+            $user = $this->getEntityManager()->find(User::class, $store['owner_id']);
+            $storeList[$key]['username'] = $user->getUsername();
         }
 
         return $this->render('store/list-stores.html.twig', array(
-            'current_user' => $currentUser->aUser,
+            'current_user' => $currentUser,
             'store_list'  => $storeList,
         ));
     }
@@ -49,39 +50,10 @@ class StoreController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
-        $createStoreForm = $this->createFormBuilder()
-            ->add('name', TextType::class, array(
-                'label'       => 'Store name',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a name')),
-                ),
-            ))
-            ->add('url', TextType::class, array(
-                'label'       => 'Store url',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a url')),
-                ),
-            ))
-            ->add('recaptcha', RecaptchaType::class, array(
-                'private_key'    => '6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll',
-                'public_key'     => '6Ldec_4SAAAAAJ_TnvICnltNqgNaBPCbXp-wN48B',
-                'recaptcha_ajax' => false,
-                'attr'           => array(
-                    'options' => array(
-                        'theme' => 'light',
-                        'type'  => 'image',
-                        'size'  => 'normal',
-                        'defer' => true,
-                        'async' => true,
-                    ),
-                ),
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Create',
-            ))
-            ->getForm();
+        $createStoreForm = $this->createForm(NewStoreType::class);
 
         $request = $this->getRequest();
         $createStoreForm->handleRequest($request);
@@ -143,7 +115,7 @@ class StoreController extends \Controller
         }
 
         return $this->render('store/create-new-store.html.twig', array(
-            'current_user'      => $currentUser->aUser,
+            'current_user'      => $currentUser,
             'create_store_form' => $createStoreForm->createView(),
         ));
     }
@@ -158,7 +130,8 @@ class StoreController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $storeId = Store::url2Id($this->parameters['store']);
         $store   = new Store($storeId);
@@ -183,7 +156,7 @@ class StoreController extends \Controller
         $cart = $rawCart->getCart($store->getVar('id'), true, true);
 
         return $this->render('store/theme1/index.html.twig', array(
-            'current_user'  => $currentUser->aUser,
+            'current_user'  => $currentUser,
             'current_store' => $store->storeData,
             'product_list'  => $productList,
             'cart'          => $cart,
@@ -205,7 +178,8 @@ class StoreController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $storeId      = Store::url2Id($this->parameters['store']);
         $store        = new Store($storeId);
@@ -218,54 +192,23 @@ class StoreController extends \Controller
         $product->productData['in_sale'] = is_null($product->getVar('price_sale_' . $userCurrency)) ? false : true;
         $product->productData['price_sale'] = $product->productData['in_sale'] ? $product->getVar('price_sale_' . $userCurrency) : null;
 
-        $addToCartForm = $this->createFormBuilder()
-            ->add('store_id', HiddenType::class, array(
-                'data' => $store->getVar('id'),
-            ))
-            ->add('product_id', HiddenType::class, array(
-                'data' => $product->getVar('id'),
-            ))
-            ->add('product_count', TextType::class, array( // TODO: This should be IntegerType
-                'label' => 'Amount',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a number')),
-                    //new Type(array('type' => 'int', 'message' => 'The value {{ value }} is not a valid {{ type }}.'))
-                ),
-                'disabled' => $product->getVar('stock_available') == 0 ? true : false,
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Add to shopping cart',
-                'disabled' => $product->getVar('stock_available') == 0 ? true : false,
-            ))
-            ->getForm();
+        $addToCartForm = $this->createForm(AddToCartType::class, null, array('store' => $store, 'product' => $product));
 
-        $addCommentForm = $this->createFormBuilder()
-            ->add('product_id', HiddenType::class, array(
-                'data' => $product->getVar('id'),
-            ))
-            ->add('rating', HiddenType::class, array(
-                'data' => 0,
-            ))
-            ->add('comment', TextareaType::class, array(
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter a message')),
-                ),
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Write a review',
-            ))
-            ->getForm();
+        $addCommentForm = $this->createForm(AddCommentType::class, null, array('product' => $product));
 
         // Add product to cart
         $request = $this->getRequest();
         $addToCartForm->handleRequest($request);
         if ($addToCartForm->isSubmitted() && $addToCartForm->isValid()) {
             $formData = $addToCartForm->getData();
-            $formData['product_count'] = intval($formData['product_count']); // TODO: As product_count is TextType, we have to convert it to a Int
+            // TODO: As product_count is TextType, we have to convert it to a Int
+            $formData['product_count'] = intval($formData['product_count']);
 
             if (LOGGED_IN) {
                 // Is registered user
-                $user = new UserInfo(USER_ID);
+                /** @var \App\Account\Entity\User $user */
+                $user = $this->getEntityManager()->find(User::class, USER_ID);
+
                 if (StoreCheckout::cartExistsForUser($user)) {
                     // Cart exists
                     $cartId = StoreCheckout::getCartIdFromUser($user);
@@ -307,7 +250,7 @@ class StoreController extends \Controller
         $cart = $rawCart->getCart($store->getVar('id'), true, true);
 
         return $this->render('store/theme1/product.html.twig', array(
-            'current_user'  => $currentUser->aUser,
+            'current_user'  => $currentUser,
             'current_store' => $store->storeData,
             'current_product'  => $product->productData,
             'comments' => $comments,
@@ -327,7 +270,8 @@ class StoreController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $storeId      = Store::url2Id($this->parameters['store']);
         $store        = new Store($storeId);
@@ -339,80 +283,7 @@ class StoreController extends \Controller
         }
         $cart = $rawCart->getCart($store->getVar('id'), true, false);
 
-        $checkoutForm = $this->createFormBuilder()
-            ->add('name', TextType::class, array(
-                'label' => 'Full name',
-                'attr'  => array(
-                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('firstname') : '') . ' ' . (!empty($currentUser->aProfile) ? $currentUser->getFromProfile('lastname') : ''),
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your full name')),
-                ),
-            ))
-            ->add('email', TextType::class, array(
-                'label' => 'Email',
-                'attr'  => array(
-                    'value'       => (USER_ID != -1 ? $currentUser->getFromUser('email') : ''),
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your email')),
-                ),
-            ))
-            ->add('phone', TextType::class, array(
-                'label' => 'Phone Nr.',
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your phone number')),
-                ),
-            ))
-            ->add('location_street', TextType::class, array(
-                'label' => 'Street',
-                'attr'  => array(
-                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_street') : ''),
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your street')),
-                ),
-            ))
-            ->add('location_street_number', TextType::class, array(
-                'label' => 'House Nr.',
-                'attr'  => array(
-                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_street_number') : ''),
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your house nr.')),
-                ),
-            ))
-            ->add('location_postal_code', TextType::class, array(
-                'label' => 'Postal code',
-                'attr'  => array(
-                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_zip') : ''),
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your zip code')),
-                ),
-            ))
-            ->add('location_city', TextType::class, array(
-                'label' => 'City',
-                'attr'  => array(
-                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_city') : ''),
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your city')),
-                ),
-            ))
-            ->add('location_country', TextType::class, array(
-                'label' => 'Country',
-                'attr'  => array(
-                    'value'       => (USER_ID != -1 ? $currentUser->getFromProfile('location_country') : ''),
-                ),
-                'constraints' => array(
-                    new NotBlank(array('message' => 'Please enter your country')),
-                ),
-            ))
-            ->add('send', SubmitType::class, array(
-                'label' => 'Order',
-            ))
-            ->getForm();
+        $checkoutForm = $this->createForm(CheckoutType::class, null, array('user' => $currentUser));
 
         if($store->getVar('braintree_mode') == 'sandbox') {
             \Braintree_Configuration::environment('sandbox');
@@ -501,7 +372,7 @@ class StoreController extends \Controller
         }
 
         return $this->render('store/theme1/checkout.html.twig', array(
-            'current_user'  => $currentUser->aUser,
+            'current_user'  => $currentUser,
             'current_store' => $store->storeData,
             'checkout_form' => $checkoutForm->createView(),
             'cart' => $cart,
@@ -550,7 +421,8 @@ class StoreController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
         $cart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
         $cart->clearCart();
@@ -567,8 +439,10 @@ class StoreController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
-        $request = Kernel::getIntent()->getRequest();
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+
+        $request = $this->getRequest();
 
         if (LOGGED_IN) {
             $checkout = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
@@ -606,8 +480,10 @@ class StoreController extends \Controller
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
-        $currentUser = new UserInfo(USER_ID);
-        $request = Kernel::getIntent()->getRequest();
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+
+        $request = $this->getRequest();
 
         if (LOGGED_IN) {
             $checkout = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);

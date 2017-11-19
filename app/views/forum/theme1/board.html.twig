@@ -224,7 +224,7 @@
                     </ul><!-- /.pagination -->
                 {% endif %}
             </div>
-            {% if current_user.user_id > -1 %}
+            {% if current_user.id > -1 %}
                 <div class="col-md-4">
                     <p class="text-right"><a href="{{ path('app_forum_forum_create_thread', {'forum': current_forum.url, 'board': current_board.id}) }}" class="btn btn-primary">{{ 'Create thread'|trans }}</a></p>
                 </div>
