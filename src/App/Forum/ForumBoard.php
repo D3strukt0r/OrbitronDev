@@ -2,7 +2,7 @@
 
 namespace App\Forum;
 
-use App\Account\UserInfo;
+use App\Account\Entity\User;
 use Container\DatabaseContainer;
 use PDO;
 use RuntimeException;
@@ -309,8 +309,9 @@ class ForumBoard
         $update = $database->prepare('UPDATE `forum_boards` SET `last_post_username`=:value WHERE `id`=:board_id');
         $update->bindValue(':board_id', $this->boardId, PDO::PARAM_INT);
 
-        $user = new UserInfo($user_id);
-        $update->bindValue(':value', $user->getFromUser('username'), PDO::PARAM_STR);
+        /** @var \App\Account\Entity\User $user */
+        $user = \Kernel::getIntent()->getEntityManager()->find(User::class, $user_id);
+        $update->bindValue(':value', $user->getUsername(), PDO::PARAM_STR);
 
         $sqlSuccess = $update->execute();
 

@@ -4,7 +4,6 @@ namespace Controller;
 
 use App\Account\AccountHelper;
 use App\Account\Entity\User;
-use App\Account\UserInfo;
 use App\Forum\Form\CheckoutType;
 use App\Store\Form\AddCommentType;
 use App\Store\Form\AddToCartType;
@@ -520,8 +519,9 @@ class StoreController extends \Controller
         $params = array();
         $request                   = $this->getRequest();
         $params['user_id']         = USER_ID;
-        $currentUser               = new UserInfo(USER_ID);
-        $params['current_user']    = $currentUser->aUser;
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $params['current_user']    = $currentUser;
         $storeId                   = Store::url2Id($this->parameters['store']);
         $store                     = new Store($storeId);
         $params['current_store']   = $store->storeData;

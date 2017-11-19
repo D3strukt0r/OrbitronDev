@@ -39,7 +39,7 @@ class CheckoutType extends AbstractType
             ->add('name', TextType::class, array(
                 'label'       => 'Full name',
                 'attr'        => array(
-                    'value' => (USER_ID != -1 ? $currentUser->getProfile()->getName() : '').' '.(!empty($currentUser->aProfile) ? $currentUser->getProfile()->getSurname() : ''),
+                    'value' => (USER_ID != -1 ? $currentUser->getProfile()->getName() : '').' '.(!is_null($currentUser) ? $currentUser->getProfile()->getSurname() : ''),
                 ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your full name')),

@@ -1,6 +1,6 @@
 app_default_setup:
     path:     /setup
-    defaults: { _controller: 'DefaultController::oneTimeSetupAction' }
+    defaults: { _controller: 'DefaultController::oneTimeSetupAction', 'cron_job': false }
 
 app_default_robot:
     path:     /robots.txt

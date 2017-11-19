@@ -1,6 +1,6 @@
 <?php
 
-use App\Account\UserInfo;
+use App\Account\Entity\User;
 use App\Store\Store;
 use App\Store\StoreAcp;
 use App\Store\StoreProduct;
@@ -98,13 +98,11 @@ function acp_html_orders($twig, $controller)
     $getOrders->bindValue(':store_id', $storeId);
     $sqlSuccess = $getOrders->execute();
 
-    $orders = array();
     if (!$sqlSuccess) {
         throw new \Exception('Cannot get list with all vouchers');
     } else {
         $orders = $getOrders->fetchAll(PDO::FETCH_ASSOC);
     }
-
 
     foreach ($orders as $index => $order) {
         // Format product list
@@ -151,7 +149,6 @@ function acp_html_vouchers($twig, $controller)
     $getVouchers->bindValue(':store_id', $storeId);
     $sqlSuccess = $getVouchers->execute();
 
-    $vouchers = array();
     if (!$sqlSuccess) {
         throw new \Exception('Cannot get list with all vouchers');
     } else {
@@ -176,13 +173,14 @@ function acp_html_change_order_status_to_1($twig, $controller)
     $request = Kernel::getIntent()->getRequest();
     $storeId = Store::url2Id($controller->parameters['store']);
     $store = new Store($storeId);
-    $user = new UserInfo(USER_ID);
+    /** @var \App\Account\Entity\User $user */
+    $user = $this->getEntityManager()->find(User::class, USER_ID);
 
-    if (LOGGED_IN && $store->getVar('owner_id') == $user->getFromUser('user_id')) {
+    if (LOGGED_IN && $store->getVar('owner_id') == $user->getId()) {
         $updateStatus = $database->prepare('UPDATE `store_orders` SET `status`=\'1\' WHERE `id`=:order_id AND `store_id`=:store_id');
         $updateStatus->bindValue(':store_id', $store->getVar('id'));
         $updateStatus->bindValue(':order_id', $request->query->get('order_id'));
-        $sqlSuccessful = $updateStatus->execute();
+        $updateStatus->execute();
     }
 
     header('Location: '.$controller->generateUrl('app_store_store_admin', array('store' => $store->getVar('url'), 'page' => 'orders')));
@@ -202,13 +200,14 @@ function acp_html_change_order_status_to_2($twig, $controller)
     $request = Kernel::getIntent()->getRequest();
     $storeId = Store::url2Id($controller->parameters['store']);
     $store = new Store($storeId);
-    $user = new UserInfo(USER_ID);
+    /** @var \App\Account\Entity\User $user */
+    $user = $this->getEntityManager()->find(User::class, USER_ID);
 
-    if (LOGGED_IN && $store->getVar('owner_id') == $user->getFromUser('user_id')) {
+    if (LOGGED_IN && $store->getVar('owner_id') == $user->getId()) {
         $updateStatus = $database->prepare('UPDATE `store_orders` SET `status`=\'2\' WHERE `id`=:order_id AND `store_id`=:store_id');
         $updateStatus->bindValue(':store_id', $store->getVar('id'));
         $updateStatus->bindValue(':order_id', $request->query->get('order_id'));
-        $sqlSuccessful = $updateStatus->execute();
+        $updateStatus->execute();
     }
 
     header('Location: '.$controller->generateUrl('app_store_store_admin', array('store' => $store->getVar('url'), 'page' => 'orders')));

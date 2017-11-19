@@ -37,11 +37,50 @@ class UserRepository extends EntityRepository implements UserCredentialsInterfac
      */
     public function getUserDetails($email)
     {
-        $user = $this->findOneBy(['email' => $email]);
+        $user = $this->findOneBy(array('email' => $email));
         if ($user) {
             $user = $user->toArray();
         }
 
         return $user;
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     * @param \App\Account\Entity\User $friend
+     *
+     * @return bool
+     */
+    public function friendShipExists($user, $friend)
+    {
+        foreach ($user->getFriends() as $friendItem) {
+            if ($friendItem->getId() == $friend->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     * @param bool                     $onlineOnly
+     *
+     * @return int
+     */
+    public function getFriendCount($user, $onlineOnly = false)
+    {
+        $count = 0;
+        foreach ($user->getFriends() as $friend) {
+            if ($onlineOnly) {
+                if ($friend->isOnline()) {
+                    $count++;
+                }
+            } else {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 }

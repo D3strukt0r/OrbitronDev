@@ -547,13 +547,13 @@ class AccountHelper
 
     public static function addDefaultScopes()
     {
-        $userInfoScope = new OAuthScope();
-        $userInfoScope
+        $scope1 = new OAuthScope();
+        $scope1
             ->setScope('user_info')
             ->setName('User info\'s')
             ->setDefault(true);
 
-        \Kernel::getIntent()->getEntityManager()->persist($userInfoScope);
+        \Kernel::getIntent()->getEntityManager()->persist($scope1);
         \Kernel::getIntent()->getEntityManager()->flush();
     }
 }

@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
@@ -112,9 +114,33 @@ class User extends EncryptableFieldEntity
      */
     protected $subscription;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     * @ManyToMany(targetEntity="User", mappedBy="myFriends")
+     */
+    private $friendsWithMe;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     * @ManyToMany(targetEntity="User", inversedBy="friendsWithMe")
+     * @JoinTable(name="user_friends",
+     *     joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")}
+     * )
+     */
+    private $myFriends;
+
+    /**
+     * @var bool
+     * @Column(type="boolean", options={"default":false})
+     */
+    private $online = false;
+
     public function __construct()
     {
         $this->paymentMethods = new ArrayCollection();
+        $this->friendsWithMe = new ArrayCollection();
+        $this->myFriends = new ArrayCollection();
     }
 
     /**
@@ -453,6 +479,58 @@ class User extends EncryptableFieldEntity
     public function setSubscription(UserSubscription $subscription)
     {
         $this->subscription = $subscription;
+
+        return $this;
+    }
+
+    /**
+     * @return \App\Account\Entity\User[]
+     */
+    public function getFriends()
+    {
+        return $this->myFriends->toArray();
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     */
+    public function addFriend(User $user)
+    {
+        if ($this->myFriends->contains($user)) {
+            return;
+        }
+        $this->myFriends->add($user);
+        $user->addFriend($this);
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     */
+    public function removeFriend(User $user)
+    {
+        if (!$this->myFriends->contains($user)) {
+            return;
+        }
+        $this->myFriends->removeElement($user);
+        $user->removeFriend($this);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOnline()
+    {
+        return $this->online;
+    }
+
+    /**
+     * @param bool $online
+     *
+     * @return $this
+     */
+    public function setOnline(bool $online)
+    {
+        $this->online = $online;
 
         return $this;
     }
