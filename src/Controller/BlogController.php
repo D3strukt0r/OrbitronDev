@@ -107,7 +107,7 @@ class BlogController extends \Controller
         //////////// TEST IF BLOG EXISTS ////////////
         /** @var \App\Blog\Entity\Blog $blog */
         $blog = $em->getRepository(Blog::class)->findOneBy(array('url' => $this->parameters['blog']));
-        if (!BlogHelper::urlExists($this->parameters['blog'])) {
+        if (is_null($blog)) {
             return $this->render('error/error404.html.twig');
         }
         //////////// END TEST IF BLOG EXISTS ////////////
@@ -159,7 +159,7 @@ class BlogController extends \Controller
         //////////// TEST IF BLOG EXISTS ////////////
         /** @var \App\Blog\Entity\Blog $blog */
         $blog = $em->getRepository(Blog::class)->findOneBy(array('url' => $this->parameters['blog']));
-        if (!BlogHelper::urlExists($this->parameters['blog'])) {
+        if (is_null($blog)) {
             return $this->render('error/error404.html.twig');
         }
         //////////// END TEST IF BLOG EXISTS ////////////
@@ -202,7 +202,7 @@ class BlogController extends \Controller
         //////////// TEST IF BLOG EXISTS ////////////
         /** @var \App\Blog\Entity\Blog $blog */
         $blog = $em->getRepository(Blog::class)->findOneBy(array('url' => $this->parameters['blog']));
-        if (!BlogHelper::urlExists($this->parameters['blog'])) {
+        if (is_null($blog)) {
             return $this->render('error/error404.html.twig');
         }
         //////////// END TEST IF BLOG EXISTS ////////////
@@ -226,7 +226,7 @@ class BlogController extends \Controller
         //////////// TEST IF BLOG EXISTS ////////////
         /** @var \App\Blog\Entity\Blog $blog */
         $blog = $em->getRepository(Blog::class)->findOneBy(array('url' => $this->parameters['blog']));
-        if (!BlogHelper::urlExists($this->parameters['blog'])) {
+        if (is_null($blog)) {
             return $this->render('error/error404.html.twig');
         }
         //////////// END TEST IF BLOG EXISTS ////////////

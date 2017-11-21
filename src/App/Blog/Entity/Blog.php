@@ -59,8 +59,8 @@ class Blog
     protected $closed_message;
 
     /**
-     * @var array
-     * @Column(type="json_array")
+     * @var null|array
+     * @Column(type="json_array", nullable=true)
      */
     protected $keywords;
 
@@ -221,7 +221,7 @@ class Blog
     }
 
     /**
-     * @return array
+     * @return null|array
      */
     public function getKeywords()
     {
@@ -235,6 +235,10 @@ class Blog
      */
     public function addKeyword($keyword)
     {
+        if (!is_array($this->keywords)) {
+            $this->keywords = array();
+        }
+
         $array = new ArrayCollection($this->keywords);
         $array->add($keyword);
         $this->keywords = $array->toArray();
@@ -249,6 +253,10 @@ class Blog
      */
     public function removeKeyword($keyword)
     {
+        if (!is_array($this->keywords)) {
+            $this->keywords = array();
+        }
+
         $array = new ArrayCollection($this->keywords);
         if ($array->contains($keyword)) {
             $array->removeElement($keyword);
@@ -399,7 +407,7 @@ class Blog
     }
 
     /**
-     * @return array
+     * @return \App\Blog\Entity\Post[]
      */
     public function getPosts()
     {
@@ -438,7 +446,7 @@ class Blog
      */
     public function toArray()
     {
-        return [
+        return array(
             'id'                   => $this->id,
             'name'                 => $this->name,
             'url'                  => $this->url,
@@ -453,6 +461,6 @@ class Blog
             'language'             => $this->language,
             'copyright'            => $this->copyright,
             'created'              => $this->created,
-        ];
+        );
     }
 }

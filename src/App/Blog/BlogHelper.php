@@ -48,11 +48,11 @@ class BlogHelper
     public static function urlExists($url)
     {
         $em = Kernel::getIntent()->getEntityManager();
-        /** @var null|\App\Blog\Entity\Blog[] $blogList */
-        $blogList = $em->getRepository(Blog::class)->findBy(array('url' => $url));
+        /** @var null|\App\Blog\Entity\Blog[] $find */
+        $find = $em->getRepository(Blog::class)->findBy(array('url' => $url));
 
-        if (!is_null($blogList)) {
-            if (count($blogList)) {
+        if (!is_null($find)) {
+            if (count($find)) {
                 return true;
             }
         }

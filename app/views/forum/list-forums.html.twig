@@ -15,7 +15,7 @@
 
 {% block body %}
     <div class="container content">
-        {% if current_user.id != -1  %}
+        {% if current_user is not empty  %}
             <section id="admin">
                 <div class="panel panel-info">
                     <div class="panel-heading">

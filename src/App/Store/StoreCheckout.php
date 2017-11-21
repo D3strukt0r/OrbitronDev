@@ -78,13 +78,13 @@ class StoreCheckout
     /**
      * Add a product to the cart
      *
-     * @param Store        $store   Required to get the ID
+     * @param \App\Store\Entity\Store        $store   Required to get the ID
      * @param StoreProduct $product Required to know which product
      * @param int          $count   Amount to be added
      */
     public function addToCart($store, $product, $count = 1)
     {
-        $storeId = $store->getVar('id');
+        $storeId = $store->getId();
         $productId = (int)$product->getVar('id');
 
         // How many are already in the cart?

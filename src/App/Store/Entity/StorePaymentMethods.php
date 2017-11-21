@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Table;
 class StorePaymentMethods
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -24,56 +25,89 @@ class StorePaymentMethods
     protected $id;
 
     /**
+     * @var \App\Store\Entity\Store
      * @ManyToOne(targetEntity="Store", inversedBy="paymentMethods")
      * @JoinColumn(name="store_id", referencedColumnName="id", nullable=false)
      */
     protected $store;
 
     /**
-     * @Column(type="string", name="payment_type")
+     * @var string
+     * @Column(type="string")
      */
-    protected $type;
+    protected $payment_type;
 
     /**
-     * @Column(type="json_array", name="data")
+     * @var array
+     * @Column(type="json_array")
      */
     protected $data;
 
+    /**
+     * @return int
+     */
     public function getId()
     {
         return $this->id;
     }
 
-    public function getUser()
+    /**
+     * @return \App\Store\Entity\Store
+     */
+    public function getStore()
     {
         return $this->store;
     }
 
-    public function setUser(Store $user)
+    /**
+     * @param \App\Store\Entity\Store $store
+     *
+     * @return $this
+     */
+    public function setStore(Store $store)
     {
-        $this->store = $user;
+        $this->store = $store;
+
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
-        return $this->type;
+        return $this->payment_type;
     }
 
-    public function setType($type)
+    /**
+     * @param string $type
+     *
+     * @return $this
+     */
+    public function setType(string $type)
     {
-        $this->type = $type;
+        $this->payment_type = $type;
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getData()
     {
         return $this->data;
     }
 
-    public function setData($data)
+    /**
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function setData(array $data)
     {
         $this->data = $data;
+
         return $this;
     }
 }

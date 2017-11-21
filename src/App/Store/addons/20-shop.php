@@ -174,7 +174,7 @@ function acp_html_change_order_status_to_1($twig, $controller)
     $storeId = Store::url2Id($controller->parameters['store']);
     $store = new Store($storeId);
     /** @var \App\Account\Entity\User $user */
-    $user = $this->getEntityManager()->find(User::class, USER_ID);
+    $user = $controller->getEntityManager()->find(User::class, USER_ID);
 
     if (LOGGED_IN && $store->getVar('owner_id') == $user->getId()) {
         $updateStatus = $database->prepare('UPDATE `store_orders` SET `status`=\'1\' WHERE `id`=:order_id AND `store_id`=:store_id');
@@ -201,7 +201,7 @@ function acp_html_change_order_status_to_2($twig, $controller)
     $storeId = Store::url2Id($controller->parameters['store']);
     $store = new Store($storeId);
     /** @var \App\Account\Entity\User $user */
-    $user = $this->getEntityManager()->find(User::class, USER_ID);
+    $user = $controller->getEntityManager()->find(User::class, USER_ID);
 
     if (LOGGED_IN && $store->getVar('owner_id') == $user->getId()) {
         $updateStatus = $database->prepare('UPDATE `store_orders` SET `status`=\'2\' WHERE `id`=:order_id AND `store_id`=:store_id');

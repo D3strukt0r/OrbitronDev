@@ -7,25 +7,6 @@ use PDO;
 
 class Store
 {
-    /**
-     * Get a list of all existing stores
-     *
-     * @return array
-     * @throws \Exception
-     */
-    public static function getStoreList()
-    {
-        $database = DatabaseContainer::getDatabase();
-
-        $getAllStores = $database->prepare('SELECT `name`,`url`,`owner_id` FROM `stores`');
-        $sqlSuccess   = $getAllStores->execute();
-
-        if (!$sqlSuccess) {
-            throw new \Exception('Cannot get list with all stores');
-        } else {
-            return $getAllStores->fetchAll(PDO::FETCH_ASSOC);
-        }
-    }
 
     /**
      * Get all stores which belong to the given User
@@ -54,29 +35,6 @@ class Store
 
             return $storeList;
         }
-    }
-
-    /**
-     * Checks whether the given url exists, in other words, if the store exists
-     *
-     * @param string $url
-     *
-     * @return bool
-     * @throws \Exception
-     */
-    public static function urlExists($url)
-    {
-        $database = DatabaseContainer::getDatabase();
-
-        $getUrl = $database->prepare('SELECT NULL FROM `stores` WHERE `url`=:url');
-        $getUrl->bindValue(':url', $url, PDO::PARAM_STR);
-        $getUrl->execute();
-
-        if ($getUrl->rowCount()) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

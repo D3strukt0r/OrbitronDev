@@ -15,7 +15,7 @@
 
 {% block body %}
     <div class="container content">
-        {% if current_user.id != -1  %}
+        {% if current_user is not empty  %}
             <section id="admin">
                 <div class="panel panel-info">
                     <div class="panel-heading">
@@ -29,7 +29,7 @@
                             <table class="table table-bordered table-striped table-hover">
                                 <tbody>
                                     {% for store in store_list %}
-                                        {% if current_user.id == store.owner_id %}
+                                        {% if current_user.id == store.owner.id %}
                                             <tr>
                                                 <td><a href="{{ path('app_store_store_index', {'store': store.url}) }}">{{ store.name }}</a></td>
                                                 <td><a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a></td>
@@ -58,8 +58,8 @@
                         {% for store in store_list %}
                             <tr>
                                 <td><a href="{{ path('app_store_store_index', {'store': store.url}) }}">{{ store.name }}</a></td>
-                                <td>{{ store.username }}</td>
-                                <td>{% if current_user.id == store.owner_id %}<a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
+                                <td>{{ store.owner.username }}</td>
+                                <td>{% if current_user.id == store.owner.id %}<a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

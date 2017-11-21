@@ -4,18 +4,18 @@ namespace Controller;
 
 use App\Account\AccountHelper;
 use App\Account\Entity\User;
-use App\Forum\Form\CheckoutType;
+use App\Store\Entity\Store;
 use App\Store\Form\AddCommentType;
 use App\Store\Form\AddToCartType;
+use App\Store\Form\CheckoutType;
 use App\Store\Form\NewStoreType;
 use App\Store\StoreAcp;
-use App\Store\Store;
 use App\Store\StoreCheckout;
 use App\Store\StoreComments;
+use App\Store\StoreHelper;
 use App\Store\StoreProduct;
 use Container\DatabaseContainer;
 use Kernel;
-use PDO;
 use ReCaptcha\ReCaptcha;
 use Swift_Image;
 use Swift_Message;
@@ -31,26 +31,21 @@ class StoreController extends \Controller
         /** @var \App\Account\Entity\User $currentUser */
         $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
 
-        $storeList = Store::getStoreList();
-        foreach ($storeList as $key => $store) {
-            /** @var \App\Account\Entity\User $user */
-            $user = $this->getEntityManager()->find(User::class, $store['owner_id']);
-            $storeList[$key]['username'] = $user->getUsername();
-        }
-
         return $this->render('store/list-stores.html.twig', array(
             'current_user' => $currentUser,
-            'store_list'  => $storeList,
+            'store_list'  => StoreHelper::getStoreList(),
         ));
     }
 
     public function newStoreAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $currentUser = $em->find(User::class, USER_ID);
 
         $createStoreForm = $this->createForm(NewStoreType::class);
 
@@ -82,32 +77,25 @@ class StoreController extends \Controller
                 } elseif (in_array($storeUrl, array('new-forum', 'admin'))) {
                     $errorMessages[] = '';
                     $createStoreForm->get('url')->addError(new FormError('It\'s prohibited to use this url'));
-                } elseif (Store::urlExists($storeUrl)) {
+                } elseif (StoreHelper::urlExists($storeUrl)) {
                     $errorMessages[] = '';
                     $createStoreForm->get('url')->addError(new FormError('This url is already in use'));
                 }
 
                 if (!count($errorMessages)) {
-                    /** @var \PDOStatement $addStore */
-                    $addStore = $this->get('database')->prepare('INSERT INTO `stores`(`name`,`url`,`owner_id`) VALUES (:name,:url,:user_id)');
-                    $storeAdded = $addStore->execute(array(
-                        ':name'    => $storeName,
-                        ':url'     => $storeUrl,
-                        ':user_id' => USER_ID,
-                    ));
+                    try {
+                        $newStore = new Store();
+                        $newStore
+                            ->setName($storeName)
+                            ->setUrl($storeUrl)
+                            ->setOwner($currentUser)
+                            ->setCreated(new \DateTime());
+                        $em->persist($newStore);
+                        $em->flush();
 
-                    if ($storeAdded) {
-                        /** @var \PDOStatement $getStore */
-                        $getStore = $this->get('database')->prepare('SELECT `url` FROM `stores` WHERE `url`=:url LIMIT 1');
-                        $getStore->execute(array(
-                            ':url' => $storeUrl,
-                        ));
-                        $storeData = $getStore->fetchAll(PDO::FETCH_ASSOC);
-
-                        return $this->redirectToRoute('app_store_store_index', array('store' => $storeData[0]['url']));
-                    } else {
-                        $errorMessage = $addStore->errorInfo();
-                        $createStoreForm->addError(new FormError('We could not create your forum. (ERROR: '.$errorMessage[2].')'));
+                        return $this->redirectToRoute('app_store_store_index', array('store' => $newStore->getUrl()));
+                    } catch (\Exception $e) {
+                        $createStoreForm->addError(new FormError('We could not create your forum. ('.$e->getMessage().')'));
                     }
                 }
             }
@@ -121,23 +109,26 @@ class StoreController extends \Controller
 
     public function storeIndexAction()
     {
-        // Does the store even exist?
-        if (!Store::urlExists($this->parameters['store'])) {
+        $em = $this->getEntityManager();
+        $request = $this->getRequest();
+
+        //////////// TEST IF STORE EXISTS ////////////
+        /** @var \App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('url' => $this->parameters['store']));
+        if (is_null($store)) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF STORE EXISTS ////////////
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $currentUser = $em->find(User::class, USER_ID);
 
-        $storeId = Store::url2Id($this->parameters['store']);
-        $store   = new Store($storeId);
-
-        $productList = StoreProduct::getProductList($store->getVar('id'));
-        $userLanguage = 'en'; // TODO: Make this editable by the user
-        $userCurrency = 'dollar';  // TODO: Make this editable by the user
+        $productList = StoreProduct::getProductList($store->getId());
+        $userLanguage = !is_null($request->query->get('lang')) ? $request->query->get('lang') : 'en';
+        $userCurrency = !is_null($request->query->get('currency')) ? $request->query->get('currency') : 'dollar';
 
         foreach ($productList as $index => $product) {
             $productList[$index]['short_description'] = $product['short_description_' . $userLanguage];
@@ -152,11 +143,11 @@ class StoreController extends \Controller
         } else {
             $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
         }
-        $cart = $rawCart->getCart($store->getVar('id'), true, true);
+        $cart = $rawCart->getCart($store->getId(), true, true);
 
         return $this->render('store/theme1/index.html.twig', array(
             'current_user'  => $currentUser,
-            'current_store' => $store->storeData,
+            'current_store' => $store,
             'product_list'  => $productList,
             'cart'          => $cart,
         ));
@@ -164,10 +155,16 @@ class StoreController extends \Controller
 
     public function storeProductAction()
     {
-        // Does the store even exist?
-        if (!Store::urlExists($this->parameters['store'])) {
+        $em = $this->getEntityManager();
+        $request = $this->getRequest();
+
+        //////////// TEST IF STORE EXISTS ////////////
+        /** @var \App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('url' => $this->parameters['store']));
+        if (is_null($store)) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF STORE EXISTS ////////////
 
         // Does the product even exist?
         if (!StoreProduct::productExists($this->parameters['product'])) {
@@ -178,12 +175,10 @@ class StoreController extends \Controller
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $currentUser = $em->find(User::class, USER_ID);
 
-        $storeId      = Store::url2Id($this->parameters['store']);
-        $store        = new Store($storeId);
-        $userLanguage = 'en'; // TODO: Make this editable by the user
-        $userCurrency = 'dollar';  // TODO: Make this editable by the user
+        $userLanguage = !is_null($request->query->get('lang')) ? $request->query->get('lang') : 'en';
+        $userCurrency = !is_null($request->query->get('currency')) ? $request->query->get('currency') : 'dollar';
         $product      = new StoreProduct($this->parameters['product']);
 
         $product->productData['description'] = $product->getVar('long_description_' . $userLanguage);
@@ -196,7 +191,6 @@ class StoreController extends \Controller
         $addCommentForm = $this->createForm(AddCommentType::class, null, array('product' => $product));
 
         // Add product to cart
-        $request = $this->getRequest();
         $addToCartForm->handleRequest($request);
         if ($addToCartForm->isSubmitted() && $addToCartForm->isValid()) {
             $formData = $addToCartForm->getData();
@@ -220,9 +214,10 @@ class StoreController extends \Controller
                 // Is a guest
                 $cart = new StoreCheckout(null);
             }
-            $store = new Store($formData['store_id']);
+            /** @var \App\Store\Entity\Store $store2 */
+            $store2 = $em->getRepository(Store::class)->findOneBy(array('url' => $formData['store_id']));
             $product2 = new StoreProduct($formData['product_id']);
-            $cart->addToCart($store, $product2, $formData['product_count']);
+            $cart->addToCart($store2, $product2, $formData['product_count']);
 
             $this->addFlash('product_added', 'Your product was added to the cart');
         }
@@ -246,11 +241,11 @@ class StoreController extends \Controller
         } else {
             $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
         }
-        $cart = $rawCart->getCart($store->getVar('id'), true, true);
+        $cart = $rawCart->getCart($store->getId(), true, true);
 
         return $this->render('store/theme1/product.html.twig', array(
             'current_user'  => $currentUser,
-            'current_store' => $store->storeData,
+            'current_store' => $store,
             'current_product'  => $product->productData,
             'comments' => $comments,
             'add_to_cart_form' => $addToCartForm->createView(),
@@ -261,26 +256,29 @@ class StoreController extends \Controller
 
     public function storeCheckoutAction()
     {
-        // Does the store even exist?
-        if (!Store::urlExists($this->parameters['store'])) {
+        $em = $this->getEntityManager();
+        $request = $this->getRequest();
+
+        //////////// TEST IF STORE EXISTS ////////////
+        /** @var \App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('url' => $this->parameters['store']));
+        if (is_null($store)) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF STORE EXISTS ////////////
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
-
-        $storeId      = Store::url2Id($this->parameters['store']);
-        $store        = new Store($storeId);
+        $currentUser = $em->find(User::class, USER_ID);
 
         if (LOGGED_IN) {
             $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
         } else {
             $rawCart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), false);
         }
-        $cart = $rawCart->getCart($store->getVar('id'), true, false);
+        $cart = $rawCart->getCart($store->getId(), true, false);
 
         $checkoutForm = $this->createForm(CheckoutType::class, null, array('user' => $currentUser));
 
@@ -299,7 +297,6 @@ class StoreController extends \Controller
         $payment = array();
         $payment['client_token'] = \Braintree_ClientToken::generate();
 
-        $request = $this->getRequest();
         $checkoutForm->handleRequest($request);
         if ($checkoutForm->isSubmitted() && $checkoutForm->isValid()) {
             $formData = $checkoutForm->getData();
@@ -325,7 +322,7 @@ class StoreController extends \Controller
                 }
             } else {
 
-                $cart2 = $rawCart->getCart($store->getVar('id'), true, true);
+                $cart2 = $rawCart->getCart($store->getId(), true, true);
                 $result = \Braintree_Transaction::sale([
                     'amount' => $cart2['system']['total_price'],
                     'paymentMethodNonce' => $nonceFromTheClient,
@@ -338,12 +335,12 @@ class StoreController extends \Controller
                     $message = (new Swift_Message());
                     $imgDir1 = $message->embed(Swift_Image::fromPath(Kernel::getIntent()->getRootDir().'/web/assets/logo-long.png'));
                     $message->setSubject('Order confirmation')
-                        ->setFrom(array($store->getVar('email') => $store->getVar('name')))
+                        ->setFrom(array($store->getOwner()->getEmail() => $store->getName()))
                         ->setTo(array(trim($formData['email']) => trim($formData['name'])))
-                        ->setBcc(array($store->getVar('email')))
-                        ->setReplyTo(array($store->getVar('email') => $store->getVar('name')))
+                        ->setBcc(array($store->getOwner()->getEmail()))
+                        ->setReplyTo(array($store->getOwner()->getEmail() => $store->getName()))
                         ->setBody($this->renderView('store/mail/order-confirmation.html.twig', array(
-                            'current_store' => $store->storeData,
+                            'current_store' => $store,
                             'order_form' => $formData,
                             'header_image' => $imgDir1,
                             'ordered_time' => time(),
@@ -356,9 +353,9 @@ class StoreController extends \Controller
 
                     if($mailSent) {
                         $formData['delivery_type'] = @$request->request->get('shipping'); // TODO: Integrate this into the form
-                        $rawCart->makeOrder($store->getVar('id'), $formData);
+                        $rawCart->makeOrder($store->getId(), $formData);
                         $rawCart->clearCart();
-                        $cart = $rawCart->getCart($store->getVar('id'), true, true);
+                        $cart = $rawCart->getCart($store->getId(), true, true);
 
                         $this->addFlash('order_sent', 'We saved your order in our system, and sent you a confirmation. We will deliver you the products as soon as possible.');
                     } else {
@@ -372,7 +369,7 @@ class StoreController extends \Controller
 
         return $this->render('store/theme1/checkout.html.twig', array(
             'current_user'  => $currentUser,
-            'current_store' => $store->storeData,
+            'current_store' => $store,
             'checkout_form' => $checkoutForm->createView(),
             'cart' => $cart,
             'payment' => $payment,
@@ -381,18 +378,21 @@ class StoreController extends \Controller
 
     public function storeDoCheckVoucherAction()
     {
-        // Does the store even exist?
-        if (!Store::urlExists($this->parameters['store'])) {
+        $em = $this->getEntityManager();
+
+        //////////// TEST IF STORE EXISTS ////////////
+        /** @var \App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('url' => $this->parameters['store']));
+        if (is_null($store)) {
             return $this->render('error/error404.html.twig');
         }
-        $storeId = Store::url2Id($this->parameters['store']);
-        $store   = new Store($storeId);
+        //////////// END TEST IF STORE EXISTS ////////////
 
         $database = DatabaseContainer::getDatabase();
         $sql = $database->prepare('SELECT * FROM `store_voucher` WHERE `code`=:voucher AND `store_id`=:store_id LIMIT 1');
         $sql->execute(array(
             ':voucher' => $this->getRequest()->query->get('code'),
-            ':store_id' => $store->getVar('id'),
+            ':store_id' => $store->getId(),
         ));
 
         if ($sql->rowCount() == 0) {
@@ -412,16 +412,21 @@ class StoreController extends \Controller
 
     public function storeDoClearCartAction()
     {
-        // Does the store even exist?
-        if (!Store::urlExists($this->parameters['store'])) {
+        $em = $this->getEntityManager();
+
+        //////////// TEST IF STORE EXISTS ////////////
+        /** @var \App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('url' => $this->parameters['store']));
+        if (is_null($store)) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF STORE EXISTS ////////////
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $currentUser = $em->find(User::class, USER_ID);
 
         $cart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
         $cart->clearCart();
@@ -430,18 +435,22 @@ class StoreController extends \Controller
 
     public function storeDoAddToCartAction()
     {
-        // Does the store even exist?
-        if (!Store::urlExists($this->parameters['store'])) {
+        $em = $this->getEntityManager();
+        $request = $this->getRequest();
+
+        //////////// TEST IF STORE EXISTS ////////////
+        /** @var \App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('url' => $this->parameters['store']));
+        if (is_null($store)) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF STORE EXISTS ////////////
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
-
-        $request = $this->getRequest();
+        $currentUser = $em->find(User::class, USER_ID);
 
         if (LOGGED_IN) {
             $checkout = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
@@ -471,18 +480,22 @@ class StoreController extends \Controller
 
     public function storeDoRemoveFromCartAction()
     {
-        // Does the store even exist?
-        if (!Store::urlExists($this->parameters['store'])) {
+        $em = $this->getEntityManager();
+        $request = $this->getRequest();
+
+        //////////// TEST IF STORE EXISTS ////////////
+        /** @var \App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('url' => $this->parameters['store']));
+        if (is_null($store)) {
             return $this->render('error/error404.html.twig');
         }
+        //////////// END TEST IF STORE EXISTS ////////////
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
-
-        $request = $this->getRequest();
+        $currentUser = $em->find(User::class, USER_ID);
 
         if (LOGGED_IN) {
             $checkout = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
@@ -512,25 +525,33 @@ class StoreController extends \Controller
 
     public function storeAdminAction()
     {
+        $em = $this->getEntityManager();
+        $request = $this->getRequest();
+
+        //////////// TEST IF STORE EXISTS ////////////
+        /** @var \App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('url' => $this->parameters['store']));
+        if (is_null($store)) {
+            return $this->render('error/error404.html.twig');
+        }
+        //////////// END TEST IF STORE EXISTS ////////////
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $em->find(User::class, USER_ID);
 
         $params = array();
-        $request                   = $this->getRequest();
         $params['user_id']         = USER_ID;
-        /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
         $params['current_user']    = $currentUser;
-        $storeId                   = Store::url2Id($this->parameters['store']);
-        $store                     = new Store($storeId);
-        $params['current_store']   = $store->storeData;
+        $params['current_store']   = $store;
         $params['view_navigation'] = '';
 
         if (!LOGGED_IN) {
             return $this->redirectToRoute('app_account_login', array('redir' => $request->getUri()));
         }
-        if (USER_ID != (int)$store->getVar('owner_id')) {
+        if (USER_ID != (int)$store->getOwner()->getId()) {
             return $this->render('store/theme_admin1/no-permission.html.twig');
         }
 
@@ -542,7 +563,7 @@ class StoreController extends \Controller
             $selected                  = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
             $params['view_navigation'] .= '<li><a href="'.$this->generateUrl('app_store_store_admin',
                     array(
-                        'store' => $store->getVar('url'),
+                        'store' => $store->getUrl(),
                         'page'  => $aMenuInfo['href'],
                     )).'" '.$selected.'>'.$aMenuInfo['title'].'</a></li>';
 
@@ -575,7 +596,7 @@ class StoreController extends \Controller
                 $selected                  = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
                 $params['view_navigation'] .= '<li><a href="'.$this->generateUrl('app_store_store_admin',
                         array(
-                            'store' => $store->getVar('url'),
+                            'store' => $store->getUrl(),
                             'page'  => $aMenuInfo['href'],
                         )).'" '.$selected.'>'.$aMenuInfo['title'].'</a></li>';
                 if (strlen($selected) > 0) {

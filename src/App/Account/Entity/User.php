@@ -409,7 +409,7 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @return array
+     * @return \App\Account\Entity\UserPaymentMethods[]
      */
     public function getPaymentMethods()
     {

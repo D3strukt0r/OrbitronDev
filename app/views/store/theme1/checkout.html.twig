@@ -1,16 +1,16 @@
 {% extends 'store/theme1/layout.html.twig' %}
 
 {% set service_page_links %}
-    {% for text,link in current_store.page_links %}
+    {% for text,link in current_store.links %}
         <li><a href="{{ link }}">{{ text }}</a></li>
     {% endfor %}
 {% endset %}
 {% set service = {
 'page_name': current_store.name,
 'page_logo_link': '/' ~ current_store.url,
-'page_author': current_store.owner_username,
-'page_description': current_store.page_description,
-'page_keywords': current_store.page_keywords,
+'page_author': current_store.owner.username,
+'page_description': current_store.description,
+'page_keywords': current_store.keywords|join(','),
 'page_links': service_page_links
 } %}
 
