@@ -12,9 +12,9 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="store_payment_methods")
+ * @Table(name="store_vouchers")
  */
-class StorePaymentMethods
+class Voucher
 {
     /**
      * @var int
@@ -26,25 +26,31 @@ class StorePaymentMethods
 
     /**
      * @var \App\Store\Entity\Store
-     * @ManyToOne(targetEntity="Store", inversedBy="paymentMethods")
+     * @ManyToOne(targetEntity="Store")
      * @JoinColumn(name="store_id", referencedColumnName="id", nullable=false)
      */
     protected $store;
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="text")
      */
-    protected $payment_type;
-
-    const TYPE_BRAINTREE_PRODUCTION = 'braintree_production';
-    const TYPE_BRAINTREE_SANDBOX = 'braintree_sandbox';
+    protected $code;
 
     /**
-     * @var array
-     * @Column(type="json_array")
+     * @var int
+     * @Column(type="smallint")
      */
-    protected $data;
+    protected $type;
+
+    const TYPE_PERCENTAGE = 0;
+    const TYPE_EXACT = 1;
+
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
+    protected $amount;
 
     /**
      * @return int
@@ -77,39 +83,59 @@ class StorePaymentMethods
     /**
      * @return string
      */
-    public function getType()
+    public function getCode()
     {
-        return $this->payment_type;
+        return $this->code;
     }
 
     /**
-     * @param string $type
+     * @param string $code
      *
      * @return $this
      */
-    public function setType(string $type)
+    public function setCode(string $code)
     {
-        $this->payment_type = $type;
+        $this->code = $code;
 
         return $this;
     }
 
     /**
-     * @return array
+     * @return int
      */
-    public function getData()
+    public function getType()
     {
-        return $this->data;
+        return $this->type;
     }
 
     /**
-     * @param array $data
+     * @param int $type
      *
      * @return $this
      */
-    public function setData(array $data)
+    public function setType(int $type)
     {
-        $this->data = $data;
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param int $amount
+     *
+     * @return $this
+     */
+    public function setAmount(int $amount)
+    {
+        $this->amount = $amount;
 
         return $this;
     }

@@ -72,7 +72,7 @@
                                                         <div class="col-xs-7">
                                                             <a href="{{ path('app_store_store_do_remove_from_cart', {'store': current_store.url, 'product': product.id}) }}" class="close" data-dismiss="alert" aria-hidden="true">×</a>
                                                             <a class="product-link" href="{{ path('app_store_store_product', {'store': current_store.url, 'product': product.id}) }}">{{ product.title }}</a>
-                                                            <p class="products-price">{{ product.in_cart }} x {% if product.in_sale %}{{ product.price_sale|number_format(2, '.', '\'') }} ${% else %}{{ product.price|number_format(2, '.', '\'') }} ${% endif %}</p>
+                                                            <p class="products-price">{{ product.in_cart }} x {% if product.in_sale %}{{ product.price_sale|number_format(2, '.', '\'') }} {{ currency }}{% else %}{{ product.price|number_format(2, '.', '\'') }} {{ currency }}{% endif %}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -131,18 +131,18 @@
                                                 {% if product.price == 0 %}
                                                     {{ 'Free'|trans }}
                                                 {% else %}
-                                                    {{ product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                    {{ product.price|number_format(2, '.', '\'') }} {{ currency }}
                                                 {% endif %}
                                             </b>
                                         </span>
                                         {% if product.in_sale %}
                                             </del>
                                             <br />
-                                            <span id="output-price-sale" style="margin-left: 10px">
+                                            <span id="output-price-sale">
                                                 {% if product.price_sale == 0 %}
                                                     <b>{{ 'Free'|trans }}</b>
                                                 {% else %}
-                                                    <b>{{ product.price_sale|number_format(2, '.', '\'') }} $</b> {# TODO: Make this editable by the user #}
+                                                    <b>{{ product.price_sale|number_format(2, '.', '\'') }} {{ currency }}</b>
                                                 {% endif %}
                                             </span>
                                         {% endif %}
@@ -150,16 +150,16 @@
                                     <h4>
                                         <a href="{{ path('app_store_store_product', {'store': current_store.url, 'product': product.id}) }}">{{ product.name }}</a>
                                         <br />
-                                        {% if product.stock_available == 0 %}
+                                        {% if product.stock == 0 %}
                                             <span class="text-danger">{{ 'Sold!'|trans }}</span>
                                         {% endif %}
                                     </h4>
-                                    <p>{{ product.short_description }}</p>
+                                    <p>{{ product.description }}</p>
                                 </div>
                                 <div class="ratings">
                                     <p class="pull-right">{{ product.rating_count|number_format(0, '.', '\'') }} {{ 'Comments'|trans }}</p>
                                     <p>
-                                        {% for i in 1..5 %}<span class="fa fa-star{% if product.rating_cache matches '/^[-+]?[0-9]*\\.?[0-9]+$/' and i > product.rating_cache and i < (product.rating_cache + 1) %}-half{% endif %}{% if i > product.rating_cache %}-o{% endif %}"></span>&nbsp;{% endfor %}
+                                        {% for i in 1..5 %}<span class="fa fa-star{% if product.rating_average matches '/^[-+]?[0-9]*\\.?[0-9]+$/' and i > product.rating_average and i < (product.rating_average + 1) %}-half{% endif %}{% if i > product.rating_average %}-o{% endif %}"></span>&nbsp;{% endfor %}
                                     </p>
                                 </div>
                             </div>

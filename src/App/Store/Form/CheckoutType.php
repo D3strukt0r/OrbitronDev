@@ -19,11 +19,11 @@ class CheckoutType extends AbstractType
         $activeAddress = $currentUser->getProfile()->getActiveAddress();
         if (!is_null($activeAddress)) {
             $mainAddress = array(
-                'street'       => USER_ID != -1 ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getStreet() : '',
-                'house_number' => USER_ID != -1 ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getHouseNumber() : '',
-                'zip_code'     => USER_ID != -1 ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getZipCode() : '',
-                'city'         => USER_ID != -1 ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getCity() : '',
-                'country'      => USER_ID != -1 ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getCountry() : '',
+                'street'       => !is_null($currentUser) ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getStreet() : '',
+                'house_number' => !is_null($currentUser) ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getHouseNumber() : '',
+                'zip_code'     => !is_null($currentUser) ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getZipCode() : '',
+                'city'         => !is_null($currentUser) ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getCity() : '',
+                'country'      => !is_null($currentUser) ? $currentUser->getProfile()->getAddresses()[$activeAddress]->getCountry() : '',
             );
         } else {
             $mainAddress = array(
@@ -39,7 +39,7 @@ class CheckoutType extends AbstractType
             ->add('name', TextType::class, array(
                 'label'       => 'Full name',
                 'attr'        => array(
-                    'value' => (USER_ID != -1 ? $currentUser->getProfile()->getName() : '').' '.(!is_null($currentUser) ? $currentUser->getProfile()->getSurname() : ''),
+                    'value' => (!is_null($currentUser) ? $currentUser->getProfile()->getName() : '').' '.(!is_null($currentUser) ? $currentUser->getProfile()->getSurname() : ''),
                 ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your full name')),
@@ -48,7 +48,7 @@ class CheckoutType extends AbstractType
             ->add('email', TextType::class, array(
                 'label'       => 'Email',
                 'attr'        => array(
-                    'value' => (USER_ID != -1 ? $currentUser->getEmail() : ''),
+                    'value' => (!is_null($currentUser) ? $currentUser->getEmail() : ''),
                 ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your email')),

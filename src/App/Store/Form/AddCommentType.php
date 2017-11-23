@@ -14,12 +14,12 @@ class AddCommentType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var \App\Forum\ForumThread $product */
+        /** @var \App\Store\Entity\Product $product */
         $product = $options['product'];
 
         $builder
             ->add('product_id', HiddenType::class, array(
-                'data' => $product->getVar('id'),
+                'data' => $product->getId(),
             ))
             ->add('rating', HiddenType::class, array(
                 'data' => 0,

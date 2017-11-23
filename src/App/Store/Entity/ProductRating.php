@@ -53,15 +53,15 @@ class ProductRating
 
     /**
      * @var bool
-     * @Column(type="boolean")
+     * @Column(type="boolean", options={"default":true})
      */
-    protected $approved;
+    protected $approved = true;
 
     /**
      * @var bool
-     * @Column(type="boolean")
+     * @Column(type="boolean", options={"default":false})
      */
-    protected $spam;
+    protected $spam = false;
 
     /**
      * @var \DateTime

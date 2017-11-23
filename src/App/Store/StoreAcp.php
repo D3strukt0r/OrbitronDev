@@ -2,8 +2,6 @@
 
 namespace App\Store;
 
-use Kernel;
-
 class StoreAcp
 {
     private static $aAcpGroupElements = array();
@@ -50,7 +48,7 @@ class StoreAcp
     public static function includeLibs()
     {
 
-        $sLibDir = Kernel::getIntent()->getRootDir().'/src/App/Store/addons';
+        $sLibDir = \Kernel::getIntent()->getRootDir().'/src/App/Store/addons';
 
         $aGetLibs = scandir($sLibDir);
         foreach ($aGetLibs as $ACPLibrary) {

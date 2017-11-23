@@ -25,13 +25,13 @@
             <tbody>
                 {% for product in products %}
                     <tr>
-                        <td>{{ product.name }}</td>
-                        <td>{{ product.short_description }}</td>
-                        <td>{{ product.long_description }}</td>
-                        <td>{{ product.price }}</td>
-                        <td>{{ product.price_sale }}</td>
+                        <td>{% for language, item in product.names %}{{ language }} => {{ item }} |{% endfor %}</td>
+                        <td>{% for language, item in product.short_descriptions %}{{ language }} => {{ item }} |{% endfor %}</td>
+                        <td>{% for language, item in product.descriptions %}{{ language }} => {{ item }} |{% endfor %}</td>
+                        <td>{% for currency, item in product.prices %}{{ currency }} => {{ item }} |{% endfor %}</td>
+                        <td>{% for currency, item in product.salePrices %}{{ currency }} => {{ item }} |{% endfor %}</td>
                         <td>{{ product.small_icon }}</td>
-                        <td>{{ product.images }}</td>
+                        <td>{% for image in product.images %}{{ image.image }} |{% endfor %}</td>
                     </tr>
                 {% endfor %}
             </tbody>

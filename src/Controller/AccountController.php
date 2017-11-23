@@ -19,7 +19,7 @@ use App\Account\Form\ResetPasswordType;
 use App\Blog\BlogHelper;
 use App\Core\Token;
 use App\Forum\Forum;
-use App\Store\Store;
+use App\Store\StoreHelper;
 use OAuth2\GrantType\AuthorizationCode;
 use OAuth2\GrantType\ClientCredentials;
 use OAuth2\GrantType\RefreshToken;
@@ -311,7 +311,7 @@ class AccountController extends \Controller
                 'service_allowed'      => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
                 'blogs'                => BlogHelper::getOwnerBlogList($currentUser),
                 'forums'               => Forum::getOwnerForumList($currentUser->getId()),
-                'stores'               => Store::getOwnerStoreList($currentUser->getId()),
+                'stores'               => StoreHelper::getOwnerStoreList($currentUser),
             ));
         } else {
             return $this->render('account/user.html.twig', array(

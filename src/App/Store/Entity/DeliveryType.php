@@ -12,9 +12,9 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
- * @Table(name="store_payment_methods")
+ * @Table(name="store_delivery_types")
  */
-class StorePaymentMethods
+class DeliveryType
 {
     /**
      * @var int
@@ -26,7 +26,7 @@ class StorePaymentMethods
 
     /**
      * @var \App\Store\Entity\Store
-     * @ManyToOne(targetEntity="Store", inversedBy="paymentMethods")
+     * @ManyToOne(targetEntity="Store")
      * @JoinColumn(name="store_id", referencedColumnName="id", nullable=false)
      */
     protected $store;
@@ -35,16 +35,19 @@ class StorePaymentMethods
      * @var string
      * @Column(type="string")
      */
-    protected $payment_type;
-
-    const TYPE_BRAINTREE_PRODUCTION = 'braintree_production';
-    const TYPE_BRAINTREE_SANDBOX = 'braintree_sandbox';
+    protected $type;
 
     /**
-     * @var array
-     * @Column(type="json_array")
+     * @var string|null
+     * @Column(type="string", nullable=true)
      */
-    protected $data;
+    protected $description;
+
+    /**
+     * @var float
+     * @Column(type="decimal")
+     */
+    protected $price;
 
     /**
      * @return int
@@ -79,7 +82,7 @@ class StorePaymentMethods
      */
     public function getType()
     {
-        return $this->payment_type;
+        return $this->type;
     }
 
     /**
@@ -89,27 +92,47 @@ class StorePaymentMethods
      */
     public function setType(string $type)
     {
-        $this->payment_type = $type;
+        $this->type = $type;
 
         return $this;
     }
 
     /**
-     * @return array
+     * @return null|string
      */
-    public function getData()
+    public function getDescription()
     {
-        return $this->data;
+        return $this->description;
     }
 
     /**
-     * @param array $data
+     * @param null|string $description
      *
      * @return $this
      */
-    public function setData(array $data)
+    public function setDescription($description)
     {
-        $this->data = $data;
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * @param float $price
+     *
+     * @return $this
+     */
+    public function setPrice(float $price)
+    {
+        $this->price = $price;
 
         return $this;
     }

@@ -2,8 +2,12 @@
 
 namespace App\Store;
 
-use Container\DatabaseContainer;
-use Kernel;
+use App\Account\Entity\User;
+use App\Store\Entity\Cart;
+use App\Store\Entity\DeliveryType;
+use App\Store\Entity\Order;
+use App\Store\Entity\Product;
+use App\Store\Entity\Store;
 
 class StoreCheckout
 {
@@ -12,15 +16,13 @@ class StoreCheckout
     private $products = array();
 
     /**
-     * StoreCheckout constructor.
-     *
-     * @param float         $cartId
-     * @param bool|null     $isRegisteredUser
-     * @param \App\Account\Entity\User|null $user
+     * @param float|null               $cartId
+     * @param bool|null                $isRegisteredUser
+     * @param \App\Account\Entity\User $user
      *
      * @throws \Exception
      */
-    public function __construct($cartId, $isRegisteredUser = false, $user = null)
+    public function __construct($cartId = null, $isRegisteredUser = false, User $user = null)
     {
         if ($isRegisteredUser == true) {
             if (is_null($cartId)) {
@@ -32,8 +34,8 @@ class StoreCheckout
                     $cartData = $this->getDatabase($user);
 
                     $this->savedIn = 'database';
-                    $this->cartId = $cartData[0]['cart_id'];
-                    $this->products = json_decode($cartData[0]['products'], true);
+                    $this->cartId = $cartData->getId();
+                    $this->products = $cartData->getProducts();
                 } else {
                     // Cart does not really exist
                     $this->cartId = $this->createNewCart($user);
@@ -43,7 +45,7 @@ class StoreCheckout
             // If user is not registered
             $this->savedIn = 'cookie';
 
-            $request = Kernel::getIntent()->getRequest();
+            $request = \Kernel::getIntent()->getRequest();
             if (!is_null($request->cookies->get('store_cart'))) {
                 // Create new cookie
                 $this->setCookie($this->products);
@@ -62,30 +64,32 @@ class StoreCheckout
      * @return string
      * @throws \Exception
      */
-    private function createNewCart($user)
+    private function createNewCart(User $user)
     {
-        $database = DatabaseContainer::getDatabase();
+        $em = \Kernel::getIntent()->getEntityManager();
 
-        $sql = $database->prepare('INSERT INTO `store_carts`(`user_id`, `products`) VALUES (:user_id, :products)');
-        $sql->execute(array(
-            ':user_id'  => $user->getId(),
-            ':products' => '{}',
-        ));
+        $newCart = new Cart();
+        $newCart
+            ->setUser($user)
+            ->setProducts(array());
 
-        return $database->lastInsertId();
+        $em->persist($newCart);
+        $em->flush();
+
+        return $newCart->getId();
     }
 
     /**
      * Add a product to the cart
      *
-     * @param \App\Store\Entity\Store        $store   Required to get the ID
-     * @param StoreProduct $product Required to know which product
-     * @param int          $count   Amount to be added
+     * @param \App\Store\Entity\Store   $store   Required to get the ID
+     * @param \App\Store\Entity\Product $product Required to know which product
+     * @param int                       $count   Amount to be added
      */
-    public function addToCart($store, $product, $count = 1)
+    public function addToCart(Store $store, Product $product, $count = 1)
     {
         $storeId = $store->getId();
-        $productId = (int)$product->getVar('id');
+        $productId = (int)$product->getId();
 
         // How many are already in the cart?
         $alreadyInCart = 0;
@@ -152,7 +156,7 @@ class StoreCheckout
      */
     private function getCookie()
     {
-        $request = Kernel::getIntent()->getRequest();
+        $request = \Kernel::getIntent()->getRequest();
 
         return json_decode(base64_decode($request->cookies->get('store_cart')), true);
     }
@@ -160,18 +164,16 @@ class StoreCheckout
     /**
      * @param \App\Account\Entity\User $user
      *
-     * @return array
+     * @return null|\App\Store\Entity\Cart
      */
     private function getDatabase($user)
     {
-        $database = DatabaseContainer::getDatabase();
+        $em = \Kernel::getIntent()->getEntityManager();
 
-        $sql = $database->prepare('SELECT * FROM `store_carts` WHERE `user_id`=:user_id');
-        $sql->execute(array(
-            ':user_id' => $user->getId(),
-        ));
+        /** @var \App\Store\Entity\Cart $get */
+        $get = $em->getRepository(Cart::class)->findOneBy(array('user' => $user));
 
-        return $sql->fetchAll(\PDO::FETCH_ASSOC);
+        return $get;
     }
 
     /**
@@ -179,12 +181,13 @@ class StoreCheckout
      */
     private function setDatabase($data)
     {
-        $database = DatabaseContainer::getDatabase();
-        $sql = $database->prepare('UPDATE `store_carts` SET `products`=:products WHERE `cart_id`=:cart_id');
-        $sql->execute(array(
-            ':cart_id'  => $this->cartId,
-            ':products' => json_encode($data, JSON_FORCE_OBJECT),
-        ));
+        $em = \Kernel::getIntent()->getEntityManager();
+
+        /** @var \App\Store\Entity\Cart $update */
+        $update = $em->getRepository(Cart::class)->findOneBy(array('id' => $this->cartId));
+        $update->setProducts($data);
+
+        $em->flush();
     }
 
     /**
@@ -206,14 +209,12 @@ class StoreCheckout
      */
     public static function cartExistsForUser($user)
     {
-        $database = DatabaseContainer::getDatabase();
+        $em = \Kernel::getIntent()->getEntityManager();
 
-        $sql = $database->prepare('SELECT NULL FROM `store_carts` WHERE `user_id`=:user_id');
-        $sql->execute(array(
-            ':user_id' => $user->getId(),
-        ));
+        /** @var \App\Store\Entity\Cart $get */
+        $get = $em->getRepository(Cart::class)->findOneBy(array('user' => $user));
 
-        if ($sql->rowCount() > 0) {
+        if (!is_null($get)) {
             return true;
         }
         return false;
@@ -227,55 +228,64 @@ class StoreCheckout
      */
     public static function getCartIdFromUser($user)
     {
-        $database = DatabaseContainer::getDatabase();
+        $em = \Kernel::getIntent()->getEntityManager();
 
-        $sql = $database->prepare('SELECT `cart_id` FROM `store_carts` WHERE `user_id`=:user_id');
-        $sql->execute(array(
-            ':user_id' => $user->getId(),
-        ));
+        /** @var null|\App\Store\Entity\Cart $get */
+        $get = $em->getRepository(Cart::class)->findOneBy(array('user' => $user));
 
-        if ($sql->rowCount() > 0) {
-            $cartData = $sql->fetchAll(\PDO::FETCH_ASSOC);
-            return (int)$cartData[0]['cart_id'];
+        if (!is_null($get)) {
+            return $get->getId();
         }
         return null;
     }
 
     /**
-     * @param int  $store_id
+     * @param \App\Store\Entity\Store $store
      * @param bool $additional_info
      * @param bool $add_total
      *
      * @return array|null
      */
-    public function getCart($store_id, $additional_info = false, $add_total = false)
+    public function getCart($store, $additional_info = false, $add_total = false)
     {
-        if (!Store::storeExists($store_id)) {
+        if (is_null($store)) {
             return null;
         }
         if (count($this->products) == 0) {
             return array();
         }
 
-        $cart = $this->products[$store_id];
+        $cart = $this->products[$store->getId()];
 
         if ($additional_info) {
 
             $totalCount = 0;
             $totalPrice = 0;
 
-            $userLanguage = 'en'; // TODO: Make this editable by the user
-            $userCurrency = 'dollar';  // TODO: Make this editable by the user
+            $request = \Kernel::getIntent()->getRequest();
+            $userLanguage = !is_null($request->query->get('lang')) ? $request->query->get('lang') : 'en';
+            $userCurrency = !is_null($request->query->get('currency')) ? $request->query->get('currency') : 'USD';
 
-            foreach ($cart as $key => $product) {
-                $product2 = new StoreProduct($product['id']);
-                $cart[$key] = $product2->productData;
-                $cart[$key]['description'] = $product2->getVar('long_description_' . $userLanguage);
-                $cart[$key]['price'] = $product2->getVar('price_' . $userCurrency);
-                $cart[$key]['in_sale'] = is_null($product2->getVar('price_sale_' . $userCurrency)) ? false : true;
-                $cart[$key]['price_sale'] = $cart[$key]['in_sale'] ? $product2->getVar('price_sale_' . $userCurrency) : null;
-                $cart[$key]['in_cart'] = $product['count'];
-                $cart[$key]['subtotal'] = $product['count'] * ($cart[$key]['in_sale'] ? $cart[$key]['price_sale'] : $cart[$key]['price']);
+            foreach ($cart as $key => $item) {
+                /** @var \App\Store\Entity\Product $product */
+                $product = \Kernel::getIntent()->getEntityManager()->getRepository(Product::class)->findOneBy(array('id' => $item['id']));
+                $cart[$key] = $product->toArray();
+
+                $names = $product->getNames();
+                $cart[$key]['name'] = (isset($names[$userLanguage]) ? $names[$userLanguage] : (isset($names['en']) ? $names['en'] : null));
+
+                $descriptions = $product->getDescriptions();
+                $cart[$key]['description'] = (isset($descriptions[$userLanguage]) ? $descriptions[$userLanguage] : (isset($descriptions['en']) ? $descriptions['en'] : null));
+
+                $prices = $product->getPrices();
+                $cart[$key]['price'] = (isset($prices[$userCurrency]) ? $prices[$userCurrency] : (isset($prices['USD']) ? $prices['USD'] : null));
+
+                $salePrices = $product->getSalePrices();
+                $cart[$key]['price_sale'] = (isset($salePrices[$userCurrency]) ? $salePrices[$userCurrency] : (isset($salePrices['USD']) ? $salePrices['USD'] : null));
+
+                $cart[$key]['in_sale'] = !is_null($cart[$key]['price_sale']) ? true : false;
+                $cart[$key]['in_cart'] = $item['count'];
+                $cart[$key]['subtotal'] = $item['count'] * ($cart[$key]['in_sale'] ? $cart[$key]['price_sale'] : $cart[$key]['price']);
 
                 if ($add_total) {
                     $totalCount += $cart[$key]['in_cart'];
@@ -301,35 +311,41 @@ class StoreCheckout
      */
     public function makeOrder($store_id, $order_info)
     {
+        $em = \Kernel::getIntent()->getEntityManager();
+
+        /** @var null|\App\Store\Entity\Store $store */
+        $store = $em->getRepository(Store::class)->findOneBy(array('id' => $store_id));
+
         // Update "stock_available" for every product in cart
         $currentStoreProducts = $this->products[$store_id];
         foreach ($currentStoreProducts as $key => $productInfo) {
-            $product = new StoreProduct($productInfo['id']);
-            $currentStock = $product->getVar('stock_available');
+            /** @var \App\Store\Entity\Product $product */
+            $product = $em->getRepository(Product::class)->findOneBy(array('id' => $productInfo['id']));
+            $currentStock = $product->getStock();
             $newStock = $currentStock - $productInfo['count'];
-            $product->setStockAvailable($newStock);
+            $product->setStock($newStock);
+            $em->flush();
         }
 
         // Save the order
-        $database = DatabaseContainer::getDatabase();
-        $productList = str_replace('"', '\\"', json_encode($this->products[$store_id]));
-        $addOrder = $database->prepare('INSERT INTO `store_orders`(`name`,`email`,`phone`,`street`,`zip_code`,`city`,`country`,`delivery_type`,`product_list`,`store_id`) VALUES (:name,:email,:phone,:street,:zip_code,:city,:country,:delivery_type,:product_list,:store_id)');
-        $addOrder->bindValue(':name', $order_info['name']);
-        $addOrder->bindValue(':email', $order_info['email']);
-        $addOrder->bindValue(':phone', $order_info['phone']);
-        $addOrder->bindValue(':street', $order_info['location_street'].' '.$order_info['location_street_number']);
-        $addOrder->bindValue(':zip_code', $order_info['location_postal_code']);
-        $addOrder->bindValue(':city', $order_info['location_city']);
-        $addOrder->bindValue(':country', $order_info['location_country']);
-        $addOrder->bindValue(':delivery_type', $order_info['delivery_type']);
-        $addOrder->bindValue(':product_list', $productList);
-        $addOrder->bindValue(':store_id', $store_id);
-        $sqlSuccess = $addOrder->execute();
+        /** @var \App\Store\Entity\DeliveryType|null $deliveryType */
+        $deliveryType = $em->getRepository(DeliveryType::class)->findOneBy(array('id' => $order_info['delivery_type']));
 
-        if (!$sqlSuccess) {
-            throw new \RuntimeException('Could not execute sql');
-        } else {
-            return $this;
-        }
+        $newOrder = new Order();
+        $newOrder
+            ->setStore($store)
+            ->setName($order_info['name'])
+            ->setEmail($order_info['email'])
+            ->setPhone($order_info['phone'])
+            ->setStreet($order_info['location_street'].' '.$order_info['location_street_number'])
+            ->setZipCode($order_info['location_postal_code'])
+            ->setCity($order_info['location_city'])
+            ->setCountry($order_info['location_country'])
+            ->setDeliveryType($deliveryType)
+            ->setProductList($this->products[$store_id]);
+        $em->persist($newOrder);
+        $em->flush();
+
+        return $this;
     }
 }

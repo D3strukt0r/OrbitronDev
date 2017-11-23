@@ -26,43 +26,43 @@
                 </tr>
             </thead>
             <tbody>
-                {% for order in orders %}
+                {% for index, order in orders %}
                     <tr>
                         <td>{{ order.id }}</td>
                         <td>
-                            {% for product in order.product_list %}
+                            {% for key, product in order.productList %}
                                 <span class="dropdown">
-                                    <a class="dropdown-toggle show-tooltip" href="#" data-placement="bottom" data-toggle="dropdown"><span class="img-thumbnail"><img src="{{ asset('app/store/products_img/' ~ product.id ~ '/' ~ product.small_icon) }}" height="30" width="30" /> <span class="caret"></span></span></a>
+                                    <a class="dropdown-toggle show-tooltip" href="#" data-placement="bottom" data-toggle="dropdown"><span class="img-thumbnail"><img src="{{ asset('app/store/products_img/' ~ orders_data[index][key].id ~ '/' ~ orders_data[index][key].small_icon) }}" height="30" width="30" /> <span class="caret"></span></span></a>
                                     <ul class="dropdown-menu">
                                         <li class="dropdown-header">{{ 'Amount'|trans }}</li>
                                         <li><a href="#">{{ product.count }}</a></li>
                                         <li class="dropdown-header">{{ 'Price'|trans }}</li>
                                         <li><a href="#">
-                                            {% if product.in_sale %}<span style="text-decoration:line-through">{% endif %}
-                                                {% if product.price == 0 %}
+                                            {% if product.salePrices[currency] is not null %}<span style="text-decoration:line-through">{% endif %}
+                                                {% if product.prices[currency] == 0 %}
                                                     {{ 'Free'|trans }}
                                                 {% else %}
-                                                    {{ product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                    {{ product.prices[currency]|number_format(2, '.', '\'') }} {{ currency }}
                                                 {% endif %}
-                                                {% if product.in_sale %}</span>{% endif %}
+                                                {% if product.salePrices[currency] is not null %}</span>{% endif %}
                                             |
-                                            {% if product.price_sale == 0 %}
+                                            {% if product.salePrices[currency] == 0 %}
                                                 {{ 'Free'|trans }}
                                             {% else %}
-                                                {{ product.price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                {{ product.salePrices[currency]|number_format(2, '.', '\'') }} {{ currency }}
                                             {% endif %}
                                         </a></li>
                                         <li class="dropdown-header">{{ 'Total price'|trans }}</li>
                                         <li><a href="#">
-                                            {% set product_total_price = product.price * product.count %}
-                                            {% set product_total_price_sale = product.price_sale * product.count %}
-                                            {% if product.in_sale %}<span style="text-decoration:line-through">{% endif %}
+                                            {% set product_total_price = orders_data[index][key].price * product.count %}
+                                            {% set product_total_price_sale = orders_data[index][key].price_sale * product.count %}
+                                            {% if orders_data[index][key].in_sale %}<span style="text-decoration:line-through">{% endif %}
                                                 {% if product_total_price == 0 %}
                                                     {{ 'Free'|trans }}
                                                 {% else %}
                                                     {{ product_total_price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
                                                 {% endif %}
-                                                {% if product.in_sale %}</span>{% endif %}
+                                                {% if orders_data[index][key].in_sale %}</span>{% endif %}
                                             |
                                             {% if product_total_price_sale == 0 %}
                                                 {{ 'Free'|trans }}

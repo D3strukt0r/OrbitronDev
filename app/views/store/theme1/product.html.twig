@@ -50,7 +50,7 @@
     "@type": "Product",
     "name": "{{ current_product.name }}",
     "image": "https://www.el-venezolano.ch/assets/img/products/arepa-con-ceso.jpg",
-    "description": "{{ current_product.short_description }}",
+    "description": "{{ current_product.description }}",
     "mpn": "1",
     "brand": {
         "@type": "Thing",
@@ -58,7 +58,7 @@
     },
     "aggregateRating": {
         "@type": "AggregateRating",
-        "ratingValue": "{{ current_product.rating_cache }}",
+        "ratingValue": "{{ current_product.rating_average }}",
         "reviewCount": "{{ current_product.rating_count }}"
     },
     "offers": {
@@ -82,10 +82,10 @@
     <script type="text/javascript">
         $('#product-count').change(function() {
             var price = {{ current_product.price }};
-            $("#output-price").html("<b>" + number_format(price * $('#product-count').val(), 2, '.', '\'') + " $</b>");
+            $("#output-price").html("<b>" + number_format(price * $('#product-count').val(), 2, '.', '\'') + " {{ currency }}</b>");
             if($("#output-price-sale").length != 0) {
                 var sale = {{ current_product.price_sale }};
-                $("#output-price-sale").html("<b>" + number_format(sale * $('#product-count').val(), 2, '.', '\'') + " $</b>");
+                $("#output-price-sale").html("<b>" + number_format(sale * $('#product-count').val(), 2, '.', '\'') + " {{ currency }}</b>");
             }
         });
     </script>
@@ -176,16 +176,14 @@
                         <div class="panel-body">
                             {{ form_start(add_to_cart_form) }}
                                 {{ form_row(add_to_cart_form._token) }}
-                                {{ form_row(add_to_cart_form.store_id) }}
-                                {{ form_row(add_to_cart_form.product_id) }}
-                                {% if current_product.stock_available > 0 %}
+                                {% if current_product.stock > 0 %}
                                     <div class="col-xs-5 col-md-4">
                                         <div class="row">
                                             <div class="input-group">
                                                 {{ form_widget(add_to_cart_form.product_count, {'id': 'product-count', 'attr': {'class': 'form-control', 'aria-describedby': 'product-count-desc', 'min': 1, 'max': current_product.stock_available, 'default': 1, 'value': 1}}) }}
                                                 <span class="input-group-addon" id="product-count-desc">{{ 'Pieces'|trans }}</span>
                                             </div>
-                                            <p class="help-block text-success"><b>{{ 'Available stock'|trans }}: {{ current_product.stock_available }}</b></p>
+                                            <p class="help-block text-success"><b>{{ 'Available stock'|trans }}: {{ current_product.stock }}</b></p>
                                             <span class="help-block text-danger">{{ form_errors(add_to_cart_form.product_count) }}</span>
                                             <span class="help-block text-success">
                                                 {% for message in app.session.flashbag.get('product_added') %}
@@ -204,7 +202,7 @@
                                                 {% if current_product.price == 0 %}
                                                     {{ 'Free'|trans }}
                                                 {% else %}
-                                                    {{ current_product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                    {{ current_product.price|number_format(2, '.', '\'') }} {{ currency }}
                                                 {% endif %}
                                             </b>
                                         </span>
@@ -214,7 +212,7 @@
                                                 {% if current_product.price_sale == 0 %}
                                                     <b>{{ 'Free'|trans }}</b>
                                                 {% else %}
-                                                    <b>{{ current_product.price_sale|number_format(2, '.', '\'') }} $</b> {# TODO: Make this editable by the user #}
+                                                    <b>{{ current_product.price_sale|number_format(2, '.', '\'') }} {{ currency }}</b>
                                                 {% endif %}
                                             </span>
                                         {% endif %}
@@ -239,14 +237,14 @@
                                                 {% if current_product.price == 0 %}
                                                     {{ 'Free'|trans }}
                                                 {% else %}
-                                                    {{ current_product.price|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}
+                                                    {{ current_product.price|number_format(2, '.', '\'') }} {{ currency }}
                                                 {% endif %}
                                             </b>
                                         </span>
                                         {% if current_product.in_sale %}
                                             </del>
                                                 <span id="output-price-sale" style="margin-left: 10px">
-                                                <b>{{ current_product.price_sale|number_format(2, '.', '\'') }} $ {# TODO: Make this editable by the user #}</b>
+                                                <b>{{ current_product.price_sale|number_format(2, '.', '\'') }} {{ currency }}</b>
                                             </span>
                                         {% endif %}
                                         {{ form_widget(add_to_cart_form.send, {'attr': {'class': 'btn btn-primary', 'style': 'margin-left: 10px'}}) }}
@@ -261,13 +259,15 @@
                         <div class="panel-body">
                             <h4>
                                 <a href="{{ path('app_store_store_product', {'store': current_store.url, 'product': current_product.id}) }}">{{ current_product.name }}</a>
-                                <span class="text-danger" style="/* color:#00FF00 */">({{ ((1 - (current_product.price_sale / current_product.price)) * 100)|round }}% {{ 'Discount!'|trans }})</span>
+                                {% if current_product.in_sale %}
+                                    <span class="text-danger">({{ ((1 - (current_product.price_sale / current_product.price)) * 100)|round }}% {{ 'Discount!'|trans }})</span>
+                                {% endif %}
                             </h4>
                             <p>{{ current_product.description }}</p>
                             <hr />
                             <div class="ratings">
                                 <p class="pull-right">{{ current_product.rating_count|number_format(0, '.', '\'') }} {{ 'Comments'|trans }}</p>
-                                <p>{% for i in 1..5 %}<span class="fa fa-star{% if current_product.rating_cache matches '/^[-+]?[0-9]*\\.?[0-9]+$/' and i > current_product.rating_cache and i < (current_product.rating_cache + 1) %}-half{% endif %}{% if i > current_product.rating_cache %}-o{% endif %}"></span>&nbsp;{% endfor %}&nbsp;&nbsp;{{ current_product.rating_cache }} {{ 'Stars'|trans }}</p>
+                                <p>{% for i in 1..5 %}<span class="fa fa-star{% if current_product.rating_average matches '/^[-+]?[0-9]*\\.?[0-9]+$/' and i > current_product.rating_average and i < (current_product.rating_average + 1) %}-half{% endif %}{% if i > current_product.rating_average %}-o{% endif %}"></span>&nbsp;{% endfor %}&nbsp;&nbsp;{{ current_product.rating_average|default(0) }} {{ 'Stars'|trans }}</p>
                             </div>
                         </div><!-- /.panel-body -->
                     </div><!-- /.panel .panel-default -->
@@ -296,10 +296,10 @@
                             <hr />
                             <div class="row">
                                 <div class="col-xs-12">
-                                    {{ comment.formatted_username|raw }}
+                                    <a href="{{ path('app_account_user', {'username': comment.user.username}) }}">{{ comment.user.username }}</a>
                                     {% for i in 1..5 %}<span class="fa fa-star{% if i > comment.rating %}-o{% endif %}"></span>&nbsp;{% endfor %}
                                     <span class="pull-right">
-                                        {% set datediff = date().timestamp - comment.created %}
+                                        {% set datediff = date().timestamp - comment.createdOn|date('U') %}
                                         {{ (datediff / (60 * 60 * 24))|round(0, 'floor') }} {{ 'days ago'|trans }}
                                     </span>
                                     <p>{{ comment.comment }}</p>

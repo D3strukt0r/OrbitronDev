@@ -37,7 +37,7 @@ class Product
     /**
      * @var \App\Account\Entity\User
      * @ManyToOne(targetEntity="\App\Account\Entity\User")
-     * @JoinColumn(name="owner_id", referencedColumnName="id")
+     * @JoinColumn(name="owner_id", referencedColumnName="id", nullable=false)
      */
     protected $owner;
 
@@ -57,7 +57,26 @@ class Product
      * @var array
      * @Column(type="json_array")
      */
+    protected $short_description;
+
+    /**
+     * @var array
+     * @Column(type="json_array")
+     */
     protected $price;
+
+
+    /**
+     * @var array
+     * @Column(type="json_array")
+     */
+    protected $price_sale;
+
+    /**
+     * @var string|null
+     * @Column(type="string", nullable=true)
+     */
+    protected $small_icon;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -88,6 +107,12 @@ class Product
      * @Column(type="datetime")
      */
     protected $last_edited;
+
+    /**
+     * @var bool
+     * @Column(type="boolean", options={"default":false})
+     */
+    protected $closed = false;
 
     /**
      * @var int
@@ -259,13 +284,60 @@ class Product
     /**
      * @return array
      */
+    public function getShortDescriptions()
+    {
+        return $this->short_description;
+    }
+
+    /**
+     * @param string $description
+     * @param string $language
+     *
+     * @return $this
+     */
+    public function setShortDescription(string $description, string $language)
+    {
+        if (!is_array($this->short_description)) {
+            $this->short_description = array();
+        }
+
+        $array = new ArrayCollection($this->short_description);
+        $array->set($language, $description);
+        $this->short_description = $array->toArray();
+
+        return $this;
+    }
+
+    /**
+     * @param string $language
+     *
+     * @return $this
+     */
+    public function removeShortDescription(string $language)
+    {
+        if (!is_array($this->short_description)) {
+            $this->short_description = array();
+        }
+
+        $array = new ArrayCollection($this->short_description);
+        if ($array->containsKey($language)) {
+            $array->remove($language);
+            $this->short_description = $array->toArray();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     public function getPrices()
     {
         return $this->price;
     }
 
     /**
-     * @param float $price
+     * @param float  $price
      * @param string $currency
      *
      * @return $this
@@ -299,6 +371,73 @@ class Product
             $array->remove($currency);
             $this->price = $array->toArray();
         }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSalePrices()
+    {
+        return $this->price_sale;
+    }
+
+    /**
+     * @param float  $price
+     * @param string $currency
+     *
+     * @return $this
+     */
+    public function setSalePrice(float $price, string $currency)
+    {
+        if (!is_array($this->price_sale)) {
+            $this->price_sale = array();
+        }
+
+        $array = new ArrayCollection($this->price_sale);
+        $array->set($currency, $price);
+        $this->price_sale = $array->toArray();
+
+        return $this;
+    }
+
+    /**
+     * @param string $currency
+     *
+     * @return $this
+     */
+    public function removeSalePrice(string $currency)
+    {
+        if (!is_array($this->price_sale)) {
+            $this->price_sale = array();
+        }
+
+        $array = new ArrayCollection($this->price_sale);
+        if ($array->containsKey($currency)) {
+            $array->remove($currency);
+            $this->price_sale = $array->toArray();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSmallIcon()
+    {
+        return $this->small_icon;
+    }
+
+    /**
+     * @param string|null $small_icon
+     *
+     * @return $this
+     */
+    public function setSmallIcon($small_icon)
+    {
+        $this->small_icon = $small_icon;
 
         return $this;
     }
@@ -359,7 +498,7 @@ class Product
     }
 
     /**
-     * @return \App\Store\Entity\ProductFile
+     * @return \App\Store\Entity\ProductFile[]
      */
     public function getFiles()
     {
@@ -429,6 +568,26 @@ class Product
     public function setLastEdited(\DateTime $lastEdited)
     {
         $this->last_edited = $lastEdited;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isClosed()
+    {
+        return $this->closed;
+    }
+
+    /**
+     * @param bool $closed
+     *
+     * @return $this
+     */
+    public function setClosed(bool $closed)
+    {
+        $this->closed = $closed;
 
         return $this;
     }
@@ -506,5 +665,32 @@ class Product
         }
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return array(
+            'id'                => $this->id,
+            'store'             => $this->store,
+            'owner'             => $this->owner,
+            'name'              => $this->name,
+            'description'       => $this->description,
+            'short_description' => $this->short_description,
+            'price'             => $this->price,
+            'price_sale'        => $this->price_sale,
+            'small_icon'        => $this->small_icon,
+            'images'            => $this->images,
+            'downloadable'      => $this->downloadable,
+            'files'             => $this->files,
+            'stock'             => $this->stock,
+            'last_edited'       => $this->last_edited,
+            'closed'            => $this->closed,
+            'rating_count'      => $this->rating_count,
+            'rating_average'    => $this->rating_average,
+            'ratings'           => $this->ratings,
+        );
     }
 }

@@ -156,12 +156,16 @@ class DefaultController extends \Controller
             $em->getClassMetadata('App\Blog\Entity\Tag'),
             $em->getClassMetadata('App\Core\Entity\CronJob'),
             $em->getClassMetadata('App\Core\Entity\Token'),
+            $em->getClassMetadata('App\Store\Entity\Cart'),
+            $em->getClassMetadata('App\Store\Entity\DeliveryType'),
+            $em->getClassMetadata('App\Store\Entity\Order'),
             $em->getClassMetadata('App\Store\Entity\Product'),
             $em->getClassMetadata('App\Store\Entity\ProductFile'),
             $em->getClassMetadata('App\Store\Entity\ProductImages'),
             $em->getClassMetadata('App\Store\Entity\ProductRating'),
             $em->getClassMetadata('App\Store\Entity\Store'),
             $em->getClassMetadata('App\Store\Entity\StorePaymentMethods'),
+            $em->getClassMetadata('App\Store\Entity\Voucher'),
         );
         if ($this->getRequest()->query->get('key') == $this->get('config')['parameters']['setup_key']) {
             if ($this->getRequest()->query->get('action') == 'drop-schema') {
@@ -185,6 +189,7 @@ class DefaultController extends \Controller
                 $text .= 'Default cron jobs added<br />';
                 return $text;
             }
+            return 'Function does not exist';
         }
         return 'No setup key given, or key not correct.';
     }

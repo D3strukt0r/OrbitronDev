@@ -40,6 +40,12 @@ class Store
     protected $url;
 
     /**
+     * @var string
+     * @Column(type="string", unique=true)
+     */
+    protected $email;
+
+    /**
      * @var \App\Account\Entity\User
      * @ManyToOne(targetEntity="\App\Account\Entity\User")
      * @JoinColumn(name="owner_id", referencedColumnName="id", nullable=false)
@@ -175,6 +181,22 @@ class Store
         $this->url = $url;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
     }
 
     /**

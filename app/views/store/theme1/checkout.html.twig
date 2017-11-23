@@ -340,16 +340,13 @@
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <tbody>
-                                        <tr>
-                                            <td><input type="radio" name="shipping" value="1" data-cost="9.00" /></td>
-                                            <td>DIE POST</td>
-                                            <td>A-Post 9,00 CHF<br />Die Lieferung erfolgt via Paket, dies kann bis zu 3 - 4 Werktage dauern.</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="radio" name="shipping" value="2" data-cost="7.00" checked /></td>
-                                            <td>DIE POST</td>
-                                            <td>B-Post 7,00 CHF<br />Die Lieferung erfolgt via Paket, dies kann bis zu 4 - 5 Werktage dauern.</td>
-                                        </tr>
+                                        {% for delivery in delivery_types %}
+                                            <tr>
+                                                <td><input type="radio" name="shipping" value="{{ delivery.id }}" data-cost="{{ delivery.price }}" /></td>
+                                                <td>{{ delivery.type }}</td>
+                                                <td><b>{{ delivery.price }} {{ currency }}</b><br />{{ delivery.description }}</td>
+                                            </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                                 <!-- /.table .table-hover -->
@@ -373,42 +370,48 @@
                     </div><!-- /#transport -->
                     <div id="payment-method" class="panel panel-default">
                         <div class="panel-body">
-                            <script src="https://js.braintreegateway.com/web/dropin/1.7.0/js/dropin.min.js"></script>
-                            <input type="hidden" name="payment_method_nonce" value="fake-valid-nonce" />
-                            <div id="dropin-container"></div>
-                            <button id="submit-button" class="btn btn-success btn-block">{{ 'Validate payment method' }}</button>
-                            <script>
-                                var button = $('#submit-button');
+                            {% if payment is null %}
+                                <p>{{ 'No payment method has been created by the store owner'|trans }}</p>
+                            {% else %}
+                                {% if payment.method.type == 'braintree_production' or payment.method.type == 'braintree_sandbox' %}
+                                    <script src="https://js.braintreegateway.com/web/dropin/1.7.0/js/dropin.min.js"></script>
+                                    <input type="hidden" name="payment_method_nonce" value="fake-valid-nonce" />
+                                    <div id="dropin-container"></div>
+                                    <button id="submit-button" class="btn btn-success btn-block">{{ 'Validate payment method' }}</button>
+                                    <script>
+                                        var button = $('#submit-button');
 
-                                $(document).ready(function () {
-                                    $('#form_send').attr("disabled", true);
-                                });
-
-                                braintree.dropin.create({
-                                    authorization: '{{ payment.client_token }}',
-                                    container: '#dropin-container',
-                                    paypal: {
-                                        flow: 'vault'
-                                    }
-                                }, function (createErr, instance) {
-                                    button.click(function (event) {
-                                        event.preventDefault();
-                                        instance.requestPaymentMethod(function (err, payload) {
-                                            if (err) {
-                                                // Handle error in Hosted Fields tokenization
-                                                console.log('Error', err);
-                                                return;
-                                            }
-                                            // Submit payload.nonce to your server
-                                            // Put `payload.nonce` into the `payment-method-nonce` input, and then
-                                            // submit the form. Alternatively, you could send the nonce to your server
-                                            // with AJAX.
-                                            document.querySelector('input[name="payment_method_nonce"]').value = payload.nonce;
-                                            $('#form_send').attr("disabled", false);
+                                        $(document).ready(function () {
+                                            $('#form_send').attr("disabled", true);
                                         });
-                                    });
-                                });
-                            </script>
+
+                                        braintree.dropin.create({
+                                            authorization: '{{ payment.client_token }}',
+                                            container: '#dropin-container',
+                                            paypal: {
+                                                flow: 'vault'
+                                            }
+                                        }, function (createErr, instance) {
+                                            button.click(function (event) {
+                                                event.preventDefault();
+                                                instance.requestPaymentMethod(function (err, payload) {
+                                                    if (err) {
+                                                        // Handle error in Hosted Fields tokenization
+                                                        console.log('Error', err);
+                                                        return;
+                                                    }
+                                                    // Submit payload.nonce to your server
+                                                    // Put `payload.nonce` into the `payment-method-nonce` input, and then
+                                                    // submit the form. Alternatively, you could send the nonce to your server
+                                                    // with AJAX.
+                                                    document.querySelector('input[name="payment_method_nonce"]').value = payload.nonce;
+                                                    $('#form_send').attr("disabled", false);
+                                                });
+                                            });
+                                        });
+                                    </script>
+                                {% endif %}
+                            {% endif %}
                         </div><!-- /.panel-body -->
                     </div><!-- /#payment-method -->
                     <div id="cart" class="panel panel-default">
@@ -450,7 +453,7 @@
                                                             <div class="media-body" style="padding-left:5px;padding-top:5px;">
                                                                 <h4 class="media-heading"><a href="#">{{ product.name }}</a></h4>
                                                                 {#<h5 class="media-heading"> by <a href="#">Brand name</a></h5>#}
-                                                                <span>{{ 'Status'|trans }}: </span><span class="text-success"><strong>{% if product.stock_available > 0 %}{{ 'In Stock'|trans }} ({{ product.stock_available }}){% endif %}</strong></span>
+                                                                <span>{{ 'Status'|trans }}: </span><span class="text-success"><strong>{% if product.stock > 0 %}{{ 'In Stock'|trans }} ({{ product.stock }}){% endif %}</strong></span>
                                                             </div>
                                                         </div>
                                                     </td>
