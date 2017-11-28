@@ -15,12 +15,12 @@ class ThreadType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var \App\Forum\ForumBoard $board */
+        /** @var \App\Forum\Entity\Board $board */
         $board = $options['board'];
 
         $builder
             ->add('parent', HiddenType::class, array(
-                'data' => $board->getVar('id'),
+                'data' => $board->getId(),
             ))
             ->add('title', TextType::class, array(
                 'label'       => 'Thread name',

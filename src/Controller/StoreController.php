@@ -27,21 +27,27 @@ class StoreController extends \Controller
 {
     public function indexAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $currentUser = $em->find(User::class, USER_ID);
+
+        /** @var \App\Store\Entity\Store[] $storeList */
+        $storeList = $em->getRepository(Store::class)->findAll();
 
         return $this->render('store/list-stores.html.twig', array(
             'current_user' => $currentUser,
-            'store_list'  => StoreHelper::getStoreList(),
+            'store_list'   => $storeList,
         ));
     }
 
     public function newStoreAction()
     {
         $em = $this->getEntityManager();
+        $request = $this->getRequest();
 
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
@@ -51,7 +57,6 @@ class StoreController extends \Controller
 
         $createStoreForm = $this->createForm(NewStoreType::class);
 
-        $request = $this->getRequest();
         $createStoreForm->handleRequest($request);
         if ($createStoreForm->isValid()) {
             $errorMessages   = array();
@@ -97,7 +102,7 @@ class StoreController extends \Controller
 
                         return $this->redirectToRoute('app_store_store_index', array('store' => $newStore->getUrl()));
                     } catch (\Exception $e) {
-                        $createStoreForm->addError(new FormError('We could not create your forum. ('.$e->getMessage().')'));
+                        $createStoreForm->addError(new FormError('We could not create your store. ('.$e->getMessage().')'));
                     }
                 }
             }

@@ -1,11 +1,10 @@
 <?php
 
-use App\Forum\Forum;
+use App\Forum\Entity\Board;
+use App\Forum\Entity\Forum;
+use App\Forum\Form\CreateBoardType;
 use App\Forum\ForumAcp;
-use App\Forum\ForumBoard;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use App\Forum\ForumHelper;
 
 ForumAcp::addGroup(array(
     'parent' => 'root',
@@ -38,13 +37,20 @@ ForumAcp::addMenu(array(
  */
 function acp_html_board_list($twig, $controller)
 {
-    $forumId = Forum::url2Id($controller->parameters['forum']);
-    $forum = new Forum($forumId);
+    $em = $controller->getEntityManager();
 
-    $boardList = ForumBoard::listBoardsTree($forum->getVar('id'), 0);
+    //////////// TEST IF FORUM EXISTS ////////////
+    /** @var \App\Forum\Entity\Forum $forum */
+    $forum = $em->getRepository(Forum::class)->findOneBy(array('url' => $controller->parameters['forum']));
+    if (is_null($forum)) {
+        return $controller->render('error/error404.html.twig');
+    }
+    //////////// END TEST IF FORUM EXISTS ////////////
+
+    $boardList = $em->getRepository(Board::class)->findBy(array('forum' => $forum, 'parent_board' => null));
 
     return $twig->render('forum/theme_admin1/board-list.html.twig', array(
-        'current_forum' => $forum->forumData,
+        'current_forum' => $forum,
         'board_list'    => $boardList,
     ));
 }
@@ -58,60 +64,48 @@ function acp_html_board_list($twig, $controller)
  */
 function acp_html_new_board($twig, $controller)
 {
-    $forumId = Forum::url2Id($controller->parameters['forum']);
-    $forum = new Forum($forumId);
-
-    $createBoardForm = $controller->createFormBuilder()
-        ->add('name', TextType::class, array(
-            'label'    => 'Board name',
-            'required' => true,
-        ))
-        ->add('description', TextType::class, array(
-            'label'    => 'Description',
-            'required' => false,
-        ))
-        ->add('parent', ChoiceType::class, array(
-            'label'    => 'Parent',
-            'required' => true,
-            'choices'  => ForumBoard::listBoardsFormSelect($forum->getVar('id'), 0),
-            'expanded' => false, // select tag
-            'multiple' => false,
-        ))
-        ->add('type', ChoiceType::class, array(
-            'label'       => 'Type',
-            'required'    => false,
-            'choices'     => array(
-                'Board'    => 1,
-                'Category' => 2,
-            ),
-            'placeholder' => false,
-            'expanded'    => true, // radio buttons
-            'multiple'    => false,
-
-        ))
-        ->add('send', SubmitType::class, array(
-            'label' => 'Submit',
-        ))
-        ->getForm();
-
+    $em = $controller->getEntityManager();
     $request = $controller->getRequest();
-    $createBoardForm->handleRequest($request);
 
+    //////////// TEST IF FORUM EXISTS ////////////
+    /** @var \App\Forum\Entity\Forum $forum */
+    $forum = $em->getRepository(Forum::class)->findOneBy(array('url' => $controller->parameters['forum']));
+    if (is_null($forum)) {
+        return $controller->render('error/error404.html.twig');
+    }
+    //////////// END TEST IF FORUM EXISTS ////////////
+
+    $specialBoardList = ForumHelper::listBoardsFormSelect($forum, null);
+
+    $createBoardForm = $controller->createForm(CreateBoardType::class, null, array('board_list' => $specialBoardList));
+
+    $createBoardForm->handleRequest($request);
     if ($createBoardForm->isSubmitted() && $createBoardForm->isValid()) {
         $formData = $createBoardForm->getData();
 
-        ForumBoard::addBoard($forum->getVar('id'), $formData['name'], $formData['description'], $formData['parent'], $formData['type']);
-        $boardAdded = true;
+        /** @var \App\Forum\Entity\Board|null $parentBoard */
+        $parentBoard = $em->getRepository(Board::class)->findOneBy(array('id' => $formData['parent']));
+
+        $newBoard = new Board();
+        $newBoard
+            ->setForum($forum)
+            ->setParentBoard($parentBoard)
+            ->setTitle($formData['name'])
+            ->setDescription($formData['description'])
+            ->setType($formData['type']);
+
+        $em->persist($newBoard);
+        $em->flush();
 
         return $twig->render('forum/theme_admin1/new-board.html.twig', array(
             'create_board_form' => $createBoardForm->createView(),
-            'current_forum'     => $forum->forumData,
-            'board_added'       => $boardAdded,
+            'current_forum'     => $forum,
+            'board_added'       => true,
         ));
     }
 
     return $twig->render('forum/theme_admin1/new-board.html.twig', array(
         'create_board_form' => $createBoardForm->createView(),
-        'current_forum'     => $forum->forumData,
+        'current_forum'     => $forum,
     ));
 }

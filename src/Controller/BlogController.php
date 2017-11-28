@@ -19,20 +19,6 @@ class BlogController extends \Controller
 {
     public function indexAction()
     {
-        if (is_null(AccountHelper::updateSession())) {
-            return $this->redirectToRoute('app_account_logout');
-        }
-        /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
-
-        return $this->render('blog/list-blogs.html.twig', array(
-            'current_user' => $currentUser,
-            'blog_list'    => BlogHelper::getBlogList(),
-        ));
-    }
-
-    public function newBlogAction()
-    {
         $em = $this->getEntityManager();
 
         if (is_null(AccountHelper::updateSession())) {
@@ -41,8 +27,27 @@ class BlogController extends \Controller
         /** @var \App\Account\Entity\User $currentUser */
         $currentUser = $em->find(User::class, USER_ID);
 
-        $createBlogForm = $this->createForm(NewBlogType::class);
+        /** @var \App\Blog\Entity\Blog[] $blogList */
+        $blogList = $em->getRepository(Blog::class)->findAll();
+
+        return $this->render('blog/list-blogs.html.twig', array(
+            'current_user' => $currentUser,
+            'blog_list'    => $blogList,
+        ));
+    }
+
+    public function newBlogAction()
+    {
+        $em = $this->getEntityManager();
         $request = $this->getRequest();
+
+        if (is_null(AccountHelper::updateSession())) {
+            return $this->redirectToRoute('app_account_logout');
+        }
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $em->find(User::class, USER_ID);
+
+        $createBlogForm = $this->createForm(NewBlogType::class);
         $createBlogForm->handleRequest($request);
         if ($createBlogForm->isValid()) {
             $errorMessages   = array();
@@ -103,6 +108,7 @@ class BlogController extends \Controller
     public function blogIndexAction()
     {
         $em = $this->getEntityManager();
+        $request = $this->getRequest();
 
         //////////// TEST IF BLOG EXISTS ////////////
         /** @var \App\Blog\Entity\Blog $blog */
@@ -119,7 +125,6 @@ class BlogController extends \Controller
         $currentUser = $em->find(User::class, USER_ID);
 
         // Get all posts
-        $request                    = $this->getRequest();
         $pagination                 = array();
         $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : 5;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;

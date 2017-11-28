@@ -66,7 +66,7 @@ function acp_html_catalogue($twig, $controller)
     /** @var \App\Store\Entity\Store $store */
     $store = $em->getRepository(\App\Store\Entity\Store::class)->findOneBy(array('url' => $controller->parameters['store']));
     if (is_null($store)) {
-        return $this->render('error/error404.html.twig');
+        return $controller->render('error/error404.html.twig');
     }
     //////////// END TEST IF STORE EXISTS ////////////
 
@@ -98,7 +98,7 @@ function acp_html_orders($twig, $controller)
     /** @var null|\App\Store\Entity\Store $store */
     $store = $em->getRepository(Store::class)->findOneBy(array('url' => $controller->parameters['store']));
     if (is_null($store)) {
-        return $this->render('error/error404.html.twig');
+        return $controller->render('error/error404.html.twig');
     }
     //////////// END TEST IF STORE EXISTS ////////////
 
@@ -161,7 +161,7 @@ function acp_html_vouchers($twig, $controller)
     /** @var null|\App\Store\Entity\Store $store */
     $store = $em->getRepository(Store::class)->findOneBy(array('url' => $controller->parameters['store']));
     if (is_null($store)) {
-        return $this->render('error/error404.html.twig');
+        return $controller->render('error/error404.html.twig');
     }
     //////////// END TEST IF STORE EXISTS ////////////
 
@@ -189,7 +189,7 @@ function acp_html_change_order_status_to_1($twig, $controller)
     /** @var null|\App\Store\Entity\Store $store */
     $store = $em->getRepository(Store::class)->findOneBy(array('url' => $controller->parameters['store']));
     if (is_null($store)) {
-        return $this->render('error/error404.html.twig');
+        return $controller->render('error/error404.html.twig');
     }
     //////////// END TEST IF STORE EXISTS ////////////
 
@@ -223,7 +223,7 @@ function acp_html_change_order_status_to_2($twig, $controller)
     /** @var null|\App\Store\Entity\Store $store */
     $store = $em->getRepository(Store::class)->findOneBy(array('url' => $controller->parameters['store']));
     if (is_null($store)) {
-        return $this->render('error/error404.html.twig');
+        return $controller->render('error/error404.html.twig');
     }
     //////////// END TEST IF STORE EXISTS ////////////
 

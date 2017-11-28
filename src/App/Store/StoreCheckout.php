@@ -61,7 +61,7 @@ class StoreCheckout
      *
      * @param \App\Account\Entity\User $user
      *
-     * @return string
+     * @return int
      * @throws \Exception
      */
     private function createNewCart(User $user)

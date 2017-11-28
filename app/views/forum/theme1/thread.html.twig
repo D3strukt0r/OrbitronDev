@@ -1,16 +1,16 @@
 {% extends 'forum/theme1/layout.html.twig' %}
 
 {% set service_page_links %}
-    {% for text,link in current_forum.page_links %}
+    {% for text,link in current_forum.links %}
         <li><a href="{{ link }}">{{ text }}</a></li>
     {% endfor %}
 {% endset %}
 {% set service = {
 'page_name': current_forum.name,
 'page_logo_link': '/' ~ current_forum.url,
-'page_author': current_forum.owner_username,
-'page_description': current_forum.page_description,
-'page_keywords': current_forum.page_keywords,
+'page_author': current_forum.owner.username,
+'page_description': current_forum.description,
+'page_keywords': current_forum.keywords|join(','),
 'page_links': service_page_links
 } %}
 
@@ -20,6 +20,23 @@
     <div class="container">
         <h1 class="page-header">{{ current_thread.topic }}</h1>
     </div><!-- /.container -->
+{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <style type="text/css">
+        .align-left {
+            text-align: left;
+        }
+
+        .align-center {
+            text-align: center;
+        }
+
+        .align-right {
+            text-align: right;
+        }
+    </style>
 {% endblock %}
 
 {% block breadcrumb %}
@@ -46,16 +63,16 @@
                         <tbody>
                             <tr>
                                 <td class="col-md-2">
-                                    <p class="text-center">{{ post.formatted_username|raw }}</p>
-                                    <a href="{{ path('app_account_user', {'username': post.username}) }}" class="thumbnail">
-                                        <img src="{{ path('app_account_api', {'function': 'get_img', 'user_id': post.user_id, 'height': 200, 'width': 200}) }}" alt="" />
+                                    <p class="text-center"><a href="{{ path('app_account_user', {'username': post.user.username}) }}">{{ post.user.username }}</a></p>
+                                    <a href="{{ path('app_account_user', {'username': post.user.username}) }}" class="thumbnail">
+                                        <img src="{{ path('app_account_api', {'function': 'get_img', 'user_id': post.user.id, 'height': 200, 'width': 200}) }}" alt="" />
                                     </a>
-                                    {% if post.user_id == current_user.id %}
+                                    {% if post.user.id == current_user.id %}
                                         {# TODO: Add URL, Add style #}
                                         <a href="#edit">{{ 'Edit'|trans }}</a>
                                     {% endif %}
                                 </td>
-                                <td>{{ post.formatted_message|raw }}</td>
+                                <td>{{ post.formattedMessage|raw }}</td>
                             </tr>
                         </tbody>
                     </table>

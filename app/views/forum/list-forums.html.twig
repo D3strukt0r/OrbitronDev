@@ -29,7 +29,7 @@
                             <table class="table table-bordered table-striped table-hover">
                                 <tbody>
                                     {% for forum in forums_list %}
-                                        {% if current_user.id == forum.owner_id %}
+                                        {% if current_user.id == forum.owner.id %}
                                             <tr>
                                                 <td><a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}">{{ forum.name }}</a></td>
                                                 <td><a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a></td>
@@ -58,8 +58,8 @@
                         {% for forum in forums_list %}
                             <tr>
                                 <td><a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}">{{ forum.name }}</a></td>
-                                <td>{{ forum.username }}</td>
-                                <td>{% if current_user.user_id == forum.owner_id %}<a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
+                                <td>{{ forum.owner.username }}</td>
+                                <td>{% if current_user.user_id == forum.owner.id %}<a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}">{{ 'Admin panel'|trans }}</a>{% endif %}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -14,15 +14,16 @@ class PostType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var \App\Forum\ForumThread $thread */
+        /** @var \App\Forum\Entity\Thread $thread */
         $thread = $options['thread'];
 
         $builder
             ->add('title', TextType::class, array(
                 'label'       => 'Post title',
                 'attr'        => array(
-                    'placeholder' => 'RE:'.$thread->getVar('topic'),
+                    'placeholder' => 'RE: '.$thread->getTopic(),
                 ),
+                'data'        => 'RE: '.$thread->getTopic(),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter a title')),
                 ),

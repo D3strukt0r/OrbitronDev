@@ -32,12 +32,53 @@
     <script type="text/javascript" src="{{ asset('assets/plugins/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#form_message").wysibb({
+            $("#post_message").wysibb({
                 allButtons: {
                     link: {
                         transform: {
-                            '<a href="{URL}">{SELTEXT}</a>':"[url=\"{URL}\"]{SELTEXT}[/url]",
-                            '<a href="{URL}">{URL}</a>':"[url]{URL}[/url]"
+                            '<a href="{URL}">{SELTEXT}</a>':'[url="{URL}"]{SELTEXT}[/url]',
+                            '<a href="{URL}">{URL}</a>':'[url]{URL}[/url]'
+                        }
+                    },
+                    numlist: {
+                        transform: {
+                            '<ol>{SELTEXT}</ol>':'[olist]{SELTEXT}[/olist]',
+                            '<li>{SELTEXT}</li>':'[*]{SELTEXT}[/*]'
+                        }
+                    },
+                    fontcolor: {
+                        transform: {
+                            '<font color="{COLOR}">{SELTEXT}</font>':'[color="{COLOR}"]{SELTEXT}[/color]'
+                        }
+                    },
+                    fs_verysmall: {
+                        transform: {
+                            '<font size="1">{SELTEXT}</font>':'[size="10"]{SELTEXT}[/size]'
+                        }
+                    },
+                    fs_small: {
+                        transform: {
+                            '<font size="2">{SELTEXT}</font>':'[size="12"]{SELTEXT}[/size]'
+                        }
+                    },
+                    fs_normal: {
+                        transform: {
+                            '<font size="3">{SELTEXT}</font>':'[size="14"]{SELTEXT}[/size]'
+                        }
+                    },
+                    fs_big: {
+                        transform: {
+                            '<font size="4">{SELTEXT}</font>':'[size="20"]{SELTEXT}[/size]'
+                        }
+                    },
+                    fs_verybig: {
+                        transform: {
+                            '<font size="6">{SELTEXT}</font>':'[size="29"]{SELTEXT}[/size]'
+                        }
+                    },
+                    fontfamily: {
+                        transform: {
+                            '<font face="{FONT}">{SELTEXT}</font>':'[font="{FONT}"]{SELTEXT}[/font]'
                         }
                     }
                 }

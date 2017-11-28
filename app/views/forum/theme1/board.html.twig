@@ -1,16 +1,16 @@
 {% extends 'forum/theme1/layout.html.twig' %}
 
 {% set service_page_links %}
-    {% for text,link in current_forum.page_links %}
+    {% for text,link in current_forum.links %}
         <li><a href="{{ link }}">{{ text }}</a></li>
     {% endfor %}
 {% endset %}
 {% set service = {
 'page_name': current_forum.name,
 'page_logo_link': '/' ~ current_forum.url,
-'page_author': current_forum.owner_username,
-'page_description': current_forum.page_description,
-'page_keywords': current_forum.page_keywords,
+'page_author': current_forum.owner.username,
+'page_description': current_forum.description,
+'page_keywords': current_forum.keywords|join(','),
 'page_links': service_page_links
 } %}
 
@@ -41,7 +41,7 @@
         {# Get all categories #}
         {% if board_tree|length > 0 %}
             {% for board in board_tree %}
-                {% if board.type == 2 and board.parent_id == current_board.id %}
+                {% if board.type == 2 and board.parentBoard.id == current_board.id %}
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover table-condensed">
                             <thead>
@@ -53,13 +53,24 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% if board.subboards|length > 0 %}
-                                    {% for subboard in board.subboards %}
+                                {% if board.boards|length > 0 %}
+                                    {% for subboard in board.boards %}
                                         <tr>
-                                            <td class="forum-category"><p><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': subboard.id}) }}">{{ subboard.title }}</a></p><p>{{ subboard.description }}</p></td>
-                                            <td class="text-center"><br /><span class="badge">{{ subboard.threads }}</span></td>
-                                            <td class="text-center"><br /><span class="badge">{{ subboard.posts }}</span></td>
-                                            <td><p><i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }} {{ subboard.last_post_username|raw }}</p><p>{{ subboard.last_post_time|date('d/m/Y H:i') }}</p></td>
+                                            <td class="forum-category">
+                                                <p><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': subboard.id}) }}">{{ subboard.title }}</a></p>
+                                                <p>{{ subboard.description }}</p>
+                                            </td>
+                                            <td class="text-center"><br /><span class="badge">{{ subboard.threadCount }}</span></td>
+                                            <td class="text-center"><br /><span class="badge">{{ subboard.postCount }}</span></td>
+                                            <td>
+                                                {% if subboard.lastPostUser is not null %}
+                                                    <p>
+                                                        <i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }}
+                                                        <a href="{{ path('app_account_user', {'username': subboard.lastPostUser.username}) }}">{{ subboard.lastPostUser.username }}</a>
+                                                    </p>
+                                                    <p>{{ subboard.lastPostTime|date('d/m/Y H:i') }}</p>
+                                                {% endif %}
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 {% endif %}
@@ -92,10 +103,21 @@
                             {% for board in board_tree %}
                                 {% if board.type == 1 %}
                                     <tr>
-                                        <td class="forum-category"><p><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': board.id}) }}">{{ board.title }}</a></p><p>{{ board.description }}</p></td>
-                                        <td class="text-center"><br /><span class="badge">{{ board.threads }}</span></td>
-                                        <td class="text-center"><br /><span class="badge">{{ board.posts }}</span></td>
-                                        <td><p><i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }} {{ board.last_post_username|raw }}</p><p>{{ board.last_post_time|date('d/m/Y H:i') }}</p></td>
+                                        <td class="forum-category">
+                                            <p><a href="{{ path('app_forum_forum_board', {'forum': current_forum.url, 'board': board.id}) }}">{{ board.title }}</a></p>
+                                            <p>{{ board.description }}</p>
+                                        </td>
+                                        <td class="text-center"><br /><span class="badge">{{ board.threadCount }}</span></td>
+                                        <td class="text-center"><br /><span class="badge">{{ board.postCount }}</span></td>
+                                        <td>
+                                            {% if subboard.lastPostUser is not null %}
+                                                <p>
+                                                    <i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }}
+                                                    <a href="{{ path('app_account_user', {'username': board.lastPostUser.username}) }}">{{ board.lastPostUser.username }}</a>
+                                                </p>
+                                                <p>{{ board.lastPostTime|date('d/m/Y H:i') }}</p>
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 {% endif %}
                             {% endfor %}
@@ -122,11 +144,19 @@
                             <tr>
                                 <td class="forum-category">
                                     <p><a href="{{ path('app_forum_forum_thread', {'forum': current_forum.url, 'thread': thread.id}) }}">{{ thread.topic }}</a></p>
-                                    <p>{{ 'by'|trans }} {{ thread.username|raw }} - {{ thread.time|date('d/m/Y H:i') }}</p>
+                                    <p>{{ 'by'|trans }} <a href="{{ path('app_account_user', {'username': thread.user.username}) }}">{{ thread.user.username }}</a> - {{ thread.time|date('d/m/Y H:i') }}</p>
                                 </td>
                                 <td class="text-center"><br /><span class="badge">{{ thread.replies }}</span></td>
                                 <td class="text-center"><br /><span class="badge">{{ thread.views }}</span></td>
-                                <td><p><i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }} {{ thread.last_post_username|raw }}</p><p>{{ thread.last_post_time|date('d/m/Y H:i') }}</p></td>
+                                <td>
+                                    {% if thread.lastPostUser is not null %}
+                                        <p>
+                                            <i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }}
+                                            <a href="{{ path('app_account_user', {'username': thread.lastPostUser.username}) }}">{{ thread.lastPostUser.username }}</a>
+                                        </p>
+                                        <p>{{ thread.lastPostTime|date('d/m/Y H:i') }}</p>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>

@@ -8,26 +8,6 @@ use App\Store\Entity\Store;
 class StoreHelper
 {
     /**
-     * Get a list of all existing stores
-     *
-     * @return \App\Store\Entity\Store[]
-     * @throws \Exception
-     */
-    public static function getStoreList()
-    {
-        $em = \Kernel::getIntent()->getEntityManager();
-
-        /** @var \App\Store\Entity\Store[] $stores */
-        $stores = $em->getRepository(Store::class)->findAll();
-
-        if (is_null($stores)) {
-            throw new \Exception('Cannot get list with all stores');
-        } else {
-            return $stores;
-        }
-    }
-
-    /**
      * Get all stores which belong to the given User
      *
      * @param \App\Account\Entity\User $user

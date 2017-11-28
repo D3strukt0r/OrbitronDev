@@ -13,8 +13,8 @@
                 <a class="anchorjs-link" href="#media-heading"><span class="anchorjs-icon"></span></a>
             </h4>
             {{ category.description }}
-            {% if category.sub_boards|length %}
-                {% for child in category.sub_boards %}
+            {% if category.boards|length %}
+                {% for child in category.boards %}
                     {{ self.recursiveCategory(child) }}
                 {% endfor %}
             {% endif %}
