@@ -189,7 +189,7 @@ class User extends EncryptableFieldEntity
     {
         $newPassword = $this->encryptField($password);
 
-        if ($newPassword === false) {
+        if (is_bool($newPassword) && $newPassword === false) {
             throw new \Exception('[Account] A hashed password could not be generated');
         }
 

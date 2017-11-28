@@ -49,8 +49,8 @@ class Language
     }
 
     /**
-     * @param string $language
-     * @param null   $default_cookie_var
+     * @param string     $language
+     * @param array|null $default_cookie_var
      */
     public static function defineLanguage($language, $default_cookie_var = null)
     {

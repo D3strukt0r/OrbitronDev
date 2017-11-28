@@ -54,7 +54,7 @@ class ForumController extends \Controller
         if ($createForumForm->isValid()) {
             $errorMessages   = array();
             $captcha         = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
-            $captchaResponse = $captcha->verify($_POST['g-recaptcha-response'], $request->getClientIp());
+            $captchaResponse = $captcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
             if (!$captchaResponse->isSuccess()) {
                 $createForumForm->get('recaptcha')->addError(new FormError('The Captcha is not correct'));
             } else {

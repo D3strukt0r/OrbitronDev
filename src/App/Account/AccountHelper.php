@@ -190,10 +190,7 @@ class AccountHelper
         return true;
     }
 
-    /**
-     * @param \Symfony\Component\HttpFoundation\Response $response
-     */
-    public static function logout(Response &$response = null)
+    public static function logout()
     {
         /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
         $session = \Kernel::getIntent()->get('session');

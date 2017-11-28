@@ -41,7 +41,6 @@ class PhpCache
     private $file;
     private $fileLock;
     private $cacheTime;
-    private $oCacheObject;
 
     private $cachePath = './app/cache';
 

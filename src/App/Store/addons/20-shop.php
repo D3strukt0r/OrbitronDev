@@ -177,7 +177,7 @@ function acp_html_vouchers($twig, $controller)
  * @param \Twig_Environment $twig
  * @param \Controller\StoreController $controller
  *
- * @return string
+ * @return \Symfony\Component\HttpFoundation\Response|null
  * @throws Exception
  */
 function acp_html_change_order_status_to_1($twig, $controller)
@@ -211,7 +211,7 @@ function acp_html_change_order_status_to_1($twig, $controller)
  * @param \Twig_Environment $twig
  * @param \Controller\StoreController $controller
  *
- * @return string
+ * @return \Symfony\Component\HttpFoundation\Response|null
  * @throws Exception
  */
 function acp_html_change_order_status_to_2($twig, $controller)

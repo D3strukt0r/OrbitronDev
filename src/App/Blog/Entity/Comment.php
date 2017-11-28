@@ -49,7 +49,7 @@ class Comment
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     * @OneToMany(targetEntity="Comment", mappedBy="parent")
+     * @OneToMany(targetEntity="Comment", mappedBy="parent", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $responses;
 
@@ -170,8 +170,6 @@ class Comment
     {
         if ($this->responses->contains($comment)) {
             $this->responses->removeElement($comment);
-            $comment->setPost(null);
-            $comment->setParent(null);
         }
 
         return $this;

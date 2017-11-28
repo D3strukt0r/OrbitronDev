@@ -332,7 +332,6 @@ class Post
     {
         if ($this->comments->contains($comment)) {
             $this->comments->removeElement($comment);
-            $comment->setPost(null);
         }
 
         return $this;

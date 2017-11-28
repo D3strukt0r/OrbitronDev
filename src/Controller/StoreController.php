@@ -61,7 +61,7 @@ class StoreController extends \Controller
         if ($createStoreForm->isValid()) {
             $errorMessages   = array();
             $captcha         = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
-            $captchaResponse = $captcha->verify($_POST['g-recaptcha-response'], $request->getClientIp());
+            $captchaResponse = $captcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
             if (!$captchaResponse->isSuccess()) {
                 $createStoreForm->get('recaptcha')->addError(new FormError('The Captcha is not correct'));
             } else {

@@ -34,7 +34,7 @@ class Tag
     protected $blog;
 
     /**
-     * @var \App\Blog\Entity\Post
+     * @var \Doctrine\Common\Collections\Collection
      * @ManyToMany(targetEntity="Post", mappedBy="tags")
      */
     protected $posts;

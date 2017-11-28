@@ -2,7 +2,7 @@
 
 namespace App\Core;
 
-use App\Core\Entity\CronJob;
+use App\Core\Entity\CronJob as CronJobEntity;
 use Container\DatabaseContainer;
 
 class Core
@@ -59,7 +59,7 @@ class Core
 
     public static function addDefaultCronJobs()
     {
-        $cronJob = new CronJob();
+        $cronJob = new CronJobEntity();
         $cronJob
             ->setEnabled(true)
             ->setPriority(5)

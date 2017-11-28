@@ -49,7 +49,7 @@ class AccountController extends \Controller
 
         if (is_null($update) || (defined('LOGGED_IN') && LOGGED_IN)) {
             $response = new RedirectResponse($this->getRequest()->getUri());
-            AccountHelper::logout($response);
+            AccountHelper::logout();
             return $response;
         }
         $request = $this->getRequest();
@@ -336,7 +336,7 @@ class AccountController extends \Controller
         if (!is_null($token = $request->query->get('token'))) {
             $token = new Token($token);
             $job = $token->getJob();
-            if (is_null($job) || !$job) {
+            if (is_null($job) || $job === false) {
                 if (is_string($job) && $job != 'reset_password') {
                     // Wrong token
                     $forgotForm->addError(new FormError('This token is not for resetting a password'));
@@ -451,7 +451,7 @@ class AccountController extends \Controller
         if (!is_null($token = $request->query->get('token'))) {
             $token = new Token($token);
             $job = $token->getJob();
-            if (is_null($job) || !$job) {
+            if (is_null($job) || $job === false) {
                 $errorMessage = 'Token not found';
                 if (is_string($job) && $job != 'confirm_email') {
                     $errorMessage = 'This token is not for email activation';

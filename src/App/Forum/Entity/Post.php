@@ -205,7 +205,7 @@ class Post
         return array(
             'id'          => $this->id,
             'thread'      => $this->thread,
-            'parent_post' => $this->parent_post,
+            'post_number' => $this->post_number,
             'user'        => $this->user,
             'subject'     => $this->subject,
             'message'     => $this->message,

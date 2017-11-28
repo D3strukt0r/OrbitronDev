@@ -120,12 +120,12 @@ class AccountApi
         $view = new \App\Template\Template();
 
         $template = new \App\Template\TemplateLoad($page);
-        $template->setHtml(function ($page) {
-            \App\Account\AccountAcp::includeLibs();
-            $functionForPage = str_replace('-', '_', $page);
-            $functionName = 'acp_html_'.$functionForPage;
-            return call_user_func($functionName);
-        });
+
+        \App\Account\AccountAcp::includeLibs();
+        $functionForPage = str_replace('-', '_', $page);
+        $functionName = 'acp_html_'.$functionForPage;
+        $content = call_user_func($functionName);
+        $template->setHtml($content);
 
         $view->addTemplate($template);
 

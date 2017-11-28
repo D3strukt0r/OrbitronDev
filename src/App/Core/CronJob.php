@@ -17,7 +17,7 @@ class CronJob
             array('priority' => 'ASC')
         );
 
-        if ($cronJobs) {
+        if (count($cronJobs)) {
             foreach ($cronJobs as $job) {
                 if (self::getNextExec($job) <= time()) {
                     self::runJob($job);
