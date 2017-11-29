@@ -10,7 +10,7 @@ use Decoda\Hook\EmoticonHook;
 
 class ForumHelper
 {
-    const DefaultShowThreadAmount = 10;
+    const DEFAULT_SHOW_THREAD_COUNT = 10;
 
     /**
      * Get all forums which belong to the given User

@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 if( isset($_POST['name']) && strtoupper($_POST['captcha']) == $_SESSION['captcha_id'] )
 {
@@ -17,4 +18,3 @@ if( isset($_POST['name']) && strtoupper($_POST['captcha']) == $_SESSION['captcha
 		mail($_POST['email'], $subject, $message, $headers);
 	}
 }
-?>

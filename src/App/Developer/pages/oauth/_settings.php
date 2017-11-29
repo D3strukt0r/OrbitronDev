@@ -9,7 +9,7 @@ $client_id = 'OrbitronDev OAuth Guide';
 $client_secret = 'b7841351296b348e35d3';
 $redirect_uri = 'https://developer.orbitrondev.org/oauth/authorized.php';
 
-$message = @$_GET['message'];
+$message = isset($_GET['message']) ? $_GET['message'] : '';
 if(isset($message) && strlen($message) > 0) {
     echo '<p style="color: blue">' . $message . '</p>';
 }

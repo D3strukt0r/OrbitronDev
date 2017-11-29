@@ -324,8 +324,8 @@ class StoreCheckout
             $currentStock = $product->getStock();
             $newStock = $currentStock - $productInfo['count'];
             $product->setStock($newStock);
-            $em->flush();
         }
+        $em->flush();
 
         // Save the order
         /** @var \App\Store\Entity\DeliveryType|null $deliveryType */

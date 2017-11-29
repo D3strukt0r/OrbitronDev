@@ -171,7 +171,7 @@ class ForumController extends \Controller
 
         // Get all threads
         $pagination                 = array();
-        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumHelper::DefaultShowThreadAmount;
+        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumHelper::DEFAULT_SHOW_THREAD_COUNT;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
         /** @var \App\Forum\Entity\Thread[] $threads */
@@ -241,7 +241,7 @@ class ForumController extends \Controller
 
         // Get all posts
         $pagination                 = array();
-        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumHelper::DefaultShowThreadAmount;
+        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumHelper::DEFAULT_SHOW_THREAD_COUNT;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
         /** @var \App\Forum\Entity\Post[] $posts */

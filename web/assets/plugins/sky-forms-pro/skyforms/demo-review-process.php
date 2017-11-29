@@ -1,4 +1,5 @@
 <?php
+
 if( isset($_POST['name']) )
 {
 	$to = 'vokyvon@gmail.com'; // Replace with your email	
@@ -14,4 +15,3 @@ if( isset($_POST['name']) )
 	
 	mail($to, $subject, $message, $headers);
 }
-?>

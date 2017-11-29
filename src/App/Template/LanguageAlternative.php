@@ -5,7 +5,7 @@
 namespace App\Template;
 
 /**
- * Requires JSON Translator file. Check function "IncludeLanguageFile"
+ * Requires JSON Translator file. Check function "includeLanguageFile"
  *
  * Class LanguageAlternative
  *
@@ -17,7 +17,7 @@ class LanguageAlternative
 
     const LOCALES_DIR = './app/data/locale';
 
-    static function RedirIfNotSet($config)
+    public static function redirIfNotSet($config)
     {
         $request = \Kernel::getIntent()->getRequest();
 
@@ -48,7 +48,7 @@ class LanguageAlternative
         }
     }
 
-    static function DefineLanguage($config)
+    public static function defineLanguage($config)
     {
         $request = \Kernel::getIntent()->getRequest();
 
@@ -77,7 +77,7 @@ class LanguageAlternative
      *
      * @return mixed
      */
-    static function IncludeLanguageFile($sLangCode)
+    public static function includeLanguageFile($sLangCode)
     {
         $sLangFile = self::LOCALES_DIR.'/'.$sLangCode.'.json';
         if (file_exists($sLangFile)) {
@@ -90,7 +90,7 @@ class LanguageAlternative
         return $aLanguage;
     }
 
-    static function Get($sLangKey)
+    public static function get($sLangKey)
     {
         $sLangString = $sLangKey;
         if (isset(self::$aLanguage[$sLangKey])) {

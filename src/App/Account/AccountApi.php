@@ -20,7 +20,7 @@ class AccountApi
         );
     }
 
-    public static function get_img()
+    public static function getImg()
     {
         $request = Kernel::getIntent()->getRequest();
 
@@ -51,7 +51,7 @@ class AccountApi
         return null;
     }
 
-    public static function update_profile_pic()
+    public static function updateProfilePic()
     {
         $request = Kernel::getIntent()->getRequest();
 
@@ -96,7 +96,7 @@ class AccountApi
         return array('files' => array('name' => $files[0]->getFileName()));
     }
 
-    public static function upload_progress()
+    public static function uploadProgress()
     {
         // Assuming default values for session.upload_progress.prefix
         // and session.upload_progress.name:
@@ -112,7 +112,7 @@ class AccountApi
     }
 
     // TODO: Is the function "panel_pages" still needed?
-    public static function panel_pages()
+    public static function panelPages()
     {
         $request = Kernel::getIntent()->getRequest();
         $page = $request->query->get('p');

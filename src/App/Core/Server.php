@@ -2,12 +2,12 @@
 
 namespace App\Core;
 
-// TODO: This file schouldn't exist in the future
+// TODO: This file shouldn't exist in the future
 
 class Server
 {
     // URL('/example', 'page=example', false)
-    public static function URL($path, $params = array(), $get_current = false)
+    public static function url($path, $params = array(), $get_current = false)
     {
         $new_scheme = 'http://';
         $new_host = 'localhost';

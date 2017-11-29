@@ -272,7 +272,16 @@ class AccountController extends \Controller
 
     public function apiAction()
     {
+        // Get function name
         $function = $this->parameters['function'];
+        $functionProcess = explode('_', $function);
+        foreach ($functionProcess as $key => $item) {
+            $functionProcess[$key] = ucfirst($item);
+        }
+        $function = implode('', $functionProcess);
+        $function = lcfirst($function);
+
+        // Prepare all parameters
         if (strlen($this->parameters['parameters']) > 0) {
             $rawParameters = explode('&', $this->parameters['parameters']);
             $parameters = array();
@@ -284,6 +293,7 @@ class AccountController extends \Controller
             $request = $this->getRequest();
             $parameters = $request->request->all();
         }
+
         $result = AccountApi::$function($parameters);
         if (is_array($result)) {
             return $this->json($result);
