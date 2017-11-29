@@ -15,18 +15,17 @@ AccountAcp::addMenu(array(
 ));
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_home($twig, $controller)
+function acp_html_home($controller)
 {
     /** @var \App\Account\Entity\User $user */
     $user = $controller->getEntityManager()->find(User::class, USER_ID);
 
-    return $twig->render('account/panel/home.html.twig', array(
+    return $controller->renderView('account/panel/home.html.twig', array(
         'current_user'    => $user,
         'service_allowed' => in_array('web_service', $user->getSubscription()->getSubscription()->getPermissions()) ? true : false,
         'blogs'           => BlogHelper::getOwnerBlogList($user),

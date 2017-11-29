@@ -355,7 +355,7 @@ function Scan($url)
         $next_url = ValidateURL($url, $next_url);
 
         // Skip if url is not valid
-        if ($next_url == false) {
+        if ($next_url === false) {
             continue;
         }
 

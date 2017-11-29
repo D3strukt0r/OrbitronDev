@@ -39,21 +39,20 @@ if (!isset($indirectly)) {
 
 function acp_html_inactivity()
 {
-
+    return '';
 }
 
 function acp_html_login_log()
 {
-
+    return '';
 }
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_delete_account($twig, $controller)
+function acp_html_delete_account($controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -66,7 +65,7 @@ function acp_html_delete_account($twig, $controller)
         AccountHelper::logout();
         AccountHelper::removeUser($currentUser);
     }
-    return $twig->render('account/panel/delete-account.html.twig', array(
+    return $controller->renderView('account/panel/delete-account.html.twig', array(
         'delete_account_form' => $deleteAccountForm->createView(),
     ));
 }

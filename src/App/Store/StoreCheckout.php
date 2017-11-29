@@ -24,7 +24,7 @@ class StoreCheckout
      */
     public function __construct($cartId = null, $isRegisteredUser = false, User $user = null)
     {
-        if ($isRegisteredUser == true) {
+        if ($isRegisteredUser === true) {
             if (is_null($cartId)) {
                 // Create new cart
                 $this->cartId = $this->createNewCart($user);

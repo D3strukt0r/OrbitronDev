@@ -262,7 +262,7 @@ class AccountController extends \Controller
         }
 
 
-        $response = call_user_func($view, $this->container->get('twig'), $this);
+        $response = call_user_func($view, $this);
         if (is_string($response)) {
             $params['view_body'] = $response;
         }
@@ -584,7 +584,7 @@ class AccountController extends \Controller
         if (!$this->oauthServer->validateAuthorizeRequest($request, $response)) {
             //return $this->oauthServer->getResponse();
             $response->send();
-            die;
+            exit;
         }
         // display an authorization form
         // Get all information about the Client requesting an Auth code
@@ -639,7 +639,7 @@ class AccountController extends \Controller
         // Handle a request to a resource and authenticate the access token
         if (!$this->oauthServer->verifyResourceRequest($request, null, null)) {
             $this->oauthServer->getResponse()->send();
-            die;
+            exit;
         }
 
         $token = $this->oauthServer->getAccessTokenData($request);

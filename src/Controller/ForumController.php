@@ -569,7 +569,7 @@ class ForumController extends \Controller
         }
 
 
-        $response = call_user_func($view, $this->container->get('twig'), $this);
+        $response = call_user_func($view, $this);
         if (is_string($response)) {
             $params['view_body'] = $response;
         }

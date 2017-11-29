@@ -90,6 +90,6 @@ class RecaptchaType extends AbstractType
 
     public function resolveLocale()
     {
-        return (strlen(@TEMPLATE_LANGUAGE) > 0) ? TEMPLATE_LANGUAGE : 'en';
+        return (defined('TEMPLATE_LANGUAGE') && strlen(TEMPLATE_LANGUAGE) > 0) ? TEMPLATE_LANGUAGE : 'en';
     }
 }

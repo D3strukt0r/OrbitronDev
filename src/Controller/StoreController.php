@@ -434,7 +434,8 @@ class StoreController extends \Controller
                     $mailSent = $mailer->send($message);
 
                     if($mailSent) {
-                        $formData['delivery_type'] = @$request->request->get('shipping'); // TODO: Integrate this into the form
+                        // TODO: Integrate shipping method into the form
+                        $formData['delivery_type'] = $request->request->get('shipping');
                         $rawCart->makeOrder($store->getId(), $formData);
                         $rawCart->clearCart();
                         $cart = $rawCart->getCart($store, true, true);
@@ -698,7 +699,7 @@ class StoreController extends \Controller
         }
 
 
-        $response = call_user_func($view, $this->container->get('twig'), $this);
+        $response = call_user_func($view, $this);
         if (is_string($response)) {
             $params['view_body'] = $response;
         }

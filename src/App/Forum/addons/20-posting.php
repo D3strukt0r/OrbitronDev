@@ -18,5 +18,5 @@ ForumAcp::addMenu(array(
 
 function acp_html_posting_bbcode()
 {
-    return;
+    return '';
 }

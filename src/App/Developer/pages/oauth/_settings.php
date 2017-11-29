@@ -1,12 +1,9 @@
 <?php
 
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-ini_set('error_reporting', E_ALL);
 error_reporting(E_ALL);
 
-$client_id = 'OrbitronDev OAuth Guide';
-$client_secret = 'b7841351296b348e35d3';
+$client_id = 'Example OAuth2';
+$client_secret = '1a2eac89bf7e8a01342c6fa1c6373cb7a0045e6f4aeac81d923eeacf63b3235a';
 $redirect_uri = 'https://developer.orbitrondev.org/oauth/authorized.php';
 
 $message = isset($_GET['message']) ? $_GET['message'] : '';

@@ -41,12 +41,11 @@ if (!isset($indirectly)) {
 }
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_account($twig, $controller)
+function acp_html_account($controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -161,19 +160,18 @@ function acp_html_account($twig, $controller)
         }
     }
 
-    return $twig->render('account/panel/account.html.twig', array(
+    return $controller->renderView('account/panel/account.html.twig', array(
         'edit_account_form' => $editAccountForm->createView(),
         'current_user'      => $currentUser,
     ));
 }
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_profile($twig, $controller)
+function acp_html_profile($controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -217,19 +215,18 @@ function acp_html_profile($twig, $controller)
         }
     }
 
-    return $twig->render('account/panel/profile.html.twig', array(
+    return $controller->renderView('account/panel/profile.html.twig', array(
         'edit_profile_form' => $editProfileForm->createView(),
         'current_user'      => $currentUser,
     ));
 }
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_add_address($twig, $controller)
+function acp_html_add_address($controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -273,7 +270,7 @@ function acp_html_add_address($twig, $controller)
         }
     }
 
-    return $twig->render('account/panel/add-address.html.twig', array(
+    return $controller->renderView('account/panel/add-address.html.twig', array(
         'add_address_form' => $addAddressForm->createView(),
         'current_user'     => $currentUser,
     ));

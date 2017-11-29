@@ -17,11 +17,17 @@ curl_close($ch);
 
 if(array_key_exists('error', $resultFormatted)) {
     header('Location: unauthorized.php?message=Token could not be received. '.$resultFormatted['error_description']);
-    //exit;
+    exit;
 }
 
 ?>
-<pre><?php var_dump($resultFormatted); ?></pre>
+<pre>
+    Access Token:     <?= $resultFormatted['access_token'] ?><br />
+    Token expires in: <?= $resultFormatted['expires_in'] ?><br />
+    Token type:       <?= $resultFormatted['token_type'] ?><br />
+    Scopes:           <?= $resultFormatted['scope'] ?><br />
+    Refresh Token:    <?= $resultFormatted['refresh_token'] ?>
+</pre>
 <a href="resource.php?token=<?php echo $resultFormatted['refresh_token']; ?>">GET RESOURCES</a>
 <br />
 <br />

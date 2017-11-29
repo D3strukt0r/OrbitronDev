@@ -34,15 +34,15 @@ ForumAcp::addMenu(array(
 
 function acp_html_users_ban()
 {
-    return;
+    return '';
 }
 
 function acp_html_users_rank()
 {
-    return;
+    return '';
 }
 
 function acp_html_groups()
 {
-    return;
+    return '';
 }

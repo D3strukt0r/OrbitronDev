@@ -54,12 +54,11 @@ if (!isset($indirectly)) {
 }
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_developer_create_application($twig, $controller)
+function acp_html_developer_create_application($controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -87,19 +86,18 @@ function acp_html_developer_create_application($twig, $controller)
         exit;
     }
 
-    return $twig->render('account/panel/developer-create-applications.html.twig', array(
+    return $controller->renderView('account/panel/developer-create-applications.html.twig', array(
         'create_app_form' => $createAppForm->createView(),
         'current_user'    => $currentUser,
     ));
 }
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_developer_applications($twig, $controller)
+function acp_html_developer_applications($controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -109,19 +107,18 @@ function acp_html_developer_applications($twig, $controller)
         exit;
     }
 
-    return $twig->render('account/panel/developer-list-applications.html.twig', array(
+    return $controller->renderView('account/panel/developer-list-applications.html.twig', array(
         'current_user_dev_apps' => AccountHelper::getDeveloperApps(USER_ID),
     ));
 }
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_developer_show_applications($twig, $controller)
+function acp_html_developer_show_applications($controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -139,21 +136,20 @@ function acp_html_developer_show_applications($twig, $controller)
     $appData = AccountHelper::getAppInformation($appId);
 
     if (is_null($appData)) {
-        return $twig->render('account/panel/developer-app-not-found.html.twig');
+        return $controller->renderView('account/panel/developer-app-not-found.html.twig');
     }
 
-    return $twig->render('account/panel/developer-show-app.html.twig', array(
+    return $controller->renderView('account/panel/developer-show-app.html.twig', array(
         'app' => $appData,
     ));
 }
 
 /**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_developer_register($twig, $controller)
+function acp_html_developer_register($controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -174,7 +170,7 @@ function acp_html_developer_register($twig, $controller)
         exit;
     }
 
-    return $twig->render('account/panel/developer-register.html.twig', array(
+    return $controller->renderView('account/panel/developer-register.html.twig', array(
         'developer_form' => $developerForm->createView(),
         'current_user'   => $currentUser,
     ));

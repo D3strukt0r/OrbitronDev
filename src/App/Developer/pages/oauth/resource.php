@@ -29,13 +29,18 @@ $resultFormatted = json_decode($result, true);
 
 curl_close($ch);
 
-
 if(array_key_exists('error', $resultFormatted)) {
     header('Location: /unauthorized.php?message=Resource could not be received');
+    exit;
 }
 
 ?>
-<pre><?php var_dump($result); ?></pre>
+
+<pre>
+    <?php foreach ($resultFormatted as $key => $item): ?>
+    <?= $key ?> => <?= $item ?><br />
+    <?php endforeach; ?>
+</pre>
 <a href="resource.php?token=<?php echo $refreshToken; ?>">GET RESOURCES AGAIN</a>
 <br />
 <br />

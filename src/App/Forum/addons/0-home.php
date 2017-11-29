@@ -11,12 +11,12 @@ ForumAcp::addMenu(array(
 ));
 
 /**
- * @param \Twig_Environment $twig
+ * @param \Controller\ForumController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_home($twig)
+function acp_html_home($controller)
 {
-    return $twig->render('forum/theme_admin1/home.html.twig');
+    return $controller->renderView('forum/theme_admin1/home.html.twig');
 }

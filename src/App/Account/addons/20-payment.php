@@ -36,31 +36,30 @@ if (!isset($indirectly)) {
 }
 
 /**
- * @param \Twig_Environment $twig
- *
- * @return string
- */
-function acp_html_buy_credits($twig)
-{
-    return $twig->render('account/panel/buy-credits.html.twig');
-}
-
-/**
- * @param \Twig_Environment             $twig
  * @param \Controller\AccountController $controller
  *
  * @return string
  */
-function acp_html_plans($twig, $controller)
+function acp_html_buy_credits($controller)
+{
+    return $controller->renderView('account/panel/buy-credits.html.twig');
+}
+
+/**
+ * @param \Controller\AccountController $controller
+ *
+ * @return string
+ */
+function acp_html_plans($controller)
 {
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
 
-    return $twig->render('account/panel/plans.html.twig', array(
+    return $controller->renderView('account/panel/plans.html.twig', array(
         'current_user' => $currentUser,
     ));
 }
 
 function acp_html_payment()
 {
-
+    return '';
 }

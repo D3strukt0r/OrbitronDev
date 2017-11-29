@@ -25,23 +25,23 @@ StoreAcp::addMenu(array(
 ));
 
 /**
- * @param \Twig_Environment $twig
+ * @param \Controller\StoreController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_advertisement($twig)
+function acp_html_advertisement($controller)
 {
-    return $twig->render('store/theme_admin1/advertisement.html.twig');
+    return $controller->renderView('store/theme_admin1/advertisement.html.twig');
 }
 
 /**
- * @param \Twig_Environment $twig
+ * @param \Controller\StoreController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_mod_tools($twig)
+function acp_html_mod_tools($controller)
 {
-    return $twig->render('store/theme_admin1/mod_tools.html.twig');
+    return $controller->renderView('store/theme_admin1/mod_tools.html.twig');
 }

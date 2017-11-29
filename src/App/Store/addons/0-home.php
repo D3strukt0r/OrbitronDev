@@ -11,12 +11,12 @@ StoreAcp::addMenu(array(
 ));
 
 /**
- * @param \Twig_Environment $twig
+ * @param \Controller\StoreController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_home($twig)
+function acp_html_home($controller)
 {
-    return $twig->render('store/theme_admin1/home.html.twig');
+    return $controller->renderView('store/theme_admin1/home.html.twig');
 }

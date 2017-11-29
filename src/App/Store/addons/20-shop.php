@@ -51,13 +51,12 @@ StoreAcp::addMenu(array(
 ));
 
 /**
- * @param \Twig_Environment $twig
  * @param \Controller\StoreController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_catalogue($twig, $controller)
+function acp_html_catalogue($controller)
 {
     $em = $controller->getEntityManager();
     $request = $controller->getRequest();
@@ -76,7 +75,7 @@ function acp_html_catalogue($twig, $controller)
     $userLanguage = !is_null($request->query->get('lang')) ? $request->query->get('lang') : 'en';
     $userCurrency = !is_null($request->query->get('currency')) ? $request->query->get('currency') : 'USD';
 
-    return $twig->render('store/theme_admin1/catalogue.html.twig', array(
+    return $controller->renderView('store/theme_admin1/catalogue.html.twig', array(
         'products' => $productList,
         'language' => $userLanguage,
         'currency' => $userCurrency,
@@ -84,13 +83,12 @@ function acp_html_catalogue($twig, $controller)
 }
 
 /**
- * @param \Twig_Environment $twig
  * @param \Controller\StoreController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_orders($twig, $controller)
+function acp_html_orders($controller)
 {
     $em = $controller->getEntityManager();
 
@@ -137,7 +135,7 @@ function acp_html_orders($twig, $controller)
 
     }
 
-    return $twig->render('store/theme_admin1/orders.html.twig', array(
+    return $controller->renderView('store/theme_admin1/orders.html.twig', array(
         'orders' => $orders,
         'orders_data' => $ordersData,
         'current_store' => $store,
@@ -147,13 +145,12 @@ function acp_html_orders($twig, $controller)
 }
 
 /**
- * @param \Twig_Environment $twig
  * @param \Controller\StoreController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_vouchers($twig, $controller)
+function acp_html_vouchers($controller)
 {
     $em = $controller->getEntityManager();
 
@@ -168,19 +165,18 @@ function acp_html_vouchers($twig, $controller)
     /** @var \App\Store\Entity\Voucher[] $vouchers */
     $vouchers = $em->getRepository(\App\Store\Entity\Voucher::class)->findBy(array('store' => $store));
 
-    return $twig->render('store/theme_admin1/vouchers.html.twig', array(
+    return $controller->renderView('store/theme_admin1/vouchers.html.twig', array(
         'vouchers' => $vouchers,
     ));
 }
 
 /**
- * @param \Twig_Environment $twig
  * @param \Controller\StoreController $controller
  *
  * @return \Symfony\Component\HttpFoundation\Response|null
  * @throws Exception
  */
-function acp_html_change_order_status_to_1($twig, $controller)
+function acp_html_change_order_status_to_1($controller)
 {
     $em = $controller->getEntityManager();
     $request = $controller->getRequest();
@@ -208,13 +204,12 @@ function acp_html_change_order_status_to_1($twig, $controller)
 }
 
 /**
- * @param \Twig_Environment $twig
  * @param \Controller\StoreController $controller
  *
  * @return \Symfony\Component\HttpFoundation\Response|null
  * @throws Exception
  */
-function acp_html_change_order_status_to_2($twig, $controller)
+function acp_html_change_order_status_to_2($controller)
 {
     $em = $controller->getEntityManager();
     $request = $controller->getRequest();

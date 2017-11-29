@@ -29,13 +29,12 @@ ForumAcp::addMenu(array(
 ));
 
 /**
- * @param \Twig_Environment           $twig
  * @param \Controller\ForumController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_board_list($twig, $controller)
+function acp_html_board_list($controller)
 {
     $em = $controller->getEntityManager();
 
@@ -49,20 +48,19 @@ function acp_html_board_list($twig, $controller)
 
     $boardList = $em->getRepository(Board::class)->findBy(array('forum' => $forum, 'parent_board' => null));
 
-    return $twig->render('forum/theme_admin1/board-list.html.twig', array(
+    return $controller->renderView('forum/theme_admin1/board-list.html.twig', array(
         'current_forum' => $forum,
         'board_list'    => $boardList,
     ));
 }
 
 /**
- * @param \Twig_Environment           $twig
  * @param \Controller\ForumController $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_new_board($twig, $controller)
+function acp_html_new_board($controller)
 {
     $em = $controller->getEntityManager();
     $request = $controller->getRequest();
@@ -97,14 +95,14 @@ function acp_html_new_board($twig, $controller)
         $em->persist($newBoard);
         $em->flush();
 
-        return $twig->render('forum/theme_admin1/new-board.html.twig', array(
+        return $controller->renderView('forum/theme_admin1/new-board.html.twig', array(
             'create_board_form' => $createBoardForm->createView(),
             'current_forum'     => $forum,
             'board_added'       => true,
         ));
     }
 
-    return $twig->render('forum/theme_admin1/new-board.html.twig', array(
+    return $controller->renderView('forum/theme_admin1/new-board.html.twig', array(
         'create_board_form' => $createBoardForm->createView(),
         'current_forum'     => $forum,
     ));

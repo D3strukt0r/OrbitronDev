@@ -95,11 +95,11 @@ class RecaptchaValidator extends ConstraintValidator
      */
     private function checkAnswer($privateKey, $remoteip, $response)
     {
-        if ($remoteip == null || $remoteip == '') {
+        if ($remoteip === null || $remoteip === '') {
             throw new ValidatorException('For security reasons, you must pass the remote ip to reCAPTCHA');
         }
         // discard spam submissions
-        if ($response == null || strlen($response) == 0) {
+        if ($response === null || strlen($response) == 0) {
             return false;
         }
         $response = $this->httpGet(self::RECAPTCHA_VERIFY_SERVER, '/recaptcha/api/siteverify', array(
@@ -108,7 +108,7 @@ class RecaptchaValidator extends ConstraintValidator
             'response' => $response,
         ));
         $response = json_decode($response, true);
-        if ($response['success'] == true) {
+        if ($response['success'] === true) {
             return true;
         }
 

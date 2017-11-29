@@ -39,16 +39,13 @@ class Kernel
             if (DEV_ONLY_INTERNAL) {
                 if (isset($_SERVER['HTTP_CLIENT_IP'])
                     || isset($_SERVER['HTTP_X_FORWARDED_FOR'])
-                    || !(in_array(@$_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']) || php_sapi_name() === 'cli-server')
+                    || !(in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1']) || php_sapi_name() === 'cli-server')
                 ) {
                     header('HTTP/1.0 403 Forbidden');
                     exit('You are not allowed to access this this page, while in development.');
                 }
             }
-
             Debug::enable();
-            //ini_set('display_startup_errors', '1');
-            //set_exception_handler('\\Kernel::exception');
         } elseif ($this->environment == 'production' || $this->environment == 'prod') {
             error_reporting(0);
         }
@@ -129,7 +126,7 @@ class Kernel
     public function runCronJob()
     {
         if ($this->has('router') && !$this->has('routing.error')) {
-            if (isset($this->get('routing')['cron_job']) && $this->get('routing')['cron_job'] == false) {
+            if (isset($this->get('routing')['cron_job']) && $this->get('routing')['cron_job'] === false) {
                 return;
             }
         }
@@ -150,7 +147,7 @@ class Kernel
     public function loadDatabase()
     {
         if ($this->has('router') && !$this->has('routing.error')) {
-            if (isset($this->get('routing')['database']) && $this->get('routing')['database'] == false) {
+            if (isset($this->get('routing')['database']) && $this->get('routing')['database'] === false) {
                 return;
             }
         }
