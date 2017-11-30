@@ -1,8 +1,8 @@
 filter:
     excluded_paths:
         - '*.min.js'
-        - 'web/assets/plugins/*'
-        - 'web/vendor/*'
+        - 'public/assets/plugins/*'
+        - 'public/vendor/*'
         - 'bin/*'
         - 'bower.json'
 checks:

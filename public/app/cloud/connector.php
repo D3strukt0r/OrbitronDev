@@ -114,7 +114,7 @@ $opts = array(
 		array(
 		    'alias'         => 'Home',
 			'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
-			'path'          => '../../../app/data/cloud/storage/'.$_GET['user_id'].'/', // path to files (REQUIRED)
+			'path'          => '../../../data/cloud/storage/'.$_GET['user_id'].'/', // path to files (REQUIRED)
 			'URL'           => '/files/',                   // URL to files (REQUIRED)
 			'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
@@ -128,8 +128,8 @@ $opts = array(
 		array(
 			'id'            => '1',
 			'driver'        => 'Trash',
-			'path'          => '../../../app/data/cloud/storage/'.$_GET['user_id'].'/.trash/',
-			'tmbURL'        => dirname($_SERVER['PHP_SELF']) . '/../../../app/data/cloud/storage/'.$_GET['user_id'].'/.trash/.tmb/',
+			'path'          => '../../../data/cloud/storage/'.$_GET['user_id'].'/.trash/',
+			'tmbURL'        => dirname($_SERVER['PHP_SELF']) . '/../../../data/cloud/storage/'.$_GET['user_id'].'/.trash/.tmb/',
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // Recommend the same settings as the original volume that uses the trash
 			'uploadAllow'   => array('image', 'text/plain'),// Same as above
@@ -140,11 +140,12 @@ $opts = array(
 );
 
 // Create directories
-mkdir('../../../data/');
-mkdir('../../../data/cloud/');
-mkdir('../../../data/cloud/storage/');
-mkdir('../../../data/cloud/storage/'.$_GET['user_id'].'/');
-mkdir('../../../data/cloud/storage/'.$_GET['user_id'].'/.trash/');
+if (!file_exists($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'])) {
+    mkdir($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'], 0777, true);
+}
+if (!file_exists($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'].'/.trash/')) {
+    mkdir($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'].'/.trash/', 0777, true);
+}
 
 // Run elFinder
 $connector = new elFinderConnector(new elFinder($opts));

@@ -162,8 +162,9 @@ class Kernel
     public function loadLogger()
     {
         // Create directories
-        mkdir($this->getRootDir().'/var/');
-        mkdir($this->getRootDir().'/var/log/');
+        if (!file_exists($this->getRootDir().'/var/log')) {
+            mkdir($this->getRootDir().'/var/log', 0777, true);
+        }
 
         $log = new Logger('Root');
         $log->pushHandler(new StreamHandler($this->getRootDir().'/var/log/debug.log', Logger::DEBUG));
