@@ -6,17 +6,13 @@ composer.phar
 
 # Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
-composer.lock
+/composer.lock
 
 #################
 ## Project
 #################
-.idea/
+/.idea/
 
-var/
-/app/config/parameters.yml
+/var/
+config/parameters.yml
 !/bin/
-/app/data/
-/web/app/store/products_img/
-/web/app/account/profile_pictures/
-/web/vendor/

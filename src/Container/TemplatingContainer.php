@@ -57,7 +57,7 @@ class TemplatingContainer
             $twigVariables['debug'] = true;
         }
         $loader = new Twig_Loader_Filesystem(array(
-            __DIR__ . '/../../app/views',
+            __DIR__ . '/../../templates',
             $vendorTwigBridgeDir . '/Resources/views/Form',
         ));
         $this->twig = new Twig_Environment($loader, $twigVariables);

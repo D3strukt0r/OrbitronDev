@@ -13,15 +13,13 @@ use Symfony\Component\Routing\Loader\YamlFileLoader;
 class RoutingContainer
 {
     /**
-     * RoutingContainer constructor.
-     *
      * @param \Kernel $kernel
      */
     public function __construct(\Kernel $kernel)
     {
         // look inside *this* directory
         $configLocations = array(
-            __DIR__ . '/../../app/config',
+            __DIR__ . '/../../config',
         );
         $locator = new FileLocator($configLocations);
         $loader = new YamlFileLoader($locator);
@@ -36,7 +34,6 @@ class RoutingContainer
 
         try {
             $parameters = $matcher->match($kernel->getRequest()->getPathInfo());
-            //$parameters = $matcher->match(strtok($_SERVER["REQUEST_URI"],'?')); // "strtok" is here to only get everything before the "?"
             $kernel->set('routing', $parameters);
 
             $kernel->getRequest()->attributes->add($parameters);

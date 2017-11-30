@@ -53,7 +53,7 @@ class Kernel
         $this->request = Request::createFromGlobals();
 
         try {
-            $config = Yaml::parse(file_get_contents($this->getRootDir() . '/app/config/parameters.yml'));
+            $config = Yaml::parse(file_get_contents($this->getRootDir().'/config/parameters.yml'));
             $this->set('config', $config);
         } catch (ParseException $e) {
             throw new Exception("Unable to load Parameters. Unable to parse the YAML string: %s", $e->getMessage());
@@ -161,8 +161,12 @@ class Kernel
      */
     public function loadLogger()
     {
+        // Create directories
+        mkdir($this->getRootDir().'/var/');
+        mkdir($this->getRootDir().'/var/log/');
+
         $log = new Logger('Root');
-        $log->pushHandler(new StreamHandler($this->getRootDir() . '/var/debug.log', Logger::DEBUG));
+        $log->pushHandler(new StreamHandler($this->getRootDir().'/var/log/debug.log', Logger::DEBUG));
         $this->set('logger', $log);
     }
 

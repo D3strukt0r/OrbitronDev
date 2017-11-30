@@ -52,7 +52,7 @@ class TranslatingContainer
         $translator->addLoader('ini', new IniFileLoader());
         $translator->addLoader('json', new JsonFileLoader());
 
-        $directory = __DIR__.'/../../app/translation';
+        $directory = __DIR__.'/../../translations';
         $files = scandir($directory);
         foreach ($files as $file) {
             if (!in_array($file, array('.', '..'))) {

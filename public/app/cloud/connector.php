@@ -139,6 +139,13 @@ $opts = array(
 	)
 );
 
-// run elFinder
+// Create directories
+mkdir('../../../data/');
+mkdir('../../../data/cloud/');
+mkdir('../../../data/cloud/storage/');
+mkdir('../../../data/cloud/storage/'.$_GET['user_id'].'/');
+mkdir('../../../data/cloud/storage/'.$_GET['user_id'].'/.trash/');
+
+// Run elFinder
 $connector = new elFinderConnector(new elFinder($opts));
 $connector->run();

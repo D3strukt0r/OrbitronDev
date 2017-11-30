@@ -69,7 +69,7 @@ class Router
     /**
      * @var string The path for the branches file
      */
-    const BRANCHES_FILE = './app/config/branches.txt';
+    const BRANCHES_FILE = './config/branches.txt';
 
     /**
      * @param array       $config       Requires an array of settings (see above #CONFIG SETUP TEMPLATE)
