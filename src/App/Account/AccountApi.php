@@ -26,23 +26,25 @@ class AccountApi
 
         $userId = (int)$request->query->get('user_id');
 
-        /** @var \App\Account\Entity\User $selectedUser */
+        /** @var null|\App\Account\Entity\User $selectedUser */
         $selectedUser = Kernel::getIntent()->getEntityManager()->find(User::class, $userId);
 
         $width = !is_null($request->query->get('width')) ? (int)$request->query->get('width') : 1000;
         $height = !is_null($request->query->get('height')) ? (int)$request->query->get('height') : 1000;
 
-        $rootPictureDir = Kernel::getIntent()->getRootDir().'/web/app/account/profile_pictures/';
+        $rootPictureDir = Kernel::getIntent()->getRootDir().'/public/app/account/profile_pictures/';
 
         if (!is_null($selectedUser)) {
             if (!is_null($selectedUser->getProfile()->getPicture()) && file_exists($filename = $rootPictureDir.$selectedUser->getProfile()->getPicture())) {
                 $oImage = new SimpleImage($filename);
                 $oImage->resize($width, $height);
                 $oImage->output();
+                exit;
             } else {
-                $oImage = new SimpleImage(Kernel::getIntent()->getRootDir().'/web/assets/img/user.jpg');
+                $oImage = new SimpleImage(Kernel::getIntent()->getRootDir().'/public/assets/img/user.jpg');
                 $oImage->resize($width, $height);
                 $oImage->output();
+                exit;
             }
         } else {
             return self::__send_error_message('User not found');

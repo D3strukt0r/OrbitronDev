@@ -21,7 +21,7 @@
     <script type="text/javascript" src="{{ asset('assets/js/plugins/validation.js') }}"></script>
 {% endblock %}
 
-{% block stylesheets_code %}
+{% block stylesheets %}
     {{ parent() }}
     <style type="text/css">
         .blue-border {
@@ -30,10 +30,14 @@
     </style>
 {% endblock %}
 
-{% block javascripts_code %}
+{% block javascripts %}
     {{ parent() }}
-    Masking.initMasking();
-    Datepicker.initDatepicker();
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Masking.initMasking();
+            Datepicker.initDatepicker();
+        });
+    </script>
 {% endblock %}
 
 {% block brand %}<a class="navbar-brand" href="{{ path('app_store_store_admin', {'store': current_store.url, 'page': 'home'}) }}">{{ current_store.name }} {{ 'Admin'|trans }}</a>{% endblock %}

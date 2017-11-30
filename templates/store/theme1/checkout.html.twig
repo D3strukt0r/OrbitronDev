@@ -14,7 +14,7 @@
 'page_links': service_page_links
 } %}
 
-{% block stylesheet %}
+{% block stylesheets %}
     {{ parent() }}
     <style>
         #map {
@@ -27,7 +27,7 @@
     </style>
 {% endblock %}
 
-{% block javascript %}
+{% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
         var placeSearch, autocomplete;

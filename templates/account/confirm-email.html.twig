@@ -19,7 +19,8 @@
             src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
 {% endblock %}
 
-{% block stylesheets_code %}
+{% block stylesheets %}
+    {{ parent() }}
     <style type="text/css">
         body {
             margin: 0;

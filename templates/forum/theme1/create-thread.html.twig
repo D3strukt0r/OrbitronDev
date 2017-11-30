@@ -22,12 +22,12 @@
     </div><!-- /.container -->
 {% endblock %}
 
-{% block stylesheet %}
+{% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('assets/plugins/jqjquery-wysibb/theme/default/wbbtheme.css') }}" />
 {% endblock %}
 
-{% block javascript %}
+{% block javascripts %}
     {{ parent() }}
     <script type="text/javascript" src="{{ asset('assets/plugins/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
     <script type="text/javascript">

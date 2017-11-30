@@ -22,12 +22,14 @@
     <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
 {% endblock %}
 
-{% block javascripts_code %}
-    Page.initMap();
-    Page.initContactForm();
-{% endblock %}
-
-{% block javascript %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Page.initMap();
+            Page.initContactForm();
+        });
+    </script>
     <script type="text/javascript">
         var Page = function () {
             return {

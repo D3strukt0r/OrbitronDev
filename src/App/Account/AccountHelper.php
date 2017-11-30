@@ -50,9 +50,9 @@ class AccountHelper
 
     public static function buildPaths()
     {
-        self::$publicDir = Kernel::getIntent()->getRootDir() . '/web/app/account';
+        self::$publicDir = Kernel::getIntent()->getRootDir() . '/public/app/account';
         self::$srcDir = Kernel::getIntent()->getRootDir() . '/src/App/Account';
-        self::$twigDir = Kernel::getIntent()->getRootDir() . '/app/views/account';
+        self::$twigDir = Kernel::getIntent()->getRootDir() . '/templates/account';
     }
 
     /**

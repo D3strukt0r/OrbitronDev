@@ -22,13 +22,18 @@
     <script type="text/javascript" src="{{ asset('assets/js/plugins/parallax-slider.js') }}"></script>
 {% endblock %}
 
-{% block javascripts_code %}
+{% block javascripts %}
     {{ parent() }}
-    OwlCarousel.initOwlCarousel();
-    ParallaxSlider.initParallaxSlider();
+    <script type="text/javascript">
+        $(document).ready(function() {
+            OwlCarousel.initOwlCarousel();
+            ParallaxSlider.initParallaxSlider();
+        });
+    </script>
 {% endblock %}
 
-{% block stylesheets_code %}
+{% block stylesheets %}
+    {{ parent() }}
     <style type="text/css">
         .no-padding {
             padding-left: 0;

@@ -8,12 +8,12 @@ use Symfony\Bridge\Twig\Extension\FormExtension;
 use Symfony\Bridge\Twig\Extension\RoutingExtension;
 use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Bridge\Twig\Extension\YamlExtension;
-use Symfony\Bridge\Twig\Form\TwigRenderer;
 use Symfony\Bridge\Twig\Form\TwigRendererEngine;
 use Symfony\Component\Asset\UrlPackage;
 use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
+use Symfony\Component\Form\FormRenderer;
 use Symfony\Component\Form\Forms;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Asset\Packages;
@@ -121,12 +121,12 @@ class TemplatingContainer
         $defaultThemes[] = 'form_widget.html.twig';
         $formEngine = new TwigRendererEngine($defaultThemes, $this->twig);
         $this->twig->addRuntimeLoader(new \Twig_FactoryRuntimeLoader(array(
-            TwigRenderer::class => function () use ($formEngine, $csrfManager) {
-                return new TwigRenderer($formEngine, $csrfManager);
+            FormRenderer::class => function () use ($formEngine, $csrfManager) {
+                return new FormRenderer($formEngine, $csrfManager);
             },
         )));
 
-        $this->twig->addExtension(new FormExtension(new TwigRenderer($formEngine, $csrfManager)));
+        $this->twig->addExtension(new FormExtension());
 
         $formFactory = Forms::createFormFactoryBuilder()
             ->addExtension(new HttpFoundationExtension())

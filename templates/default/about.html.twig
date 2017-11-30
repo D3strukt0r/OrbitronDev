@@ -22,10 +22,15 @@
     <script type="text/javascript" src="{{ asset('assets/js/plugins/owl-carousel.js') }}"></script>
 {% endblock %}
 
-{% block javascripts_code %}
-    FancyBox.initFancybox();
-    OwlCarousel.initOwlCarousel();
-    ProgressBar.initProgressBarHorizontal();
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            FancyBox.initFancybox();
+            OwlCarousel.initOwlCarousel();
+            ProgressBar.initProgressBarHorizontal();
+        });
+    </script>
 {% endblock %}
 
 {% block breadcrumb %}

@@ -30,11 +30,14 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
 {% endblock %}
 
-{% block stylesheets_code %}
+{% block stylesheets %}
+    {{ parent() }}
     <style type="text/css">body{padding-top:0}</style>
 {% endblock %}
 
-{#{% block javascript %}
+{#
+{% block javascripts %}
+    {{ parent() }}
     <script type="text/javascript">
         // TODO: Add posibility to change page faster with javascript
 

@@ -21,7 +21,7 @@
     <script type="text/javascript" src="{{ asset('assets/js/plugins/validation.js') }}"></script>
 {% endblock %}
 
-{% block stylesheets_code %}
+{% block stylesheets %}
     {{ parent() }}
     <style type="text/css">
         .blue-border {
@@ -30,10 +30,14 @@
     </style>
 {% endblock %}
 
-{% block javascripts_code %}
+{% block javascripts %}
     {{ parent() }}
-    Masking.initMasking();
-    Datepicker.initDatepicker();
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Masking.initMasking();
+            Datepicker.initDatepicker();
+        });
+    </script>
 {% endblock %}
 
 {% block brand %}<a class="navbar-brand" href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'home'}) }}">{{ current_forum.name }} {{ 'Admin'|trans }}</a>{% endblock %}
