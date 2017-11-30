@@ -197,14 +197,15 @@ class AccountController extends \Controller
 
     public function panelAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
 
         $params = array();
         $params['user_id'] = USER_ID;
-        $entityManager = $this->getEntityManager();
-        $params['current_user'] = $entityManager->find(User::class, USER_ID);
+        $params['current_user'] = $em->find(User::class, USER_ID);
         $params['view_navigation'] = '';
 
         if (!LOGGED_IN) {
@@ -306,6 +307,8 @@ class AccountController extends \Controller
 
     public function usersAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
@@ -313,7 +316,7 @@ class AccountController extends \Controller
         $username = $this->parameters['username'];
         if (AccountHelper::usernameExists($this->parameters['username'])) {
             /** @var \App\Account\Entity\User $currentUser */
-            $currentUser = $this->getEntityManager()->getRepository(User::class)->findOneBy(array('username' => $username));
+            $currentUser = $em->getRepository(User::class)->findOneBy(array('username' => $username));
             return $this->render('account/user.html.twig', array(
                 'logged_in_user_id'    => USER_ID,
                 'user_exists'          => true,
@@ -332,6 +335,8 @@ class AccountController extends \Controller
 
     public function forgotAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
@@ -383,9 +388,9 @@ class AccountController extends \Controller
 
                     $userId = $token->getInformation()['user_id'];
                     /** @var \App\Account\Entity\User $user */
-                    $user = $this->getEntityManager()->find(User::class, $userId);
+                    $user = $em->find(User::class, $userId);
                     $user->setPassword($password);
-                    $this->getEntityManager()->flush();
+                    $em->flush();
                     $token->remove();
 
                     return $this->render('account/forgot-password-form.html.twig', array(
@@ -412,7 +417,7 @@ class AccountController extends \Controller
 
                     if (AccountHelper::emailExists($forgotForm->get('email')->getData())) {
                         /** @var \App\Account\Entity\User $user */
-                        $user = $this->getEntityManager()->getRepository(User::class)->findOneBy(array('email' => $forgotForm->get('email')->getData()));
+                        $user = $em->getRepository(User::class)->findOneBy(array('email' => $forgotForm->get('email')->getData()));
                         $tokenGenerator = new Token();
                         $token = $tokenGenerator->generateToken('reset_password', (new \DateTime())->modify('+1 day'), array('user_id' => $user->getId()));
 
@@ -449,12 +454,14 @@ class AccountController extends \Controller
 
     public function confirmAction()
     {
+        $em = $this->getEntityManager();
+
         if (is_null(AccountHelper::updateSession())) {
             return $this->redirectToRoute('app_account_logout');
         }
 
         /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
+        $currentUser = $em->find(User::class, USER_ID);
         $request = $this->getRequest();
         $sendEmailForm = $this->createForm(ConfirmEmailType::class);
 
@@ -472,7 +479,7 @@ class AccountController extends \Controller
                 ));
             } else {
                 $currentUser->setEmailVerified(true);
-                $this->getEntityManager()->flush();
+                $em->flush();
                 $token->remove();
                 $successMessage = 'Successful verified your email';
                 return $this->render('account/confirm-email.html.twig', array(
@@ -516,16 +523,18 @@ class AccountController extends \Controller
 
     public function oauthServer()
     {
+        $em = $this->getEntityManager();
+
         /** @var \App\Account\Repository\OAuthClientRepository $clientStorage */
-        $clientStorage  = $this->getEntityManager()->getRepository(OAuthClient::class);
+        $clientStorage  = $em->getRepository(OAuthClient::class);
         /** @var \App\Account\Repository\UserRepository $userStorage */
-        $userStorage = $this->getEntityManager()->getRepository(User::class);
+        $userStorage = $em->getRepository(User::class);
         /** @var \App\Account\Repository\OAuthAccessTokenRepository $accessTokenStorage */
-        $accessTokenStorage  = $this->getEntityManager()->getRepository(OAuthAccessToken::class);
+        $accessTokenStorage  = $em->getRepository(OAuthAccessToken::class);
         /** @var \App\Account\Repository\OAuthAuthorizationCodeRepository $authorizationCodeStorage */
-        $authorizationCodeStorage = $this->getEntityManager()->getRepository(OAuthAuthorizationCode::class);
+        $authorizationCodeStorage = $em->getRepository(OAuthAuthorizationCode::class);
         /** @var \App\Account\Repository\OAuthRefreshTokenRepository $refreshTokenStorage */
-        $refreshTokenStorage = $this->getEntityManager()->getRepository(OAuthRefreshToken::class);
+        $refreshTokenStorage = $em->getRepository(OAuthRefreshToken::class);
 
         // Pass the doctrine storage objects to the OAuth2 server class
         $this->oauthServer = new \OAuth2\Server(array(
@@ -575,6 +584,7 @@ class AccountController extends \Controller
     public function oauthAuthorizeAction()
     {
         $this->oauthServer();
+        $em = $this->getEntityManager();
 
         $request2 = $this->getRequest();
         $request = \OAuth2\Request::createFromGlobals();
@@ -584,7 +594,6 @@ class AccountController extends \Controller
         if (!$this->oauthServer->validateAuthorizeRequest($request, $response)) {
             //return $this->oauthServer->getResponse();
             $response->send();
-            exit;
         }
         // display an authorization form
         // Get all information about the Client requesting an Auth code
@@ -593,7 +602,7 @@ class AccountController extends \Controller
         $scopes = array();
         foreach ($clientInfo->getScopes() as $scope) {
             /** @var \App\Account\Entity\OAuthScope $getScope */
-            $getScope = $this->getEntityManager()->getRepository(OAuthScope::class)->findOneBy(array('scope' => $scope));
+            $getScope = $em->getRepository(OAuthScope::class)->findOneBy(array('scope' => $scope));
             if (!is_null($getScope)) {
                 $scopes[] = $getScope->getName();
             }
@@ -616,7 +625,7 @@ class AccountController extends \Controller
         //     $code = substr($response->getHttpHeader('Location'), strpos($response->getHttpHeader('Location'), 'code=') + 5, 40);
         //     exit("SUCCESS! Authorization Code: $code");
         // }
-        return $response->send();
+        $response->send();
     }
 
     // curl https://account.orbitrondev.org/oauth/token -d 'grant_type=authorization_code&code=AUTHORIZATION_CODE&client_id=testclient&client_secret=testpass&redirect_uri=http://d3strukt0r.esy.es'
@@ -626,7 +635,9 @@ class AccountController extends \Controller
 
         // Handle a request for an OAuth2.0 Access Token and send the response to the client
         $request = \OAuth2\Request::createFromGlobals();
-        return $this->oauthServer->handleTokenRequest($request)->send();
+        /** @var \OAuth2\Response $response */
+        $response = $this->oauthServer->handleTokenRequest($request);
+        $response->send();
     }
 
     // curl https://account.orbitrondev.org/oauth/resource -d 'access_token=YOUR_TOKEN'
