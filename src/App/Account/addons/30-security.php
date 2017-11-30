@@ -48,11 +48,11 @@ function acp_html_login_log()
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_delete_account($controller)
+function acp_html_delete_account(Controller $controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);

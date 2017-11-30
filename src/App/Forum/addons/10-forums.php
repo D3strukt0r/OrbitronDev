@@ -29,12 +29,12 @@ ForumAcp::addMenu(array(
 ));
 
 /**
- * @param \Controller\ForumController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_board_list($controller)
+function acp_html_board_list(Controller $controller)
 {
     $em = $controller->getEntityManager();
 
@@ -55,12 +55,12 @@ function acp_html_board_list($controller)
 }
 
 /**
- * @param \Controller\ForumController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_new_board($controller)
+function acp_html_new_board(Controller $controller)
 {
     $em = $controller->getEntityManager();
     $request = $controller->getRequest();

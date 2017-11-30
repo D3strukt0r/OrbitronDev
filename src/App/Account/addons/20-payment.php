@@ -36,21 +36,21 @@ if (!isset($indirectly)) {
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_buy_credits($controller)
+function acp_html_buy_credits(Controller $controller)
 {
     return $controller->renderView('account/panel/buy-credits.html.twig');
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_plans($controller)
+function acp_html_plans(Controller $controller)
 {
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
 

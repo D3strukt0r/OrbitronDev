@@ -10,11 +10,11 @@ ForumAcp::addGroup(array(
 ));
 
 /**
- * @param \Controller\ForumController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_not_found($controller)
+function acp_not_found(Controller $controller)
 {
     return $controller->renderView('forum/theme_admin1/not-found.html.twig');
 }

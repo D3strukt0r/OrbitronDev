@@ -33,7 +33,7 @@ class Template
     /**
      * @param \App\Template\TemplateLoad $template
      */
-    public function addTemplate($template)
+    public function addTemplate(TemplateLoad $template)
     {
         $this->output_data .= $template->__getHtml();
     }
@@ -111,8 +111,8 @@ class Template
     }
 
     /**
-     * @param string $param
-     * @param string $value
+     * @param string        $param
+     * @param string|object $value
      */
     public function setParam($param, $value)
     {

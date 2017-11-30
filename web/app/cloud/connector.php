@@ -20,12 +20,11 @@ if (USER_ID != $_GET['user_id']) {
     exit;
 }
 
-// elFinder autoload
-//require './autoload.php';
 // ===============================================
 
 // Enable FTP connector netmount
 elFinder::$netDrivers['ftp'] = 'FTP';
+
 // ===============================================
 
 // // Required for Dropbox network mount
@@ -110,12 +109,13 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
 $opts = array(
 	// 'debug' => true,
 	'roots' => array(
+
 		// Items volume
 		array(
 		    'alias'         => 'Home',
 			'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
 			'path'          => '../../../app/data/cloud/storage/'.$_GET['user_id'].'/', // path to files (REQUIRED)
-			'URL'           => '/files/', // URL to files (REQUIRED)
+			'URL'           => '/files/',                   // URL to files (REQUIRED)
 			'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
 			'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
@@ -123,6 +123,7 @@ $opts = array(
 			'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
 			'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
 		),
+
 		// Trash volume
 		array(
 			'id'            => '1',
@@ -130,7 +131,7 @@ $opts = array(
 			'path'          => '../../../app/data/cloud/storage/'.$_GET['user_id'].'/.trash/',
 			'tmbURL'        => dirname($_SERVER['PHP_SELF']) . '/../../../app/data/cloud/storage/'.$_GET['user_id'].'/.trash/.tmb/',
 			'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-			'uploadDeny'    => array('all'),                // Recomend the same settings as the original volume that uses the trash
+			'uploadDeny'    => array('all'),                // Recommend the same settings as the original volume that uses the trash
 			'uploadAllow'   => array('image', 'text/plain'),// Same as above
 			'uploadOrder'   => array('deny', 'allow'),      // Same as above
 			'accessControl' => 'access',                    // Same as above

@@ -10,11 +10,11 @@ AccountAcp::addGroup(array(
 ));
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_not_found($controller)
+function acp_not_found(Controller $controller)
 {
     return $controller->renderView('account/panel/not-found.html.twig');
 }

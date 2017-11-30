@@ -306,7 +306,7 @@ class Kernel
     /**
      * @param \Exception $exception
      */
-    public static function exception($exception)
+    public static function exception(\Exception $exception)
     {
         ?>
         <title>Server ERROR</title>

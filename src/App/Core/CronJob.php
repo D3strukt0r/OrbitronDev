@@ -3,14 +3,12 @@
 namespace App\Core;
 
 use App\Core\Entity\CronJob as CronJobEntity;
-use Exception;
-use Kernel;
 
 class CronJob
 {
     public static function execute()
     {
-        $em = Kernel::getIntent()->getEntityManager();
+        $em = \Kernel::getIntent()->getEntityManager();
 
         $cronJobs = $em->getRepository(CronJobEntity::class)->findBy(
             array('enabled' => true),
@@ -31,7 +29,7 @@ class CronJob
      *
      * @return integer
      */
-    public static function getNextExec($job)
+    public static function getNextExec(CronJobEntity $job)
     {
         if ($job) {
             $lastExec = $job->getLastExec()->getTimestamp();
@@ -48,19 +46,19 @@ class CronJob
      *
      * @throws \Exception
      */
-    public static function runJob($job)
+    public static function runJob(CronJobEntity $job)
     {
         if ($job) {
-            $fileDir = Kernel::getIntent()->getRootDir().'/src/App/Core/cron_job/'.$job->getScriptFile();
+            $fileDir = \Kernel::getIntent()->getRootDir().'/src/App/Core/cron_job/'.$job->getScriptFile();
 
             if (file_exists($fileDir)) {
                 include $fileDir;
 
-                $em = Kernel::getIntent()->getEntityManager();
+                $em = \Kernel::getIntent()->getEntityManager();
                 $job->setLastExec(new \DateTime());
                 $em->flush();
             } else {
-                throw new Exception('[CronJob][Fatal Error]: Could not execute cron job. Could not locate script file ("'.$fileDir.'")');
+                throw new \Exception('[CronJob][Fatal Error]: Could not execute cron job. Could not locate script file ("'.$fileDir.'")');
             }
         }
     }

@@ -32,7 +32,7 @@ class TranslatingContainer
      *
      * @param \Kernel $kernel
      */
-    public function __construct($kernel)
+    public function __construct(\Kernel $kernel)
     {
         $this->kernel = $kernel;
 

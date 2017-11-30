@@ -373,7 +373,7 @@ class AccountHelper
      *
      * @return bool
      */
-    public static function passwordMatches($user, $password)
+    public static function passwordMatches(User $user, $password)
     {
         return password_verify($password, $user->getPassword());
     }

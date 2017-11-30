@@ -10,7 +10,6 @@ use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Bridge\Twig\Extension\YamlExtension;
 use Symfony\Bridge\Twig\Form\TwigRenderer;
 use Symfony\Bridge\Twig\Form\TwigRendererEngine;
-use Symfony\Component\Asset\Package;
 use Symfony\Component\Asset\UrlPackage;
 use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
 use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
@@ -41,7 +40,7 @@ class TemplatingContainer
      * @param \Kernel $kernel
      * @param bool    $cache
      */
-    public function __construct($kernel, $cache = false)
+    public function __construct(\Kernel $kernel, $cache = false)
     {
         ///////// Form extension //////
         // the path to TwigBridge library so Twig can locate the
@@ -92,7 +91,7 @@ class TemplatingContainer
     /**
      * @param \Kernel $kernel
      */
-    public function translationExtension($kernel)
+    public function translationExtension(\Kernel $kernel)
     {
         /** \Symfony\Component\Translation\Translator $translator */
         $translator = $kernel->get('translator');
@@ -102,7 +101,7 @@ class TemplatingContainer
     /**
      * @param \Kernel $kernel
      */
-    public function formExtension($kernel)
+    public function formExtension(\Kernel $kernel)
     {
         // CSRF
         $session = $kernel->get('session');
@@ -155,7 +154,7 @@ class TemplatingContainer
     /**
      * @param \Kernel $kernel
      */
-    public function routingExtension($kernel)
+    public function routingExtension(\Kernel $kernel)
     {
         $generator = new UrlGenerator($kernel->get('routing.routes'), $kernel->get('routing.context'));
         $this->twig->addExtension(new RoutingExtension($generator));

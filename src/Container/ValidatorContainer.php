@@ -12,7 +12,7 @@ class ValidatorContainer
      *
      * @param \Kernel $kernel
      */
-    public function __construct($kernel)
+    public function __construct(\Kernel $kernel)
     {
 
         $instance = Validation::createValidatorBuilder();

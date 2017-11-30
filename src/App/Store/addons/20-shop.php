@@ -51,12 +51,12 @@ StoreAcp::addMenu(array(
 ));
 
 /**
- * @param \Controller\StoreController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_catalogue($controller)
+function acp_html_catalogue(Controller $controller)
 {
     $em = $controller->getEntityManager();
     $request = $controller->getRequest();
@@ -83,12 +83,12 @@ function acp_html_catalogue($controller)
 }
 
 /**
- * @param \Controller\StoreController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_orders($controller)
+function acp_html_orders(Controller $controller)
 {
     $em = $controller->getEntityManager();
 
@@ -145,12 +145,12 @@ function acp_html_orders($controller)
 }
 
 /**
- * @param \Controller\StoreController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_vouchers($controller)
+function acp_html_vouchers(Controller $controller)
 {
     $em = $controller->getEntityManager();
 
@@ -171,12 +171,12 @@ function acp_html_vouchers($controller)
 }
 
 /**
- * @param \Controller\StoreController $controller
+ * @param \Controller $controller
  *
  * @return \Symfony\Component\HttpFoundation\Response|null
  * @throws Exception
  */
-function acp_html_change_order_status_to_1($controller)
+function acp_html_change_order_status_to_1(Controller $controller)
 {
     $em = $controller->getEntityManager();
     $request = $controller->getRequest();
@@ -204,12 +204,12 @@ function acp_html_change_order_status_to_1($controller)
 }
 
 /**
- * @param \Controller\StoreController $controller
+ * @param \Controller $controller
  *
  * @return \Symfony\Component\HttpFoundation\Response|null
  * @throws Exception
  */
-function acp_html_change_order_status_to_2($controller)
+function acp_html_change_order_status_to_2(Controller $controller)
 {
     $em = $controller->getEntityManager();
     $request = $controller->getRequest();

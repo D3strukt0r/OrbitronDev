@@ -7,6 +7,7 @@ use App\Account\Entity\UserAddress;
 use App\Account\Form\AddAddressType;
 use App\Account\Form\EditAccountType;
 use App\Account\Form\EditProfileType;
+use Symfony\Component\Form\FormError;
 
 if (!isset($indirectly)) {
     AccountAcp::addGroup(array(
@@ -41,11 +42,11 @@ if (!isset($indirectly)) {
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_account($controller)
+function acp_html_account(Controller $controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -154,9 +155,19 @@ function acp_html_account($controller)
                 }
                 $controller->getEntityManager()->flush();
             }
-            // Else do nothing
         } else {
             $errorMessages['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
+        }
+
+        // Save all errors in form
+        if (count($errorMessages)) {
+            foreach ($errorMessages as $field => $message) {
+                if ($field == 'form') {
+                    $editAccountForm->addError(new FormError($message));
+                } else {
+                    $editAccountForm->get($field)->addError(new FormError($message));
+                }
+            }
         }
     }
 
@@ -167,11 +178,11 @@ function acp_html_account($controller)
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_profile($controller)
+function acp_html_profile(Controller $controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -213,6 +224,17 @@ function acp_html_profile($controller)
         } else {
             $errorMessages['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
         }
+
+        // Save all errors in form
+        if (count($errorMessages)) {
+            foreach ($errorMessages as $field => $message) {
+                if ($field == 'form') {
+                    $editProfileForm->addError(new FormError($message));
+                } else {
+                    $editProfileForm->get($field)->addError(new FormError($message));
+                }
+            }
+        }
     }
 
     return $controller->renderView('account/panel/profile.html.twig', array(
@@ -222,11 +244,11 @@ function acp_html_profile($controller)
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_add_address($controller)
+function acp_html_add_address(Controller $controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);

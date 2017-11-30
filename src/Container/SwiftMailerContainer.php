@@ -2,7 +2,6 @@
 
 namespace Container;
 
-use Exception;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 
@@ -12,10 +11,8 @@ class SwiftMailerContainer
      * Templating constructor.
      *
      * @param \Kernel $kernel
-     *
-     * @throws Exception
      */
-    public function __construct($kernel)
+    public function __construct(\Kernel $kernel)
     {
         $config = $kernel->get('config');
 

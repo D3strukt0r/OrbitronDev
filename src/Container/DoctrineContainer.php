@@ -18,7 +18,7 @@ class DoctrineContainer
      *
      * @throws \Exception
      */
-    public function __construct($kernel)
+    public function __construct(\Kernel $kernel)
     {
         $config = $kernel->get('config');
 

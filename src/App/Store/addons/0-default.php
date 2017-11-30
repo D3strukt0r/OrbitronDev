@@ -10,11 +10,11 @@ StoreAcp::addGroup(array(
 ));
 
 /**
- * @param \Controller\StoreController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_not_found($controller)
+function acp_not_found(Controller $controller)
 {
     return $controller->renderView('store/theme_admin1/not-found.html.twig');
 }

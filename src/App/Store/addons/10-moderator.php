@@ -25,23 +25,23 @@ StoreAcp::addMenu(array(
 ));
 
 /**
- * @param \Controller\StoreController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_advertisement($controller)
+function acp_html_advertisement(Controller $controller)
 {
     return $controller->renderView('store/theme_admin1/advertisement.html.twig');
 }
 
 /**
- * @param \Controller\StoreController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_mod_tools($controller)
+function acp_html_mod_tools(Controller $controller)
 {
     return $controller->renderView('store/theme_admin1/mod_tools.html.twig');
 }

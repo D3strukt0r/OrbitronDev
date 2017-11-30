@@ -15,12 +15,12 @@ AccountAcp::addMenu(array(
 ));
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_home($controller)
+function acp_html_home(Controller $controller)
 {
     /** @var \App\Account\Entity\User $user */
     $user = $controller->getEntityManager()->find(User::class, USER_ID);

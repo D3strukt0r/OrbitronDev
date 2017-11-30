@@ -246,7 +246,7 @@ class StoreCheckout
      *
      * @return array|null
      */
-    public function getCart($store, $additional_info = false, $add_total = false)
+    public function getCart(Store $store, $additional_info = false, $add_total = false)
     {
         if (is_null($store)) {
             return null;

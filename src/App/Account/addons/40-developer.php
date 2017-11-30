@@ -54,11 +54,11 @@ if (!isset($indirectly)) {
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_developer_create_application($controller)
+function acp_html_developer_create_application(Controller $controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -93,11 +93,11 @@ function acp_html_developer_create_application($controller)
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_developer_applications($controller)
+function acp_html_developer_applications(Controller $controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -113,12 +113,12 @@ function acp_html_developer_applications($controller)
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  * @throws Exception
  */
-function acp_html_developer_show_applications($controller)
+function acp_html_developer_show_applications(Controller $controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
@@ -145,11 +145,11 @@ function acp_html_developer_show_applications($controller)
 }
 
 /**
- * @param \Controller\AccountController $controller
+ * @param \Controller $controller
  *
  * @return string
  */
-function acp_html_developer_register($controller)
+function acp_html_developer_register(Controller $controller)
 {
     /** @var \App\Account\Entity\User $currentUser */
     $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
