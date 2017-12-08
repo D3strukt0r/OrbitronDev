@@ -1,154 +1,282 @@
-{% extends 'default/layout.html.twig' %}
+{% extends 'layout.html.twig' %}
 
-{% block title %}{{ 'Contact us'|trans }} | {{ parent() }}{% endblock %}
+{% block title %}Contact us | {{ parent() }}{% endblock %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('vendor/cubeportfolio-full/cubeportfolio/css/cubeportfolio.min.css', 'local-theme') }}">
+{% block stylesheets_implemeting_plugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
+    <!--[if lt IE 9]><link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms-ie8.css') }}" /><![endif]-->
+{% endblock %}
+
+{% block stylesheets_page_style %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/css/pages/page_contact.css') }}" />
+{% endblock %}
+
+{% block javascripts_implementing_plugins %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyBSO1fpoQuukeVKiueZxzqhLCFlkgP0IMM"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gmaps.js/0.4.25/gmaps.min.js"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('vendor/gmaps/gmaps.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('js/components/gmap/hs.map.js', 'local-theme') }}"></script>
-    <script>
-        // initialization of google map
-        function initMap() {
-            $.HSCore.components.HSGMap.init('.js-g-map');
-        }
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Page.initMap();
+            Page.initContactForm();
+        });
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSO1fpoQuukeVKiueZxzqhLCFlkgP0IMM&callback=initMap" async defer></script>
+    <script type="text/javascript">
+        var Page = function () {
+            return {
+                //Basic Map
+                initMap: function () {
+                    var map;
+                    $(document).ready(function () {
+                        map = new GMaps({
+                            div: '#map',
+                            scrollwheel: false,
+                            lat: 40.748866,
+                            lng: -73.988366
+                        });
+
+                        var marker = map.addMarker({
+                            lat: 40.748866,
+                            lng: -73.988366,
+                            title: 'Company, Inc.'
+                        });
+                    });
+                },
+
+                //Panorama Map
+                initPanorama: function () {
+                    var panorama;
+                    $(document).ready(function () {
+                        panorama = GMaps.createPanorama({
+                            el: '#panorama',
+                            lat: 40.748866,
+                            lng: -73.988366
+                        });
+                    });
+                },
+
+                //Contact Form
+                initContactForm: function () {
+                    // Validation
+                    $("#contact-form").validate({
+                        // Rules for form validation
+                        rules: {
+                            'form[name]': {
+                                required: true
+                            },
+                            'form[email]': {
+                                required: true,
+                                email: true
+                            },
+                            'form[subject]': {
+                                required: true,
+                                minlength: 10
+                            },
+                            'form[message]': {
+                                required: true,
+                                minlength: 10
+                            },
+                            captcha: {
+                                required: true,
+                                remote: '/contact?verify_captcha'
+                            }
+                        },
+
+                        // Messages for form validation
+                        messages: {
+                            'form[name]': {
+                                required: 'Please enter your name'
+                            },
+                            'form[email]': {
+                                required: 'Please enter your email address',
+                                email: 'Please enter a VALID email address'
+                            },
+                            'form[subject]': {
+                                required: 'Please enter your subject'
+                            },
+                            'form[message]': {
+                                required: 'Please enter your message'
+                            },
+                            captcha: {
+                                required: 'Please enter characters',
+                                remote: 'Correct captcha is required'
+                            }
+                        },
+
+                        // Ajax form submition
+                        submitHandler: function(form) {
+                            $(form).ajaxSubmit({
+                                beforeSend: function() {
+                                    $("#contact-form").find('button[type="submit"]').attr('disabled', true);
+                                },
+                                success: function() {
+                                    $("#contact-form").addClass('submited');
+                                }
+                            });
+                        },
+
+                        // Do not change code below
+                        errorPlacement: function(error, element) {
+                            error.insertAfter(element.parent());
+                        }
+                    });
+                }
+            };
+        }();
+    </script>
 {% endblock %}
 
-{% block content %}
-    <!-- Breadcrumbs -->
-    <section class="g-bg-gray-light-v5 g-py-50">
+{% block breadcrumb %}
+    <!--=== Breadcrumbs ===-->
+    <div class="breadcrumbs">
         <div class="container">
-            <div class="d-sm-flex text-center">
-                <div class="align-self-center">
-                    <h2 class="h3 g-font-weight-300 w-100 g-mb-10 g-mb-0--md">{{ 'Contact us'|trans }}</h2>
-                </div>
-
-                <div class="align-self-center ml-auto">
-                    <ul class="u-list-inline">
-                        <li class="list-inline-item g-mr-5">
-                            <a class="u-link-v5 g-color-main g-color-primary--hover" href="{{ path('app_default_index') }}">{{ 'Home'|trans }}</a>
-                            <i class="g-color-gray-light-v2 g-ml-5">/</i>
-                        </li>
-                        <li class="list-inline-item g-color-primary">
-                            <span>{{ 'Contact us'|trans }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+            <h1 class="pull-left">{{ 'Our Contacts'|trans }}</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="{{ path('app_default_index') }}">{{ 'Home'|trans }}</a></li>
+                <li class="active">{{ 'Contacts'|trans }}</li>
+            </ul>
         </div>
-    </section>
-    <!-- End Breadcrumbs -->
+    </div><!--/breadcrumbs-->
+    <!--=== End Breadcrumbs ===-->
+{% endblock %}
 
-    <!-- Google Map -->
-    <div id="GMapCustomized-light" class="js-g-map embed-responsive embed-responsive-21by9 g-height-400" data-type="custom" data-lat="40.674" data-lng="-73.946" data-zoom="12" data-title="Agency" data-styles='[["", "", [{"saturation":-100},{"lightness":51},{"visibility":"simplified"}]], ["", "labels", [{"visibility":"on"}]], ["water", "", [{"color":"#bac6cb"}]] ]'
-         data-pin="true" data-pin-icon="{{ asset('img/icons/pin/green.png', 'local-theme') }}">
-    </div>
-    <!-- End Google Map -->
+{% block header %}
+<!-- Google Map -->
+<div id="map" class="map"></div><!---/map-->
+<!-- End Google Map -->
+{% endblock %}
 
-    <section class="container g-pt-100 g-pb-40">
-        <div class="row justify-content-between">
-            <div class="col-md-7 g-mb-60">
-                {% for message in app.session.flashbag.get('success') %}
-                    <!-- Teal Alert -->
-                    <div class="alert alert-dismissible fade show g-bg-teal g-color-white rounded-0" role="alert">
-                        <button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
+{% block body %}
+    <!--=== Content Part  ===-->
+    <div class="container content">
+        <div class="row margin-bottom-30">
+            <div class="col-md-9 mb-margin-bottom-30">
+                <div class="headline"><h2>Contact Form</h2></div>
+                <p>Contact us if you have any questions to us, e.g. Information about a project or you need help for one of our services or you want to improve our website or services. Simply everything you want.</p>
+                <p>If you want to contact us with your email client (e.g. Hotmail) you can use this E-mail: <a href="mailto:info@orbitrondev.org">info@orbitrondev.org</a></p><br />
 
-                        <div class="media">
-                            <span class="d-flex g-mr-10 g-mt-5">
-                                <i class="icon-check g-font-size-25"></i>
-                            </span>
-                            <span class="media-body align-self-center">
-                                {{ message|trans }}
-                            </span>
+                {% if app.request.get('sent') is not empty %}
+                    <br />
+                    {% if app.request.get('sent') == 1 %}
+                        <div class="alert alert-success fade in alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            {{ 'Your message was successfully sent! We will try to contact you as soon as possible.'|trans }}
                         </div>
-                    </div>
-                    <!-- End Teal Alert -->
-                {% endfor %}
-                {% for message in app.session.flashbag.get('failure') %}
-                    <!-- Red Alert -->
-                    <div class="alert alert-dismissible fade show g-bg-red g-color-white rounded-0" role="alert">
-                        <button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-
-                        <div class="media">
-                            <span class="d-flex g-mr-10 g-mt-5">
-                                <i class="icon-ban g-font-size-25"></i>
-                            </span>
-                            <span class="media-body align-self-center">
-                                {{ message|trans }}
-                            </span>
+                    {% else %}
+                        <div class="alert alert-danger fade in alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                            {{ 'Your message couldn\'t be sent. Try again!'|trans }}
                         </div>
+                    {% endif %}
+                {% endif %}
+
+                {{ form_start(contact_form, {'action': path('app_default_contact'), 'attr': {'class': 'sky-form sky-changes-3', 'id': 'contact-form'}}) }}
+                    {{ form_row(contact_form._token) }}
+                    <fieldset>
+                        {{ form_errors(contact_form) }}
+                        <div class="row">
+                            <section class="col col-6">
+                                {{ form_label(contact_form.name, null, {'label_attr': {'class': 'label'}}) }}
+                                <label class="input">
+                                    <i class="icon-append fa fa-user"></i>
+                                    {{ form_widget(contact_form.name) }}
+                                </label>
+                                <div class="note note-error">{{ form_errors(contact_form.name) }}</div>
+                            </section>
+                            <section class="col col-6">
+                               {{ form_label(contact_form.email, null, {'label_attr': {'class': 'label'}}) }}
+                                <label class="input">
+                                    <i class="icon-append fa fa-envelope-o"></i>
+                                    {{ form_widget(contact_form.email) }}
+                                </label>
+                                <div class="note note-error">{{ form_errors(contact_form.email) }}</div>
+                            </section>
+                        </div>
+
+                        <section>
+                            {{ form_label(contact_form.subject, null, {'label_attr': {'class': 'label'}}) }}
+                            <label class="input">
+                                <i class="icon-append fa fa-tag"></i>
+                                {{ form_widget(contact_form.subject) }}
+                            </label>
+                            <div class="note note-error">{{ form_errors(contact_form.subject) }}</div>
+                        </section>
+
+                        <section>
+                            {{ form_label(contact_form.message, null, {'label_attr': {'class': 'label'}}) }}
+                            <label class="textarea">
+                                <i class="icon-append fa fa-comment"></i>
+                                {{ form_widget(contact_form.message) }}
+                            </label>
+                            <div class="note note-error">{{ form_errors(contact_form.message) }}</div>
+                        </section>
+
+                        <section>
+                            <label class="input input-captcha">
+                                {{ form_widget(contact_form.recaptcha) }}
+                            </label>
+                        </section>
+
+                        <section>
+                            <label class="checkbox">{{ form_widget(contact_form.send_to_own) }}<i></i>{{ 'Send a copy to my e-mail address'|trans }}</label>
+                        </section>
+                    </fieldset>
+
+                    <footer>
+                        {{ form_widget(contact_form.send, {'attr': {'class': 'btn-u'}}) }}
+                    </footer>
+
+                    <div class="message">
+                        <i class="rounded-x fa fa-check"></i>
+                        <p>{{ 'Your message was successfully sent! We will try to contact you as soon as possible.'|trans }}</p>
                     </div>
-                    <!-- End Red Alert -->
-                {% endfor %}
-
-                <!-- Contact Form -->
-                {{ form_start(contact_form, {'action': path('app_default_contact')}) }}
-                <div class="row">
-                    {{ form_errors(contact_form) }}
-                    <div class="col-md-6 form-group g-mb-20">
-                        {{ form_label(contact_form.name, null, {'label_attr': {'class': 'g-color-gray-dark-v2 g-font-size-13'}}) }}
-                        {{ form_widget(contact_form.name, {'attr': {'class': 'form-control g-color-gray-dark-v5 g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--focus rounded-3 g-py-13 g-px-15'}}) }}
-                        <div class="note note-error">{{ form_errors(contact_form.name) }}</div>
-                    </div>
-
-                    <div class="col-md-6 form-group g-mb-20">
-                        {{ form_label(contact_form.email, null, {'label_attr': {'class': 'g-color-gray-dark-v2 g-font-size-13'}}) }}
-                        {{ form_widget(contact_form.email, {'attr': {'class': 'form-control g-color-gray-dark-v5 g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--focus rounded-3 g-py-13 g-px-15'}}) }}
-                        <div class="note note-error">{{ form_errors(contact_form.email) }}</div>
-                    </div>
-
-                    <div class="col-md-12 form-group g-mb-20">
-                        {{ form_label(contact_form.subject, null, {'label_attr': {'class': 'g-color-gray-dark-v2 g-font-size-13'}}) }}
-                        {{ form_widget(contact_form.subject, {'attr': {'class': 'form-control g-color-gray-dark-v5 g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--focus rounded-3 g-py-13 g-px-15'}}) }}
-                        <div class="note note-error">{{ form_errors(contact_form.subject) }}</div>
-                    </div>
-
-                    <div class="col-md-12 form-group g-mb-40">
-                        {{ form_label(contact_form.message, null, {'label_attr': {'class': 'g-color-gray-dark-v2 g-font-size-13'}}) }}
-                        {{ form_widget(contact_form.message, {'attr': {'class': 'form-control g-color-gray-dark-v5 g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--focus g-resize-none rounded-3 g-py-13 g-px-15'}}) }}
-                        <div class="note note-error">{{ form_errors(contact_form.message) }}</div>
-                    </div>
-                </div>
-
-                <div class="g-mb-20">
-                    {{ form_widget(contact_form.recaptcha) }}
-                </div>
-
-                <div class="g-mb-20">
-                    <label class="u-check g-pl-25">
-                        {{ form_widget(contact_form.send_to_own, {'attr': {'class': 'g-hidden-xs-up g-pos-abs g-top-0 g-left-0'}}) }}
-                        <span class="u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0"><i class="fa" data-check-icon=""></i></span>
-                        {{ contact_form.send_to_own.vars.label }}
-                    </label>
-                </div>
-
-                <div>{{ form_widget(contact_form.send, {'attr': {'class': 'btn u-btn-primary rounded-3 g-py-12 g-px-20'}}) }}</div>
                 {{ form_end(contact_form) }}
-                <!-- End Contact Form -->
-            </div>
+            </div><!--/col-md-9-->
 
-            <div class="col-md-4">
-                <h1 class="g-font-weight-300 mb-5">{{ 'OrbitronDev' }}</h1>
+            <div class="col-md-3">
+                <!-- Contacts -->
+                <div class="headline"><h2>Contacts</h2></div>
+                {#
+                <ul class="list-unstyled who margin-bottom-30">
+                    <li><a href="#"><i class="fa fa-home"></i>Salzstrasse 50, CH-4313 Möhlin</a></li>
+                    <li><a href="mailto:team-orbitron@hotmail.com"><i class="fa fa-envelope"></i>team-orbitron@hotmail.com</a></li>
+                    <li><a href="#"><i class="fa fa-phone"></i>+41 (0)76 804 43 34</a></li>
+                    <li><a href="#"><i class="fa fa-globe"></i>https://orbitrondev.org</a></li>
+                </ul>
+                #}
+                <ul class="list-unstyled who margin-bottom-30">
+                    <li>Please only use our email or the contact form to contact us </li>
+                    <li><a href="mailto:info@orbitrondev.org"><i class="fa fa-envelope"></i>info@orbitrondev.org</a></li>
+                    <li><a href="#"><i class="fa fa-globe"></i>https://www.orbitrondev.org</a></li>
+                </ul>
 
-                <div class="mb-4">
-                    <h2 class="h5 g-color-gray-dark-v2 g-font-weight-600">Email us:</h2>
-                    <p class="g-color-gray-dark-v4">{{ 'Email:'|trans }}: <a class="g-color-gray-dark-v2" href="mailto:info@orbitrondev.org">info@orbitrondev.org</a>
-                    </p>
-                </div>
+                {#<!-- Business Hours -->
+                <div class="headline"><h2>Business Hours</h2></div>
+                <ul class="list-unstyled margin-bottom-30">
+                    <li><strong>Monday-Friday:</strong> 10:00 to 20:00</li>
+                    <li><strong>Saturday:</strong> 11:00 to 15:00</li>
+                    <li><strong>Sunday:</strong> Closed</li>
+                </ul>#}
 
-                <div class="g-mb-30">
-                    <p class="g-color-gray-dark-v5 g-font-weight-600 g-font-size-16"><em>Monday - Friday: 9:00 AM to 6:00 PM</em>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+                {#<!-- Why we are? -->
+                <div class="headline"><h2>Why we are?</h2></div>
+                <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum.</p>
+                <ul class="list-unstyled">
+                    <li><i class="fa fa-check color-green"></i> Odio dignissimos ducimus</li>
+                    <li><i class="fa fa-check color-green"></i> Blanditiis praesentium volup</li>
+                    <li><i class="fa fa-check color-green"></i> Eos et accusamus</li>
+                </ul>#}
+            </div><!--/col-md-3-->
+        </div><!--/row-->
+    </div><!--/container-->
+    <!--=== End Content Part  ===-->
 {% endblock %}

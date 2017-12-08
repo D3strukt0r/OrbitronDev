@@ -47,7 +47,7 @@ class ContactType extends AbstractType
             ->add('message', TextareaType::class, array(
                 'label'       => 'Message',
                 'attr'        => array(
-                    'rows' => 7,
+                    'rows' => 6,
                 ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your message')),

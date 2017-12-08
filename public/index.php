@@ -38,7 +38,7 @@ define('MAINTENANCE', false);
 define('DEV_ONLY_INTERNAL', false);
 
 if (MAINTENANCE) {
-    echo file_get_contents(__DIR__.'/../templates/error/maintenance.phtml');
+    echo file_get_contents(__DIR__.'/../app/views/error/maintenance.phtml');
     exit;
 }
 

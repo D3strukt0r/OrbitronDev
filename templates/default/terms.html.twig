@@ -1,84 +1,33 @@
-{% extends 'default/layout.html.twig' %}
+{% extends 'layout.html.twig' %}
 
-{% block title %}{{ 'Terms of Service'|trans }} | {{ parent() }}{% endblock %}
+{% block title %}Terms of Service | {{ parent() }}{% endblock %}
 
-{% block javascripts %}
-    <script src="{{ asset('js/components/hs.sticky-block.js', 'local-theme') }}"></script>
-    <script>
-        $(document).load(function () {
-            // initialization of sticky blocks
-            $.HSCore.components.HSStickyBlock.init('.js-sticky-block');
-        });
-    </script>
+{% block breadcrumb %}
+    <!--=== Breadcrumbs ===-->
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">Terms of Service</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="{{ path('app_default_index') }}">Home</a></li>
+                <li class="active">Terms of Service</li>
+            </ul>
+        </div>
+    </div><!--/breadcrumbs-->
+    <!--=== End Breadcrumbs ===-->
 {% endblock %}
 
-{% block content %}
+{% block header %}{% endblock %}
 
-    <!-- Promo Block -->
-    <section class="container g-py-150">
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="d-inline-block g-width-80 g-height-4 g-bg-black mb-3"></div>
-                <h2 class="g-color-black g-font-weight-700 g-font-size-50 g-line-height-1 mb-4">{{ 'Terms & Conditions'|trans }}</h2>
-                <p class="mb-0">{{ 'All the information that you need to know.'|trans }}</p>
-            </div>
-        </div>
-    </section>
-    <!-- End Promo Block -->
-
-    <!-- Content -->
-    <section class="g-bg-gray-light-v5">
-        <div class="container g-py-100">
-            <div class="row">
-                <div id="stickyblock-start" class="col-md-4 g-mb-30">
-                    <div class="js-sticky-block g-sticky-block--lg" data-type="responsive" data-start-point="#stickyblock-start" data-end-point="#stickyblock-end">
-                        <ul class="list-unstyled mb-0">
-                            <li class="g-bg-gray-dark-v2 g-rounded-top-5 g-px-20 g-pt-30">
-                                <a class="js-go-to d-block g-color-white g-bg-primary--hover g-font-weight-600 g-font-size-12 text-uppercase g-text-underline--none--hover rounded g-px-20 g-py-15" href="#general" data-target="#general">General</a>
-                            </li>
-                            <li class="g-bg-gray-dark-v2 g-px-20">
-                                <a class="js-go-to d-block g-color-white g-bg-primary--hover g-font-weight-600 g-font-size-12 text-uppercase g-text-underline--none--hover rounded g-px-20 g-py-15" href="#a" data-target="#a">A</a>
-                            </li>
-                            <li class="g-bg-gray-dark-v2 g-rounded-bottom-5 g-px-20 g-pb-30">
-                                <a class="js-go-to d-block g-color-white g-bg-primary--hover g-font-weight-600 g-font-size-12 text-uppercase g-text-underline--none--hover rounded g-px-20 g-py-15" href="#b" data-target="#b">B</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-8">
-                    <!-- License -->
-                    <div id="general" class="u-shadow-v19 g-bg-white rounded g-pa-40 g-mb-50">
-                        <h2 class="h3 g-color-black mb-3">General</h2>
-                        <div class="d-inline-block g-width-50 g-height-2 g-bg-black mb-3"></div>
-                        <p>We reserve the right to terminate your account if any offensive/phishing/plagiarized content is found.</p>
-                        <p>We strive to keep website performance at its best, however if any service we provide experiences downtime due to technical issues, we are not liable for any loss of revenue during this period.</p>
-                        <p>The API located at http://api.team-orbitron.com may be used for any purpose other than websites who are in competition with the services we provide.</p>
-                        <p>The features we provide are marketed "as-is".</p>
-                        <p>We reserve the right to change/revoke/limit features of the service at any point (unless they have been paid for).</p>
-                    </div>
-                    <!-- End License -->
-
-                    <!-- Refunds -->
-                    <div id="a" class="u-shadow-v19 g-bg-white rounded g-pa-40 g-mb-50">
-                        <h3 class="g-color-black mb-3">A</h3>
-                        <div class="d-inline-block g-width-50 g-height-2 g-bg-black mb-3"></div>
-                        <p>A</p>
-                    </div>
-                    <!-- End Refunds -->
-
-                    <!-- Refunds -->
-                    <div id="b" class="u-shadow-v19 g-bg-white rounded g-pa-40">
-                        <h3 class="g-color-black mb-3">B</h3>
-                        <div class="d-inline-block g-width-50 g-height-2 g-bg-black mb-3"></div>
-                        <p>B</p>
-                    </div>
-                    <!-- End Refunds -->
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- End Content -->
-
-    <div id="stickyblock-end"></div>
+{% block body %}
+    <!--=== Content Part  ===-->
+    <div class="container content">
+        <ol>
+            <li>We reserve the right to terminate your account if any offensive/phishing/plagiarized content is found.</li>
+            <li>We strive to keep website performance at its best, however if any service we provide experiences downtime due to technical issues, we are not liable for any loss of revenue during this period.</li>
+            <li>The API located at http://api.team-orbitron.com may be used for any purpose other than websites who are in competition with the services we provide.</li>
+            <li>The features we provide are marketed "as-is".</li>
+            <li>We reserve the right to change/revoke/limit features of the service at any point (unless they have been paid for).</li>
+        </ol>
+    </div><!--/container-->
+    <!--=== End Content Part  ===-->
 {% endblock %}

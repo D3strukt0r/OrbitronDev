@@ -1,373 +1,382 @@
-{% extends 'default/layout.html.twig' %}
+{% extends 'layout.html.twig' %}
 
-{% block title %}{{ 'Home'|trans }} | {{ parent() }}{% endblock %}
+{% block title %}Home | {{ parent() }}{% endblock %}
 
-{% block stylesheets %}
-    <!-- Revolution Slider -->
-    <link rel="stylesheet" href="{{ asset('vendor/revolution-slider/revolution/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css', 'local-theme') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/revolution-slider/revolution/css/settings.css', 'local-theme') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/revolution-slider/revolution/css/layers.css', 'local-theme') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/revolution-slider/revolution/css/navigation.css', 'local-theme') }}">
+{% block stylesheets_implemeting_plugins %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/plugins/parallax-slider/css/parallax-slider.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.css">
+{% endblock %}
+
+{% block javascripts_implementing_plugins %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/plugins/parallax-slider/js/modernizr.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/plugins/parallax-slider/js/jquery.cslider.js') }}"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
+{% endblock %}
+
+{% block javascripts_page_level %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/owl-carousel.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/style-switcher.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/js/plugins/parallax-slider.js') }}"></script>
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('js/components/hs.tabs.js', 'local-theme') }}"></script>
-
-    <!-- JS Revolution Slider -->
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/jquery.themepunch.tools.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/jquery.themepunch.revolution.min.js', 'local-theme') }}"></script>
-
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.actions.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.carousel.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.kenburn.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.layeranimation.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.migration.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.navigation.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.parallax.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.slideanims.min.js', 'local-theme') }}"></script>
-    <script src="{{ asset('vendor/revolution-slider/revolution/js/extensions/revolution.extension.video.min.js', 'local-theme') }}"></script>
-
-    <script>
-        // initialization of slider revolution
-        var tpj = jQuery,
-            revapi1150;
-
-        tpj(document).ready(function () {
-            revapi1150 = tpj("#welcome").show().revolution({
-                sliderType: "standard",
-                jsFileLocation: "revolution/js/",
-                sliderLayout: "fullwidth",
-                dottedOverlay: "none",
-                delay: 9000,
-                navigation: {
-                    onHoverStop: "off"
-                },
-                responsiveLevels: [1240, 1024, 778, 480],
-                visibilityLevels: [1240, 1024, 778, 480],
-                gridwidth: [1240, 1024, 778, 480],
-                gridheight: [1000, 900, 960, 720],
-                lazyType: "none",
-                parallax: {
-                    type: "scroll",
-                    origo: "slidercenter",
-                    speed: 400,
-                    levels: [5, 10, 15, 20, 25, 30, 50, 60, -5, -10, -15, -20, -25, -30, -35, 55]
-                },
-                shadow: 0,
-                spinner: "spinner3",
-                stopLoop: "on",
-                stopAfterLoops: 0,
-                stopAtSlide: 1,
-                shuffle: "off",
-                autoHeight: "off",
-                disableProgressBar: "on",
-                hideThumbsOnMobile: "off",
-                hideSliderAtLimit: 0,
-                hideCaptionAtLimit: 0,
-                hideAllCaptionAtLilmit: 0,
-                debugMode: false,
-                fallbacks: {
-                    simplifyAll: "off",
-                    nextSlideOnWindowFocus: "off",
-                    disableFocusListener: false
-                }
-            });
-        });
-
-        $(document).on('ready', function () {
-            // initialization of tabs
-            $.HSCore.components.HSTabs.init('[role="tablist"]');
-        });
-
-        $(window).on('load', function () {
-            // initialization of masonry
-            $('.masonry-grid').imagesLoaded().then(function () {
-                $('.masonry-grid').masonry({
-                    columnWidth: '.masonry-grid-sizer',
-                    itemSelector: '.masonry-grid-item',
-                    percentPosition: true
-                });
-            });
-        });
-
-        $(window).on('resize', function () {
-            setTimeout(function () {
-                $.HSCore.components.HSTabs.init('[role="tablist"]');
-            }, 200);
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            OwlCarousel.initOwlCarousel();
+            ParallaxSlider.initParallaxSlider();
         });
     </script>
 {% endblock %}
 
-{% block content %}
-    <!-- Revolution Slider -->
-    <div class="g-overflow-hidden">
-        <div id="welcome_wrapper" class="rev_slider_wrapper fullwidthbanner-container" data-alias="themeplicity-header177" data-source="gallery" style="margin:0 auto;background-color:#e9eae2;padding:0;">
-            <!-- START REVOLUTION SLIDER 5.4.1 fullwidth mode -->
-            <div id="welcome" class="rev_slider fullwidthabanner" style="display:none;" data-version="5.4.1">
+{% block stylesheets %}
+    {{ parent() }}
+    <style type="text/css">
+        .no-padding {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    <!--=== Slider ===-->
+    <div class="slider-inner">
+        <div id="da-slider" class="da-slider">
+            <div class="da-slide">
+                <h2><i>BEAUTIFUL</i> <br /> <i>DESIGN</i></h2>
+                <p><i>Everything we do is perfect.</i> <br /> <i>See yourself!</i></p>
+                <div class="da-img"><img class="img-responsive" src="{{ asset('assets/plugins/parallax-slider/img/1.png') }}" alt=""></div>
+            </div>
+            <div class="da-slide">
+                <h2><i>LEARN ABOUT US</i> <br /> <i>IN A VIDEO</i></h2>
+                <p><i>Learn, in a video</i></p>
+                <div class="da-img">
+                    <iframe id="ytplayer" type="text/html" width="530" height="298.125"
+                            src="https://www.youtube.com/embed/8tPnX7OPo0Q"
+                            frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="da-arrows">
+                <span class="da-arrows-prev"></span>
+                <span class="da-arrows-next"></span>
+            </div>
+        </div>
+    </div><!--/slider-->
+    <!--=== End Slider ===-->
+{% endblock %}
+
+{% block body %}
+    <!--=== Notice Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="margin-top-20 animated fadeInLeft">
+                <h3>{{ 'IMPORTANT NOTICE'|trans }}</h3>
+                <p>{{ 'The services are having major updates, please wait until we finish these updates, as the database is being truncated multiple times, and data will be lost.' }}</p>
+                <p>{{ 'This includes, account, blog, cloud, forum and the store.' }}</p>
+                {#<p>{{ 'Following has already finished and can be used again' }}</p>
                 <ul>
-                    <!-- SLIDE  -->
-                    <li data-index="rs-3186" data-transition="fade" data-slotamount="default" data-hideafterloop="0" data-hideslideonmobile="off" data-easein="default" data-easeout="default" data-masterspeed="300" data-rotate="0" data-saveperformance="off" data-title="Slide"
-                        data-param1="" data-param2="" data-param3="" data-param4="" data-param5="" data-param6="" data-param7="" data-param8="" data-param9="" data-param10="" data-description="">
-                        <!-- MAIN IMAGE -->
-                        <img src="{{ asset('img/bg/transparent.png', 'local-theme') }}" data-bgcolor="#e9eae2" alt="" data-bgposition="center center" data-bgfit="cover" data-bgrepeat="no-repeat" data-bgparallax="off" class="rev-slidebg">
-                        <!-- LAYERS -->
-
-                        <!-- LAYER NR. 1 -->
-                        <div class="tp-caption   tp-resizeme rs-parallaxlevel-14" id="slide-3186-layer-13" data-x="['right','right','right','right']" data-hoffset="['-328','-328','-328','-248']" data-y="['bottom','bottom','bottom','bottom']" data-voffset="['-417','-417','-417','-240']"
-                             data-width="none" data-height="none" data-whitespace="nowrap" data-type="image" data-responsive_offset="on" data-frames='[{"delay":600,"speed":2000,"frame":"0","from":"x:right;rZ:-90deg;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 5;">
-                            <img src="{{ asset('img/1500x1500/img1.png') }}" alt="" data-ww="['700px','700px','700px','500px']" data-hh="['700px','700px','700px','500px']" width="1500" height="1500">
-                        </div>
-
-                        <!-- LAYER NR. 2 -->
-                        <div class="tp-caption   tp-resizeme rs-parallaxlevel-7" id="slide-3186-layer-14" data-x="['left','left','left','left']" data-hoffset="['-248','-248','-248','-190']" data-y="['top','top','top','top']" data-voffset="['-219','-219','-219','-205']" data-width="none"
-                             data-height="none" data-whitespace="nowrap" data-type="image" data-responsive_offset="on" data-frames='[{"delay":600,"speed":2000,"frame":"0","from":"x:left;rZ:90deg;","to":"o:1;rZ:20;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 6;">
-                            <img src="{{ asset('img/1000x1000/img1.png') }}" alt="" data-ww="['650px','650px','650px','500px']" data-hh="['650px','650px','650px','500px']" width="1000" height="1000">
-                        </div>
-
-                        <!-- LAYER NR. 3 -->
-                        <div class="tp-caption   tp-resizeme rs-parallaxlevel-3" id="slide-3186-layer-5" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['bottom','bottom','bottom','bottom']" data-voffset="['0','-50','-50','-120']" data-width="none"
-                             data-height="none" data-whitespace="nowrap" data-type="image" data-responsive_offset="on" data-frames='[{"delay":600,"speed":1500,"frame":"0","from":"y:bottom;rX:45deg;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 7;">
-                            <img src="{{ asset('img/1200x918/img1.png') }}" alt="" data-ww="['600px','600px','600px','600px']" data-hh="['459px','459px','459px','459px']" width="1200" height="918">
-                        </div>
-
-                        <!-- LAYER NR. 4 -->
-                        <div class="tp-caption   tp-resizeme rs-parallaxlevel-6" id="slide-3186-layer-7" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['top','top','top','top']" data-voffset="['466','406','456','276']" data-width="none"
-                             data-height="none" data-whitespace="nowrap" data-type="image" data-responsive_offset="on" data-frames='[{"delay":600,"speed":1200,"frame":"0","from":"y:bottom;rX:90deg;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 8;">
-                            <img src="{{ asset('img/800x800/img1.png') }}" alt="" data-ww="['600px','600px','600px','600px']" data-hh="['600px','600px','600px','600px']" width="800" height="800">
-                        </div>
-
-                        <!-- LAYER NR. 5 -->
-                        <div class="tp-caption   tp-resizeme rs-parallaxlevel-6" id="slide-3186-layer-8" data-x="['center','center','center','center']" data-hoffset="['-2','-2','-2','-2']" data-y="['top','top','top','top']" data-voffset="['707','647','697','517']" data-width="none"
-                             data-height="none" data-whitespace="nowrap" data-type="image" data-responsive_offset="on" data-frames='[{"delay":750,"speed":1200,"frame":"0","from":"y:bottom;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 9;">
-                            <img src="{{ asset('img/200x240/img1.jpg') }}" alt="" data-ww="['100px','100px','100px','100px']" data-hh="['120px','120px','120px','120px']" width="200" height="240">
-                        </div>
-
-                        <!-- LAYER NR. 6 -->
-                        <div class="tp-caption g-color-primary tp-resizeme rs-parallaxlevel-6" id="slide-3186-layer-11" data-x="['center','center','center','center']" data-hoffset="['-2','-2','-2','-2']" data-y="['top','top','top','top']" data-voffset="['721','661','711','531']"
-                             data-width="none" data-height="none" data-whitespace="nowrap" data-type="text" data-responsive_offset="on" data-frames='[{"delay":800,"speed":1200,"frame":"0","from":"y:bottom;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 10; white-space: nowrap; font-size: 50px; line-height: 50px; font-weight: 400;">
-                            <i class="pe-7s-paper-plane"></i>
-                        </div>
-
-                        <!-- LAYER NR. 7 -->
-                        <div class="tp-caption rev-btn g-color-primary g-brd-primary tp-resizeme rs-parallaxlevel-6" id="slide-3186-layer-12" data-x="['center','center','center','center']" data-hoffset="['-2','-2','-2','-2']" data-y="['top','top','top','top']" data-voffset="['787','727','777','597']"
-                             data-width="none" data-height="none" data-whitespace="nowrap" data-type="button" data-responsive_offset="on" data-frames='[{"delay":850,"speed":1200,"frame":"0","from":"y:bottom;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[30,30,30,30]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[30,30,30,30]" style="z-index: 11; white-space: nowrap; font-size: 11px; line-height: 28px; font-weight: 500; border: 1px solid;border-radius:3px 3px 3px 3px;outline:none;box-shadow:none;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;cursor:pointer;">
-                            <i class="fa fa-chevron-right"></i>
-                        </div>
-
-                        <!-- LAYER NR. 9 -->
-                        <div class="tp-caption  " id="slide-3186-layer-1" data-x="['center','center','center','center']" data-hoffset="['-1','0','0','0']" data-y="['top','top','top','top']" data-voffset="['267','217','214','116']" data-fontsize="['60','60','40','30']" data-lineheight="['60','60','40','30']"
-                             data-width="['none','none','480','320']" data-height="none" data-whitespace="nowrap" data-type="text" data-responsive_offset="off" data-responsive="off" data-frames='[{"delay":300,"speed":1000,"frame":"0","from":"y:50px;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['center','center','center','center']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 13; white-space: nowrap; font-size: 60px; font-weight: 700; line-height: 60px; color: rgba(0, 0, 0, 1);">{{ 'We Create'|trans }}
-                        </div>
-
-                        <!-- LAYER NR. 10 -->
-                        <div class="tp-caption  " id="slide-3186-layer-2" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['top','top','top','top']" data-voffset="['340','290','265','152']" data-fontsize="['60','60','40','30']" data-lineheight="['60','60','40','30']"
-                             data-width="['none','none','440','321']" data-height="none" data-whitespace="['nowrap','nowrap','nowrap','normal']" data-type="text" data-responsive_offset="off" data-responsive="off" data-frames='[{"delay":400,"speed":1000,"frame":"0","from":"y:50px;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['center','center','center','center']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 14; white-space: nowrap; font-size: 60px; line-height: 60px; font-weight: 100; color: rgba(0, 0, 0, 1);">{{ 'simple web solutions'|trans }}
-                        </div>
-
-                        <!-- LAYER NR. 11 -->
-                        <a class="tp-caption rev-btn g-color-white--hover g-bg-primary--hover g-brd-primary--hover tp-rs-menulink" id="slide-3186-layer-4" data-x="['center','center','center','center']" data-hoffset="['-130','-130','-110','0']" data-y="['top','top','top','top']"
-                           data-voffset="['450','401','338','208']" data-lineheight="['60','60','60','50']" data-width="['240','240','200','240']" data-height="none" data-whitespace="nowrap" data-type="button" data-actions='[{"event":"click","action":"startlayer","layer":"slide-3186-layer-17","delay":""},{"event":"click","action":"startlayer","layer":"slide-3186-layer-16","delay":""},{"event":"click","action":"startlayer","layer":"slide-3186-layer-18","delay":""},{"event":"click","action":"playvideo","layer":"slide-3186-layer-16","delay":"500"},{"event":"click","action":"gofullscreen","delay":""}]'
-                           data-responsive_offset="off" data-responsive="off" data-frames='[{"delay":500,"speed":1000,"frame":"0","from":"y:50px;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                           data-textAlign="['center','center','center','center']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 15; min-width: 240px; max-width: 240px; white-space: nowrap; font-size: 13px; line-height: 60px; font-weight: 500; color: rgba(0, 0, 0, 0.90);background-color:rgba(0, 0, 0, 0);border: 1px solid rgba(0, 0, 0, 0.50);border-radius:50px 50px 50px 50px;outline:none;box-shadow:none;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;letter-spacing:2px;cursor:pointer;" href="{{ path('app_account_login') }}">{{ 'LOG IN'|trans }}</a>
-
-                        <!-- LAYER NR. 12 -->
-                        <a class="tp-caption rev-btn   tp-rs-menulink" id="slide-3186-layer-15" data-x="['center','center','center','center']" data-hoffset="['130','130','110','0']" data-y="['top','top','top','top']" data-voffset="['450','401','338','270']" data-lineheight="['60','60','60','50']"
-                           data-width="['240','240','200','240']" data-height="none" data-whitespace="nowrap" data-type="button" data-actions='' data-responsive_offset="off" data-responsive="off" data-frames='[{"delay":500,"speed":1000,"frame":"0","from":"y:50px;opacity:0;","to":"o:1;","ease":"Power4.easeOut"},{"delay":"wait","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"},{"frame":"hover","speed":"0","ease":"Linear.easeNone","force":true,"to":"o:1;rX:0;rY:0;rZ:0;z:0;","style":"c:rgba(255, 255, 255, 1.00);bg:rgba(0, 0, 0, 1.00);bc:rgba(233, 234, 226, 1.00);"}]'
-                           data-textAlign="['center','center','center','center']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" style="z-index: 16; background-size: cover; min-width: 240px; max-width: 240px; white-space: nowrap; font-size: 13px; line-height: 60px; font-weight: 500; color: rgba(255, 255, 255, 1.00);background: rgba(0, 0, 0, 0.50) url('{{ asset('img/300x60/img1.jpg') }}') no-repeat center center;border: 1px solid rgba(0, 0, 0, 0);border-radius:50px 50px 50px 50px;outline:none;box-shadow:none;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;letter-spacing:2px;cursor:pointer;" href="{{ path('app_account_register') }}">{{ 'REGISTER NOW'|trans }}</a>
-
-                        <!-- LAYER NR. 13 -->
-                        <div class="tp-caption tp-shape tp-shapewrapper " id="slide-3186-layer-17" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['0','0','0','0']" data-width="full"
-                             data-height="full" data-whitespace="nowrap" data-type="shape" data-actions='[{"event":"click","action":"stopvideo","layer":"slide-3186-layer-16","delay":""},{"event":"click","action":"stoplayer","layer":"slide-3186-layer-17","delay":""},{"event":"click","action":"stoplayer","layer":"slide-3186-layer-16","delay":""},{"event":"click","action":"stoplayer","layer":"slide-3186-layer-18","delay":""},{"event":"click","action":"exitfullscreen","delay":""}]'
-                             data-basealign="slide" data-responsive_offset="off" data-responsive="off" data-frames='[{"delay":"bytrigger","speed":300,"frame":"0","from":"opacity:0;","to":"o:1;","ease":"Power3.easeInOut"},{"delay":"bytrigger","speed":300,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"},{"frame":"hover","speed":"0","ease":"Linear.easeNone","force":true,"to":"o:1;rX:0;rY:0;rZ:0;z:0;","style":"c:rgba(0, 0, 0, 1.00);bs:solid;bw:0 0 0 0;"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" data-lasttriggerstate="reset" style="z-index: 17;background-color:rgba(0, 0, 0, 0.85);border-color:rgba(0, 0, 0, 0);cursor:pointer;"></div>
-
-                        <!-- LAYER NR. 14 -->
-                        <div class="tp-caption   tp-resizeme tp-videolayer" id="slide-3186-layer-16" data-x="['center','center','center','center']" data-hoffset="['0','0','0','0']" data-y="['middle','middle','middle','middle']" data-voffset="['0','0','0','0']" data-whitespace="nowrap"
-                             data-type="video" data-responsive_offset="on" data-frames='[{"delay":"bytrigger","speed":300,"frame":"0","from":"opacity:0;","to":"o:1;","ease":"Power3.easeInOut"},{"delay":"bytrigger","speed":0,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-vimeoid="185336500" data-videoattributes="title=0&byline=0&portrait=0&api=1" data-videowidth="['1024px','800px','640','480']" data-videoheight="['576px','600px','360','270px']" data-videoloop="none" data-textAlign="['inherit','inherit','inherit','inherit']"
-                             data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" data-lasttriggerstate="reset" data-autoplay="off" data-volume="100" data-stopallvideos="true" style="z-index: 18;"></div>
-
-                        <!-- LAYER NR. 15 -->
-                        <div class="tp-caption   tp-resizeme tp-svg-layer" id="slide-3186-layer-18" data-x="['right','right','right','right']" data-hoffset="['20','20','20','20']" data-y="['top','top','top','top']" data-voffset="['20','20','20','20']" data-width="60" data-height="60"
-                             data-whitespace="nowrap" data-type="svg" data-actions='[{"event":"click","action":"stopvideo","layer":"slide-3186-layer-16","delay":""},{"event":"click","action":"stoplayer","layer":"slide-3186-layer-17","delay":""},{"event":"click","action":"stoplayer","layer":"slide-3186-layer-16","delay":""},{"event":"click","action":"stoplayer","layer":"slide-3186-layer-18","delay":""},{"event":"click","action":"exitfullscreen","delay":""}]'
-                             data-svg_src="{{ asset('figures/ic_close_36px.svg', 'local-theme') }}" data-svg_idle="sc:transparent;sw:0;sda:0;sdo:0;" data-basealign="slide" data-responsive_offset="off" data-frames='[{"delay":"bytrigger","speed":300,"frame":"0","from":"opacity:0;","to":"o:1;","ease":"Power3.easeInOut"},{"delay":"bytrigger","speed":0,"frame":"999","to":"opacity:0;","ease":"Power3.easeInOut"}]'
-                             data-textAlign="['inherit','inherit','inherit','inherit']" data-paddingtop="[0,0,0,0]" data-paddingright="[0,0,0,0]" data-paddingbottom="[0,0,0,0]" data-paddingleft="[0,0,0,0]" data-lasttriggerstate="reset" style="z-index: 19; min-width: 60px; max-width: 60px; color: rgba(255, 255, 255, 1.00);cursor:pointer;"></div>
-                    </li>
-                </ul>
-                <div class="tp-bannertimer tp-bottom" style="visibility: hidden !important;"></div>
+                    <li><b>{{ 'Account' }}</b></li>
+                    <li><b>{{ 'Blog' }}</b></li>
+                    <li><b>{{ 'Cloud' }}</b></li>
+                </ul>#}
             </div>
         </div>
     </div>
-    <!-- End Revolution Slider -->
+    <!-- End Notice Block -->
 
-    <!-- About -->
-    <section class="container g-pt-100 g-pb-70">
-        <div class="masonry-grid row">
-            <div class="masonry-grid-sizer col-sm-1"></div>
-
-            <div class="masonry-grid-item col-md-6 g-mb-30">
-                <div class="g-px-50 g-pb-50">
-                    <h1 class="g-color-black g-font-weight-600 g-line-height-1_4">{{ 'Enthusiastic IT Team'|trans }}
-                    </h1>
+    <!--=== Account Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 animated fadeInLeft">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 margin-top-20 animated fadeInRight">
+                    <h3>{{ 'Account'|trans }}</h3>
+                    <p>{{ 'Save all you information in one place. There is no need for 20 different websites.'|trans }}</p>
+                    <a href="{{ path('app_account_register') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create an Account'|trans }}</a>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- End Account Block -->
 
-            <div class="masonry-grid-item col-md-6 g-mb-30">
-                <div class="g-px-50--lg g-pb-50--lg">
-                    <p class="g-color-black g-font-weight-600">{{ 'This is the place where I work, and keep the site up to date.'|trans }}</p>
-                    <p>{{ 'This project started in 2013, since then the website got more and more features, with one goal, unifying everything.'|trans }}</p>
+    <!--=== Blog Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 margin-top-20 animated fadeInLeft">
+                    <h3>{{ 'Blog'|trans }}</h3>
+                    <p>{{ 'The slim easy-to-use weblog for anyone.' }}</p>
+                    <a href="{{ path('app_blog_new') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create an blog'|trans }}</a>
+                </div>
+                <div class="col-md-6 animated fadeInRight">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- End Blog Block -->
 
-            <div class="masonry-grid-item col-sm-6 col-md-5 g-mb-30">
-                <img class="img-fluid w-100" src="{{ asset('img/500x320/img2.jpg') }}" alt="Image description">
+    <!--=== Cloud Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 animated fadeInLeft">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 margin-top-20 animated fadeInRight">
+                    <h3>{{ 'Cloud'|trans }}</h3>
+                    <p>{{ 'When creating an account you will also get an unlimited large storage.'|trans }}</p>
+                    <a href="{{ path('app_account_register') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create an Account'|trans }}</a>
+                </div>
             </div>
+        </div>
+    </div>
+    <!-- End Cloud Block -->
 
-            <div class="masonry-grid-item col-sm-6 col-md-5 g-offset-md-1 g-mb-30">
-                <img class="img-fluid w-100" src="{{ asset('img/500x320/img3.jpg') }}" alt="Image description">
+    <!--=== Forum Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 margin-top-20 animated fadeInLeft">
+                    <h3>{{ 'Forum'|trans }}</h3>
+                    <p>{{ 'The slim easy-to-use forum/board for anyone.' }}</p>
+                    <a href="{{ path('app_forum_new') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create a forum'|trans }}</a>
+                </div>
+                <div class="col-md-6 animated fadeInRight">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+    <!-- End Forum Block -->
 
-            <div class="masonry-grid-item col-md-5 g-mb-30">
-                <div class="g-px-50--lg g-pt-50--lg">
-                    <h2 class="h3 g-color-black g-font-weight-600">{{ 'What we provide'|trans }}</h2>
+    <!--=== Cloud Block ===-->
+    <div class="service-block-v5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 animated fadeInLeft">
+                    <div class="container-fluid no-padding">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <img src="holder.js/500x300" class="img-responsive" style="width: 100%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 margin-top-20 animated fadeInRight">
+                    <h3>{{ 'Store'|trans }}</h3>
+                    <p>{{ 'Sell all your products/services as easily as possible.'|trans }}</p>
+                    <a href="{{ path('app_store_new') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> {{ 'Create a store'|trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Cloud Block -->
+{#
+    <!--=== Purchase Block ===-->
+    <div class="purchase">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9 animated fadeInLeft">
+                    <span>One account, many services.</span>
+                    <p>With only one account you can have your unlimited large cloud, create blogs, forums, online shops, and many others. But we also offer simple tools like calculator.</p>
+                </div>
+                <div class="col-md-3 btn-buy animated fadeInRight">
+                    <a href="{{ path('fos_user_registration_register') }}" class="btn-u btn-u-lg"><i class="fa fa-user-plus"></i> Create an Account</a>
+                </div>
+            </div>
+        </div>
+    </div><!--/row-->
+    <!-- End Purchase Block -->
 
-                    <div class="row">
-                        <ul class="col-lg-6 list-unstyled">
-                            <li class="g-my-15">
-                                <span class="u-icon-v1 g-color-primary"><i class="icon-finance-138 u-line-icon-pro"></i></span>
-                                <a class="g-brd-bottom g-brd-1 g-brd-gray-dark-v4 g-brd-black--hover g-color-gray-dark-v3 g-color-primary--hover g-text-underline--none--hover g-transition-0_3 pb-1" href="#">{{ 'Easy usage'|trans }}</a>
-                            </li>
-                            <li class="g-my-15">
-                                <span class="u-icon-v1 g-color-primary"><i class="icon-education-087 u-line-icon-pro"></i></span>
-                                <a class="g-brd-bottom g-brd-1 g-brd-gray-dark-v4 g-brd-black--hover g-color-gray-dark-v3 g-color-primary--hover g-text-underline--none--hover g-transition-0_3 pb-1" href="#">{{ 'Customizability'|trans }}</a>
-                            </li>
+    <!--=== Content Part ===-->
+    <div class="container content-sm">
+        <!-- Service Blocks -->
+        <div class="row margin-bottom-30">
+            <div class="col-md-4">
+                <div class="service">
+                    <i class="fa fa-compress service-icon"></i>
+                    <div class="desc">
+                        <h4>Everything what you need we have</h4>
+                        <p>You have the pssibility to get your own <b>Forum</b>, <b>Blog</b>, <b>Store</b> or your own <b>Wiki</b>.<br />We also offer many other things like a <b>Cloud</b></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service">
+                    <i class="fa fa-cogs service-icon"></i>
+                    <div class="desc">
+                        <h4>Maximal customisation</h4>
+                        <p>Customise your apps until you like it. That works because we give you this option.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service">
+                    <i class="fa fa-lock service-icon"></i>
+                    <div class="desc">
+                        <h4>Safe and secure</h4>
+                        <p>No one can hack your page, get private data or anything else. You are also ALWAYS secured by SSL when you access our page.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Service Blokcs -->
+
+        <!-- Recent Works -->
+        <div class="headline"><h2>Recent Works</h2></div>
+        <div class="row margin-bottom-20">
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnails thumbnail-style thumbnail-kenburn">
+                    <div class="thumbnail-img">
+                        <div class="overflow-hidden">
+                            <img class="img-responsive" src="{{ asset('assets/img/projects/img27.jpg') }}" alt="">
+                        </div>
+                        <a class="btn-more hover-effect" href="http://service.orbitrondev.org">read more +</a>
+                    </div>
+                    <div class="caption">
+                        <h3><a class="hover-effect" href="http://service.orbitrondev.org">Web Service</a></h3>
+                        <p>All required web services on the web in one place. And everything can be used by creating only one account.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnails thumbnail-style thumbnail-kenburn">
+                    <div class="thumbnail-img">
+                        <div class="overflow-hidden">
+                            <img class="img-responsive" src="{{ asset('assets/img/projects/img28.jpg') }}" alt="">
+                        </div>
+                        <a class="btn-more hover-effect" href="http://appstore.orbitrondev.org">read more +</a>
+                    </div>
+                    <div class="caption">
+                        <h3><a class="hover-effect" href="http://appstore.orbitrondev.org">App Store</a></h3>
+                        <p>Do you hate to pay for something three times? Here is the solution. Here you pay one time and your desired application is available on every device. Well, it depends on the developer.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnails thumbnail-style thumbnail-kenburn">
+                    <div class="thumbnail-img">
+                        <div class="overflow-hidden">
+                            <img class="img-responsive" src="{{ asset('assets/img/projects/img36.jpg') }}" alt="">
+                        </div>
+                        <a class="btn-more hover-effect" href="http://jarvis.orbitrondev.org">read more +</a>
+                    </div>
+                    <div class="caption">
+                        <h3><a class="hover-effect" href="http://jarvis.orbitrondev.org">Jarvis</a></h3>
+                        <p>Bring Jarvis to real live. The best assistant for everyone, on any device!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnails thumbnail-style thumbnail-kenburn">
+                    <div class="thumbnail-img">
+                        <div class="overflow-hidden">
+                            <img class="img-responsive" src="{{ asset('assets/img/projects/img32.jpg') }}" alt="">
+                        </div>
+                        <a class="btn-more hover-effect" href="http://titanium.orbitrondev.org">read more +</a>
+                    </div>
+                    <div class="caption">
+                        <h3><a class="hover-effect" href="http://titanium.orbitrondev.org">Titanium</a></h3>
+                        <p>The most effective Operating System. It offers the security of Linux, the beautiness of OS X and the functionality of Windows. Sounds good, doesn't it?.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Recent Works -->
+
+        <!-- Info Blokcs -->
+        <div class="row margin-bottom-30">
+            <!-- Welcome Block -->
+            <div class="col-md-12 md-margin-bottom-40">
+                <div class="headline"><h2>Welcome To OrbitronDev</h2></div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <img class="img-responsive margin-bottom-20" src="{{ asset('assets/img/main/thumb-up.jpg') }}" alt="" style="width: 300px" />
+                    </div>
+                    <div class="col-sm-8">
+                        <p>OrbitronDev gives you everything you need on one place, so forget every other website, we are special!</p>
+                        <ul class="list-unstyled margin-bottom-20">
+                            <li><i class="fa fa-check color-green"></i> The price is lower than everything you have ever seen</li>
+                            <li><i class="fa fa-check color-green"></i> We work with perfection. So never expect a 1980 application from us</li>
+                            <li><i class="fa fa-check color-green"></i> We do things because we love what we do, and because we need it</li>
                         </ul>
-                        <ul class="col-lg-6 list-unstyled">
-                            <li class="g-my-15--lg">
-                                <span class="u-icon-v1 g-color-primary"><i class="icon-finance-122 u-line-icon-pro"></i></span>
-                                <a class="g-brd-bottom g-brd-1 g-brd-gray-dark-v4 g-brd-black--hover g-color-gray-dark-v3 g-color-primary--hover g-text-underline--none--hover g-transition-0_3 pb-1" href="#">{{ 'Design'|trans }}</a>
-                            </li>
-                            <li class="g-my-15">
-                                <span class="u-icon-v1 g-color-primary"><i class="icon-finance-189 u-line-icon-pro"></i></span>
-                                <a class="g-brd-bottom g-brd-1 g-brd-gray-dark-v4 g-brd-black--hover g-color-gray-dark-v3 g-color-primary--hover g-text-underline--none--hover g-transition-0_3 pb-1" href="#">{{ 'Support'|trans }}</a>
-                            </li>
-                        </ul>
                     </div>
                 </div>
-            </div>
 
-            <div class="masonry-grid-item col-md-5 g-offset-md-1 g-mb-30">
-                <div class="g-px-50--lg g-pt-50--lg">
-                    <p>{{ 'Whether you need a blog, a forum, a store you can easily create one or multiple ones for your need.' }}</p>
+                <blockquote class="hero-unify">
+                    <p>Everything we do, will be done with perfection. Everything we sell, will be sold low. That are our goals and those will stay, no matter what happens.</p>
+                    <small>CEO, Manuele Vaccari</small>
+                </blockquote>
+            </div><!--/col-md-8-->
+
+            <!-- Latest Shots -->
+            <div class="col-md-4">
+                <div class="headline"><h2>Latest Shots</h2></div>
+                <div id="myCarousel" class="carousel slide carousel-v1">
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img src="{{ asset('assets/img/main/img4.jpg') }}" alt="">
+                            <div class="carousel-caption">
+                                <p>Facilisis odio, dapibus ac justo acilisis gestinas.</p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="{{ asset('assets/img/main/img2.jpg') }}" alt="">
+                            <div class="carousel-caption">
+                                <p>Cras justo odio, dapibus ac facilisis into egestas.</p>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="{{ asset('assets/img/main/img24.jpg') }}" alt="">
+                            <div class="carousel-caption">
+                                <p>Justo cras odio apibus ac afilisis lingestas de.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-arrow">
+                        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                            <i class="fa fa-angle-left"></i>
+                        </a>
+                        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
+            </div><!--/col-md-4-->
         </div>
-    </section>
-    <!-- End About -->
-
-    <!-- Testimonials -->
-    <section class="dzsparallaxer auto-init height-is-based-on-content use-loading g-bg-cover g-bg-black-opacity-0_4--after">
-        <div class="divimage dzsparallaxer--target w-100" style="height: 120%; background-image: url({{ asset('img/1920x1080/img3.jpg') }});"></div>
-        <div class="container g-z-index-1 g-py-120">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <!-- Testimonials -->
-                    <div class="g-brd-x g-brd-y g-brd-3 g-brd-cyan-gradient-opacity-v1 g-color-white text-center g-z-index-1 g-pa-30">
-                        <blockquote class="u-blockquote-v4 g-font-size-30 g-mb-30">{{ 'If somebody else can do, why shouldn\'t I can.'|trans }}</blockquote>
-                        <h4 class="h5 g-color-cyan g-font-weight-700 text-uppercase g-mb-0">{{ 'Manuele Vaccari' }}</h4>
-                    </div>
-                    <!-- End Testimonials -->
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- End Testimonials -->
-
-    <!-- Icon Blocks -->
-    <section class="g-pos-rel g-overflow-hidden">
-        <div class="container g-pt-100 g-pb-50">
-            <div class="row justify-content-between">
-                <div class="col-lg-5 g-mb-50">
-                    <!-- Heading -->
-                    <div class="text-center text-lg-left g-mb-60">
-                        <div class="g-mb-30">
-                            <h2 class="g-color-black g-font-weight-600 g-mb-30">{{ 'The Benefits'|trans }}<br>{{ 'of using our service' }}</h2>
-                            <p>{{ 'Need a blog but got got no time, create one easily here. Need another one no problem. That\'s our goal.' }}</p>
-                        </div>
-                    </div>
-                    <!-- End Heading -->
-                </div>
-
-                <div class="col-lg-6">
-                    <!-- Icon Blocks -->
-                    <div class="row">
-                        <div class="col-sm-6 text-center text-lg-left g-mb-50">
-                            <!-- Icon Blocks -->
-                            <span class="d-inline-block g-color-primary g-font-size-30 g-rounded-5 mb-2">
-                                <i class="fa fa-rss-square"></i>
-                            </span>
-                            <h3 class="h5 g-color-black g-font-weight-600 mb-2">{{ 'Blog'|trans }}</h3>
-                            <!-- End Icon Blocks -->
-                        </div>
-
-                        <div class="col-sm-6 text-center text-lg-left g-mb-50">
-                            <!-- Icon Blocks -->
-                            <span class="d-inline-block g-color-primary g-font-size-30 g-rounded-5 mb-2">
-                                <i class="fa fa-cloud"></i>
-                            </span>
-                            <h3 class="h5 g-color-black g-font-weight-600 mb-2">{{ 'Cloud'|trans }}</h3>
-                            <!-- End Icon Blocks -->
-                        </div>
-
-                        <div class="col-sm-6 text-center text-lg-left g-mb-50">
-                            <!-- Icon Blocks -->
-                            <span class="d-inline-block g-color-primary g-font-size-30 g-rounded-5 mb-2">
-                                <i class="fa fa-users"></i>
-                            </span>
-                            <h3 class="h5 g-color-black g-font-weight-600 mb-2">{{ 'Forum'|trans }}</h3>
-                            <!-- End Icon Blocks -->
-                        </div>
-
-                        <div class="col-sm-6 text-center text-lg-left g-mb-50">
-                            <!-- Icon Blocks -->
-                            <span class="d-inline-block g-color-primary g-font-size-30 g-rounded-5 mb-2">
-                                <i class="fa fa-shopping-cart"></i>
-                            </span>
-                            <h3 class="h5 g-color-black g-font-weight-600 mb-2">{{ 'Store'|trans }}</h3>
-                            <!-- End Icon Blocks -->
-                        </div>
-                    </div>
-                    <!-- End Icon Blocks -->
-                </div>
-            </div>
-
-            <img class="g-width-600 g-pos-abs g-bottom-minus-25x g-z-index-minus-1" src="{{ asset('img/maps/map3.png', 'local-theme') }}" alt="Image description">
-        </div>
-    </section>
-    <!-- End Icon Blocks -->
-
-    <!-- Github -->
-    <section class="container">
-        <div class="g-bg-secondary g-py-70 g-px-20">
-            <div class="row justify-content-center">
-                <div class="col-sm-10 col-md-7 col-lg-5">
-                    <div class="text-center g-mb-50">
-                        <h2 class="g-color-black g-font-weight-600 mb-3">{{ 'Github' }}</h2>
-                        <p>{{ 'If you\'re interested in helping us, you can find this project on GitHub under:' }}</p>
-                        <p><a class="u-shadow-v19" href="https://github.com/D3strukt0r/OrbitronDev">https://github.com/D3strukt0r/OrbitronDev</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- End Github -->
+        <!-- End Info Blokcs -->
+    </div><!--/container-->
+    <!-- End Content Part -->#}
 {% endblock %}
