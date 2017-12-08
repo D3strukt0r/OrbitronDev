@@ -14,9 +14,6 @@ app_default_index:
 app_default_about:
     path:     /about
     defaults: { _controller: 'DefaultController::aboutAction' }
-app_default_aboutteam:
-    path:     /about-team
-    defaults: { _controller: 'DefaultController::aboutTeamAction' }
 app_default_contact:
     path:     /contact
     defaults: { _controller: 'DefaultController::contactAction' }
@@ -35,11 +32,4 @@ app_default_search:
 
 app_project_index:
     path:     /projects
-    defaults: { _controller: 'ProjectController::indexAction' }
-
-app_product_index:
-    path:     /products
-    defaults: { _controller: 'ProductController::indexAction' }
-app_product_product:
-    path:     /products/{type}
-    defaults: { _controller: 'ProductController::indexAction' }
+    defaults: { _controller: 'DefaultController::projectAction' }
