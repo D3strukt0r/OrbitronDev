@@ -35,11 +35,6 @@ class DefaultController extends \Controller
         return $this->render('default/about.html.twig');
     }
 
-    public function aboutTeamAction()
-    {
-        return $this->render('default/about-team.html.twig');
-    }
-
     public function contactAction()
     {
         $contactForm = $this->createForm(ContactType::class);
@@ -49,38 +44,27 @@ class DefaultController extends \Controller
         if ($contactForm->isSubmitted() && $contactForm->isValid()) {
             $formData = $contactForm->getData();
 
+            $message = (new Swift_Message())
+                ->setSubject(trim($formData['subject']))
+                ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
+                ->setTo(array('info@orbitrondev.org'))
+                ->setBody($this->renderView('default/mail/contact.html.twig', array(
+                    'ip'      => $request->getClientIp(),
+                    'name'    => $formData['name'],
+                    'message' => $formData['message'],
+                )), 'text/html');
             if ($contactForm->get('send_to_own')->getData()) {
-                $message = (new Swift_Message())
-                    ->setSubject(trim($formData['subject']))
-                    ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
-                    ->setTo(array('info@orbitrondev.org'))
-                    ->setCc(array(trim($formData['email']) => trim($formData['name'])))
-                    ->setBody($this->renderView('default/mail/contact.html.twig', array(
-                        'ip'      => $request->getClientIp(),
-                        'name'    => $formData['name'],
-                        'message' => $formData['message'],
-                    )), 'text/html');
-            } else {
-                $message = (new Swift_Message())
-                    ->setSubject(trim($formData['subject']))
-                    ->setFrom(array(trim($formData['email']) => trim($formData['name'])))
-                    ->setTo(array('info@orbitrondev.org'))
-                    ->setBody($this->renderView('default/mail/contact.html.twig', array(
-                        'ip'      => $request->getClientIp(),
-                        'name'    => $formData['name'],
-                        'message' => $formData['message'],
-                    )), 'text/html');
+                $message->setCc(array(trim($formData['email']) => trim($formData['name'])));
             }
+
             /** @var \Swift_Mailer $mailer */
             $mailer = $this->get('mailer');
             $mailSent = $mailer->send($message);
 
-            $this->addFlash('success', 'Your email has been sent! Thanks!');
-
             if($mailSent) {
-                return $this->redirectToRoute('app_default_contact', array('sent' => 1));
+                $this->addFlash('success', 'Your message was successfully sent! We will try to contact you as soon as possible.');
             } else {
-                return $this->redirectToRoute('app_default_contact', array('sent' => 0));
+                $this->addFlash('failure', 'Your message couldn\'t be sent. Try again!');
             }
         }
 
@@ -111,10 +95,8 @@ class DefaultController extends \Controller
             return $response;
         }
 
-        $request = $this->getRequest();
-
         return $this->render('default/search.html.twig', array(
-            'search'   => $request->query->get('q'),
+            'search'   => $this->getRequest()->query->get('q'),
         ));
     }
 
@@ -196,5 +178,10 @@ class DefaultController extends \Controller
             return 'Function does not exist';
         }
         return 'No setup key given, or key not correct.';
+    }
+
+    public function projectAction()
+    {
+        return $this->render('default/projects.html.twig');
     }
 }
