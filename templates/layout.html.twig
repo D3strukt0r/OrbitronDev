@@ -10,7 +10,7 @@
                 <div class="container">
                     <!-- Logo -->
                     <a class="logo" href="{{ path('app_default_index') }}">
-                        <img src="{{ asset('assets/logo-long.png') }}" alt="Logo" height="30px" />
+                        <img src="{{ asset('img/logo-long.png') }}" alt="Logo" height="30px" />
                     </a>
                     <!--  End Logo -->
 
@@ -24,14 +24,14 @@
                                     {% if app.request.getLocale() == "en" %}
                                          <li class="active">
                                              <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">
-                                                 <img src="{{ asset('assets/img/icons/flags/United-States-of-America.png') }}" style="height:1em" />
+                                                 <img src="{{ asset('img/icons/flags/United-States-of-America.png') }}" style="height:1em" />
                                                  English <i class="fa fa-check"></i>
                                              </a>
                                          </li>
                                     {% else %}
                                         <li>
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/United-States-of-America.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/United-States-of-America.png') }}" style="height:1em" />
                                                 English
                                             </a>
                                         </li>
@@ -40,14 +40,14 @@
                                     {% if app.request.getLocale() == "fr" %}
                                         <li class="active">
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/France.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/France.png') }}" style="height:1em" />
                                                 French <i class="fa fa-check"></i>
                                             </a>
                                         </li>
                                     {% else %}
                                         <li>
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/France.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/France.png') }}" style="height:1em" />
                                                 French
                                             </a>
                                         </li>
@@ -56,14 +56,14 @@
                                     {% if app.request.getLocale() == "de" %}
                                         <li class="active">
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/Germany.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/Germany.png') }}" style="height:1em" />
                                                 German <i class="fa fa-check"></i>
                                             </a>
                                         </li>
                                     {% else %}
                                         <li>
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/Germany.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/Germany.png') }}" style="height:1em" />
                                                 German
                                             </a>
                                         </li>
@@ -72,14 +72,14 @@
                                     {% if app.request.getLocale() == "it" %}
                                         <li class="active">
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/Italy.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/Italy.png') }}" style="height:1em" />
                                                 Italian <i class="fa fa-check"></i>
                                             </a>
                                         </li>
                                     {% else %}
                                         <li>
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/Italy.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/Italy.png') }}" style="height:1em" />
                                                 Italian
                                             </a>
                                         </li>
@@ -88,14 +88,14 @@
                                     {% if app.request.getLocale() == "es" %}
                                         <li class="active">
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/Spain.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/Spain.png') }}" style="height:1em" />
                                                 Spanish <i class="fa fa-check"></i>
                                             </a>
                                         </li>
                                     {% else %}
                                         <li>
                                             <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}">
-                                                <img src="{{ asset('assets/img/icons/flags/Spain.png') }}" style="height:1em" />
+                                                <img src="{{ asset('img/icons/flags/Spain.png') }}" style="height:1em" />
                                                 Spanish
                                             </a>
                                         </li>
@@ -285,7 +285,7 @@
                         <div class="row">
                             <!-- About -->
                             <div class="col-md-3 md-margin-bottom-40">
-                                <a href="{{ path('app_default_index') }}"><img id="logo-footer" class="footer-logo" src="{{ asset('assets/logo-long.png') }}" alt="" height="30px"></a>
+                                <a href="{{ path('app_default_index') }}"><img id="logo-footer" class="footer-logo" src="{{ asset('img/logo-long.png') }}" alt="" height="30px"></a>
                                 <p>{{ 'footer.description.part1'|trans }}</p>
                                 <p>{{ 'footer.description.part2'|trans }}</p>
                             </div>

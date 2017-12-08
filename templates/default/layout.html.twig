@@ -21,7 +21,7 @@
             "@type": "Organization",
             "name": "OrbitronDev",
             "url": "https://www.orbitrondev.org",
-            "logo": "https://www.orbitrondev.org/assets/logo.png",
+            "logo": "https://www.orbitrondev.org/img/logo.png",
             "description": "{{ 'We develop multiple web services'|trans }}",
             "address": {
                 "@type": "PostalAddress",
@@ -104,7 +104,7 @@
                         <!-- End Responsive Toggle Button -->
                         <!-- Logo -->
                         <a href="{{ path('app_default_index') }}" class="navbar-brand">
-                            <img src="{{ asset('assets/logo-long.png') }}" alt="Logo" height="30px">
+                            <img src="{{ asset('img/logo-long.png') }}" alt="Logo" height="30px">
                         </a>
                         <!-- End Logo -->
 
@@ -137,11 +137,11 @@
                                        data-dropdown-type="css-animation" data-dropdown-duration="300" data-dropdown-hide-on-scroll="false" data-dropdown-animation-in="fadeIn" data-dropdown-animation-out="fadeOut">{{ languages[app.request.getLocale()] }}
                                     </a>
                                     <ul id="languages-dropdown-2" class="list-unstyled text-left u-shadow-v23 g-pos-abs g-right-0 g-bg-white g-width-160 g-py-20 g-pb-15 g-mt-5 g-z-index-99" aria-labelledby="languages-dropdown-invoker-2">
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}"><img src="{{ asset('assets/img/icons/flags/United-States-of-America.png') }}" style="height:1em" /> English</a></li>
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}"><img src="{{ asset('assets/img/icons/flags/France.png') }}" style="height:1em" /> French</a></li>
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}"><img src="{{ asset('assets/img/icons/flags/Germany.png') }}" style="height:1em" /> German</a></li>
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}"><img src="{{ asset('assets/img/icons/flags/Italy.png') }}" style="height:1em" /> Italian</a></li>
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}"><img src="{{ asset('assets/img/icons/flags/Spain.png') }}" style="height:1em" /> Spanish</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}"><img src="{{ asset('img/icons/flags/United-States-of-America.png') }}" style="height:1em" /> English</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}"><img src="{{ asset('img/icons/flags/France.png') }}" style="height:1em" /> French</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}"><img src="{{ asset('img/icons/flags/Germany.png') }}" style="height:1em" /> German</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}"><img src="{{ asset('img/icons/flags/Italy.png') }}" style="height:1em" /> Italian</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}"><img src="{{ asset('img/icons/flags/Spain.png') }}" style="height:1em" /> Spanish</a></li>
                                     </ul>
                                 </li>
                             </ul>
