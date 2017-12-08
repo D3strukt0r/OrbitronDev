@@ -56,7 +56,7 @@ class Kernel
             $config = Yaml::parse(file_get_contents($this->getRootDir().'/config/parameters.yml'));
             $this->set('config', $config);
         } catch (ParseException $e) {
-            throw new Exception("Unable to load Parameters. Unable to parse the YAML string: %s", $e->getMessage());
+            throw new ParseException("Unable to load Parameters. Unable to parse the YAML string: %s", $e->getMessage());
         }
 
         // Load components
@@ -177,7 +177,6 @@ class Kernel
     public function loadSession()
     {
         new SessionContainer($this);
-        return;
 
         // Session by Manuele Vaccari
         /*
@@ -200,7 +199,6 @@ class Kernel
     {
         // Symfony Templating
         new TemplatingContainer($this);
-        return;
 
         // Templating by Manuele Vaccari and Noel Pineiro
         // Router and Templater are together. Templates are also in the "/views" directory but with the ".phtml" ending and support PHP functions, NO TWIG
@@ -255,7 +253,6 @@ class Kernel
     {
         // Symfony Translator
         new TranslatingContainer($this);
-        return;
     }
 
     public function getRootDir()
