@@ -1,20 +1,6 @@
-{% extends 'base.html.twig' %}
+{% extends 'account/layout_clean.html.twig' %}
 
 {% block title %}{{ 'Authorize access'|trans }} | {{ parent() }}{% endblock %}
-
-{% block stylesheets_implemeting_plugins %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
-    <!--[if lt IE 9]>
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms-ie8.css') }}" /><![endif]-->
-{% endblock %}
-
-{% block javascripts_implementing_plugins %}
-    {{ parent() }}
-    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
-{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -25,36 +11,33 @@
             background: url({{ asset('assets/img/background/bg-cyan.jpg') }}) fixed 50% 50%;
             background-size: cover;
         }
-
-        .sky-form {
-            border: none;
-            margin: 0 auto;
-            padding: 40px;
-            box-sizing: content-box;
-            max-width: 400px;
-        }
     </style>
 {% endblock %}
 
 {% block content %}
-    <form method="post" class="sky-form">
-        <header>Do You Authorize <b>{{ client_info.clientIdentifier }}</b>?</header>
-        <fieldset>
-            <section>
-                <h3><b>{{ client_info.clientIdentifier }}</b> wants access to:</h3>
-                <ul>
-                    {#{% for scope in client_info.scope|split(' ') %}
-                        <li>{{ scope }}</li>
-                    {% endfor %}#}
-                    {% for scope in scopes %}
-                        <li>{{ scope }}</li>
-                    {% endfor %}
-                </ul>
-            </section>
-        </fieldset>
-        <footer>
-            <input type="submit" name="authorized" value="No" class="button button-secondary" />
-            <input type="submit" name="authorized" value="Yes" class="button" />
-        </footer>
-    </form>
+    <section class="container g-py-100">
+        <div class="row justify-content-center">
+            <div class="col-sm-8 col-lg-5">
+                <div class="g-brd-around g-brd-gray-light-v4 rounded g-py-40 g-px-30 g-bg-white">
+                    <header class="text-center mb-4">
+                        <h2 class="h2 g-color-black g-font-weight-600">Do You Authorize <br /><b>{{ client_info.clientIdentifier }}</b>?</h2>
+                    </header>
+
+                    <h4><b>{{ client_info.clientIdentifier }}</b> wants access to:</h4>
+                    <ul>
+                        {% for scope in scopes %}
+                            <li>{{ scope }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <footer class="text-center">
+                        <form method="post">
+                            <input type="submit" name="authorized" value="No" class="btn btn-md u-btn-red rounded" />
+                            <input type="submit" name="authorized" value="Yes" class="btn btn-md u-btn-primary rounded" />
+                        </form>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

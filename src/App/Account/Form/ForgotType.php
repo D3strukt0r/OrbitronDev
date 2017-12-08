@@ -17,6 +17,9 @@ class ForgotType extends AbstractType
         $builder
             ->add('email', EmailType::class, array(
                 'label'       => 'E-mail',
+                'attr' => array(
+                    'placeholder' => 'johndoe@gmail.com',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your email address')),
                     new Email(array('message' => 'Please enter a VALID email address')),

@@ -4,6 +4,7 @@ namespace App\Account\Form;
 
 use Form\RecaptchaType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -19,12 +20,18 @@ class RegisterType extends AbstractType
         $builder
             ->add('username', TextType::class, array(
                 'label'       => 'Username',
+                'attr' => array(
+                    'placeholder' => 'JohnDoe',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your username')),
                 ),
             ))
             ->add('email', EmailType::class, array(
                 'label'       => 'E-mail',
+                'attr' => array(
+                    'placeholder' => 'johndoe@gmail.com',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your email address')),
                     new Email(array('message' => 'Please enter a VALID email address')),
@@ -32,12 +39,18 @@ class RegisterType extends AbstractType
             ))
             ->add('password', PasswordType::class, array(
                 'label'       => 'Password',
+                'attr' => array(
+                    'placeholder' => 'Password',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your password')),
                 ),
             ))
             ->add('password_verify', PasswordType::class, array(
                 'label'       => 'Repeat Password',
+                'attr' => array(
+                    'placeholder' => 'Password',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your password')),
                 ),
@@ -56,6 +69,13 @@ class RegisterType extends AbstractType
                     ),
                 ),
                 'mapped'         => false,
+            ))
+            ->add('terms', CheckboxType::class, array(
+                'label'    => 'I accept the %link%Terms and Conditions%/link%',
+                'required' => true,
+                'constraints' => array(
+                    new NotBlank(array('message' => 'Please accept the terms')),
+                ),
             ))
             ->add('send', SubmitType::class, array(
                 'label' => 'Register',

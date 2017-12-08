@@ -15,12 +15,18 @@ class ResetPasswordType extends AbstractType
         $builder
             ->add('password', PasswordType::class, array(
                 'label'       => 'Password',
+                'attr' => array(
+                    'placeholder' => 'Password',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your password')),
                 ),
             ))
             ->add('password_verify', PasswordType::class, array(
                 'label'       => 'Repeat Password',
+                'attr' => array(
+                    'placeholder' => 'Repeat Password',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your password')),
                 ),

@@ -26,24 +26,30 @@ class LoginType extends AbstractType
                 'data' => strlen($request->query->get('redir')) > 0 ? $request->query->get('redir') : $router->generate('app_account_panel', array('page' => 'home')),
             ))
             ->add('email', EmailType::class, array(
-                'label'       => 'E-mail',
+                'label'       => 'E-mail:',
+                'attr' => array(
+                    'placeholder' => 'johndoe@gmail.com',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your email address')),
                     new Email(array('message' => 'Please enter a VALID email address')),
                 ),
             ))
             ->add('password', PasswordType::class, array(
-                'label'       => 'Password',
+                'label'       => 'Password:',
+                'attr' => array(
+                    'placeholder' => 'Password',
+                ),
                 'constraints' => array(
                     new NotBlank(array('message' => 'Please enter your password')),
                 ),
             ))
             ->add('remember', CheckboxType::class, array(
-                'label'    => 'Keep me logged in',
+                'label'    => 'Keep signed in',
                 'required' => false,
             ))
             ->add('send', SubmitType::class, array(
-                'label' => 'Log in',
+                'label' => 'Login',
             ));
     }
 }

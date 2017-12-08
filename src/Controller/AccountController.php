@@ -374,7 +374,7 @@ class AccountController extends \Controller
                         return $this->render('account/forgot-password-form.html.twig', array(
                             'reset_form' => $resetForm->createView(),
                         ));
-                    } elseif (strlen($password) < 8) {
+                    } elseif (strlen($password) < AccountHelper::$settings['password']['min_length']) {
                         $resetForm->get('password')->addError(new FormError('Your password is too short (min. 7 characters)'));
                         return $this->render('account/forgot-password-form.html.twig', array(
                             'reset_form' => $resetForm->createView(),
@@ -393,10 +393,10 @@ class AccountController extends \Controller
                     $em->flush();
                     $token->remove();
 
+                    $this->addFlash('success', 'Successfully changed your password');
                     return $this->render('account/forgot-password-form.html.twig', array(
-                        'reset_form'      => $resetForm->createView(),
-                        'success_message' => 'Successfully changed your password',
-                        'redirect'        => $this->generateUrl('app_account_login'),
+                        'reset_form' => $resetForm->createView(),
+                        'redirect'   => $this->generateUrl('app_account_login'),
                     ));
                 }
 
@@ -431,13 +431,11 @@ class AccountController extends \Controller
                             )), 'text/html');
                         $this->get('mailer')->send($message);
 
-                        $params = array(
-                            'forgot_form'     => $forgotForm->createView(),
-                            'success_message' => 'Email sent',
-                        );
-
                         // Email sent
-                        return $this->render('account/forgot-password.html.twig', $params);
+                        $this->addFlash('success', 'Email sent');
+                        return $this->render('account/forgot-password.html.twig', array(
+                            'forgot_form' => $forgotForm->createView(),
+                        ));
                     } else {
                         // Email does not exist
                         $forgotForm->get('email')->addError(new FormError('A user with this email does not exist.'));
@@ -473,18 +471,16 @@ class AccountController extends \Controller
                 if (is_string($job) && $job != 'confirm_email') {
                     $errorMessage = 'This token is not for email activation';
                 }
+                $this->addFlash('failure', $errorMessage);
                 return $this->render('account/confirm-email.html.twig', array(
-                    'error_message'   => $errorMessage,
                     'send_email_form' => $sendEmailForm->createView(),
                 ));
             } else {
                 $currentUser->setEmailVerified(true);
                 $em->flush();
                 $token->remove();
-                $successMessage = 'Successful verified your email';
-                return $this->render('account/confirm-email.html.twig', array(
-                    'success_message' => $successMessage,
-                ));
+                $this->addFlash('success', 'Successfully verified your email');
+                return $this->render('account/confirm-email.html.twig');
             }
         } else {
             $sendEmailForm->handleRequest($request);
@@ -503,13 +499,7 @@ class AccountController extends \Controller
                     )), 'text/html');
                 $this->get('mailer')->send($message);
 
-
-                $params = array(
-                    'send_email_form' => $sendEmailForm->createView(),
-                    'success_message' => 'Email sent',
-                );
-
-                return $this->render('account/confirm-email.html.twig', $params);
+                $this->addFlash('success', 'Email sent');
             }
 
             return $this->render('account/confirm-email.html.twig', array(

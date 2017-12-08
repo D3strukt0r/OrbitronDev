@@ -1,21 +1,6 @@
-{% extends 'base.html.twig' %}
+{% extends 'account/layout_clean.html.twig' %}
 
 {% block title %}{{ 'Login'|trans }} | {{ parent() }}{% endblock %}
-
-{% block stylesheets_implemeting_plugins %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
-    <!--[if lt IE 9]>
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms-ie8.css') }}" />
-    <![endif]-->
-{% endblock %}
-
-{% block javascripts_implementing_plugins %}
-    {{ parent() }}
-    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
-{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -23,119 +8,71 @@
         body {
             margin: 0;
             padding: 0;
-            background: url(/assets/img/background/bg-cyan.jpg) fixed 50% 50%;
+            background: url({{ asset('assets/img/background/bg-cyan.jpg') }}) fixed 50% 50%;
             background-size: cover;
-        }
-        /*body {
-                background: url(https://i.imgur.com/GHr12sH.jpg) no-repeat center center fixed;
-                -webkit-background-size: cover;
-                -moz-background-size: cover;
-                -o-background-size: cover;
-                background-size: cover;
-            }*/
-
-        .sky-form {
-            margin: 0 auto;
-            padding: 40px;
-            box-sizing: content-box;
-            max-width: 400px;
-        }
-        .sky-changes-3.sky-form {
-            border: none;
         }
     </style>
 {% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $(function () {
-                // Validation for login form
-                $("#login-form").validate({
-                    // Rules for form validation
-                    rules: {
-                        'form[email]': {
-                            required: true,
-                            email: true
-                        },
-                        'form[password]': {
-                            required: true,
-                            minlength: 8
-                        }
-                    },
-
-                    // Messages for form validation
-                    messages: {
-                        'form[email]': {
-                            required: 'Please enter your email address',
-                            email: 'Please enter a VALID email address'
-                        },
-                        'form[password]': {
-                            required: 'Please enter your password'
-                        }
-                    },
-
-                    // Do not change code below
-                    errorPlacement: function (error, element) {
-                        error.insertAfter(element.parent());
-                    }
-                });
-            });
-
-        });
-    </script>
-{% endblock %}
 
 {% block content %}
-    {{ form_start(login_form, {'action': path('app_account_login'), 'attr': {'class': 'sky-form sky-changes-3', 'id': 'login-form'}}) }}
-        {{ form_row(login_form._token) }}
-        {{ form_row(login_form.redirect) }}
+    <!-- Login -->
+    <section class="container g-py-100">
+        <div class="row justify-content-center">
+            <div class="col-sm-8 col-lg-5">
+                <div class="g-brd-around g-brd-gray-light-v4 rounded g-py-40 g-px-30 g-bg-white">
+                    <header class="text-center mb-4">
+                        <h2 class="h2 g-color-black g-font-weight-600">{{ 'Login'|trans }}</h2>
+                    </header>
 
-        <header>{{ 'Login form'|trans }}</header>
-        <fieldset>
-            <img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" alt="" width="100" height="100" class="img-circle center-block" />
-            <br />
-            {{ form_errors(login_form) }}
-            <section>
-                <div class="row">
-                    {{ form_label(login_form.email, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                    <div class="col col-8">
-                        <label class="input">
-                            {#<i class="icon-append fa fa-user"></i>#}
-                            {{ form_widget(login_form.email) }}
-                        </label>
-                        <div class="note note-error">{{ form_errors(login_form.email) }}</div>
-                    </div>
-                </div>
-            </section>
+                    <!-- Form -->
+                    {{ form_start(login_form, {'attr': {'class': 'g-py-15'}}) }}
+                        {{ form_errors(login_form) }}
+                        <div class="form-group {% if login_form.email.vars.errors|length %}u-has-error-v1{% endif %} mb-4">
+                            {{ form_label(login_form.email, null, {'label_attr': {'class': 'g-color-gray-dark-v2 g-font-weight-600 g-font-size-13'}}) }}
+                            {{ form_widget(login_form.email, {'attr': {'class': 'form-control g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15'}}) }}
+                            <small class="form-control-feedback">{{ form_errors(login_form.email) }}</small>
+                        </div>
 
-            <section>
-                <div class="row">
-                    {{ form_label(login_form.password, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                    <div class="col col-8">
-                        <label class="input">
-                            {#<i class="icon-append fa fa-lock"></i>#}
-                            {{ form_widget(login_form.password) }}
-                        </label>
-                        <div class="note note-error">{{ form_errors(login_form.password) }}</div>
-                        <div class="note"><a href="{{ path('app_account_forgot') }}">Forgot password?</a></div>
-                    </div>
-                </div>
-            </section>
+                        <div class="form-group {% if login_form.email.vars.errors|length %}u-has-error-v1{% endif %} mb-3">
+                            <div class="row justify-content-between">
+                                <div class="col align-self-center">
+                                    {{ form_label(login_form.password, null, {'label_attr': {'class': 'g-color-gray-dark-v2 g-font-weight-600 g-font-size-13'}}) }}
+                                </div>
+                                <div class="col align-self-center text-right">
+                                    <a class="d-inline-block g-font-size-12 mb-2" href="{{ path('app_account_forgot') }}">{{ 'Forgot password?'|trans }}</a>
+                                </div>
+                            </div>
+                            {{ form_widget(login_form.password, {'attr': {'class': 'form-control g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15'}}) }}
+                            <small class="form-control-feedback">{{ form_errors(login_form.password) }}</small>
+                        </div>
+                        <div class="g-mb-35">
+                            <div class="row justify-content-between">
+                                <div class="col-8 align-self-center">
+                                    <label class="form-check-inline u-check g-color-gray-dark-v5 g-font-size-13 g-pl-25 mb-0">
+                                        {{ form_widget(login_form.remember, {'attr': {'class': 'g-hidden-xs-up g-pos-abs g-top-0 g-left-0'}}) }}
+                                        <span class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
+                                            <i class="fa" data-check-icon="&#xf00c"></i>
+                                        </span>
+                                        {{ login_form.remember.vars.label }}
+                                    </label>
+                                </div>
+                                <div class="col-4 align-self-center text-right">
+                                    {{ form_widget(login_form.send, {'attr': {'class': 'btn btn-md u-btn-primary rounded g-py-13 g-px-25'}}) }}
+                                </div>
+                            </div>
+                        </div>
+                    {{ form_end(login_form) }}
+                    <!-- End Form -->
 
-            <section>
-                <div class="row">
-                    <div class="col col-4"></div>
-                    <div class="col col-8">
-                        <label class="checkbox">{{ form_widget(login_form.remember) }}<i></i>{{ 'Keep me logged in'|trans }}</label>
-                    </div>
+                    <footer class="text-center">
+                        <p class="g-color-gray-dark-v5 g-font-size-13 mb-0">
+                            {{ 'Don\'t have an account?'|trans }}
+                            <a class="g-font-weight-600" href="{{ path('app_account_register') }}">{{ 'register'|trans }}</a>
+                        </p>
+                    </footer>
                 </div>
-            </section>
-        </fieldset>
-        <footer>
-            {{ form_widget(login_form.send, {'attr': {'class': 'button'}}) }}
-            <a href="{{ path('app_account_register') }}" class="button button-secondary">{{ 'Register'|trans }}</a>
-        </footer>
-    {{ form_end(login_form) }}
+            </div>
+        </div>
+    </section>
+    <!-- End Login -->
 {% endblock %}

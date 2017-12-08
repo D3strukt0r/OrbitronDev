@@ -1,9 +1,9 @@
-{% extends 'layout.html.twig' %}
+{% extends 'account/layout_main.html.twig' %}
 
-{% block body %}
+{% block content %}
     {% if not user_exists %}
         <div class="container content">
-            <div class="heading heading-v1 margin-bottom-40">
+            <div class="heading text-center g-my-50">
                 <h1>{{ 'This user doesn\'t exist.'|trans }}</h1>
             </div>
         </div>
@@ -12,123 +12,141 @@
             <div class="row">
                 <div class="col-lg-3">
                     <div class="thumbnail">
-                        <img src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.id, 'height': 280, 'width': 280}) }}" alt="" width="100%">
-                        <div class="caption">
-                            <h3>{{ current_user.username }}</h3>
-                            <hr />
-                            {% if current_user.profile.name|length == 0 and current_user.profile.surname|length == 0 %}
-                                <p>{{ 'No name set'|trans }}</p>
-                            {% else %}
-                            <p>{{ current_user.profile.name }} {{ current_user.profile.surname }}</p>
-                            {% endif %}
-                            <p>{% if current_user.profile.gender == 0 %}{{ 'No gender set'|trans }}
-                                {% elseif current_user.profile.gender == 1 %}{{ 'Male'|trans }}
-                                {% elseif current_user.profile.gender == 2 %}{{ 'Female'|trans }}
-                                {% endif %}</p>
-                            <p>{{ current_user.profile.birthday|date('d.m.Y') }}</p>
+                        <div class="card">
+                            <img class="card-img-top" src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.id, 'height': 280, 'width': 280}) }}" alt="">
+                            <div class="card-body">
+                                <h4 class="card-title">{{ current_user.username }}</h4>
+                                <hr />
+                                {% if current_user.profile.name|length == 0 and current_user.profile.surname|length == 0 %}
+                                    <p>{{ 'No name set'|trans }}</p>
+                                {% else %}
+                                    <p>{{ current_user.profile.name }} {{ current_user.profile.surname }}</p>
+                                {% endif %}
+                                <p>{% if current_user.profile.gender == 0 %}{{ 'No gender set'|trans }}
+                                    {% elseif current_user.profile.gender == 1 %}{{ 'Male'|trans }}
+                                    {% elseif current_user.profile.gender == 2 %}{{ 'Female'|trans }}
+                                    {% endif %}</p>
+                                <p>{{ current_user.profile.birthday|date('d.m.Y') }}</p>
+                            </div>
                         </div>
                     </div>
                 </div><!-- /.col-lg-3 -->
                 <div class="col-lg-9">
                     {% if service_allowed %}
-                        <div id="service-blog" class="panel panel-default">
-                            <div class="panel-heading">
+
+                        <!-- Blog block -->
+                        <div class="card mb-3">
+                            <div class="card-header">
                                 {{ 'Blog'|trans }}
                                 {% if logged_in_user_id == current_user.id %}
-                                <span class="pull-right">
-                                    <a href="{{ path('app_blog_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
-                                    <a href="{{ path('app_blog_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new blog'|trans }}</a>
-                                </span>
+                                    <span class="pull-right">
+                                        <a href="{{ path('app_blog_index') }}" class="btn btn-xs u-btn-blue">{{ 'View'|trans }}</a>
+                                        <a href="{{ path('app_blog_new') }}" class="btn btn-xs u-btn-teal">{{ 'Create new blog'|trans }}</a>
+                                    </span>
                                 {% endif %}
                             </div>
                             {% if blogs|length > 0 %}
-                                <div class="panel-body">
+                                <div class="card-body">
                                     {% for blog in blogs %}
-                                        <div class="well well-sm">
-                                            {{ blog.name }}
-                                            {% if logged_in_user_id == current_user.id %}
-                                            <div class="pull-right">
-                                                <a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
-                                                <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                        <div class="card bg-light mb-3">
+                                            <div class="card-body">
+                                                {{ blog.name }}
+                                                {% if logged_in_user_id == current_user.id %}
+                                                    <div class="pull-right">
+                                                        <a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}" class="btn btn-xs u-btn-blue">{{ 'Edit'|trans }}</a>
+                                                        <a href="#!" class="btn btn-xs u-btn-red">{{ 'Delete'|trans }}</a>
+                                                    </div>
+                                                {% endif %}
                                             </div>
-                                            {% endif %}
                                         </div>
                                     {% endfor %}
                                 </div>
                             {% endif %}
                         </div>
+                        <!-- End Blog block -->
+
+                        <!-- Cloud block -->
                         {% if logged_in_user_id == current_user.id %}
-                            <div id="service-cloud" class="panel panel-default">
-                                <div class="panel-heading">
+                            <div class="card mb-3">
+                                <div class="card-header">
                                     {{ 'Cloud'|trans }}
                                     <span class="pull-right">
-                                        <a href="{{ path('app_cloud_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'Open'|trans }}</a>
+                                        <a href="{{ path('app_cloud_index') }}" class="btn btn-xs u-btn-blue">{{ 'Open'|trans }}</a>
                                     </span>
                                 </div>
                             </div>
                         {% endif %}
-                        <div id="service-forum" class="panel panel-default">
-                            <div class="panel-heading">
+                        <!-- End Cloud block -->
+
+                        <!-- Forum block -->
+                        <div class="card mb-3">
+                            <div class="card-header">
                                 {{ 'Forum'|trans }}
                                 {% if logged_in_user_id == current_user.id %}
-                                <span class="pull-right">
-                                    <a href="{{ path('app_forum_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
-                                    <a href="{{ path('app_forum_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new forum'|trans }}</a>
-                                </span>
+                                    <span class="pull-right">
+                                        <a href="{{ path('app_forum_index') }}" class="btn btn-xs u-btn-blue">{{ 'View'|trans }}</a>
+                                        <a href="{{ path('app_forum_new') }}" class="btn btn-xs u-btn-teal">{{ 'Create new forum'|trans }}</a>
+                                    </span>
                                 {% endif %}
                             </div>
                             {% if forums|length > 0 %}
-                                <div class="panel-body">
+                                <div class="card-body">
                                     {% for forum in forums %}
-                                        <div class="well well-sm">
-                                            {{ forum.name }}
-                                            {% if logged_in_user_id == current_user.id %}
-                                            <div class="pull-right">
-                                                <a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
-                                                <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                        <div class="card bg-light mb-3">
+                                            <div class="card-body">
+                                                {{ forum.name }}
+                                                {% if logged_in_user_id == current_user.id %}
+                                                    <div class="pull-right">
+                                                        <a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}" class="btn btn-xs u-btn-blue">{{ 'Edit'|trans }}</a>
+                                                        <a href="#!" class="btn btn-xs u-btn-red">{{ 'Delete'|trans }}</a>
+                                                    </div>
+                                                {% endif %}
                                             </div>
-                                            {% endif %}
                                         </div>
                                     {% endfor %}
                                 </div>
                             {% endif %}
                         </div>
-                        <div id="service-pages" class="panel panel-default">
-                            <div class="panel-heading">
-                                {{ 'Pages'|trans }}
-                            </div>
-                        </div>
-                        <div id="service-store" class="panel panel-default">
-                            <div class="panel-heading">
+                        <!-- End Forum block -->
+
+                        <!-- Store block -->
+                        <div class="card mb-3">
+                            <div class="card-header">
                                 {{ 'Store'|trans }}
                                 {% if logged_in_user_id == current_user.id %}
-                                <span class="pull-right">
-                                    <a href="{{ path('app_store_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
-                                    <a href="{{ path('app_store_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new store'|trans }}</a>
-                                </span>
+                                    <span class="pull-right">
+                                        <a href="{{ path('app_store_index') }}" class="btn btn-xs u-btn-blue">{{ 'View'|trans }}</a>
+                                        <a href="{{ path('app_store_new') }}" class="btn btn-xs u-btn-teal">{{ 'Create new store'|trans }}</a>
+                                    </span>
                                 {% endif %}
                             </div>
-                            {% if stores|length > 0 %}
-                                <div class="panel-body">
+                            {% if forums|length > 0 %}
+                                <div class="card-body">
                                     {% for store in stores %}
-                                        <div class="well well-sm">
-                                            {{ store.name }}
-                                            {% if logged_in_user_id == current_user.id %}
-                                            <div class="pull-right">
-                                                <a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
-                                                <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                        <div class="card bg-light mb-3">
+                                            <div class="card-body">
+                                                {{ store.name }}
+                                                {% if logged_in_user_id == current_user.id %}
+                                                    <div class="pull-right">
+                                                        <a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}" class="btn btn-xs u-btn-blue">{{ 'Edit'|trans }}</a>
+                                                        <a href="#!" class="btn btn-xs u-btn-red">{{ 'Delete'|trans }}</a>
+                                                    </div>
+                                                {% endif %}
                                             </div>
-                                            {% endif %}
                                         </div>
                                     {% endfor %}
                                 </div>
                             {% endif %}
                         </div>
-                        <div id="service-wiki" class="panel panel-default">
-                            <div class="panel-heading">
+                        <!-- End Store block -->
+
+                        <!-- Wiki block -->
+                        <div class="card mb-3">
+                            <div class="card-header">
                                 {{ 'Wiki'|trans }}
                             </div>
                         </div>
+                        <!-- End Wiki block -->
                     {% endif %}
                 </div>
             </div>

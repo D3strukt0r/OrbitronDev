@@ -1,23 +1,6 @@
-{% extends 'base.html.twig' %}
+{% extends 'account/layout_clean.html.twig' %}
 
-{% block title %}Register | {{ parent() }}{% endblock %}
-
-{% block stylesheets_implemeting_plugins %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
-    <!--[if lt IE 9]>
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms-ie8.css') }}" />
-    <![endif]-->
-{% endblock %}
-
-{% block javascripts_implementing_plugins %}
-    {{ parent() }}
-    <script type="text/javascript"
-            src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
-    <script type="text/javascript"
-            src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
-{% endblock %}
+{% block title %}{{ 'Register'|trans }} | {{ parent() }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -25,156 +8,98 @@
         body {
             margin: 0;
             padding: 0;
-            background: url(/assets/img/background/bg-cyan.jpg) fixed 50% 50%;
+            background: url({{ asset('assets/img/background/bg-cyan.jpg') }}) fixed 50% 50%;
             background-size: cover;
-        }
-
-        .sky-form {
-            border: none;
-            margin: 0 auto;
-            padding: 40px;
-            box-sizing: content-box;
-            max-width: 400px;
         }
     </style>
 {% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $(function () {
-                // Validation for login form
-                $("#register-form").validate({
-                    // Rules for form validation
-                    rules: {
-                        'form[username]': {
-                            required: true
-                        },
-                        'form[email]': {
-                            required: true,
-                            email: true
-                        },
-                        'form[password]': {
-                            required: true,
-                            minlength: 8
-                        },
-                        'form[password_verify]': {
-                            required: true,
-                            minlength: 8,
-                            equalTo : "#form_password"
-                        }
-                    },
-
-                    // Messages for form validation
-                    messages: {
-                        'form[username]': {
-                            required: 'Please enter your username'
-                        },
-                        'form[email]': {
-                            required: 'Please enter your email address',
-                            email: 'Please enter a VALID email address'
-                        },
-                        'form[password]': {
-                            required: 'Please enter your password'
-                        },
-                        'form[password_verify]': {
-                            required: 'Please enter your password',
-                            equalTo: 'Your password doesn\'t matches the first one'
-                        }
-                    },
-
-                    // Do not change code below
-                    errorPlacement: function (error, element) {
-                        error.insertAfter(element.parent());
-                    }
-                });
-            });
-
-        });
-    </script>
-{% endblock %}
 
 {% block content %}
-    <form action="{{ path('app_account_register') }}" method="post" id="register-form" class="sky-form sky-changes-3" novalidate="novalidate">
-        {{ form_row(register_form._token) }}
+    <!-- Signup -->
+    <section class="container g-py-100">
+        <div class="row justify-content-center">
+            <div class="col-sm-10 col-md-9 col-lg-6">
+                <div class="g-brd-around g-brd-gray-light-v4 rounded g-py-40 g-px-30 g-bg-white">
+                    <header class="text-center mb-4">
+                        <h2 class="h2 g-color-black g-font-weight-600">{{ 'Register'|trans }}</h2>
+                    </header>
 
-        <header>Register</header>
-        <fieldset>
-            <img src="{{ asset('assets/logo-long.png') }}" width="60%" class="img-responsive center-block" alt="" />
-            <br />
-            {{ form_errors(register_form) }}
-            <section>
-                <div class="row">
-                    {{ form_label(register_form.username, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                    <div class="col col-8">
-                        <label class="input">
-                            {#<i class="icon-append fa fa-user"></i>#}
-                            {{ form_widget(register_form.username) }}
-                        </label>
-                        <div class="note note-error">{{ form_errors(register_form.username) }}</div>
-                    </div>
-                </div>
-            </section>
+                    <!-- Form -->
+                    {{ form_start(register_form, {'attr': {'class': 'g-py-15'}}) }}
+                        {{ form_errors(register_form) }}
 
-            <section>
-                <div class="row">
-                    {{ form_label(register_form.email, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                    <div class="col col-8">
-                        <label class="input">
-                            {#<i class="icon-append fa fa-envelope"></i>#}
-                            {{ form_widget(register_form.email) }}
-                        </label>
-                        <div class="note note-error">{{ form_errors(register_form.email) }}</div>
-                    </div>
-                </div>
-            </section>
+                        <div class="form-group {% if register_form.username.vars.errors|length %}u-has-error-v1{% endif %} mb-4">
+                            <div class="input-group">
+                                <span class="input-group-addon g-width-45 g-brd-gray-light-v4 g-color-gray-dark-v5">
+                                    <i class="icon-finance-067 u-line-icon-pro"></i>
+                                </span>
+                                {{ form_widget(register_form.username, {'attr': {'class': 'form-control g-brd-gray-light-v4 g-brd-primary--hover g-py-15 g-px-15'}}) }}
+                            </div>
+                            <small class="form-control-feedback">{{ form_errors(register_form.username) }}</small>
+                        </div>
 
-            <section>
-                <div class="row">
-                    {{ form_label(register_form.password, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                    <div class="col col-8">
-                        <label class="input">
-                            {#<i class="icon-append fa fa-lock"></i>#}
-                            {{ form_widget(register_form.password, {'attr': {'class': 'password-verify'}}) }}
-                        </label>
-                        {#<div class="pwstrength_viewport_progress"></div>
-                        <script src="{{ asset('assets/js/admin/password-strength.js') }}"></script>#}
-                        <div class="note note-error">{{ form_errors(register_form.password) }}</div>
-                    </div>
-                </div>
-            </section>
+                        <div class="form-group {% if register_form.email.vars.errors|length %}u-has-error-v1{% endif %} mb-4">
+                            <div class="input-group">
+                                <span class="input-group-addon g-width-45 g-brd-gray-light-v4 g-color-gray-dark-v5">
+                                    <i class="icon-communication-062 u-line-icon-pro"></i>
+                                </span>
+                                {{ form_widget(register_form.email, {'attr': {'class': 'form-control g-brd-gray-light-v4 g-brd-primary--hover g-py-15 g-px-15'}}) }}
+                            </div>
+                            <small class="form-control-feedback">{{ form_errors(register_form.email) }}</small>
+                        </div>
 
-            <section>
-                <div class="row">
-                    {{ form_label(register_form.password_verify, null, {'label_attr': {'class': 'label col col-4'}}) }}
-                    <div class="col col-8">
-                        <label class="input">
-                            {#<i class="icon-append fa fa-lock"></i>#}
-                            {{ form_widget(register_form.password_verify) }}
-                        </label>
-                        <div class="note note-error">{{ form_errors(register_form.password_verify) }}</div>
-                    </div>
+                        <div class="row">
+                            <div class="form-group {% if register_form.password.vars.errors|length %}u-has-error-v1{% endif %} col-xs-12 col-sm-6 mb-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon g-width-45 g-brd-gray-light-v4 g-color-gray-dark-v5">
+                                        <i class="icon-media-094 u-line-icon-pro"></i>
+                                    </span>
+                                    {{ form_widget(register_form.password, {'attr': {'class': 'form-control g-brd-gray-light-v4 g-brd-primary--hover g-py-15 g-px-15'}}) }}
+                                </div>
+                                <small class="form-control-feedback">{{ form_errors(register_form.password) }}</small>
+                            </div>
+
+                            <div class="form-group {% if register_form.password_verify.vars.errors|length %}u-has-error-v1{% endif %} col-xs-12 col-sm-6 mb-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon g-width-45 g-brd-gray-light-v4 g-color-gray-dark-v5">
+                                        <i class="icon-media-094 u-line-icon-pro"></i>
+                                    </span>
+                                    {{ form_widget(register_form.password_verify, {'attr': {'class': 'form-control g-brd-gray-light-v4 g-brd-primary--hover g-py-15 g-px-15'}}) }}
+                                </div>
+                                <small class="form-control-feedback">{{ form_errors(register_form.password_verify) }}</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group {% if register_form.recaptcha.vars.errors|length %}u-has-error-v1{% endif %} mb-4">
+                            {{ form_widget(register_form.recaptcha) }}
+                            <small class="form-control-feedback">{{ form_errors(register_form.recaptcha) }}</small>
+                        </div>
+
+                        <div class="form-group {% if register_form.terms.vars.errors|length %}u-has-error-v1{% endif %} mb-4">
+                            <label class="form-check-inline u-check g-color-gray-dark-v5 g-font-size-13 g-pl-25">
+                                {{ form_widget(register_form.terms, {'attr': {'class': 'g-hidden-xs-up g-pos-abs g-top-0 g-left-0'}}) }}
+                                <span class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
+                                    <i class="fa g-rounded-2" data-check-icon="&#xf00c"></i>
+                                </span>
+                                {{ register_form.terms.vars.label|replace({'%link%': '<a href="' ~ path('app_default_terms') ~ '">', '%/link%': '</a>'})|raw }}
+                            </label>
+                            <div></div>
+                            <small class="form-control-feedback">{{ form_errors(register_form.terms) }}</small>
+                        </div>
+
+                        {{ form_widget(register_form.send, {'attr': {'class': 'btn btn-md btn-block u-btn-primary rounded-0 g-py-15 mb-5'}}) }}
+                    {{ form_end(register_form) }}
+                    <!-- End Form -->
+
+                    <footer class="text-center">
+                        <p class="g-color-gray-dark-v5 g-font-size-13 mb-0">
+                            {{ 'Already have an account?'|trans }}
+                            <a class="g-font-weight-600" href="{{ path('app_account_login') }}">{{ 'log in'|trans }}</a>
+                        </p>
+                    </footer>
                 </div>
-            </section>
-        </fieldset>
-        <fieldset>
-            <section>
-                {{ form_widget(register_form.recaptcha) }}
-                <div class="note note-error">{{ form_errors(register_form.recaptcha) }}</div>
-            </section>
-        </fieldset>
-        <fieldset>
-            <small>
-                By registering you agree to our <a href="https://www.orbitrondev.org/en/terms-of-service" target="_blank">Terms and Conditions <i class="fa fa-external-link"></i></a>
-                and the <a href="https://www.orbitrondev.org/en/privacy-policy" target="_blank">Privacy Policy <i class="fa fa-external-link"></i></a>
-            </small>
-            <br />
-            <br />
-        </fieldset>
-        <footer>
-            {{ form_widget(register_form.send, {'attr': {'class': 'button'}}) }}
-            <a href="{{ path('app_account_login') }}" class="button button-secondary">Log in</a>
-        </footer>
-    </form>
+            </div>
+        </div>
+    </section>
+    <!-- End Signup -->
 {% endblock %}

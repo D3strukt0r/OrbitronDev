@@ -1,63 +1,69 @@
-{% extends 'base.html.twig' %}
+{% extends 'account/layout_clean.html.twig' %}
 
 {% block title %}{{ 'Confirm Email'|trans }} | {{ parent() }}{% endblock %}
 
-{% block stylesheets_implemeting_plugins %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css') }}" />
-    <!--[if lt IE 9]>
-    <link rel="stylesheet" href="{{ asset('assets/plugins/sky-forms-pro/skyforms/css/sky-forms-ie8.css') }}" />
-    <![endif]-->
-{% endblock %}
-
-{% block javascripts_implementing_plugins %}
-    {{ parent() }}
-    <script type="text/javascript"
-            src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.form.min.js') }}"></script>
-    <script type="text/javascript"
-            src="{{ asset('assets/plugins/sky-forms-pro/skyforms/js/jquery.validate.min.js') }}"></script>
-{% endblock %}
-
 {% block stylesheets %}
     {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" />
     <style type="text/css">
         body {
             margin: 0;
             padding: 0;
-            background: url(/assets/img/background/bg-cyan.jpg) fixed 50% 50%;
+            background: url({{ asset('assets/img/background/bg-cyan.jpg') }}) fixed 50% 50%;
             background-size: cover;
-        }
-
-        .sky-form {
-            border: none;
-            margin: 0 auto;
-            padding: 40px;
-            box-sizing: content-box;
-            max-width: 400px;
         }
     </style>
 {% endblock %}
 
 {% block content %}
-    <div class="col-md-3 col-center">
-        <form method="post" id="confirm-email-form" class="sky-form" novalidate="novalidate">
-            <header>Confirm email</header>
-            {% if error_message is defined %}
-                <fieldset>
-                    {{ error_message }}
-                </fieldset>
-            {% endif %}
-            {% if success_message is defined %}
-                <fieldset>
-                    {{ success_message }}
-                </fieldset>
-            {% endif %}
-            {% if send_email_form is defined %}
-                <footer>
-                    {{ form_widget(send_email_form.send, {'attr': {'class': 'button btn-block'}}) }}
-                </footer>
-            {% endif %}
-        </form>
-    </div>
+    <section class="container g-py-100">
+        <div class="row justify-content-center">
+            <div class="col-sm-8 col-lg-5">
+                <div class="g-brd-around g-brd-gray-light-v4 rounded g-py-40 g-px-30 g-bg-white">
+                    <header class="text-center mb-4">
+                        <h2 class="h2 g-color-black g-font-weight-600">{{ 'Confirm email'|trans }}</h2>
+                    </header>
+
+                    {% for message in app.session.flashbag.get('success') %}
+                        <div class="alert alert-dismissible fade show g-bg-teal g-color-white rounded-0" role="alert">
+                            <button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <div class="media">
+                                <span class="d-flex g-mr-10 g-mt-5">
+                                    <i class="icon-check g-font-size-25"></i>
+                                </span>
+                                <span class="media-body align-self-center">
+                                    {{ message }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% for message in app.session.flashbag.get('failure') %}
+                        <div class="alert alert-dismissible fade show g-bg-red g-color-white rounded-0" role="alert">
+                            <button type="button" class="close u-alert-close--light" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                            <div class="media">
+                                <span class="d-flex g-mr-10 g-mt-5">
+                                    <i class="icon-ban g-font-size-25"></i>
+                                </span>
+                                <span class="media-body align-self-center">
+                                    {{ message }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    {% if send_email_form is defined %}
+                        {{ form_start(send_email_form, {'attr': {'class': 'g-py-15'}}) }}
+                            {{ form_errors(send_email_form) }}
+                            {{ form_widget(send_email_form.send, {'attr': {'class': 'btn btn-md btn-block u-btn-primary rounded-0 g-py-15 '}}) }}
+                        {{ form_end(send_email_form) }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}
