@@ -41,7 +41,7 @@ class AccountApi
                 $oImage->output();
                 exit;
             } else {
-                $oImage = new SimpleImage(Kernel::getIntent()->getRootDir().'/public/assets/img/user.jpg');
+                $oImage = new SimpleImage(Kernel::getIntent()->getRootDir().'/public/img/user.jpg');
                 $oImage->resize($width, $height);
                 $oImage->output();
                 exit;

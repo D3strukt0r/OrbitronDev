@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.getLocale() }}">
+<head>
+    <!-- Title -->
+    <title>{% block title %}OrbitronDev{% endblock %}</title>
+
+    <!-- Required Meta Tags Always Come First -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="{% block description %}The official site of OrbitronDev. Containing all projects and everything about us.{% endblock %}" />
+    <meta name="author" content="OrbitronDev" />
+    <meta name="publisher" content="OrbitronDev" />
+    <meta name="copyright" content="OrbitronDev &copy; 2013-2017" />
+    <meta name="keywords" content="" />
+    <meta name="audience" content="Alle" />
+    <meta name="robots" content="INDEX,FOLLOW" />
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icon/orbitrondev/apple-touch-icon.png?v=YAoYKqWYex', 'local') }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('icon/orbitrondev/favicon-32x32.png?v=YAoYKqWYex', 'local') }}" />
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icon/orbitrondev/android-chrome-192x192.png?v=YAoYKqWYex', 'local') }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('icon/orbitrondev/favicon-16x16.png?v=YAoYKqWYex', 'local') }}" />
+    <link rel="manifest" href="{{ asset('icon/orbitrondev/manifest.json?v=YAoYKqWYex', 'local') }}" />
+    <link rel="mask-icon" href="{{ asset('icon/orbitrondev/safari-pinned-tab.svg?v=YAoYKqWYex', 'local') }}" color="#5bbad5" />
+    <link rel="shortcut icon" href="{{ asset('icon/orbitrondev/favicon.ico?v=YAoYKqWYex', 'local') }}" />
+    <meta name="msapplication-TileColor" content="#2b5797" />
+    <meta name="msapplication-TileImage" content="{{ asset('icon/orbitrondev/mstile-144x144.png?v=YAoYKqWYex', 'local') }}" />
+    <meta name="msapplication-config" content="{{ asset('icon/orbitrondev/browserconfig.xml?v=YAoYKqWYex', 'local') }}" />
+    <meta name="theme-color" content="#2980b9" />
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans%3A400%2C300%2C500%2C600%2C700" />
+
+    <!-- CSS Global Compulsory -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/css/bootstrap.min.css" />
+
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="{{ asset('vendor/icon-line-pro/style.css', 'local-theme') }}" />
+    <link rel="stylesheet" href="{{ asset('vendor/icon-hs/style.css', 'local-theme') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.css" />
+
+    <!-- CSS Unify -->
+    <link rel="stylesheet" href="{{ asset('css/unify-core.css', 'local-theme') }}" />
+    <link rel="stylesheet" href="{{ asset('css/unify-components.css', 'local-theme') }}" />
+    <link rel="stylesheet" href="{{ asset('css/unify-globals.css', 'local-theme') }}" />
+
+    <!-- CSS Customization -->
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}" />
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body>
+<main>
+    {% block content %}
+        <!-- Content -->
+        <section class="g-py-50">
+            <div class="container">
+                <h1 class="g-mb-20">Blank Page!</h1>
+            </div>
+        </section>
+        <!-- End Content -->
+    {% endblock %}
+</main>
+
+<!-- JS Google Analytics -->
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        };
+        i[r].l = 1 * new Date();
+        a = s.createElement(o);
+        m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-69484706-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+<!-- JS Global Compulsory -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.1/jquery-migrate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+
+<!-- JS Implementing Plugins -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.js"></script>
+
+<!-- JS Unify -->
+<script src="{{ asset('js/hs.core.js', 'local-theme') }}"></script>
+
+<!-- JS Custom -->
+<script src="{{ asset('js/custom.js') }}"></script>
+
+<!-- JS Plugins Init. -->
+<script>
+    $(document).ready(function() {
+        window.cookieconsent.initialise({
+            "palette": {
+                "popup": {
+                    "background": "#252e39"
+                },
+                "button": {
+                    "background": "#14a7d0"
+                }
+            },
+
+            onInitialise: function (status) {
+                var type = this.options.type;
+                var didConsent = this.hasConsented();
+                if (type === 'opt-in' && didConsent) {
+                    // enable cookies
+                }
+                if (type === 'opt-out' && !didConsent) {
+                    // disable cookies
+                }
+            },
+
+            onStatusChange: function(status, chosenBefore) {
+                var type = this.options.type;
+                var didConsent = this.hasConsented();
+                if (type === 'opt-in' && didConsent) {
+                    // enable cookies
+                }
+                if (type === 'opt-out' && !didConsent) {
+                    // disable cookies
+                }
+            },
+
+            onRevokeChoice: function() {
+                var type = this.options.type;
+                if (type === 'opt-in') {
+                    // disable cookies
+                }
+                if (type === 'opt-out') {
+                    // enable cookies
+                }
+            },
+            law: {
+                regionalLaw: false
+            },
+            location: true
+        });
+    });
+</script>
+{% block javascripts %}{% endblock %}
+</body>
+</html>
