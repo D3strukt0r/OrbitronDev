@@ -286,12 +286,8 @@
                             <!-- About -->
                             <div class="col-md-3 md-margin-bottom-40">
                                 <a href="{{ path('app_default_index') }}"><img id="logo-footer" class="footer-logo" src="{{ asset('assets/logo-long.png') }}" alt="" height="30px"></a>
-                                <p>
-                                    {{ 'footer.description.part1'|trans }}
-                                </p>
-                                <p>
-                                    {{ 'footer.description.part2'|trans }}
-                                </p>
+                                <p>{{ 'footer.description.part1'|trans }}</p>
+                                <p>{{ 'footer.description.part2'|trans }}</p>
                             </div>
                             <!-- End About -->
 
@@ -323,7 +319,6 @@
                                 <div class="headline"><h2>{{ 'footer.company.title'|trans }}</h2></div>
                                 <ul class="list-unstyled link-list">
                                     <li><a href="{{ path('app_default_about') }}">{{ 'footer.company.link1'|trans }}</a><i class="fa fa-angle-right"></i></li>
-                                    <li><a href="{{ path('app_default_aboutteam') }}">{{ 'footer.company.link2'|trans }}</a><i class="fa fa-angle-right"></i></li>
                                     <li><a href="{{ path('app_default_contact') }}">{{ 'footer.company.link3'|trans }}</a><i class="fa fa-angle-right"></i></li>
                                     <li><a href="{{ path('app_project_index') }}">{{ 'footer.company.link4'|trans }}</a><i class="fa fa-angle-right"></i></li>
                                 </ul>
