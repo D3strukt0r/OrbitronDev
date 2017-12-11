@@ -15,28 +15,6 @@
     <meta name="keywords" content="" />
     <meta name="audience" content="Alle" />
     <meta name="robots" content="INDEX,FOLLOW" />
-    <script type='application/ld+json'>
-        {
-            "@context": "http://www.schema.org",
-            "@type": "Organization",
-            "name": "OrbitronDev",
-            "url": "https://www.orbitrondev.org",
-            "logo": "https://www.orbitrondev.org/img/logo.png",
-            "description": "{{ 'We develop multiple web services'|trans }}",
-            "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "Salzstrasse 50",
-                "addressLocality": "Möhlin",
-                "postalCode": "4313",
-                "addressCountry": "Switzerland"
-            },
-            "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+41 61 921 82 40",
-                "contactType": "customer service"
-            }
-        }
-        </script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icon/orbitrondev/apple-touch-icon.png?v=YAoYKqWYex', 'local') }}">
@@ -58,12 +36,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
 
-    <!-- CSS Header and Footer -->
-    {% block stylesheets_head_foot %}
-        <link rel="stylesheet" href="{{ asset('assets/css/headers/header-default.css') }}" />
-        <link rel="stylesheet" href="{{ asset('assets/css/footers/footer-v1.css') }}" />
-    {% endblock %}
-
     <!-- CSS Implementing Plugins -->
     {% block stylesheets_implemeting_plugins %}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
@@ -73,7 +45,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.css" />
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/css/sb-admin-2.min.css">
-        <link rel="stylesheet" href="{{ asset('app/breadcrumb.css') }}" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.7.0/metisMenu.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/css/jquery.fileupload.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
@@ -85,18 +56,59 @@
     <!-- CSS Theme -->
     {% block stylesheets_theme %}
         <link rel="stylesheet" href="{{ asset('assets/css/theme-colors/blue.css') }}" id="style_color" />
-        <link rel="stylesheet" href="{{ asset('assets/css/theme-skins/dark.css') }}" />
     {% endblock %}
 
     <!-- CSS Customization -->
     {% block stylesheets %}
-        <style type="text/css">body{padding-top:0}</style>
+        <style type="text/css">
+            body {
+                padding-top: 0
+            }
+
+            .breadcrumb {
+                padding: 8px 15px;
+                margin-bottom: 20px;
+                list-style: none;
+                background-color: #f5f5f5;
+                border-radius: 4px;
+            }
+            .breadcrumb>.active {
+                color: #777;
+            }
+            .breadcrumb>li {
+                display: inline-block;
+            }
+
+            .col-center {
+                float: none;
+                margin: 0 auto;
+            }
+
+            .pre-animate {
+                opacity: 0;
+                -webkit-transform: translateX(25px);
+                -moz-transform: translateX(25px);
+                transform: translateX(25px);
+            }
+
+            .animate-in {
+                -webkit-transition: all 0.6s ease-in-out 0s;
+                -moz-transition: all 0.6s ease-in-out 0s;
+                transition: all 0.6s ease-in-out 0s;
+                -webkit-transform: translateZ(0);
+                -moz-transform: translateZ(0);
+                transform: translateZ(0);
+            }
+
+            .blue-border {
+                border-color: #337ab7;
+            }
+        </style>
     {% endblock %}
 
     <!-- JS Global Compulsory -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.0/jquery-migrate.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.1/jquery-migrate.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body {#class="dark"#}>

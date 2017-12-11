@@ -1,42 +1,38 @@
-<section id="header">
-    <div class="col-lg-12">
-        <h1 class="page-header">{{ 'List Applications'|trans }}</h1>
-        <ol class="breadcrumb">
-            <li><a href="{{ path('app_account_panel', {'page': 'developer-applications'}) }}">{{ 'Developer'|trans }}</a></li>
-            <li class="active">{{ 'Applications'|trans }}</li>
-        </ol><!-- /.breadcrumb -->
-        <hr />
-    </div><!-- /.col-lg-12 -->
-</section><!-- /#header -->
-<section id="page">
-    <div class="col-md-12">
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>{{ 'Application name'|trans }}</th>
-                        <th>{{ 'Key'|trans }}</th>
-                        <th>{{ 'Redirect URI'|trans }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if current_user_dev_apps|length > 0 %}
-                        {% for app in current_user_dev_apps %}
-                            <tr>
-                                <td><a href="{{ path('app_account_panel', {'page': 'developer-show-application', 'app': app.clientIdentifier }) }}">{{ app.clientIdentifier }}</a></td>
-                                <td>{{ app.clientSecret }}</td>
-                                <td>{{ app.redirectUri }}</td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
-                </tbody>
-            </table><!-- /.table -->
-        </div><!-- /.table-responsive -->
-        <p><a class="btn btn-default" href="{{ path('app_account_panel', {'page': 'developer-create-application'}) }}">{{ 'Create application'|trans }}</a></p>
-        <br />
-        <p>
-            {{ 'Check out this page to learn how to integrate Oauth2:'|trans }}
-            <a href="{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}">{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}</a>
-        </p>
-    </div><!-- /.col-md-12 -->
-</section><!-- /#page -->
+<h1>{{ 'List Applications'|trans }}</h1>
+<hr />
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ path('app_account_panel', {'page': 'developer-applications'}) }}">{{ 'Developer'|trans }}</a></li>
+    <li class="breadcrumb-item active">{{ 'Applications'|trans }}</li>
+</ol>
+<hr />
+<div class="mb-3">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>{{ 'Application name'|trans }}</th>
+                    <th>{{ 'Key'|trans }}</th>
+                    <th>{{ 'Redirect URI'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if current_user_dev_apps|length > 0 %}
+                    {% for app in current_user_dev_apps %}
+                        <tr>
+                            <td><a href="{{ path('app_account_panel', {'page': 'developer-show-application', 'app': app.clientIdentifier }) }}">{{ app.clientIdentifier }}</a></td>
+                            <td>{{ app.clientSecret }}</td>
+                            <td>{{ app.redirectUri }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <p class="mt-1"><a class="btn btn-primary" href="{{ path('app_account_panel', {'page': 'developer-create-application'}) }}">{{ 'Create application'|trans }}</a></p>
+    <br />
+    <p>
+        {{ 'Check out this page to learn how to integrate Oauth2:'|trans }}
+        <a href="{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}">{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}</a>
+    </p>
+</div>

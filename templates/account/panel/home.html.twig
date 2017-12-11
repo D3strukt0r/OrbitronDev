@@ -1,171 +1,176 @@
-<style type="text/css">
-    .blue-border {
-        border-color: #337ab7;
-    }
-</style>
-<section id="header">
-    <div class="col-lg-12">
-        <h1 class="page-header">{{ 'Main dashboard'|trans }}</h1>
-        <ol class="breadcrumb">
-            <li class="active">{{ 'Home'|trans }}</li>
-        </ol><!-- /.breadcrumb -->
-        <hr />
-    </div><!-- /.col-lg-12 -->
-</section><!-- /#header -->
-<section id="page">
+<h1>{{ 'Main dashboard'|trans }}</h1>
+<hr />
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active">{{ 'Home'|trans }}</li>
+</ol>
+<hr />
+<div class="row mb-3">
     <div class="col-lg-6">
-        <div class="sky-form blue-border">
-            <header>{{ 'User data'|trans }}</header>
-            <fieldset>
-                <section>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <tbody>
-                                <tr>
-                                    <td><b>{{ 'ID'|trans }}</b></td>
-                                    <td>{{ current_user.id }}</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><b>{{ 'Username'|trans }}</b></td>
-                                    <td>{{ current_user.username }}</td>
-                                    <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a></td>
-                                </tr>
-                                <tr>
-                                    <td><b>{{ 'Password'|trans }}</b></td>
-                                    <td>**********</td>
-                                    <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a></td>
-                                </tr>
-                                <tr>
-                                    <td><b>{{ 'Email'|trans }}</b></td>
-                                    <td>{{ current_user.email }}</td>
-                                    <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a></td>
-                                </tr>
-                                <tr>
-                                    <td><b>{{ 'Email Activated'|trans }}</b></td>
-                                    <td>{% if current_user.emailVerified == 1 %}{{ 'Yes'|trans }}{% else %}{{ 'No'|trans }}{% endif %}</td>
-                                    <td>{% if not current_user.emailVerified %}<a href="{{ path('app_account_confirm') }}" class="btn-u btn-u-orange btn-u-xs">{{ 'Activate'|trans }}</a>{% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><b>{{ 'Credits'|trans }}</b></td>
-                                    <td>{{ current_user.credits|number_format(0, '.', '\'') }}</td>
-                                    <td><a href="{{ path('app_account_panel', {'page': 'buy-credits'}) }}" class="btn-u btn-u-green btn-u-xs">{{ 'Buy credits'|trans }}</a></td>
-                                </tr>
-                            </tbody>
-                        </table><!-- /.table .table-hover -->
-                    </div><!-- /.table-responsive -->
-                </section>
-            </fieldset>
+        <div class="card">
+            <div class="card-header">{{ 'User data'|trans }}</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <td><b>{{ 'ID'|trans }}</b></td>
+                                <td>{{ current_user.id }}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><b>{{ 'Username'|trans }}</b></td>
+                                <td>{{ current_user.username }}</td>
+                                <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
+                            </tr>
+                            <tr>
+                                <td><b>{{ 'Password'|trans }}</b></td>
+                                <td>**********</td>
+                                <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
+                            </tr>
+                            <tr>
+                                <td><b>{{ 'Email'|trans }}</b></td>
+                                <td>{{ current_user.email }}</td>
+                                <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
+                            </tr>
+                            <tr>
+                                <td><b>{{ 'Email Activated'|trans }}</b></td>
+                                <td>{% if current_user.emailVerified == 1 %}{{ 'Yes'|trans }}{% else %}{{ 'No'|trans }}{% endif %}</td>
+                                <td>{% if not current_user.emailVerified %}<a href="{{ path('app_account_confirm') }}" class="btn btn-warning btn-sm">{{ 'Activate'|trans }}</a>{% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>{{ 'Credits'|trans }}</b></td>
+                                <td>{{ current_user.credits|number_format(0, '.', '\'') }}</td>
+                                <td><a href="{{ path('app_account_panel', {'page': 'buy-credits'}) }}" class="btn btn-success btn-sm">{{ 'Buy credits'|trans }}</a></td>
+                            </tr>
+                        </tbody>
+                    </table><!-- /.table .table-hover -->
+                </div><!-- /.table-responsive -->
+            </div>
         </div>
     </div>
     {% if service_allowed %}
     <div class="col-lg-6">
-        <div class="sky-form blue-border">
-            <header>{{ 'Service'|trans }}</header>
-            <fieldset>
-                <section>
-                    <div id="service-blog" class="panel panel-default">
-                        <div class="panel-heading">
-                            {{ 'Blog'|trans }}
-                            <span class="pull-right">
-                                <a href="{{ path('app_blog_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
-                                <a href="{{ path('app_blog_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new blog'|trans }}</a>
-						    </span>
-                        </div>
-                        {% if blogs|length > 0 %}
-                        <div class="panel-body">
-                            {% for blog in blogs %}
-                            <div class="well well-sm">
+        <div class="card">
+            <div class="card-header">{{ 'Service'|trans }}</div>
+            <div class="card-body">
+
+                <!-- Blog block -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        {{ 'Blog'|trans }}
+                        <span class="pull-right">
+                            <a href="{{ path('app_blog_index') }}" class="btn btn-primary btn-sm">{{ 'View'|trans }}</a>
+                            <a href="{{ path('app_blog_new') }}" class="btn btn-success btn-sm">{{ 'Create new blog'|trans }}</a>
+                        </span>
+                    </div>
+                    {% if blogs|length > 0 %}
+                    <div class="card-body">
+                        {% for blog in blogs %}
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
                                 {{ blog.name }}
                                 <div class="pull-right">
-                                    <a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'View'|trans }}</a>
-                                    <a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
-                                    <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                    <a href="{{ path('app_blog_blog_index', {'blog': blog.url}) }}" class="btn btn-primary btn-sm">{{ 'View'|trans }}</a>
+                                    <a href="{{ path('app_blog_blog_admin', {'blog': blog.url, 'page': 'home'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a>
+                                    <a href="#!" class="btn btn-danger btn-sm">{{ 'Delete'|trans }}</a>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                        {% endif %}
+                        {% endfor %}
                     </div>
-                    <div id="service-cloud" class="panel panel-default">
-                        <div class="panel-heading">
-                            {{ 'Cloud'|trans }}
-                            <span class="pull-right">
-                                <a href="{{ path('app_cloud_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'Open'|trans }}</a>
-						    </span>
-                        </div>
+                    {% endif %}
+                </div>
+                <!-- End Blog block -->
+
+                <!-- Cloud block -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        {{ 'Cloud'|trans }}
+                        <span class="pull-right">
+                            <a href="{{ path('app_cloud_index') }}" class="btn btn-primary btn-sm">{{ 'Open'|trans }}</a>
+                        </span>
                     </div>
-                    <div id="service-forum" class="panel panel-default">
-                        <div class="panel-heading">
-                            {{ 'Forum'|trans }}
-                            <span class="pull-right">
-                                <a href="{{ path('app_forum_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
-                                <a href="{{ path('app_forum_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new forum'|trans }}</a>
-						    </span>
-                        </div>
-                        {% if forums|length > 0 %}
-                        <div class="panel-body">
-                            {% for forum in forums %}
-                            <div class="well well-sm">
+                </div>
+                <!-- End Cloud block -->
+
+                <!-- Forum block -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        {{ 'Forum'|trans }}
+                        <span class="pull-right">
+                            <a href="{{ path('app_forum_index') }}" class="btn btn-primary btn-sm">{{ 'View'|trans }}</a>
+                            <a href="{{ path('app_forum_new') }}" class="btn btn-success btn-sm">{{ 'Create new forum'|trans }}</a>
+                        </span>
+                    </div>
+                    {% if forums|length > 0 %}
+                    <div class="card-body">
+                        {% for forum in forums %}
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
                                 {{ forum.name }}
                                 <div class="pull-right">
-                                    <a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'View'|trans }}</a>
-                                    <a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
-                                    <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                    <a href="{{ path('app_forum_forum_index', {'forum': forum.url}) }}" class="btn btn-primary btn-sm">{{ 'View'|trans }}</a>
+                                    <a href="{{ path('app_forum_forum_admin', {'forum': forum.url, 'page': 'home'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a>
+                                    <a href="#!" class="btn btn-danger btn-sm">{{ 'Delete'|trans }}</a>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                        {% endif %}
+                        {% endfor %}
                     </div>
-                    <div id="service-pages" class="panel panel-default">
-                        <div class="panel-heading">
-                            {{ 'Pages'|trans }}
-                        </div>
+                    {% endif %}
+                </div>
+                <!-- End Forum block -->
+
+                <!-- Store block -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        {{ 'Store'|trans }}
+                        <span class="pull-right">
+                            <a href="{{ path('app_store_index') }}" class="btn btn-primary btn-sm">{{ 'View'|trans }}</a>
+                            <a href="{{ path('app_store_new') }}" class="btn btn-success btn-sm">{{ 'Create new store'|trans }}</a>
+                        </span>
                     </div>
-                    <div id="service-store" class="panel panel-default">
-                        <div class="panel-heading">
-                            {{ 'Store'|trans }}
-                            <span class="pull-right">
-							<a href="{{ path('app_store_index') }}" class="btn-u btn-u-blue btn-u-xs" data-toggle="page">{{ 'View'|trans }}</a>
-							<a href="{{ path('app_store_new') }}" class="btn-u btn-u-green btn-u-xs" data-toggle="page">{{ 'Create new store'|trans }}</a>
-						</span>
-                        </div>
-                        {% if stores|length > 0 %}
-                        <div class="panel-body">
-                            {% for store in stores %}
-                            <div class="well well-sm">
+                    {% if stores|length > 0 %}
+                    <div class="card-body">
+                        {% for store in stores %}
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
                                 {{ store.name }}
                                 <div class="pull-right">
-                                    <a href="{{ path('app_store_store_index', {'store': store.url}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'View'|trans }}</a>
-                                    <a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}" class="btn-u btn-u-blue btn-u-xs">{{ 'Edit'|trans }}</a>
-                                    <a href="#" class="btn-u btn-u-red btn-u-xs">{{ 'Delete'|trans }}</a>
+                                    <a href="{{ path('app_store_store_index', {'store': store.url}) }}" class="btn btn-primary btn-sm">{{ 'View'|trans }}</a>
+                                    <a href="{{ path('app_store_store_admin', {'store': store.url, 'page': 'home'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a>
+                                    <a href="#!" class="btn btn-danger btn-sm">{{ 'Delete'|trans }}</a>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                        {% endif %}
+                        {% endfor %}
                     </div>
-                    <div id="service-wiki" class="panel panel-default">
-                        <div class="panel-heading">
-                            {{ 'Wiki'|trans }}
-                        </div>
+                    {% endif %}
+                </div>
+                <!-- End Store block -->
+
+                <!-- Wiki block -->
+                <div class="card">
+                    <div class="card-header">
+                        {{ 'Wiki'|trans }}
                     </div>
-                </section>
-            </fieldset>
+                </div>
+                <!-- End Wiki block -->
+            </div>
         </div>
     </div>
     {% else %}
         <div class="col-lg-6">
-            <div class="panel panel-warning">
-                <div class="panel-heading">
+            <div class="card bg-warning text-white">
+                <div class="card-header">
                     <b>{{ 'Service'|trans }}</b>
                 </div><!-- /.panel-heading -->
-                <div class="panel-body">
+                <div class="card-body">
                     <p>{{ 'You have not activated our service'|trans }}</p>
                 </div><!-- /.panel-body -->
             </div><!-- /.panel .panel-info -->
         </div><!-- /.col-lg-6 -->
     {% endif %}
-</section><!-- /#page -->
+</div><!-- /#page -->

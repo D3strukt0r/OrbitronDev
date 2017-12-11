@@ -117,7 +117,7 @@ class TemplatingContainer
         $defaultThemes = array();
         //$defaultThemes[] = 'form_layout.html.twig'; // the Twig file that holds all the default markup for rendering forms. This file comes with TwigBridge
         $defaultThemes[] = 'form_div_layout.html.twig';
-        //$defaultThemes[] = 'bootstrap_3_layout.html.twig';
+        //$defaultThemes[] = 'bootstrap_4_layout.html.twig';
         $defaultThemes[] = 'form_widget.html.twig';
         $formEngine = new TwigRendererEngine($defaultThemes, $this->twig);
         $this->twig->addRuntimeLoader(new \Twig_FactoryRuntimeLoader(array(

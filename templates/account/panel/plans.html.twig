@@ -1,20 +1,18 @@
-<section id="header">
-    <div class="col-lg-12">
-        <h1 class="page-header">{{ 'Pricing'|trans }}</h1>
-        <ol class="breadcrumb">
-            <li><a href="{{ path('app_account_panel', {'page': 'account'}) }}">{{ 'Account'|trans }}</a></li>
-            <li class="active">{{ 'Pricing'|trans }}</li>
-        </ol><!-- /.breadcrumb -->
-        <hr />
-    </div><!-- /.col-lg-12 -->
-</section><!-- /#header -->
-<section id="page">
+<h1>{{ 'Pricing'|trans }}</h1>
+<hr />
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ path('app_account_panel', {'page': 'account'}) }}">{{ 'Account'|trans }}</a></li>
+    <li class="breadcrumb-item active">{{ 'Pricing'|trans }}</li>
+</ol>
+<hr />
+<div class="row mb-3">
     <div class="col-md-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
+        <div class="card">
+            <div class="card-header">
                 <h4 class="text-center">{{ 'Basic'|trans }}</h4>
-            </div><!-- /.panel-heading -->
-            <div class="panel-body text-center">
+            </div>
+            <div class="card-body text-center">
                 <p class="lead">
                     <strong>{{ 'Free / forever'|trans }}</strong>
                 </p>
@@ -22,74 +20,73 @@
             <ul class="list-group list-group-flush text-center">
                 <li class="list-group-item">
                     {{ 'Use account feature'|trans }}
-                    <span class="glyphicon glyphicon-ok pull-right"></span>
+                    <span class="fa fa-check pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Use our whole service'|trans }}
-                    <span class="glyphicon glyphicon-remove pull-right"></span>
+                    <span class="fa fa-times pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Create multiple services (e.g. 2 Blogs)'|trans }}
-                    <span class="glyphicon glyphicon-remove pull-right"></span>
+                    <span class="fa fa-times pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Technical Support'|trans }}
-                    <span class="glyphicon glyphicon-remove pull-right"></span>
+                    <span class="fa fa-times pull-right"></span>
                 </li>
             </ul>
-            <div class="panel-footer">
+            <div class="card-footer">
                 {% if current_user.subscription.subscription.id == 1 %}
-                    <p class="btn btn-lg btn-block btn-default">{{ 'Your plan'|trans }}</p>
+                    <p class="btn btn-lg btn-block btn-primary mb-0">{{ 'Your plan'|trans }}</p>
                 {% else %}
-                    <a class="btn btn-lg btn-block btn-success">{{ 'Set this plan'|trans }}</a>
+                    <a class="btn btn-lg btn-block btn-success text-white mb-0">{{ 'Set this plan'|trans }}</a>
                 {% endif %}
             </div>
         </div>
-        <!-- /.panel .panel-success -->
-    </div><!-- /.col-md-4 -->
+    </div>
     <div class="col-md-4">
-        <div class="panel panel-success">
-            <div class="panel-heading">
+        <div class="card border-success">
+            <div class="card-header">
                 <h4 class="text-center">{{ 'Premium'|trans }}</h4>
-            </div><!-- /.panel-heading -->
-            <div class="panel-body text-center">
+            </div>
+            <div class="card-body text-center">
                 <p class="lead">
                     <strong>{{ '9.99$ / month'|trans }}</strong>
                 </p>
-            </div><!-- /.panel-body -->
+            </div>
             <ul class="list-group list-group-flush text-center">
                 <li class="list-group-item">
                     {{ 'Use account feature'|trans }}
-                    <span class="glyphicon glyphicon-ok pull-right"></span>
+                    <span class="fa fa-check pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Use our whole service'|trans }}
-                    <span class="glyphicon glyphicon-ok pull-right"></span>
+                    <span class="fa fa-check pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Create multiple services (e.g. 2 Blogs)'|trans }}
-                    <span class="glyphicon glyphicon-remove pull-right"></span>
+                    <span class="fa fa-times pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Technical Support'|trans }}
-                    <span class="glyphicon glyphicon-ok pull-right"></span>
+                    <span class="fa fa-check pull-right"></span>
                 </li>
             </ul>
-            <div class="panel-footer">
+            <div class="card-footer">
                 {% if current_user.subscription.subscription.id == 2 %}
-                    <p class="btn btn-lg btn-block btn-default">{{ 'Your plan'|trans }}</p>
+                    <p class="btn btn-lg btn-block btn-primary mb-0">{{ 'Your plan'|trans }}</p>
                 {% else %}
-                    <a class="btn btn-lg btn-block btn-success">{{ 'Set this plan'|trans }}</a>
+                    <a class="btn btn-lg btn-block btn-success text-white mb-0">{{ 'Set this plan'|trans }}</a>
                 {% endif %}
             </div>
-        </div><!-- /.panel .panel-info -->
-    </div><!-- /.col-md-4 -->
+        </div>
+    </div>
     <div class="col-md-4">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h4 class="text-center" style="color: white;">{{ 'Enterprise'|trans }}</h4>
+        <div class="card border-primary">
+            <div class="card-header">
+                <h4 class="text-center">{{ 'Enterprise'|trans }}</h4>
             </div><!-- /.panel-heading -->
-            <div class="panel-body text-center">
+            <div class="card-body text-center">
                 <p class="lead">
                     <strong>{{ '29.99$ / month'|trans }}</strong>
                 </p>
@@ -97,28 +94,28 @@
             <ul class="list-group list-group-flush text-center">
                 <li class="list-group-item">
                     {{ 'Use account feature'|trans }}
-                    <span class="glyphicon glyphicon-ok pull-right"></span>
+                    <span class="fa fa-check pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Use our whole service'|trans }}
-                    <span class="glyphicon glyphicon-ok pull-right"></span>
+                    <span class="fa fa-check pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Create multiple services (e.g. 2 Blogs)'|trans }}
-                    <span class="glyphicon glyphicon-ok pull-right"></span>
+                    <span class="fa fa-check pull-right"></span>
                 </li>
                 <li class="list-group-item">
                     {{ 'Technical Support'|trans }}
-                    <span class="glyphicon glyphicon-ok pull-right"></span>
+                    <span class="fa fa-check pull-right"></span>
                 </li>
             </ul>
-            <div class="panel-footer">
+            <div class="card-footer">
                 {% if current_user.subscription.subscription.id == 3 %}
-                    <p class="btn btn-lg btn-block btn-default">{{ 'Your plan'|trans }}</p>
+                    <p class="btn btn-lg btn-block btn-primary mb-0">{{ 'Your plan'|trans }}</p>
                 {% else %}
-                    <a class="btn btn-lg btn-block btn-success">{{ 'Set this plan'|trans }}</a>
+                    <a class="btn btn-lg btn-block btn-success text-white mb-0">{{ 'Set this plan'|trans }}</a>
                 {% endif %}
             </div>
-        </div><!-- /.panel .panel-primary -->
-    </div><!-- /.col-md-4 -->
-</section><!-- /#page -->
+        </div>
+    </div>
+</div>

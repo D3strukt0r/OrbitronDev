@@ -8,6 +8,7 @@ if (!isset($indirectly)) {
         'parent' => 'root',
         'id'     => 'payment',
         'title'  => 'Billing',
+        'icon'   => 'fa fa-fw fa-credit-card',
     ));
 
     AccountAcp::addMenu(array(

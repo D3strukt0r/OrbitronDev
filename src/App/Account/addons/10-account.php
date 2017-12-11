@@ -14,6 +14,7 @@ if (!isset($indirectly)) {
         'parent' => 'root',
         'id'     => 'account',
         'title'  => 'Account',
+        'icon'   => 'fa fa-fw fa-user',
     ));
 
     AccountAcp::addMenu(array(
@@ -96,7 +97,7 @@ function acp_html_account(Controller $controller)
                     $errorMessages['new_password'] = $controller->get('translator')->trans('You have to insert a password.');
                 } elseif (strlen($newPassword) < AccountHelper::$settings['password']['min_length']) {
                     $errorMessages['new_password'] = $controller->get('translator')->trans('Your password is too short. Min '.AccountHelper::$settings['password']['min_length'].' characters.');
-                } elseif ($newPassword == $verifyNewPassword) {
+                } elseif ($newPassword !== $verifyNewPassword) {
                     $errorMessages['new_password_verify'] = $controller->get('translator')->trans('Your inserted password do not match the password verifier.');
                 }
             }

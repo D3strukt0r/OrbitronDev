@@ -11,6 +11,7 @@ AccountAcp::addMenu(array(
     'id'     => 'home',
     'title'  => 'Overview',
     'href'   => 'home',
+    'icon'   => 'fa fa-fw fa-home',
     'screen' => 'acp_html_home',
 ));
 

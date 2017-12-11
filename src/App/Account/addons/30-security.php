@@ -10,6 +10,7 @@ if (!isset($indirectly)) {
         'parent' => 'root',
         'id'     => 'security',
         'title'  => 'Security',
+        'icon'   => 'fa fa-fw fa-lock'
     ));
 
     AccountAcp::addMenu(array(

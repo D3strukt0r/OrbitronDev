@@ -16,6 +16,7 @@ if (!isset($indirectly)) {
             'parent' => 'root',
             'id'     => 'developer',
             'title'  => 'Developer',
+            'icon'   => 'fa fa-fw fa-code'
         ));
 
         AccountAcp::addMenu(array(
