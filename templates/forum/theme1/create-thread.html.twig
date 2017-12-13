@@ -24,13 +24,13 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('assets/plugins/jqjquery-wysibb/theme/default/wbbtheme.css') }}" />
+    <link rel="stylesheet" href="{{ asset('vendor/jqjquery-wysibb/theme/default/wbbtheme.css') }}" />
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="text/javascript" src="{{ asset('assets/plugins/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
-    <script type="text/javascript">
+    <script src="{{ asset('vendor/jqjquery-wysibb/jquery.wysibb.min.js') }}"></script>
+    <script>
         $(document).ready(function() {
             $("#thread_message").wysibb({
                 allButtons: {

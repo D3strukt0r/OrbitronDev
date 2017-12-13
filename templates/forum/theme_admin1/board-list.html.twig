@@ -1,50 +1,39 @@
 {# Reference: https://stackoverflow.com/questions/40707461/recursive-macro-in-twig #}
-{% macro recursiveCategory(category) %}
+{% macro recursiveCategory(category, level) %}
     {% import _self as self %}
-    <div class="media">
-        <div class="media-left">
-            <a href="#">
-                <img class="media-object" src="//placehold.it/64x64" alt="" style="width:64px;height:64px;" />
-            </a>
-        </div>
-        <div class="media-body">
-            <h4 class="media-heading" id="media-heading">
-                {{ category.title }} (ID: {{ category.id }})
-                <a class="anchorjs-link" href="#media-heading"><span class="anchorjs-icon"></span></a>
-            </h4>
-            {{ category.description }}
-            {% if category.boards|length %}
-                {% for child in category.boards %}
-                    {{ self.recursiveCategory(child) }}
-                {% endfor %}
-            {% endif %}
-        </div>
-    </div>
+    <ul class="list-unstyled">
+        <li class="media {% if level|default(0) > 0 %}mt-3{% endif %}">
+            <img class="mr-3" src="//placehold.it/64x64" alt="Image">
+            <div class="media-body">
+                <h5 class="mt-0">{{ category.title }} (ID: {{ category.id }})</h5>
+                {{ category.description }}
+                {% if category.boards|length %}
+                    {% for child in category.boards %}
+                        {{ self.recursiveCategory(child, level|default(0) + 1) }}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </li>
+    </ul>
 {% endmacro %}
 
 {% from _self import recursiveCategory %}
 
-<section id="header">
-    <div class="col-lg-12">
-        <h1 class="page-header">{{ 'List all boards'|trans }}</h1>
-        <ol class="breadcrumb">
-            <li class="active">{{ 'Forums'|trans }}</li>
-        </ol><!-- /.breadcrumb -->
-        <hr />
-    </div><!-- /.col-lg-12 -->
-</section><!-- /#header -->
-<section id="page">
-    <div class="col-md-12">
-        <a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'new-board'}) }}" class="btn btn-success">{{ 'Create new board'|trans }}</a>
-        <hr />
-        <div class="panel panel-info">
-            <div class="panel-body">
-                {% for board in board_list %}
-                    {{ recursiveCategory(board) }}
-                {% endfor %}
-            </div>
-        </div>
-        <hr />
-        <a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'new-board'}) }}" class="btn btn-success">{{ 'Create new board'|trans }}</a>
+<h1>{{ 'List all boards'|trans }}</h1>
+<hr />
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active">{{ 'Forums'|trans }}</li>
+</ol>
+<hr />
+<a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'new-board'}) }}" class="btn btn-success">{{ 'Create new board'|trans }}</a>
+<hr />
+<div class="card">
+    <div class="card-body">
+        {% for board in board_list %}
+            {{ recursiveCategory(board) }}
+        {% endfor %}
     </div>
-</section><!-- /#page -->
+</div>
+<hr />
+<a href="{{ path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'new-board'}) }}" class="btn btn-success">{{ 'Create new board'|trans }}</a>

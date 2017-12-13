@@ -18,6 +18,7 @@ class ForumAcp
             'parent'  => 'root',
             'id'      => '',
             'title'   => '',
+            'icon'    => '',
             'display' => 'true',
         );
         $aGroupInfo = array_replace($aDefaultInfo, $group_info);
@@ -35,6 +36,7 @@ class ForumAcp
             'id'     => '',
             'title'  => '',
             'href'   => '',
+            'icon'   => '',
             'meta'   => array(
                 'tabindex' => -1,
             ),

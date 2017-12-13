@@ -6,33 +6,31 @@
     <li class="breadcrumb-item active">{{ 'Applications'|trans }}</li>
 </ol>
 <hr />
-<div class="mb-3">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>{{ 'Application name'|trans }}</th>
-                    <th>{{ 'Key'|trans }}</th>
-                    <th>{{ 'Redirect URI'|trans }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if current_user_dev_apps|length > 0 %}
-                    {% for app in current_user_dev_apps %}
-                        <tr>
-                            <td><a href="{{ path('app_account_panel', {'page': 'developer-show-application', 'app': app.clientIdentifier }) }}">{{ app.clientIdentifier }}</a></td>
-                            <td>{{ app.clientSecret }}</td>
-                            <td>{{ app.redirectUri }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-    <p class="mt-1"><a class="btn btn-primary" href="{{ path('app_account_panel', {'page': 'developer-create-application'}) }}">{{ 'Create application'|trans }}</a></p>
-    <br />
-    <p>
-        {{ 'Check out this page to learn how to integrate Oauth2:'|trans }}
-        <a href="{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}">{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}</a>
-    </p>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>{{ 'Application name'|trans }}</th>
+                <th>{{ 'Key'|trans }}</th>
+                <th>{{ 'Redirect URI'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if current_user_dev_apps|length > 0 %}
+                {% for app in current_user_dev_apps %}
+                    <tr>
+                        <td><a href="{{ path('app_account_panel', {'page': 'developer-show-application', 'app': app.clientIdentifier }) }}">{{ app.clientIdentifier }}</a></td>
+                        <td>{{ app.clientSecret }}</td>
+                        <td>{{ app.redirectUri }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
 </div>
+<p class="mt-1"><a class="btn btn-primary" href="{{ path('app_account_panel', {'page': 'developer-create-application'}) }}">{{ 'Create application'|trans }}</a></p>
+<br />
+<p>
+    {{ 'Check out this page to learn how to integrate Oauth2:'|trans }}
+    <a href="{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}">{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}</a>
+</p>

@@ -1,451 +1,188 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html lang="en" class="ie8"><![endif]-->
-<!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
-<!--[if !IE]><!--><html lang="{{ app.request.getLocale() }}" {# manifest="/website.appcache" #}><!--<![endif]-->
-<head>
-    <title>{% block title %}OrbitronDev{% endblock %}</title>
+<html lang="{{ app.request.getLocale() }}">
+<body>
+{#<script type="text/javascript">
+    // When using Hash to update website
+    $(document).ready(function() {
+        $("#screen-loading").hide();
+        if("onhashchange" in window) {
+            $("#screen-loading").show();
+            var href = location.hash;
+            href = href.substr(2);
+            setTimeout(function () {
+                $.ajax({
+                    url		: "/account/do.php",
+                    data	: {
+                        a : "getTemplate",
+                        tpl : "account/page-" + href
+                    },
+                    complete: function() {
+                        $("#screen-loading").hide();
+                    },
+                    success	: function(data) {
+                        $("#screen-content").empty().append($(data));
+                    },
+                    error	: function() {
+                        var n = noty({
+                            text		: "Error while loading page",
+                            type		: "error",
+                            layout		: "bottomRight",
+                            timeout		: 3000,
+                            maxVisible  : 3
+                        });
+                    }
+                });
+            }, 1000);
+        }
+        function onHashChanged() {
+            $("#screen-loading").show();
+            var href = location.hash;
+            href = href.substr(2);
+            setTimeout(function () {
+                $.ajax({
+                    url		: "/account/do.php",
+                    data	: {
+                        a : "getTemplate",
+                        tpl : "account/page-" + href
+                    },
+                    complete: function() {
+                        $("#screen-loading").hide();
+                    },
+                    success	: function(data) {
+                        $("#screen-content").empty().append($(data));
+                    },
+                    error	: function() {
+                        var n = noty({
+                            text		: 'Error while loading page',
+                            type		: 'error',
+                            layout		: 'bottomRight',
+                            timeout		: 3000,
+                            maxVisible  : 3
+                        });
+                    }
+                });
+            }, 1000);
+        }
+        window.onhashchange = onHashChanged;
+    });
+    $(function(){
+        $(document).on("click", "li.active > a", function(){
+            var $parent = $(this).parent();
 
-    <!-- Meta -->
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <meta name="description" content="{% block description %}The official site of OrbitronDev. Containing all projects and everything about us.{% endblock %}" />
-    <meta name="author" content="OrbitronDev" />
-    <meta name="publisher" content="OrbitronDev" />
-    <meta name="copyright" content="OrbitronDev &copy; 2013-2017" />
-    <meta name="keywords" content="" />
-    <meta name="audience" content="Alle" />
-    <meta name="robots" content="INDEX,FOLLOW" />
+            // Ensure link isn't just a dropdown menu link
+            if (!$parent.hasClass("dropdown")){
+                // Deactivate tab buttons
+                $("#testtab li").removeClass("active");
 
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icon/orbitrondev/apple-touch-icon.png?v=YAoYKqWYex', 'local') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('icon/orbitrondev/favicon-32x32.png?v=YAoYKqWYex', 'local') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icon/orbitrondev/android-chrome-192x192.png?v=YAoYKqWYex', 'local') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('icon/orbitrondev/favicon-16x16.png?v=YAoYKqWYex', 'local') }}">
-    <link rel="manifest" href="{{ asset('icon/orbitrondev/manifest.json?v=YAoYKqWYex', 'local') }}">
-    <link rel="mask-icon" href="{{ asset('icon/orbitrondev/safari-pinned-tab.svg?v=YAoYKqWYex', 'local') }}" color="#5bbad5">
-    <link rel="shortcut icon" href="{{ asset('icon/orbitrondev/favicon.ico?v=YAoYKqWYex', 'local') }}">
-    <meta name="msapplication-TileColor" content="#2b5797">
-    <meta name="msapplication-TileImage" content="{{ asset('icon/orbitrondev/mstile-144x144.png?v=YAoYKqWYex', 'local') }}">
-    <meta name="msapplication-config" content="{{ asset('icon/orbitrondev/browserconfig.xml?v=YAoYKqWYex', 'local') }}">
-    <meta name="theme-color" content="#2980b9">
-
-    <!-- Web Fonts -->
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin" />
-
-    <!-- CSS Global Compulsory -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" />
-
-    <!-- CSS Implementing Plugins -->
-    {% block stylesheets_implemeting_plugins %}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.css" />
-
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/css/sb-admin-2.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.7.0/metisMenu.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/css/jquery.fileupload.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/blue/pace-theme-minimal.min.css">
-    {% endblock %}
-
-    <!-- CSS Page Style -->
-    {% block stylesheets_page_style %}{% endblock %}
-
-    <!-- CSS Theme -->
-    {% block stylesheets_theme %}
-        <link rel="stylesheet" href="{{ asset('assets/css/theme-colors/blue.css') }}" id="style_color" />
-    {% endblock %}
-
-    <!-- CSS Customization -->
-    {% block stylesheets %}
-        <style type="text/css">
-            body {
-                padding-top: 0
+                // Hides tab contents
+                tabName = $(this).attr("href");
+                $(tabName).removeClass("active").addClass("fade");
             }
-
-            .breadcrumb {
-                padding: 8px 15px;
-                margin-bottom: 20px;
-                list-style: none;
-                background-color: #f5f5f5;
-                border-radius: 4px;
-            }
-            .breadcrumb>.active {
-                color: #777;
-            }
-            .breadcrumb>li {
-                display: inline-block;
-            }
-
-            .col-center {
-                float: none;
-                margin: 0 auto;
-            }
-
-            .pre-animate {
-                opacity: 0;
-                -webkit-transform: translateX(25px);
-                -moz-transform: translateX(25px);
-                transform: translateX(25px);
-            }
-
-            .animate-in {
-                -webkit-transition: all 0.6s ease-in-out 0s;
-                -moz-transition: all 0.6s ease-in-out 0s;
-                transition: all 0.6s ease-in-out 0s;
-                -webkit-transform: translateZ(0);
-                -moz-transform: translateZ(0);
-                transform: translateZ(0);
-            }
-
-            .blue-border {
-                border-color: #337ab7;
-            }
-        </style>
-    {% endblock %}
-
-    <!-- JS Global Compulsory -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.1/jquery-migrate.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
-<body {#class="dark"#}>
-{% block content %}
-    <div id="wrapper">
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">{{ 'Toggle navigation'|trans }}</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                {% block brand %}<a class="navbar-brand" href="#">Panel</a>{% endblock %}
-            </div>
-            <!-- /.navbar-header -->
-            <ul class="nav navbar-top-links navbar-right">
-                {% block navigation_top %}{% endblock %}
-            </ul>
-            <!-- /.navbar-top-links -->
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        {% block navigation %}{% endblock %}
-                    </ul>
-                    <!-- /.nav -->
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
-        </nav>
-        <div id="page-wrapper">
-            <div id="content" class="row">
-                {% block body_notification %}{% endblock %}
-                {% block body %}{% endblock %}
-            </div><!-- /.screen-content -->
-            <br />
-        </div><!-- /#page-wrapper -->
-    </div>
-    <!-- /#wrapper -->
-{% endblock %}
-
-<!-- JS Google Analytics -->
-<script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-69484706-1', 'auto');
-    ga('send', 'pageview');
-</script>
-
-<!-- JS Implementing Plugins -->
-{% block javascripts_implementing_plugins %}
-    <script type="text/javascript" src="{{ asset('assets/plugins/back-to-top.js') }}"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.6/SmoothScroll.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.4.1/packaged/jquery.noty.packaged.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-noty/2.4.1/themes/bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.4/holder.min.js"></script>{# TODO: Remove as soon as all images are existing #}
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.js"></script>
-
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7+1/js/sb-admin-2.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.7.0/metisMenu.min.js"></script>
-    <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/vendor/jquery.ui.widget.min.js"></script>
-    <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.17.0/load-image.all.min.js"></script>
-    <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.14.0/js/canvas-to-blob.min.js"></script>
-    <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.iframe-transport.min.js"></script>
-    <!-- The basic File Upload plugin -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.fileupload.min.js"></script>
-    <!-- The File Upload processing plugin -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.fileupload-process.min.js"></script>
-    <!-- The File Upload image preview & resize plugin -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.19.1/js/jquery.fileupload-image.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
-{% endblock %}
-
-<!-- JS Customization -->
-<script type="text/javascript" src="{{ asset('app/custom.js') }}"></script>
-
-<!-- JS Page Level -->
-{% block javascripts_page_level %}
-    <script type="text/javascript" src="{{ asset('assets/js/app.js') }}"></script>
-{% endblock %}
-<script type="text/javascript">
-    jQuery(document).ready(function() {
-        App.init();
-
-        window.cookieconsent.initialise({
-            "palette": {
-                "popup": {
-                    "background": "#252e39"
-                },
-                "button": {
-                    "background": "#14a7d0"
-                }
-            },
-
-            onInitialise: function (status) {
-                var type = this.options.type;
-                var didConsent = this.hasConsented();
-                if (type === 'opt-in' && didConsent) {
-                    // enable cookies
-                }
-                if (type === 'opt-out' && !didConsent) {
-                    // disable cookies
-                }
-            },
-
-            onStatusChange: function(status, chosenBefore) {
-                var type = this.options.type;
-                var didConsent = this.hasConsented();
-                if (type === 'opt-in' && didConsent) {
-                    // enable cookies
-                }
-                if (type === 'opt-out' && !didConsent) {
-                    // disable cookies
-                }
-            },
-
-            onRevokeChoice: function() {
-                var type = this.options.type;
-                if (type === 'opt-in') {
-                    // disable cookies
-                }
-                if (type === 'opt-out') {
-                    // enable cookies
-                }
-            },
-            law: {
-                regionalLaw: false
-            },
-            location: true
         });
     });
 </script>
 
-{% block javascripts %}
-    {#<script type="text/javascript">
-            // TODO: Add posibility to change page faster with javascript
+<script src="{{ asset('app/ControlPanel.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    // VERSION 2 of JAVASCRIPT Panel
 
-            // When using Hash to update website
-            $(document).ready(function() {
-                $("#screen-loading").hide();
-                if("onhashchange" in window) {
-                    $("#screen-loading").show();
-                    var href = location.hash;
-                    href = href.substr(2);
-                    setTimeout(function () {
-                        $.ajax({
-                            url		: "/account/do.php",
-                            data	: {
-                                a : "getTemplate",
-                                tpl : "account/page-" + href
-                            },
-                            complete: function() {
-                                $("#screen-loading").hide();
-                            },
-                            success	: function(data) {
-                                $("#screen-content").empty().append($(data));
-                            },
-                            error	: function() {
-                                var n = noty({
-                                    text		: "Error while loading page",
-                                    type		: "error",
-                                    layout		: "bottomRight",
-                                    timeout		: 3000,
-                                    maxVisible  : 3
-                                });
-                            }
-                        });
-                    }, 1000);
-                }
-                function onHashChanged() {
-                    $("#screen-loading").show();
-                    var href = location.hash;
-                    href = href.substr(2);
-                    setTimeout(function () {
-                        $.ajax({
-                            url		: "/account/do.php",
-                            data	: {
-                                a : "getTemplate",
-                                tpl : "account/page-" + href
-                            },
-                            complete: function() {
-                                $("#screen-loading").hide();
-                            },
-                            success	: function(data) {
-                                $("#screen-content").empty().append($(data));
-                            },
-                            error	: function() {
-                                var n = noty({
-                                    text		: 'Error while loading page',
-                                    type		: 'error',
-                                    layout		: 'bottomRight',
-                                    timeout		: 3000,
-                                    maxVisible  : 3
-                                });
-                            }
-                        });
-                    }, 1000);
-                }
-                window.onhashchange = onHashChanged;
-            });
-            $(function(){
-                $(document).on("click", "li.active > a", function(){
-                    var $parent = $(this).parent();
+    $(document).ready(function() {
+        ControlPanelSettings.ajaxPageTarget = '<?php echo \Core\Server::URL('www', 'do.php'); ?>';
+        ControlPanelSettings.debug = true;
+        ControlPanelSettings.controlPanelPageSystem = '<?php echo $aAccountConfig['controlPanelPageSystem']; ?>';
 
-                    // Ensure link isn't just a dropdown menu link
-                    if (!$parent.hasClass("dropdown")){
-                        // Deactivate tab buttons
-                        $("#testtab li").removeClass("active");
+        if(ControlPanelSettings.controlPanelPageSystem === 'href' || ControlPanelSettings.controlPanelPageSystem === 'hash')
+        {
+            ControlPanel.init('#screen-content', '#screen-loading');
+            ControlPanel.startLoading();
 
-                        // Hides tab contents
-                        tabName = $(this).attr("href");
-                        $(tabName).removeClass("active").addClass("fade");
-                    }
-                });
-            });
-        </script>
+            if(location.hash.length == 0)
+                location.replace('#/home')
 
-        <script src="{{ asset('app/ControlPanel.js') }}" type="text/javascript"></script>
-        <script type="text/javascript">
-            // VERSION 2 of JAVASCRIPT Panel
+            var sPage = location.hash;
+            sPage = sPage.substr(2);
+            ControlPanel.changePage(sPage);
 
-            $(document).ready(function() {
-                ControlPanelSettings.ajaxPageTarget = '<?php echo \Core\Server::URL('www', 'do.php'); ?>';
-                ControlPanelSettings.debug = true;
-                ControlPanelSettings.controlPanelPageSystem = '<?php echo $aAccountConfig['controlPanelPageSystem']; ?>';
-
-                if(ControlPanelSettings.controlPanelPageSystem === 'href' || ControlPanelSettings.controlPanelPageSystem === 'hash')
-                {
-                    ControlPanel.init('#screen-content', '#screen-loading');
+            if(ControlPanelSettings.controlPanelPageSystem === 'href')
+            {
+                $('*[data-toggle="page"]').click(function() {
                     ControlPanel.startLoading();
 
-                    if(location.hash.length == 0)
-                        location.replace('#/home')
-
-                    var sPage = location.hash;
+                    sPage = $(this).attr('href');
                     sPage = sPage.substr(2);
                     ControlPanel.changePage(sPage);
+                });
+            }
+            else if(ControlPanelSettings.controlPanelPageSystem === 'hash')
+            {
+                if("onhashchange" in window) {
+                    ControlPanel.startLoading();
 
-                    if(ControlPanelSettings.controlPanelPageSystem === 'href')
-                    {
-                        $('*[data-toggle="page"]').click(function() {
-                            ControlPanel.startLoading();
+                    sPage = location.hash;
+                    sPage = sPage.substr(2);
 
-                            sPage = $(this).attr('href');
-                            sPage = sPage.substr(2);
-                            ControlPanel.changePage(sPage);
-                        });
-                    }
-                    else if(ControlPanelSettings.controlPanelPageSystem === 'hash')
-                    {
-                        if("onhashchange" in window) {
-                            ControlPanel.startLoading();
-
-                            sPage = location.hash;
-                            sPage = sPage.substr(2);
-
-                            ControlPanel.changePage(sPage);
-                        }
-
-                        function onHashChanged() {
-                            ControlPanel.startLoading();
-
-                            sPage = location.hash;
-                            sPage = sPage.substr(2);
-
-                            ControlPanel.changePage(sPage);
-                        }
-
-                        window.onhashchange = onHashChanged;
-                    }
-                    else if(ControlPanelSettings.controlPanelPageSystem === 'url')
-                    {
-                        // the browser will change the page itself
-                    }
+                    ControlPanel.changePage(sPage);
                 }
-            });
-        </script>
 
-        <script type="text/javascript">
-            // TODO: Better functionality in javascript page changer
+                function onHashChanged() {
+                    ControlPanel.startLoading();
 
-            function changePage(urlPath) {
-                var ajax = new XMLHttpRequest();
-                ajax.onreadystatechange = function () {
-                    if (ajax.readyState == 4 && ajax.status == 200) {
-                        console.log("[Ajax] Page loaded");
-                        processAjaxData(ajax, urlPath);
-                    }
-                };
-                page = "https://account.orbitrondev.org/api/panel_pages?p=" + encodeURI(urlPath);
-                console.log("[Ajax] Loading \"" + urlPath + "\" (from: " + page + ")");
-                ajax.open("GET", page, true);
-                ajax.send();
+                    sPage = location.hash;
+                    sPage = sPage.substr(2);
+
+                    ControlPanel.changePage(sPage);
+                }
+
+                window.onhashchange = onHashChanged;
             }
-
-            function processAjaxData(response, urlPath) {
-                document.getElementById("content").innerHTML = response.responseText;
-                document.title = response.pageTitle;
-                window.history.pushState({
-                    "html": document.body.innerHTML,
-                    "pageTitle": document.getElementsByTagName("title")[0].innerHTML
-                }, "", urlPath);
+            else if(ControlPanelSettings.controlPanelPageSystem === 'url')
+            {
+                // the browser will change the page itself
             }
+        }
+    });
+</script>
 
-            $(document).ready(function () {
-                history.pushState({
-                    "html": document.body.innerHTML,
-                    "pageTitle": document.getElementsByTagName("title")[0].innerHTML
-                }, "", window.location.href);
+<script type="text/javascript">
+    function changePage(urlPath) {
+        var ajax = new XMLHttpRequest();
+        ajax.onreadystatechange = function () {
+            if (ajax.readyState == 4 && ajax.status == 200) {
+                console.log("[Ajax] Page loaded");
+                processAjaxData(ajax, urlPath);
+            }
+        };
+        page = "https://account.orbitrondev.org/api/panel_pages?p=" + encodeURI(urlPath);
+        console.log("[Ajax] Loading \"" + urlPath + "\" (from: " + page + ")");
+        ajax.open("GET", page, true);
+        ajax.send();
+    }
 
-                window.onpopstate = function (e) {
-                    console.info("Returned a page");
-                    //console.log(e.state.html);
-                    if (typeof e.state !== undefined) {
-                        //alert(e.state.html)
-                        document.getElementsByTagName("body")[0].innerHTML = e.state.html;
-                        document.title = e.state.pageTitle;
-                    }
-                };
-            });
-        </script>#}
-{% endblock %}
+    function processAjaxData(response, urlPath) {
+        document.getElementById("content").innerHTML = response.responseText;
+        document.title = response.pageTitle;
+        window.history.pushState({
+            "html": document.body.innerHTML,
+            "pageTitle": document.getElementsByTagName("title")[0].innerHTML
+        }, "", urlPath);
+    }
 
-<!--[if lt IE 9]>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script type="text/javascript" src="{{ asset('assets/plugins/placeholder-IE-fixes.js') }}"></script>
-<![endif]-->
+    $(document).ready(function () {
+        history.pushState({
+            "html": document.body.innerHTML,
+            "pageTitle": document.getElementsByTagName("title")[0].innerHTML
+        }, "", window.location.href);
+
+        window.onpopstate = function (e) {
+            console.info("Returned a page");
+            //console.log(e.state.html);
+            if (typeof e.state !== undefined) {
+                //alert(e.state.html)
+                document.getElementsByTagName("body")[0].innerHTML = e.state.html;
+                document.title = e.state.pageTitle;
+            }
+        };
+    });
+</script>#}
 </body>
 </html>

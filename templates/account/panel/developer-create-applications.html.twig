@@ -6,7 +6,7 @@
     <li class="breadcrumb-item active">{{ 'Applications'|trans }}</li>
 </ol>
 <hr />
-<div class="row mb-3">
+<div class="row">
     <div class="col-md-5">
         {% if current_user.developerStatus == 1 %}
             {{ form_start(create_app_form, {'attr': {'class': 'card'}}) }}
@@ -38,7 +38,15 @@
                     <div class="form-group row">
                         {{ form_label(create_app_form.scopes, null, {'label_attr': {'class': 'col-sm-4 col-form-label'}}) }}
                         <div class="col-sm-8">
-                            {{ form_widget(create_app_form.scopes) }}
+
+                            {% for key, type in create_app_form.scopes %}
+                                <label class="custom-control custom-checkbox">
+                                    {{ form_widget(type, {'attr': {'class': 'custom-control-input'}}) }}
+                                    <span class="custom-control-indicator"></span>
+                                    {{ form_label(type, null, {'label_attr': {'class': 'custom-control-description'}}) }}
+                                </label>
+                            {% endfor %}
+
                         </div>
                     </div>
                 </div>

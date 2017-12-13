@@ -1,14 +1,12 @@
-<section id="header">
-    <div class="col-lg-12">
-        <h1 class="page-header">{{ 'New Board'|trans }}</h1>
-        <ol class="breadcrumb">
-            <li>{{ 'Boards'|trans }}</li>
-            <li class="active">{{ 'Create...'|trans }}</li>
-        </ol><!-- /.breadcrumb -->
-        <hr />
-    </div><!-- /.col-lg-12 -->
-</section><!-- /#header -->
-<section id="page">
+<h1>{{ 'New Board'|trans }}</h1>
+<hr />
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">{{ 'Boards'|trans }}</li>
+    <li class="breadcrumb-item active">{{ 'Create...'|trans }}</li>
+</ol>
+<hr />
+<div class="row">
     <div class="col-md-6">
         {% if board_added|length > 0 and board_added == 1 %}
             <div class="alert alert-success fade in alert-dismissable">
@@ -21,45 +19,55 @@
                 {{ 'Your board/category wasn\'t added! Try again'|trans }}
             </div>
         {% endif %}
-        <div class="panel panel-default">
-            <div class="panel-heading">
+        <div class="card">
+            <div class="card-header">
                 {{ 'Add board'|trans }}
             </div>
-            <div class="panel-body">
-                {{ form_start(create_board_form, {'action': path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'new-board'}), 'attr': {'class': 'form-horizontal'}}) }}
-                    {{ form_row(create_board_form._token) }}
+            <div class="card-body">
+                {{ form_start(create_board_form, {'action': path('app_forum_forum_admin', {'forum': current_forum.url, 'page': 'new-board'})}) }}
                     {{ form_errors(create_board_form) }}
-                    <div class="form-group">
-                        {{ form_label(create_board_form.name, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
-                        <div class="col-md-7">
-                            {{ form_widget(create_board_form.name, {'attr': {'class': 'form-control input-md'}}) }}
-                            <span class="help-block">{{ 'How should your board be called?'|trans }}</span>
+
+                    <div class="form-group row">
+                        {{ form_label(create_board_form.name, null, {'label_attr': {'class': 'col-sm-4 col-form-label'}}) }}
+                        <div class="col-sm-8">
+                            {{ form_widget(create_board_form.name, {'attr': {'class': 'form-control'}}) }}
+                            <small class="form-text">{{ 'How should your board be called?'|trans }}</small>
+                            <small class="form-text text-danger">{{ form_errors(create_board_form.name) }}</small>
                         </div>
                     </div>
-                    <div class="form-group">
-                        {{ form_label(create_board_form.description, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
-                        <div class="col-md-7">
-                            {{ form_widget(create_board_form.description, {'attr': {'class': 'form-control input-md'}}) }}
-                            <span class="help-block">{{ 'You want to add a description for more information? (optional)'|trans }}</span>
+
+                    <div class="form-group row">
+                        {{ form_label(create_board_form.description, null, {'label_attr': {'class': 'col-sm-4 col-form-label'}}) }}
+                        <div class="col-sm-8">
+                            {{ form_widget(create_board_form.description, {'attr': {'class': 'form-control'}}) }}
+                            <small class="form-text">{{ 'You want to add a description for more information? (optional)'|trans }}</small>
+                            <small class="form-text text-danger">{{ form_errors(create_board_form.description) }}</small>
                         </div>
                     </div>
-                    <div class="form-group">
-                        {{ form_label(create_board_form.parent, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
-                        <div class="col-md-7">
+
+                    <div class="form-group row">
+                        {{ form_label(create_board_form.parent, null, {'label_attr': {'class': 'col-sm-4 col-form-label'}}) }}
+                        <div class="col-sm-8">
                             {{ form_widget(create_board_form.parent, {'attr': {'class': 'form-control'}}) }}
-                            <span class="help-block">{{ 'For what board should this be the child?'|trans }}</span>
+                            <small class="form-text">{{ 'For what board should this be the child?'|trans }}</small>
+                            <small class="form-text text-danger">{{ form_errors(create_board_form.parent) }}</small>
                         </div>
                     </div>
-                    <div class="form-group">
-                        {{ form_label(create_board_form.type, null, {'label_attr': {'class': 'col-md-4 control-label'}}) }}
-                        <div class="col-md-7">
+
+                    <div class="form-group row">
+                        {{ form_label(create_board_form.type, null, {'label_attr': {'class': 'col-sm-4 col-form-label'}}) }}
+                        <div class="col-sm-8">
+
                             {% for key, type in create_board_form.type %}
-                            <label class="radio-inline">
-                                {# TODO: Label shouldn't be displayed bold! Reason: It's in a <label> field. Answer: Change form theme? #}
-                                {{ form_widget(type) }} {{ form_label(type) }}
-                            </label>
+                                <label class="custom-control custom-radio">
+                                    {{ form_widget(type, {'attr': {'class': 'custom-control-input'}}) }}
+                                    <span class="custom-control-indicator"></span>
+                                    {{ form_label(type, null, {'label_attr': {'class': 'custom-control-description'}}) }}
+                                </label>
                             {% endfor %}
-                            <span class="help-block">{{ 'What do you want to add?'|trans }}</span>
+
+                            <small class="form-text">{{ 'What do you want to add?'|trans }}</small>
+                            <small class="form-text text-danger">{{ form_errors(create_board_form.type) }}</small>
                         </div>
                     </div>
                     <hr />
@@ -68,4 +76,4 @@
             </div>
         </div>
     </div>
-</section><!-- /#page -->
+</div>

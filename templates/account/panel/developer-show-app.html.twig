@@ -7,37 +7,35 @@
     <li class="breadcrumb-item active">{{ app.clientIdentifier }}</li>
 </ol>
 <hr />
-<div class="mb-3">
-    <h4>{{ app.clientIdentifier }}</h4>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
-            <tbody>
-                <tr>
-                    <td>{{ 'App ID'|trans }}</td>
-                    <td><code>{{ app.clientIdentifier }}</code></td>
-                </tr>
-                <tr>
-                    <td>{{ 'Secret Key'|trans }}</td>
-                    <td><code>{{ app.clientSecret }}</code></td>
-                </tr>
-                <tr>
-                    <td>{{ 'Redirect URI'|trans }}</td>
-                    <td>{{ app.redirectUri }}</td>
-                </tr>
-                <tr>
-                    <td>{{ 'Permissions'|trans }}</td>
-                    <td>
-                        {% for scope in app.scopes %}
-                            {{ scope }}{% if not loop.last %} |{% endif %}
-                        {% endfor %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <br />
-    <p>
-        {{ 'Check out this page to learn how to integrate Oauth2:'|trans }}
-        <a href="{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}">{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}</a>
-    </p>
+<h4>{{ app.clientIdentifier }}</h4>
+<div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+        <tbody>
+            <tr>
+                <td>{{ 'App ID'|trans }}</td>
+                <td><code>{{ app.clientIdentifier }}</code></td>
+            </tr>
+            <tr>
+                <td>{{ 'Secret Key'|trans }}</td>
+                <td><code>{{ app.clientSecret }}</code></td>
+            </tr>
+            <tr>
+                <td>{{ 'Redirect URI'|trans }}</td>
+                <td>{{ app.redirectUri }}</td>
+            </tr>
+            <tr>
+                <td>{{ 'Permissions'|trans }}</td>
+                <td>
+                    {% for scope in app.scopes %}
+                        {{ scope }}{% if not loop.last %} |{% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
+<br />
+<p>
+    {{ 'Check out this page to learn how to integrate Oauth2:'|trans }}
+    <a href="{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}">{{ url('app_developer_page', {'page': 'oauth/unauthorized.php'}) }}</a>
+</p>

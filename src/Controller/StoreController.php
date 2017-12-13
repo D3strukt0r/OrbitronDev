@@ -647,12 +647,14 @@ class StoreController extends \Controller
         $view = 'acp_not_found';
 
         foreach (StoreAcp::getAllMenus('root') as $sMenu => $aMenuInfo) {
-            $selected                  = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
-            $params['view_navigation'] .= '<li><a href="'.$this->generateUrl('app_store_store_admin',
-                    array(
-                        'store' => $store->getUrl(),
-                        'page'  => $aMenuInfo['href'],
-                    )).'" '.$selected.'>'.$aMenuInfo['title'].'</a></li>';
+            $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'active' : '');
+            $url = $this->generateUrl('app_store_store_admin', array('store' => $store->getUrl(), 'page' => $aMenuInfo['href']));
+            $params['view_navigation'] .= '<li class="nav-item '.$selected.'" data-toggle="tooltip" data-placement="right" title="'.$aMenuInfo['title'].'">
+                    <a class="nav-link" href="'.$url.'">
+                        <i class="'.$aMenuInfo['icon'].'"></i>
+                        <span class="nav-link-text">'.$aMenuInfo['title'].'</span>
+                    </a>
+                </li>';
 
             if (strlen($selected) > 0) {
                 if (is_callable($aMenuInfo['screen'])) {
@@ -677,15 +679,22 @@ class StoreController extends \Controller
                 }
                 continue;
             }
-            $params['view_navigation'] .= '<li><a href="#">'.$aGroupInfo['title'].'<span class="fa arrow"></span></a><ul class="nav nav-second-level collapse">';
+            $params['view_navigation'] .= '<li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
+                    <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapse_'.$aGroupInfo['id'].'" data-parent="#menu">
+                        <i class="'.$aGroupInfo['icon'].'"></i>
+                        <span class="nav-link-text">'.$aGroupInfo['title'].'</span>
+                    </a>
+                    <ul class="sidenav-second-level collapse" id="collapse_'.$aGroupInfo['id'].'">';
 
             foreach (StoreAcp::getAllMenus($aGroupInfo['id']) as $sMenu => $aMenuInfo) {
-                $selected                  = ($this->parameters['page'] === $aMenuInfo['href'] ? 'class="active"' : '');
-                $params['view_navigation'] .= '<li><a href="'.$this->generateUrl('app_store_store_admin',
-                        array(
-                            'store' => $store->getUrl(),
-                            'page'  => $aMenuInfo['href'],
-                        )).'" '.$selected.'>'.$aMenuInfo['title'].'</a></li>';
+                $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'active' : '');
+                $url = $this->generateUrl('app_store_store_admin', array('store' => $store->getUrl(), 'page' => $aMenuInfo['href']));
+                $params['view_navigation'] .= '<li class="nav-item '.$selected.'" data-toggle="tooltip" data-placement="right" title="'.strip_tags($aMenuInfo['title']).'">
+                    <a class="nav-link" href="'.$url.'">
+                        <i class="'.$aMenuInfo['icon'].'"></i>
+                        <span class="nav-link-text">'.$aMenuInfo['title'].'</span>
+                    </a>
+                </li>';
                 if (strlen($selected) > 0) {
                     if (is_callable($aMenuInfo['screen'])) {
                         $view = $aMenuInfo['screen'];

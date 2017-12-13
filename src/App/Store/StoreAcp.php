@@ -16,6 +16,7 @@ class StoreAcp
             'parent'  => 'root',
             'id'      => '',
             'title'   => '',
+            'icon'    => '',
             'display' => 'true',
         );
         $aGroupInfo = array_replace($aDefaultInfo, $group_info);
@@ -33,6 +34,7 @@ class StoreAcp
             'id'     => '',
             'title'  => '',
             'href'   => '',
+            'icon'   => '',
             'meta'   => array(
                 'tabindex' => -1,
             ),

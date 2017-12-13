@@ -6,12 +6,10 @@
     <li class="breadcrumb-item active">{{ 'Register account'|trans }}</li>
 </ol>
 <hr />
-<div class="mb-3">
-    {% if not current_user.developerStatus == 1 %}
-        {{ form_start(developer_form) }}
-            {{ form_widget(developer_form.send, {'attr': {'class': 'btn btn-success'}}) }}
-        {{ form_end(developer_form) }}
-    {% else %}
-        <div class="alert alert-danger" role="alert">{{ 'You are already a developer'|trans }}</div>
-    {% endif %}
-</div>
+{% if not current_user.developerStatus == 1 %}
+    {{ form_start(developer_form) }}
+        {{ form_widget(developer_form.send, {'attr': {'class': 'btn btn-success'}}) }}
+    {{ form_end(developer_form) }}
+{% else %}
+    <div class="alert alert-danger" role="alert">{{ 'You are already a developer'|trans }}</div>
+{% endif %}
