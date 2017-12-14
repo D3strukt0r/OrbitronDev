@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<!--[if IE 8]><html lang="en" class="ie8"><![endif]-->
-<!--[if IE 9]><html lang="en" class="ie9"><![endif]-->
-<!--[if !IE]><!--><html lang="{{ app.request.getLocale() }}"><!--<![endif]-->
+<html lang="{{ app.request.getLocale() }}">
     <head>
         <title>{% block title %}{% endblock %}</title>
 
@@ -18,7 +16,7 @@
         <meta name="google-site-verification" content="{{ service.page_google_webdev }}" />
 
         <!-- Favicon -->
-        <link rel="shortcut icon" {# type="image/vnd.microsoft.icon" #} href="{{ service.page_logo_url }}" />
+        <link rel="shortcut icon" href="{{ service.page_logo_url }}" />
 
         <!-- Web Fonts -->
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin" />
@@ -32,7 +30,7 @@
 
         <!-- CSS Customization -->
         {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('app/store/css/style.css') }}" />
+            <link rel="stylesheet" href="{{ asset('css/store.css') }}" />
             <style type="text/css">
                 footer {
                     background-color: white;
@@ -63,10 +61,10 @@
         {% endblock %}
 
         <!-- JS Global Compulsory -->
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.0/jquery-migrate.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.0/jquery-migrate.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
     <body>
         <!--=== Navigation ===-->
@@ -150,8 +148,8 @@
         </script>
 
         <!-- JS Implementing Plugins -->
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.6/SmoothScroll.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.6/SmoothScroll.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 
         {% block javascripts %}
             <script type="text/javascript">
@@ -200,8 +198,8 @@
         {% endblock %}
 
         <!--[if lt IE 9]>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
         <![endif]-->
     </body>
 </html>

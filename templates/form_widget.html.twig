@@ -2,7 +2,7 @@
     {% spaceless %}
         {% if form.vars.recaptcha_enabled %}
             {% if not form.vars.recaptcha_ajax %}
-                <script type="text/javascript" src="{{ form.vars.url_challenge }}"
+                <script src="{{ form.vars.url_challenge }}"
                         {% if attr.options.defer is defined and attr.options.defer %}defer{% endif %}
                         {% if attr.options.async is defined and attr.options.async %}async{% endif %}
                 ></script>

@@ -16,7 +16,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('app/store/css/starrr.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/starrr.css') }}" />
     <style type="text/css">
         .ratings {
             padding-right: 10px;
@@ -78,8 +78,8 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('app/store/js/starrr.js') }}" type="text/javascript"></script>
-    <script type="text/javascript">
+    <script src="{{ asset('js/starrr.js') }}"></script>
+    <script>
         $('#product-count').change(function() {
             var price = {{ current_product.price }};
             $("#output-price").html("<b>" + number_format(price * $('#product-count').val(), 2, '.', '\'') + " {{ currency }}</b>");
@@ -89,7 +89,7 @@
             }
         });
     </script>
-    <script type="text/javascript">
+    <script>
         $(document).ready(function() {
             $('.starrr').starrr({
                 change: function(e, value) {
