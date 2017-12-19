@@ -1,0 +1,56 @@
+header:
+  language:
+    base: "Language"
+    english:
+      short: "EN"
+      long: "English"
+    french:
+      short: "FR"
+      long: "French"
+    german:
+      short: "DE"
+      long: "German"
+    italian:
+      short: "IT"
+      long: "Italian"
+    spanish:
+      short: "ES"
+      long: "Spanish"
+  help: "Help"
+  account:
+    account: "Account"
+    logout: "Logout"
+    profile: "Profile"
+    login: "Login"
+    register: "Register"
+  toggle_nav: "Toggle navigation"
+  home: "Home"
+  services:
+    title: "Explore ..."
+    footer: "All our services"
+    blog: "Blog"
+    cloud: "Cloud"
+    forum: "Forum"
+    site: "Sites"
+    store: "Store"
+    wiki: "Wiki"
+  search: "Search"
+  go: "Go"
+footer:
+  description:
+    title: "About us"
+    part1: "We are a small company to get every service on the web into one place. Everything we do will be done with perfection."
+    part2: "We also offer all products, like TVs, Smartphones and more, with perfect design and including all new technologies."
+  links:
+    title: "Useful links"
+    link1: "About us"
+    link3: "Contact us"
+    link4: "Projects"
+  contact:
+    title: "Our contacts"
+    email: "info@orbitrondev.org"
+    web: "www.orbitrondev.org"
+  legal:
+    reserved: "2013 - 2017 © All rights Reserved"
+    tos: "Terms of Service"
+    privacy: "Privacy Policy"

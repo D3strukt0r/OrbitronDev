@@ -310,7 +310,7 @@ class AccountController extends \Controller
             $parameters = $request->request->all();
         }
 
-        $result = AccountApi::$function($parameters);
+        $result = AccountApi::$function($parameters, $this);
         if (is_array($result)) {
             return $this->json($result);
         } elseif (is_null($result)) {

@@ -4,6 +4,7 @@ namespace App\Account;
 
 use App\Account\Entity\User;
 use Kernel;
+use Symfony\Component\HttpFoundation\Response;
 
 class AccountApi
 {
@@ -126,23 +127,18 @@ class AccountApi
     }
 
     // TODO: Is the function "panel_pages" still needed?
-    public static function panelPages()
+    public static function panelPages($parameters, $controller)
     {
-        $request = Kernel::getIntent()->getRequest();
+        $kernel = Kernel::getIntent();
+        $request = $kernel->getRequest();
+        AccountHelper::updateSession();
         $page = $request->query->get('p');
-
-        $view = new \App\Template\Template();
-
-        $template = new \App\Template\TemplateLoad($page);
 
         \App\Account\AccountAcp::includeLibs();
         $functionForPage = str_replace('-', '_', $page);
         $functionName = 'acp_html_'.$functionForPage;
-        $content = call_user_func($functionName);
-        $template->setHtml($content);
+        $content = call_user_func($functionName, $controller);
 
-        $view->addTemplate($template);
-
-        echo $view;
+        return $content;
     }
 }
