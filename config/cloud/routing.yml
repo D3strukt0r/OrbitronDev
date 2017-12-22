@@ -13,3 +13,7 @@ app_cloud_show_file:
 app_cloud_share:
     path:     /share
     defaults: { _controller: 'CloudController::shareAction' }
+
+app_cloud_connector:
+    path:     /connector
+    defaults: { _controller: 'CloudController::connectorAction' }

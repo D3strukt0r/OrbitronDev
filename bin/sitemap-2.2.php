@@ -3,13 +3,16 @@
 /*************************************************************
  *
  * Simple site crawler to create a search engine XML Sitemap.
- * Version: 2.1
+ * Version: 2.2
  * License: GPL v2
  * Free to use, without any warranty.
  * Written by Elmar Hanlhofer https://www.plop.at
  *
  * ChangeLog:
  * ----------
+ * Version 2.2 2017/10/12 by Elmar Hanlhofer
+ * Cut off page anchor from URL
+ *
  * Version 2.1 2016/10/07 by Elmar Hanlhofer
  * strpos fix (swap arguments) for first anchor - by William
  * First anchor check optimized - by Elmar Hanlhofer
@@ -48,7 +51,7 @@ define("SITE", "https://www.orbitrondev.org");
 // Set true or false to define how the script is used.
 // true:  As CLI script.
 // false: As Website script.
-define("CLI", true);
+define("CLI", false);
 
 
 // Define here the URLs to skip. All URLs that start with the defined URL
@@ -180,16 +183,14 @@ function ValidateURL($url_base, $url)
         return false;
     }
 
+    // Check for page anchor in url
+    if ($page_anchor_pos = strpos($url, "#")) {
+        // Cut off page anchor
+        $url = substr($url, 0, $page_anchor_pos);
+    }
 
     if ($host == "")    // Handle URLs without host value
     {
-        if (substr($url, 0, 1) == '#') // Handle page anchor
-        {
-            echo "Skip page anchor: $url".NL;
-
-            return false;
-        }
-
         if (substr($url, 0, 1) == '/') // Handle absolute URL
         {
             $url = SITE_SCHEME."://".SITE_HOST.$url;
@@ -310,8 +311,8 @@ function Scan($url)
         } else {
             if ($content_type == "") {
                 echo "Info: Content-Type is not sent by the web server. Change ".
-                    "'IGNORE_EMPTY_CONTENT_TYPE' to 'true' in the sitemap script ".
-                    "to scan those pages too.".NL;
+                     "'IGNORE_EMPTY_CONTENT_TYPE' to 'true' in the sitemap script ".
+                     "to scan those pages too.".NL;
             } else {
                 echo "Info: $url is not a website: $content[0]".NL;
             }
@@ -355,17 +356,17 @@ function Scan($url)
         $next_url = ValidateURL($url, $next_url);
 
         // Skip if url is not valid
-        if ($next_url === false) {
+        if ($next_url == false) {
             continue;
         }
 
         if (Scan($next_url)) {
             // Add URL to sitemap
             fwrite($pf, "  <url>\n".
-                "    <loc>".htmlentities($next_url)."</loc>\n".
-                "    <changefreq>".FREQUENCY."</changefreq>\n".
-                "    <priority>".PRIORITY."</priority>\n".
-                "  </url>\n");
+                        "    <loc>".htmlentities($next_url)."</loc>\n".
+                        "    <changefreq>".FREQUENCY."</changefreq>\n".
+                        "    <priority>".PRIORITY."</priority>\n".
+                        "  </url>\n");
         }
     }
 
@@ -373,7 +374,7 @@ function Scan($url)
 }
 
 // Program start
-define("VERSION", "2.1");
+define("VERSION", "2.2");
 define("AGENT", "Mozilla/5.0 (compatible; Plop PHP XML Sitemap Generator/".VERSION.")");
 define("NL", CLI ? "\n" : "<br>");
 define("SITE_SCHEME", parse_url(SITE, PHP_URL_SCHEME));
@@ -389,15 +390,15 @@ if (!$pf) {
 }
 
 fwrite($pf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
-    "<!-- Created with Plop PHP XML Sitemap Generator ".VERSION." https://www.plop.at -->\n".
-    "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\n".
-    "        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n".
-    "        xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9\n".
-    "        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n".
-    "  <url>\n".
-    "    <loc>".SITE."/</loc>\n".
-    "    <changefreq>".FREQUENCY."</changefreq>\n".
-    "  </url>\n");
+            "<!-- Created with Plop PHP XML Sitemap Generator ".VERSION." https://www.plop.at -->\n".
+            "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\n".
+            "        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n".
+            "        xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9\n".
+            "        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n".
+            "  <url>\n".
+            "    <loc>".SITE."/</loc>\n".
+            "    <changefreq>".FREQUENCY."</changefreq>\n".
+            "  </url>\n");
 
 $scanned = array();
 Scan(GetEffectiveURL(SITE));
@@ -407,4 +408,3 @@ fclose($pf);
 
 echo "Done.".NL;
 echo OUTPUT_FILE." created.".NL;
-?>
