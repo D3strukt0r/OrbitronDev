@@ -311,43 +311,33 @@ class Kernel
     public static function exception(\Exception $exception)
     {
         ?>
-        <title>Server ERROR</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" type="text/css" />
-        <style type="text/css">
-            hr {
-                margin-top: 20px;
-                margin-bottom: 20px;
-                border: 0;
-                border-top: 1px solid #eee;
-            }
-
-            .col-center {
-                float: none;
-                margin: 0 auto;
-            }
-
-            .error-message {
-                margin-top: 50px;
-            }
-        </style>
-        <div class="col-sm-6 col-lg-6 col-center error-message">
-            <div class="panel panel-danger">
-                <div class="panel-heading">
-                    <img src="/assets/img/error.png" title="Error" style="float: left" />
-                    &nbsp;&nbsp;
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Server ERROR</title>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/css/bootstrap.min.css" />
+        </head>
+        <body class="bg-dark">
+        <div class="col-sm-6 col-lg-6 mx-auto mt-5">
+            <div class="card bg-danger text-white">
+                <div class="card-header">
+                    <img src="/img/error.png" title="Error" class="ml-auto mr-2" />
                     <b>Server error in file <?= $exception->getFile() ?> line <?= $exception->getLine() ?></b>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <?= $exception->getMessage() ?>
                     <hr />
                     <pre><?= $exception ?></pre>
                     <hr />
-                    <i>Script execution was aborted. We apoligize for the possible inconvenience. If this problem is
-                       persistant, please contact an Administrator.</i>
+                    <i>Script execution was aborted. We apologise for the possible inconvenience. If this problem is
+                       persistent, please contact an Administrator.</i>
                 </div>
             </div>
         </div>
+        </body>
+        </html>
         <?php
     }
 }

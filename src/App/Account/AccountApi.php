@@ -4,7 +4,6 @@ namespace App\Account;
 
 use App\Account\Entity\User;
 use Kernel;
-use Symfony\Component\HttpFoundation\Response;
 
 class AccountApi
 {
@@ -88,6 +87,7 @@ class AccountApi
         $fileupload->addValidator($validator);
 
         // Doing the deed
+        /** @var \FileUpload\File[] $files */
         list($files, $headers) = $fileupload->processAll();
 
         // Outputting it, for example like this
@@ -126,7 +126,6 @@ class AccountApi
         return $progress;
     }
 
-    // TODO: Is the function "panel_pages" still needed?
     public static function panelPages($parameters, $controller)
     {
         $kernel = Kernel::getIntent();
@@ -134,7 +133,7 @@ class AccountApi
         AccountHelper::updateSession();
         $page = $request->query->get('p');
 
-        \App\Account\AccountAcp::includeLibs();
+        AccountAcp::includeLibs();
         $functionForPage = str_replace('-', '_', $page);
         $functionName = 'acp_html_'.$functionForPage;
         $content = call_user_func($functionName, $controller);

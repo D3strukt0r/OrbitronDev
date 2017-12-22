@@ -94,17 +94,13 @@ class CloudController extends \Controller
     {
         /** @var \Kernel $kernel */
         $kernel = $this->get('kernel');
+        $em = $this->getEntityManager();
 
         if (is_null(AccountHelper::updateSession()) || !LOGGED_IN) {
-            header('Content-Type: application/json');
-            echo '{}';
-            exit;
+            return $this->json(array());
         }
-        if (USER_ID != $_GET['user_id']) {
-            header('Content-Type: application/json');
-            echo '{}';
-            exit;
-        }
+        /** @var \App\Account\Entity\User $currentUser */
+        $currentUser = $em->find(User::class, USER_ID);
 
         $functionsFile = $kernel->getRootDir().'/src/App/Cloud/functions.php';
         if (file_exists($functionsFile)) {
@@ -174,6 +170,14 @@ class CloudController extends \Controller
         // define('ELFINDER_BOX_CLIENTSECRET', '');
         // ===============================================
 
+        // Create directories
+        if (!file_exists($kernel->getRootDir().'/data/cloud/storage/'.$currentUser->getId())) {
+            mkdir($kernel->getRootDir().'/data/cloud/storage/'.$currentUser->getId(), 0777, true);
+        }
+        if (!file_exists($kernel->getRootDir().'/data/cloud/storage/'.$currentUser->getId().'/.trash/')) {
+            mkdir($kernel->getRootDir().'/data/cloud/storage/'.$currentUser->getId().'/.trash/', 0777, true);
+        }
+
         // Documentation for connector options:
         // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
         $opts = array(
@@ -184,7 +188,7 @@ class CloudController extends \Controller
                 array(
                     'alias'         => 'Home',
                     'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
-                    'path'          => realpath($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id']), // path to files (REQUIRED)
+                    'path'          => realpath($kernel->getRootDir().'/data/cloud/storage/'.$currentUser->getId()), // path to files (REQUIRED)
                     'URL'           => '/files/',                   // URL to files (REQUIRED)
                     'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                     'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
@@ -198,8 +202,8 @@ class CloudController extends \Controller
                 array(
                     'id'            => '1',
                     'driver'        => 'Trash',
-                    'path'          => realpath($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'].'/.trash'),
-                    'tmbURL'        => '../data/cloud/storage/'.$_GET['user_id'].'/.trash/.tmb',
+                    'path'          => realpath($kernel->getRootDir().'/data/cloud/storage/'.$currentUser->getId().'/.trash'),
+                    'tmbURL'        => '../data/cloud/storage/'.$currentUser->getId().'/.trash/.tmb',
                     'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
                     'uploadDeny'    => array('all'),                // Recommend the same settings as the original volume that uses the trash
                     'uploadAllow'   => array('image', 'text/plain'),// Same as above
@@ -209,17 +213,8 @@ class CloudController extends \Controller
             )
         );
 
-        // Create directories
-        if (!file_exists($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'])) {
-            mkdir($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'], 0777, true);
-        }
-        if (!file_exists($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'].'/.trash/')) {
-            mkdir($kernel->getRootDir().'/data/cloud/storage/'.$_GET['user_id'].'/.trash/', 0777, true);
-        }
-
         // Run elFinder
         $connector = new elFinderConnector(new elFinder($opts));
         $connector->run();
-        exit;
     }
 }
