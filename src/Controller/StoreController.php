@@ -59,8 +59,8 @@ class StoreController extends \Controller
 
         $createStoreForm->handleRequest($request);
         if ($createStoreForm->isValid()) {
-            $errorMessages   = array();
-            $captcha         = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
+            $errorMessages = array();
+            $captcha = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
             $captchaResponse = $captcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
             if (!$captchaResponse->isSuccess()) {
                 $createStoreForm->get('recaptcha')->addError(new FormError('The Captcha is not correct'));
@@ -290,7 +290,7 @@ class StoreController extends \Controller
             $totalStars += $stars;
             $count++;
 
-            $average = round(($totalStars / $count) * 2)/2;
+            $average = round(($totalStars / $count) * 2) / 2;
             $product->setRatingAverage($average);
             $em->flush();
         }
@@ -389,7 +389,7 @@ class StoreController extends \Controller
                 /** @var \App\Store\Entity\Product $product */
                 $product = $em->getRepository(Product::class)->findOneBy(array('id' => $productInfo['id']));
 
-                if($product->getStock() >= $productInfo['in_cart']) {
+                if ($product->getStock() >= $productInfo['in_cart']) {
                     $newProductsStock[$product->getId()] = $product->getStock() - $productInfo['in_cart'];
                 } else {
                     $productData = $product->toArray();
@@ -406,11 +406,11 @@ class StoreController extends \Controller
 
                 $cart2 = $rawCart->getCart($store, true, true);
                 $result = \Braintree_Transaction::sale(array(
-                    'amount' => $cart2['system']['total_price'],
+                    'amount'             => $cart2['system']['total_price'],
                     'paymentMethodNonce' => $nonceFromTheClient,
-                    'options' => array(
+                    'options'            => array(
                         'submitForSettlement' => true,
-                    )
+                    ),
                 ));
 
                 if ($result->success === true) {
@@ -423,17 +423,17 @@ class StoreController extends \Controller
                         ->setReplyTo(array($store->getOwner()->getEmail() => $store->getName()))
                         ->setBody($this->renderView('store/mail/order-confirmation.html.twig', array(
                             'current_store' => $store,
-                            'order_form' => $formData,
-                            'header_image' => $imgDir1,
-                            'ordered_time' => time(),
-                            'cart' => $cart,
+                            'order_form'    => $formData,
+                            'header_image'  => $imgDir1,
+                            'ordered_time'  => time(),
+                            'cart'          => $cart,
                         )), 'text/html');
 
                     /** @var \Swift_Mailer $mailer */
                     $mailer = $this->get('mailer');
                     $mailSent = $mailer->send($message);
 
-                    if($mailSent) {
+                    if ($mailSent) {
                         // TODO: Integrate shipping method into the form
                         $formData['delivery_type'] = $request->request->get('shipping');
                         $rawCart->makeOrder($store->getId(), $formData);
@@ -455,14 +455,14 @@ class StoreController extends \Controller
 
 
         return $this->render('store/theme1/checkout.html.twig', array(
-            'current_user'  => $currentUser,
-            'current_store' => $store,
-            'checkout_form' => $checkoutForm->createView(),
+            'current_user'   => $currentUser,
+            'current_store'  => $store,
+            'checkout_form'  => $checkoutForm->createView(),
             'delivery_types' => $deliveryType,
-            'cart' => $cart,
-            'payment' => $payment,
-            'currency' => $userCurrency,
-            'language' => $userLanguage,
+            'cart'           => $cart,
+            'payment'        => $payment,
+            'currency'       => $userCurrency,
+            'language'       => $userLanguage,
         ));
     }
 
@@ -494,6 +494,7 @@ class StoreController extends \Controller
         $response = new Response();
         $response->headers->set('Content-Type', 'text/xml');
         $response->setContent($result->asXML());
+
         return $response;
     }
 
@@ -517,6 +518,7 @@ class StoreController extends \Controller
 
         $cart = new StoreCheckout(StoreCheckout::getCartIdFromUser($currentUser), true, $currentUser);
         $cart->clearCart();
+
         return '';
     }
 
@@ -630,9 +632,9 @@ class StoreController extends \Controller
         $currentUser = $em->find(User::class, USER_ID);
 
         $params = array();
-        $params['user_id']         = USER_ID;
-        $params['current_user']    = $currentUser;
-        $params['current_store']   = $store;
+        $params['user_id'] = USER_ID;
+        $params['current_user'] = $currentUser;
+        $params['current_store'] = $store;
         $params['view_navigation'] = '';
 
         if (!LOGGED_IN) {

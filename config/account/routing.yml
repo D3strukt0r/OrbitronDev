@@ -31,8 +31,8 @@ app_account_panel:
     defaults: { _controller: 'AccountController::panelAction' }
 
 app_account_api:
-    path:     /api/{function}/{parameters}
-    defaults: { _controller: 'AccountController::apiAction', parameters: '' }
+    path:     /api/{function}
+    defaults: { _controller: 'AccountController::apiAction' }
 
 app_account_oauth_authorize:
     path:     /oauth/authorize

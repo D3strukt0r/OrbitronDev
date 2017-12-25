@@ -24,12 +24,12 @@ class DatabaseContainer
 
         try {
             $dbSetup = $config['parameters']['database_driver'];
-            $dbSetup .= ':host=' . $config['parameters']['database_host'];
-            $dbSetup .= ';dbname=' . $config['parameters']['database_name'];
+            $dbSetup .= ':host='.$config['parameters']['database_host'];
+            $dbSetup .= ';dbname='.$config['parameters']['database_name'];
 
             $db = new PDO($dbSetup, $config['parameters']['database_user'], $config['parameters']['database_password']);
         } catch (PDOException $error) {
-            throw new Exception('Cannot connect to database: ' . $error->getMessage());
+            throw new Exception('Cannot connect to database: '.$error->getMessage());
         }
 
         DatabaseContainer::$database = $db;

@@ -61,7 +61,7 @@ class DefaultController extends \Controller
             $mailer = $this->get('mailer');
             $mailSent = $mailer->send($message);
 
-            if($mailSent) {
+            if ($mailSent) {
                 $this->addFlash('success', 'Your message was successfully sent! We will try to contact you as soon as possible.');
             } else {
                 $this->addFlash('failure', 'Your message couldn\'t be sent. Try again!');
@@ -96,7 +96,7 @@ class DefaultController extends \Controller
         }
 
         return $this->render('default/search.html.twig', array(
-            'search'   => $this->getRequest()->query->get('q'),
+            'search' => $this->getRequest()->query->get('q'),
         ));
     }
 
@@ -137,6 +137,7 @@ class DefaultController extends \Controller
             $em->getClassMetadata('App\Blog\Entity\Post'),
             $em->getClassMetadata('App\Blog\Entity\Tag'),
             $em->getClassMetadata('App\Core\Entity\CronJob'),
+            $em->getClassMetadata('App\Core\Entity\Sessions'),
             $em->getClassMetadata('App\Core\Entity\Token'),
             $em->getClassMetadata('App\Forum\Entity\Forum'),
             $em->getClassMetadata('App\Forum\Entity\Board'),
@@ -157,26 +158,32 @@ class DefaultController extends \Controller
             if ($this->getRequest()->query->get('action') == 'drop-schema') {
                 $tool = new SchemaTool($em);
                 $tool->dropSchema($classes);
+
                 return 'Database schema dropped';
             }
             if ($this->getRequest()->query->get('action') == 'create-schema') {
                 $tool = new SchemaTool($em);
                 $tool->createSchema($classes);
+
                 return 'Database schema created';
             }
             if ($this->getRequest()->query->get('action') == 'update-schema') {
                 $tool = new SchemaTool($em);
                 $tool->updateSchema($classes);
+
                 return 'Database schema updated';
             }
             if ($this->getRequest()->query->get('action') == 'add-default-entries') {
                 $text = '';
                 Core::addDefaultCronJobs();
                 $text .= 'Default cron jobs added<br />';
+
                 return $text;
             }
+
             return 'Function does not exist';
         }
+
         return 'No setup key given, or key not correct.';
     }
 

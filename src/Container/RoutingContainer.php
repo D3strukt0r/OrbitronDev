@@ -19,7 +19,7 @@ class RoutingContainer
     {
         // look inside *this* directory
         $configLocations = array(
-            __DIR__ . '/../../config',
+            __DIR__.'/../../config',
         );
         $locator = new FileLocator($configLocations);
         $loader = new YamlFileLoader($locator);

@@ -58,6 +58,7 @@ abstract class Controller
     {
         /** @var Kernel $kernel */
         $kernel = $this->get('kernel');
+
         return $kernel->getRequest();
     }
 
@@ -68,6 +69,7 @@ abstract class Controller
     {
         /** @var \Doctrine\ORM\EntityManager $em */
         $em = $this->get('doctrine.entitymanager');
+
         return $em;
     }
 

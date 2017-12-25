@@ -52,8 +52,8 @@ class ForumController extends \Controller
         $request = $this->getRequest();
         $createForumForm->handleRequest($request);
         if ($createForumForm->isValid()) {
-            $errorMessages   = array();
-            $captcha         = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
+            $errorMessages = array();
+            $captcha = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
             $captchaResponse = $captcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
             if (!$captchaResponse->isSuccess()) {
                 $createForumForm->get('recaptcha')->addError(new FormError('The Captcha is not correct'));
@@ -170,8 +170,8 @@ class ForumController extends \Controller
         $boardTree = $em->getRepository(Board::class)->findBy(array('forum' => $forum, 'parent_board' => $board));
 
         // Get all threads
-        $pagination                 = array();
-        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumHelper::DEFAULT_SHOW_THREAD_COUNT;
+        $pagination = array();
+        $pagination['item_limit'] = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumHelper::DEFAULT_SHOW_THREAD_COUNT;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
         /** @var \App\Forum\Entity\Thread[] $threads */
@@ -187,12 +187,12 @@ class ForumController extends \Controller
         /** @var \App\Forum\Entity\Thread[] $threadCount */
         $threadCount = $em->getRepository(Thread::class)->findBy(array('board' => $board));
         $pagination['total_items'] = count($threadCount);
-        $pagination['adjacents']   = 1;
+        $pagination['adjacents'] = 1;
 
-        $pagination['next_page']     = $pagination['current_page'] + 1;
+        $pagination['next_page'] = $pagination['current_page'] + 1;
         $pagination['previous_page'] = $pagination['current_page'] - 1;
-        $pagination['pages_count']   = ceil($pagination['total_items'] / $pagination['item_limit']);
-        $pagination['last_page_m1']  = $pagination['pages_count'] - 1;
+        $pagination['pages_count'] = ceil($pagination['total_items'] / $pagination['item_limit']);
+        $pagination['last_page_m1'] = $pagination['pages_count'] - 1;
 
         return $this->render('forum/theme1/board.html.twig', array(
             'current_user'  => $currentUser,
@@ -240,8 +240,8 @@ class ForumController extends \Controller
         $breadcrumb = ForumHelper::getBreadcrumb($board);
 
         // Get all posts
-        $pagination                 = array();
-        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumHelper::DEFAULT_SHOW_THREAD_COUNT;
+        $pagination = array();
+        $pagination['item_limit'] = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : ForumHelper::DEFAULT_SHOW_THREAD_COUNT;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
         /** @var \App\Forum\Entity\Post[] $posts */
@@ -256,12 +256,12 @@ class ForumController extends \Controller
         /** @var \App\Forum\Entity\Post[] $postCount */
         $postCount = $em->getRepository(Post::class)->findBy(array('thread' => $thread));
         $pagination['total_items'] = count($postCount);
-        $pagination['adjacents']   = 1;
+        $pagination['adjacents'] = 1;
 
-        $pagination['next_page']     = $pagination['current_page'] + 1;
+        $pagination['next_page'] = $pagination['current_page'] + 1;
         $pagination['previous_page'] = $pagination['current_page'] - 1;
-        $pagination['pages_count']   = ceil($pagination['total_items'] / $pagination['item_limit']);
-        $pagination['last_page_m1']  = $pagination['pages_count'] - 1;
+        $pagination['pages_count'] = ceil($pagination['total_items'] / $pagination['item_limit']);
+        $pagination['last_page_m1'] = $pagination['pages_count'] - 1;
 
         return $this->render('forum/theme1/thread.html.twig', array(
             'current_user'   => $currentUser,
@@ -500,9 +500,9 @@ class ForumController extends \Controller
         $currentUser = $em->find(User::class, USER_ID);
 
         $params = array();
-        $params['user_id']         = USER_ID;
-        $params['current_user']    = $currentUser;
-        $params['current_forum']   = $forum;
+        $params['user_id'] = USER_ID;
+        $params['current_user'] = $currentUser;
+        $params['current_forum'] = $forum;
         $params['view_navigation'] = '';
 
         if (!LOGGED_IN) {

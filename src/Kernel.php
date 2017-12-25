@@ -82,7 +82,7 @@ class Kernel
             $response->send();
         } else {
             $controller = explode('::', $this->components['routing']['_controller']); // Split in Class and Function
-            $className = '\\Controller\\' . $controller[0]; // Specify Class with namespace
+            $className = '\\Controller\\'.$controller[0]; // Specify Class with namespace
             $functionName = $controller[1];
 
             /** @var Controller $class */
@@ -138,6 +138,10 @@ class Kernel
      */
     public function loadMailer()
     {
+        if ($this->has('mailer')) {
+            return;
+        }
+
         new SwiftMailerContainer($this);
     }
 
@@ -146,6 +150,10 @@ class Kernel
      */
     public function loadDatabase()
     {
+        if ($this->has('database')) {
+            return;
+        }
+
         if ($this->has('router') && !$this->has('routing.error')) {
             if (isset($this->get('routing')['database']) && $this->get('routing')['database'] === false) {
                 return;
@@ -153,7 +161,6 @@ class Kernel
         }
         new DoctrineContainer($this);
         new DatabaseContainer($this);
-        return;
     }
 
     /**
@@ -161,6 +168,10 @@ class Kernel
      */
     public function loadLogger()
     {
+        if ($this->has('logger')) {
+            return;
+        }
+
         // Create directories
         if (!file_exists($this->getRootDir().'/var/log')) {
             mkdir($this->getRootDir().'/var/log', 0777, true);
@@ -176,20 +187,11 @@ class Kernel
      */
     public function loadSession()
     {
-        new SessionContainer($this);
+        if ($this->has('session')) {
+            return;
+        }
 
-        // Session by Manuele Vaccari
-        /*
-        $session_name = '_session'; // Set a custom session name
-        $secure = false; // Set to true if using https.
-        $httponly = false; // This stops javascript being able to access the session id.
-        //ini_set('session.use_only_cookies', 1); // Forces sessions to only use cookies.
-        $cookieParams = session_get_cookie_params(); // Gets current cookies params.
-        session_set_cookie_params($cookieParams['lifetime'], '/', 'orbitrondev.org', $secure, $httponly);
-        session_name($session_name); // Sets the session name to the one set above.
-        session_start(); // Start the php session
-        //session_regenerate_id(true); // regenerated the session, delete the old one.
-        */
+        new SessionContainer($this);
     }
 
     /**
@@ -262,12 +264,22 @@ class Kernel
 
     public function getCacheDir()
     {
-        return realpath(dirname(__DIR__) . '/var/cache/');
+        $dir = $this->getRootDir().'/var/cache';
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        return realpath($dir);
     }
 
     public function getLogDir()
     {
-        return realpath(dirname(__DIR__) . '/var/logs');
+        $dir = $this->getRootDir().'/var/logs';
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        return realpath($dir);
     }
 
     /**
@@ -276,7 +288,7 @@ class Kernel
      */
     public static function getIntent()
     {
-        if(is_null(self::$kernel)) {
+        if (is_null(self::$kernel)) {
             throw new Exception('Kernel not initiated');
         } else {
             return self::$kernel;
@@ -292,6 +304,7 @@ class Kernel
         /** @var Session $session */
         $session = $this->get('session');
         $request->setSession($session);
+
         return $request;
     }
 
@@ -302,6 +315,7 @@ class Kernel
     {
         /** @var \Doctrine\ORM\EntityManager $em */
         $em = $this->get('doctrine.entitymanager');
+
         return $em;
     }
 

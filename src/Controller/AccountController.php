@@ -50,6 +50,7 @@ class AccountController extends \Controller
         if (is_null($update) || (defined('LOGGED_IN') && LOGGED_IN)) {
             $response = new RedirectResponse($this->getRequest()->getUri());
             AccountHelper::logout();
+
             return $response;
         }
         $request = $this->getRequest();
@@ -73,11 +74,11 @@ class AccountController extends \Controller
         $loginForm->handleRequest($request);
         if ($loginForm->isSubmitted() && $loginForm->isValid()) {
             $resultCodes = array(
-                'wrong_password'   => $this->container->get('translator')->trans('Incorrect password'),
-                'insert_username'  => $this->container->get('translator')->trans('Please enter your username'),
-                'insert_password'  => $this->container->get('translator')->trans('Please enter your password'),
+                'wrong_password'      => $this->container->get('translator')->trans('Incorrect password'),
+                'insert_username'     => $this->container->get('translator')->trans('Please enter your username'),
+                'insert_password'     => $this->container->get('translator')->trans('Please enter your password'),
                 'user_does_not_exist' => $this->container->get('translator')->trans('This user doesn\'t exist'),
-                'unknown_error'    => $this->container->get('translator')->trans('Unknown error'),
+                'unknown_error'       => $this->container->get('translator')->trans('Unknown error'),
             );
             $loginData = $loginForm->getData();
 
@@ -176,6 +177,7 @@ class AccountController extends \Controller
                     $registerForm->get('email')->getData(),
                     $registerForm->get('password')->getData()
                 );
+
                 return $response;
             } elseif ($registerResult === false) {
                 $this->addFlash('error', $this->container->get('translator')->trans('Unknown error'));
@@ -298,7 +300,7 @@ class AccountController extends \Controller
         $function = lcfirst($function);
 
         // Prepare all parameters
-        if (strlen($this->parameters['parameters']) > 0) {
+        if (isset($this->parameters['parameters']) && strlen($this->parameters['parameters']) > 0) {
             $rawParameters = explode('&', $this->parameters['parameters']);
             $parameters = array();
             foreach ($rawParameters as $value) {
@@ -332,14 +334,15 @@ class AccountController extends \Controller
         if (AccountHelper::usernameExists($this->parameters['username'])) {
             /** @var \App\Account\Entity\User $currentUser */
             $currentUser = $em->getRepository(User::class)->findOneBy(array('username' => $username));
+
             return $this->render('account/user.html.twig', array(
-                'logged_in_user_id'    => USER_ID,
-                'user_exists'          => true,
-                'current_user'         => $currentUser,
-                'service_allowed'      => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
-                'blogs'                => BlogHelper::getOwnerBlogList($currentUser),
-                'forums'               => ForumHelper::getOwnerForumList($currentUser),
-                'stores'               => StoreHelper::getOwnerStoreList($currentUser),
+                'logged_in_user_id' => USER_ID,
+                'user_exists'       => true,
+                'current_user'      => $currentUser,
+                'service_allowed'   => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
+                'blogs'             => BlogHelper::getOwnerBlogList($currentUser),
+                'forums'            => ForumHelper::getOwnerForumList($currentUser),
+                'stores'            => StoreHelper::getOwnerStoreList($currentUser),
             ));
         } else {
             return $this->render('account/user.html.twig', array(
@@ -373,6 +376,7 @@ class AccountController extends \Controller
                 } else {
                     $forgotForm->addError(new FormError('Token not found'));
                 }
+
                 return $this->render('account/forgot-password.html.twig', array(
                     'forgot_form' => $forgotForm->createView(),
                 ));
@@ -386,16 +390,19 @@ class AccountController extends \Controller
 
                     if (strlen($password) == 0) {
                         $resetForm->get('password')->addError(new FormError('You have to insert a password'));
+
                         return $this->render('account/forgot-password-form.html.twig', array(
                             'reset_form' => $resetForm->createView(),
                         ));
                     } elseif (strlen($password) < AccountHelper::$settings['password']['min_length']) {
                         $resetForm->get('password')->addError(new FormError('Your password is too short (min. 7 characters)'));
+
                         return $this->render('account/forgot-password-form.html.twig', array(
                             'reset_form' => $resetForm->createView(),
                         ));
                     } elseif ($password != $passwordVerify) {
                         $resetForm->get('password_verify')->addError(new FormError('Your passwords don\'t match'));
+
                         return $this->render('account/forgot-password-form.html.twig', array(
                             'reset_form' => $resetForm->createView(),
                         ));
@@ -409,6 +416,7 @@ class AccountController extends \Controller
                     $token->remove();
 
                     $this->addFlash('success', 'Successfully changed your password');
+
                     return $this->render('account/forgot-password-form.html.twig', array(
                         'reset_form' => $resetForm->createView(),
                         'redirect'   => $this->generateUrl('app_account_login'),
@@ -434,7 +442,8 @@ class AccountController extends \Controller
                         /** @var \App\Account\Entity\User $user */
                         $user = $em->getRepository(User::class)->findOneBy(array('email' => $forgotForm->get('email')->getData()));
                         $tokenGenerator = new Token();
-                        $token = $tokenGenerator->generateToken('reset_password', (new \DateTime())->modify('+1 day'), array('user_id' => $user->getId()));
+                        $token = $tokenGenerator->generateToken('reset_password', (new \DateTime())->modify('+1 day'),
+                            array('user_id' => $user->getId()));
 
                         $message = (new Swift_Message())
                             ->setSubject('[Account] Reset password')
@@ -448,6 +457,7 @@ class AccountController extends \Controller
 
                         // Email sent
                         $this->addFlash('success', 'Email sent');
+
                         return $this->render('account/forgot-password.html.twig', array(
                             'forgot_form' => $forgotForm->createView(),
                         ));
@@ -487,6 +497,7 @@ class AccountController extends \Controller
                     $errorMessage = 'This token is not for email activation';
                 }
                 $this->addFlash('failure', $errorMessage);
+
                 return $this->render('account/confirm-email.html.twig', array(
                     'send_email_form' => $sendEmailForm->createView(),
                 ));
@@ -495,6 +506,7 @@ class AccountController extends \Controller
                 $em->flush();
                 $token->remove();
                 $this->addFlash('success', 'Successfully verified your email');
+
                 return $this->render('account/confirm-email.html.twig');
             }
         } else {
@@ -531,11 +543,11 @@ class AccountController extends \Controller
         $em = $this->getEntityManager();
 
         /** @var \App\Account\Repository\OAuthClientRepository $clientStorage */
-        $clientStorage  = $em->getRepository(OAuthClient::class);
+        $clientStorage = $em->getRepository(OAuthClient::class);
         /** @var \App\Account\Repository\UserRepository $userStorage */
         $userStorage = $em->getRepository(User::class);
         /** @var \App\Account\Repository\OAuthAccessTokenRepository $accessTokenStorage */
-        $accessTokenStorage  = $em->getRepository(OAuthAccessToken::class);
+        $accessTokenStorage = $em->getRepository(OAuthAccessToken::class);
         /** @var \App\Account\Repository\OAuthAuthorizationCodeRepository $authorizationCodeStorage */
         $authorizationCodeStorage = $em->getRepository(OAuthAuthorizationCode::class);
         /** @var \App\Account\Repository\OAuthRefreshTokenRepository $refreshTokenStorage */
@@ -646,7 +658,6 @@ class AccountController extends \Controller
     }
 
     // curl https://account.orbitrondev.org/oauth/resource -d 'access_token=YOUR_TOKEN'
-    // TODO: That has nothing lost in here. This goes into the API section
     public function oauthResourceAction()
     {
         $this->oauthServer();
@@ -675,8 +686,10 @@ class AccountController extends \Controller
             $text .= 'Subscription types added<br />';
             AccountHelper::addDefaultScopes();
             $text .= 'Scopes added<br />';
+
             return $text;
         }
+
         return 'No setup key given, or key not correct.';
     }
 }

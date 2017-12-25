@@ -50,8 +50,8 @@ class BlogController extends \Controller
         $createBlogForm = $this->createForm(NewBlogType::class);
         $createBlogForm->handleRequest($request);
         if ($createBlogForm->isValid()) {
-            $errorMessages   = array();
-            $captcha         = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
+            $errorMessages = array();
+            $captcha = new ReCaptcha('6Ldec_4SAAAAAMqZOBRgHo0KRYptXwsfCw-3Pxll');
             $captchaResponse = $captcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
             if (!$captchaResponse->isSuccess()) {
                 $createBlogForm->get('recaptcha')->addError(new FormError('The Captcha is not correct'));
@@ -125,8 +125,8 @@ class BlogController extends \Controller
         $currentUser = $em->find(User::class, USER_ID);
 
         // Get all posts
-        $pagination                 = array();
-        $pagination['item_limit']   = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : 5;
+        $pagination = array();
+        $pagination['item_limit'] = !is_null($request->query->get('show')) ? (int)$request->query->get('show') : 5;
         $pagination['current_page'] = !is_null($request->query->get('page')) ? (int)$request->query->get('page') : 1;
 
         /** @var \App\Blog\Entity\Post[] $posts */
@@ -142,12 +142,12 @@ class BlogController extends \Controller
         /** @var \App\Blog\Entity\Post[] $getPostCount */
         $getPostCount = $em->getRepository(Post::class)->findBy(array('blog' => $blog));
         $pagination['total_items'] = count($getPostCount);
-        $pagination['adjacents']   = 1;
+        $pagination['adjacents'] = 1;
 
-        $pagination['next_page']     = $pagination['current_page'] + 1;
+        $pagination['next_page'] = $pagination['current_page'] + 1;
         $pagination['previous_page'] = $pagination['current_page'] - 1;
-        $pagination['pages_count']   = ceil($pagination['total_items'] / $pagination['item_limit']);
-        $pagination['last_page_m1']  = $pagination['pages_count'] - 1;
+        $pagination['pages_count'] = ceil($pagination['total_items'] / $pagination['item_limit']);
+        $pagination['last_page_m1'] = $pagination['pages_count'] - 1;
 
         return $this->render('blog/theme1/index.html.twig', array(
             'current_user' => $currentUser,
@@ -236,7 +236,7 @@ class BlogController extends \Controller
         }
         //////////// END TEST IF BLOG EXISTS ////////////
 
-        $feed    = new Feed();
+        $feed = new Feed();
         $channel = new Channel();
         $channel
             ->title($blog->getName())

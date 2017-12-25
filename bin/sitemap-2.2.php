@@ -43,16 +43,13 @@
 // Set the output file name.
 define("OUTPUT_FILE", "sitemap.xml");
 
-
 // Set the start URL. Here is https used, use http:// for non SSL websites.
 define("SITE", "https://www.orbitrondev.org");
-
 
 // Set true or false to define how the script is used.
 // true:  As CLI script.
 // false: As Website script.
 define("CLI", false);
-
 
 // Define here the URLs to skip. All URLs that start with the defined URL
 // will be skipped too.
@@ -63,26 +60,21 @@ $skip_url = array(
     "https://www.plop.at/slide",
 );
 
-
 // General information for search engines how often they should crawl the page.
 define("FREQUENCY", "weekly");
-
 
 // General information for search engines. You have to modify the code to set
 // various priority values for different pages. Currently, the default behavior
 // is that all pages have the same priority.
 define("PRIORITY", "0.5");
 
-
 // When your web server does not send the Content-Type header, then set
 // this to 'true'. But I don't suggest this.
 define("IGNORE_EMPTY_CONTENT_TYPE", false);
 
-
 /*************************************************************
  * End of user defined settings.
  *************************************************************/
-
 
 function GetPage($url)
 {
@@ -395,10 +387,10 @@ fwrite($pf, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
             "        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n".
             "        xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9\n".
             "        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n".
-            "  <url>\n".
+            "<url>\n".
             "    <loc>".SITE."/</loc>\n".
             "    <changefreq>".FREQUENCY."</changefreq>\n".
-            "  </url>\n");
+            "</url>\n");
 
 $scanned = array();
 Scan(GetEffectiveURL(SITE));

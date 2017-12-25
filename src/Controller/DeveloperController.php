@@ -25,6 +25,7 @@ class DeveloperController extends \Controller
         }
 
         $text .= '</ul>';
+
         return $text;
     }
 
@@ -48,6 +49,7 @@ class DeveloperController extends \Controller
         header('Content-Length: '.filesize($fileLoc));
         header('Content-Disposition: attachment; filename = '.basename($fileLoc));
         readfile($fileLoc);
+
         return '';
     }
 }

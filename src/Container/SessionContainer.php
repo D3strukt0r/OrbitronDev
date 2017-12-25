@@ -6,16 +6,15 @@ use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\MetadataBag;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class SessionContainer
 {
-    /**
-     * TODO: Use PDO as Session handler
-     * See: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
-     * Arguments: mysql:host=%database_host%;port=%database_port%;dbname=%database_name%
-     */
+    public static $settings = array(
+        'save_to' => 'pdo', // pdo or file
+    );
 
     /**
      * Templating constructor.
@@ -24,19 +23,36 @@ class SessionContainer
      */
     public function __construct(\Kernel $kernel)
     {
-        $sessionHandler = new NativeFileSessionHandler(realpath('/../var/sessions'));
+        $sessionMetaDataBag = new MetadataBag('_meta', '0');
+        $kernel->set('session.storage.metadata_bag', $sessionMetaDataBag);
+
+        // Save session in file
+        $sessionHandler = new NativeFileSessionHandler(realpath('./../var/sessions'));
         $kernel->set('session.handler', $sessionHandler);
 
-        $sessionMetaDataBag = new MetadataBag('_sf2_meta', '0');
-        $kernel->set('session.storage.metadata_bag', $sessionMetaDataBag);
+        // Save session in database
+        if (!$kernel->has('database')) {
+            $kernel->loadDatabase();
+        }
+        $kernel->get('database')->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $sessionStorageDatabase = new PdoSessionHandler($kernel->get('database'), array(
+            'db_table' => 'app_sessions',
+        ));
+        $kernel->set('session.handler.pdo', $sessionStorageDatabase);
+
+        // Create cookie
+        $handler = (self::$settings['save_to'] === 'file' ? $kernel->get('session.handler') :
+                   (self::$settings['save_to'] === 'pdo' ? $kernel->get('session.handler.pdo') :
+                   null));
 
         $sessionStorage = new NativeSessionStorage(array(
             'cookie_domain'   => 'orbitrondev.org',
             'cookie_httponly' => true,
             'gc_probability'  => 1,
-        ), $kernel->get('session.handler'), $kernel->get('session.storage.metadata_bag'));
+        ), $handler, $kernel->get('session.storage.metadata_bag'));
         $kernel->set('session.storage.native', $sessionStorage);
 
+        // Create session
         $session = new Session($kernel->get('session.storage.native'), new AttributeBag(), new FlashBag());
         $session->setName('_session');
         $session->start();

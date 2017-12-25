@@ -14,11 +14,11 @@ class SwiftMailerContainer
      */
     public function __construct(\Kernel $kernel)
     {
-        $config = $kernel->get('config');
+        $config = $kernel->get('config')['parameters'];
 
-        $transport = (new Swift_SmtpTransport($config['parameters']['mailer_host'], $config['parameters']['mailer_port'], $config['parameters']['mailer_security']))
-            ->setUsername($config['parameters']['mailer_user'])
-            ->setPassword($config['parameters']['mailer_password']);
+        $transport = (new Swift_SmtpTransport($config['mailer_host'], $config['mailer_port'], $config['mailer_security']))
+            ->setUsername($config['mailer_user'])
+            ->setPassword($config['mailer_password']);
         $kernel->set('mailer', new Swift_Mailer($transport));
     }
 }

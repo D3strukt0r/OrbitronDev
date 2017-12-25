@@ -109,9 +109,9 @@ class RedirectController extends \Controller
         $qs = $request->getQueryString();
         if ($qs) {
             if (strpos($path, '?') === false) {
-                $qs = '?' . $qs;
+                $qs = '?'.$qs;
             } else {
-                $qs = '&' . $qs;
+                $qs = '&'.$qs;
             }
         }
 
@@ -142,7 +142,7 @@ class RedirectController extends \Controller
             }
         }
 
-        $url = $scheme . '://' . $request->getHost() . $port . $request->getBaseUrl() . $path . $qs;
+        $url = $scheme.'://'.$request->getHost().$port.$request->getBaseUrl().$path.$qs;
 
         return new RedirectResponse($url, $statusCode);
     }
