@@ -26,6 +26,7 @@ use OAuth2\GrantType\RefreshToken;
 use ReCaptcha\ReCaptcha;
 use Swift_Message;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class AccountController extends \Controller
@@ -670,12 +671,33 @@ class AccountController extends \Controller
         }
 
         $token = $this->oauthServer->getAccessTokenData($request);
+        $em = $this->getEntityManager();
 
-        echo json_encode(array(
-            'success' => true,
-            'message' => 'You accessed my APIs!',
-            'user_id' => $token['user_id'],
-        ));
+        /** @var \App\Account\Entity\User $user */
+        $user = $em->getRepository(User::class)->findOneBy(['id' => $token['user_id']]);
+
+        if (is_null($token['scope'])) {
+            return new JsonResponse();
+        }
+
+        $scopeList = explode(' ', $token['scope']);
+        $responseData = [];
+        // Call the function for all scopes
+        foreach ($scopeList as $scope) {
+            // Find out the function name
+            $functionProcess = explode(':', $scope);
+            foreach ($functionProcess as $key => $item) {
+                $functionProcess[$key] = ucfirst($item);
+            }
+            $function = 'scope'.implode('', $functionProcess);
+
+            // Call function
+            $data = $this->{$function}($user);
+            foreach ($data as $key => $value) {
+                $responseData[$key] = $value;
+            }
+        }
+        return new JsonResponse($responseData);
     }
 
     public function oneTimeSetupAction()
@@ -691,5 +713,75 @@ class AccountController extends \Controller
         }
 
         return 'No setup key given, or key not correct.';
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return array
+     */
+    private function scopeUserId($user)
+    {
+        return ['id' => $user->getId()];
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return array
+     */
+    private function scopeUserUsername($user)
+    {
+        return ['username' => $user->getUsername()];
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return array
+     */
+    private function scopeUserEmail($user)
+    {
+        return ['email' => $user->getEmail()];
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return array
+     */
+    private function scopeUserName($user)
+    {
+        return ['name' => $user->getProfile()->getName()];
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return array
+     */
+    private function scopeUserSurname($user)
+    {
+        return ['surname' => $user->getProfile()->getSurname()];
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return array
+     */
+    private function scopeUserBirthday($user)
+    {
+        return ['birthday' => $user->getProfile()->getBirthday()->getTimestamp()];
+    }
+
+    /**
+     * @param \App\Account\Entity\User $user
+     *
+     * @return array
+     */
+    private function scopeUserSubscription($user)
+    {
+        return ['subscription_type' => $user->getSubscription()->getSubscription()->getTitle()];
     }
 }

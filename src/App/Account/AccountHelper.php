@@ -518,39 +518,63 @@ class AccountHelper
 
     public static function addDefaultSubscriptionTypes()
     {
-        $basicSubscription = new SubscriptionType();
-        $basicSubscription
+        $em = \Kernel::getIntent()->getEntityManager();
+        $subscriptions = [];
+        $subscriptions[] = (new SubscriptionType())
             ->setTitle('Basic')
             ->setPrice('0')
-            ->setPermissions(array());
-
-        $premiumSubscription = new SubscriptionType();
-        $premiumSubscription
+            ->setPermissions([]);
+        $subscriptions[] = (new SubscriptionType())
             ->setTitle('Premium')
             ->setPrice('10')
-            ->setPermissions(array('web_service', 'support'));
-
-        $enterpriseSubscription = new SubscriptionType();
-        $enterpriseSubscription
+            ->setPermissions(['web_service', 'support']);
+        $subscriptions[] = (new SubscriptionType())
             ->setTitle('Enterprise')
             ->setPrice('30')
-            ->setPermissions(array('web_service', 'web_service_multiple', 'support'));
+            ->setPermissions(['web_service', 'web_service_multiple', 'support']);
 
-        \Kernel::getIntent()->getEntityManager()->persist($basicSubscription);
-        \Kernel::getIntent()->getEntityManager()->persist($premiumSubscription);
-        \Kernel::getIntent()->getEntityManager()->persist($enterpriseSubscription);
-        \Kernel::getIntent()->getEntityManager()->flush();
+        foreach ($subscriptions as $item) {
+            $em->persist($item);
+        }
+        $em->flush();
     }
 
     public static function addDefaultScopes()
     {
-        $scope1 = new OAuthScope();
-        $scope1
-            ->setScope('user_info')
-            ->setName('User info\'s')
+        $em = \Kernel::getIntent()->getEntityManager();
+        $scope = [];
+        $scope[] = (new OAuthScope())
+            ->setScope('user:id')
+            ->setName('User ID')
             ->setDefault(true);
+        $scope[] = (new OAuthScope())
+            ->setScope('user:username')
+            ->setName('Username')
+            ->setDefault(false);
+        $scope[] = (new OAuthScope())
+            ->setScope('user:email')
+            ->setName('Email address')
+            ->setDefault(false);
+        $scope[] = (new OAuthScope())
+            ->setScope('user:name')
+            ->setName('First name')
+            ->setDefault(false);
+        $scope[] = (new OAuthScope())
+            ->setScope('user:surname')
+            ->setName('Surname')
+            ->setDefault(false);
+        $scope[] = (new OAuthScope())
+            ->setScope('user:birthday')
+            ->setName('Birthday')
+            ->setDefault(false);
+        $scope[] = (new OAuthScope())
+            ->setScope('user:subscription')
+            ->setName('Subscription')
+            ->setDefault(false);
 
-        \Kernel::getIntent()->getEntityManager()->persist($scope1);
-        \Kernel::getIntent()->getEntityManager()->flush();
+        foreach ($scope as $item) {
+            $em->persist($item);
+        }
+        $em->flush();
     }
 }
