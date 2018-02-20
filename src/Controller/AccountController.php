@@ -23,6 +23,8 @@ use App\Store\StoreHelper;
 use OAuth2\GrantType\AuthorizationCode;
 use OAuth2\GrantType\ClientCredentials;
 use OAuth2\GrantType\RefreshToken;
+use OAuth2\Request as OAuthRequest;
+use OAuth2\Response as OAuthResponse;
 use ReCaptcha\ReCaptcha;
 use Swift_Message;
 use Symfony\Component\Form\FormError;
@@ -604,21 +606,27 @@ class AccountController extends \Controller
         $this->oauthServer();
         $em = $this->getEntityManager();
 
-        $request2 = $this->getRequest();
-        $request = \OAuth2\Request::createFromGlobals();
-        $response = new \OAuth2\Response();
+        $request = $this->getRequest();
+        $requestOAuth = OAuthRequest::createFromGlobals();
+        $responseOAuth = new OAuthResponse();
 
         // validate the authorize request
-        if (!$this->oauthServer->validateAuthorizeRequest($request, $response)) {
-            //return $this->oauthServer->getResponse();
-            $response->send();
+        if (!$this->oauthServer->validateAuthorizeRequest($requestOAuth, $responseOAuth)) {
+            $responseOAuth->send();
+            exit;
         }
         // display an authorization form
         // Get all information about the Client requesting an Auth code
-        $clientInfo = AccountHelper::getAppInformation($request2->query->get('client_id'));
+        $clientInfo = AccountHelper::getAppInformation($request->query->get('client_id'));
 
-        $scopes = array();
-        foreach ($clientInfo->getScopes() as $scope) {
+        $scopes = [];
+        $scopeList = $request->query->has('scope') ? $request->query->get('scope') : null;
+        if (is_null($scopeList)) {
+            $scopeList = $clientInfo->getScopes();
+        } else {
+            $scopeList = explode(' ', $scopeList);
+        }
+        foreach ($scopeList as $scope) {
             /** @var \App\Account\Entity\OAuthScope $getScope */
             $getScope = $em->getRepository(OAuthScope::class)->findOneBy(array('scope' => $scope));
             if (!is_null($getScope)) {
@@ -637,13 +645,14 @@ class AccountController extends \Controller
             return $this->redirectToRoute('app_account_logout');
         }
         $is_authorized = ($_POST['authorized'] === 'Yes');
-        $this->oauthServer->handleAuthorizeRequest($request, $response, $is_authorized, USER_ID);
+        $this->oauthServer->handleAuthorizeRequest($requestOAuth, $responseOAuth, $is_authorized, USER_ID);
         // if ($is_authorized) {
         //     // this is only here so that you get to see your code in the cURL request. Otherwise, we'd redirect back to the client
         //     $code = substr($response->getHttpHeader('Location'), strpos($response->getHttpHeader('Location'), 'code=') + 5, 40);
         //     exit("SUCCESS! Authorization Code: $code");
         // }
-        $response->send();
+        $responseOAuth->send();
+        exit;
     }
 
     // curl https://account.orbitrondev.org/oauth/token -d 'grant_type=authorization_code&code=AUTHORIZATION_CODE&client_id=testclient&client_secret=testpass&redirect_uri=http://d3strukt0r.esy.es'
@@ -652,26 +661,32 @@ class AccountController extends \Controller
         $this->oauthServer();
 
         // Handle a request for an OAuth2.0 Access Token and send the response to the client
-        $request = \OAuth2\Request::createFromGlobals();
+        $request = OAuthRequest::createFromGlobals();
+
         /** @var \OAuth2\Response $response */
         $response = $this->oauthServer->handleTokenRequest($request);
         $response->send();
+        exit;
     }
 
     // curl https://account.orbitrondev.org/oauth/resource -d 'access_token=YOUR_TOKEN'
     public function oauthResourceAction()
     {
         $this->oauthServer();
-        $request = \OAuth2\Request::createFromGlobals();
+        $em = $this->getEntityManager();
+        $request = $this->getRequest();
+        $requestOAuth = OAuthRequest::createFromGlobals();
+        $responseOAuth = new OAuthResponse();
 
         // Handle a request to a resource and authenticate the access token
-        if (!$this->oauthServer->verifyResourceRequest($request, null, null)) {
-            $this->oauthServer->getResponse()->send();
+        $scopeRequired = $request->query->has('scope') ? $request->query->get('scope') : null;
+        if (!$this->oauthServer->verifyResourceRequest($requestOAuth, $responseOAuth, $scopeRequired)) {
+            // if the scope required is different from what the token allows, this will send a "401 insufficient_scope" error
+            $responseOAuth->send();
             exit;
         }
 
-        $token = $this->oauthServer->getAccessTokenData($request);
-        $em = $this->getEntityManager();
+        $token = $this->oauthServer->getAccessTokenData($requestOAuth);
 
         /** @var \App\Account\Entity\User $user */
         $user = $em->getRepository(User::class)->findOneBy(['id' => $token['user_id']]);
