@@ -108,7 +108,7 @@
                                     <td class="text-center"><br /><span class="badge">{{ board.threadCount }}</span></td>
                                     <td class="text-center"><br /><span class="badge">{{ board.postCount }}</span></td>
                                     <td>
-                                        {% if subboard.lastPostUser is not null %}
+                                        {% if board.lastPostUser is not null %}
                                             <p>
                                                 <i>{{ 'Last post'|trans }}</i> {{ 'by'|trans }}
                                                 <a href="{{ path('app_account_user', {'username': board.lastPostUser.username}) }}">{{ board.lastPostUser.username }}</a>
