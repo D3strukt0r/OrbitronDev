@@ -27,15 +27,15 @@
 
     <!-- CSS Global Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="https://web-assets.orbitrondev.org/unify-2.5/vendor/icon-hs/style.css" />
+    <link rel="stylesheet" href="{{ asset('vendor/icon-hs/style.css', 'local-theme') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
-    <link rel="stylesheet" href="https://web-assets.orbitrondev.org/unify-2.5/vendor/hamburgers/hamburgers.min.css" />
-    <link rel="stylesheet" href="https://web-assets.orbitrondev.org/unify-2.5/vendor/hs-megamenu/src/hs.megamenu.css" />
+    <link rel="stylesheet" href="{{ asset('vendor/hamburgers/hamburgers.min.css', 'local-theme') }}" />
+    <link rel="stylesheet" href="{{ asset('vendor/hs-megamenu/src/hs.megamenu.css', 'local-theme') }}" />
 
     <!-- CSS Unify -->
-    <link rel="stylesheet" href="https://web-assets.orbitrondev.org/unify-2.5/css/unify-core.css" />
-    <link rel="stylesheet" href="https://web-assets.orbitrondev.org/unify-2.5/css/unify-components.css" />
-    <link rel="stylesheet" href="https://web-assets.orbitrondev.org/unify-2.5/css/unify-globals.css" />
+    <link rel="stylesheet" href="{{ asset('css/unify-core.css', 'local-theme') }}" />
+    <link rel="stylesheet" href="{{ asset('css/unify-components.css', 'local-theme') }}" />
+    <link rel="stylesheet" href="{{ asset('css/unify-globals.css', 'local-theme') }}" />
 
     <!-- CSS Customization -->
     {% block stylesheets %}{% endblock %}
@@ -130,13 +130,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.6/SmoothScroll.min.js"></script>
 
 <!-- JS Implementing Plugins -->
-<script src="https://web-assets.orbitrondev.org/unify-2.5/vendor/hs-megamenu/src/hs.megamenu.js"></script>
+<script src="{{ asset('vendor/hs-megamenu/src/hs.megamenu.js', 'local-theme') }}"></script>
 
 <!-- JS Unify -->
-<script src="https://web-assets.orbitrondev.org/unify-2.5/js/hs.core.js"></script>
+<script src="{{ asset('js/hs.core.js', 'local-theme') }}"></script>
 
-<script src="https://web-assets.orbitrondev.org/unify-2.5/js/components/hs.header-side.js"></script>
-<script src="https://web-assets.orbitrondev.org/unify-2.5/js/helpers/hs.hamburgers.js"></script>
+<script src="{{ asset('js/components/hs.header-side.js', 'local-theme') }}"></script>
+<script src="{{ asset('js/helpers/hs.hamburgers.js', 'local-theme') }}"></script>
 
 <!-- JS Custom -->
 <script src="/js/custom.js"></script>

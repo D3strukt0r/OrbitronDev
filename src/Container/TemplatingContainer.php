@@ -145,7 +145,7 @@ class TemplatingContainer
         $namedPackage = array(
             'cdnjs'       => new UrlPackage('https://cdnjs.cloudflare.com/ajax/libs/', new EmptyVersionStrategy(), $assetContext),
             'local'       => new UrlPackage('https://web-assets.orbitrondev.org/', new EmptyVersionStrategy(), $assetContext),
-            'local-theme' => new UrlPackage('https://web-assets.orbitrondev.org/unify-2.4', new EmptyVersionStrategy(), $assetContext),
+            'local-theme' => new UrlPackage('https://web-assets.orbitrondev.org/unify-2.5.1', new EmptyVersionStrategy(), $assetContext),
         );
         $packages = new Packages($defaultPackage, $namedPackage);
 

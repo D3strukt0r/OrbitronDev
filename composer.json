@@ -38,19 +38,19 @@
         "symfony/security-csrf": "^3.4",
         "symfony/validator": "^3.4",
         "symfony/debug": "^3.4",
-        "monolog/monolog": "^1.23",
-        "gargron/fileupload": "^1.4",
-        "google/recaptcha": "^1.1",
         "swiftmailer/swiftmailer": "^6.0",
+        "doctrine/annotations": "^1.5",
+        "doctrine/orm": "^2.5",
+        "monolog/monolog": "^1.23",
+        "google/recaptcha": "^1.1",
+        "gargron/fileupload": "^1.4",
         "bshaffer/oauth2-server-php": "^1.10",
         "guzzlehttp/guzzle": "^6.3",
         "mjohnson/decoda": "^6.10",
         "braintree/braintree_php": "^3.26",
         "suin/php-rss-writer": "^1.6",
-        "doctrine/annotations": "^1.5",
         "league/oauth2-client": "^2.2",
         "sabre/dav": "^3.2",
-        "studio-42/elfinder": "^2.1",
-        "doctrine/orm": "^2.5"
+        "studio-42/elfinder": "^2.1"
     }
 }
