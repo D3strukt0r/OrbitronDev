@@ -28,9 +28,6 @@ cloud:
 forum:
     resource: 'forum/routing.yml'
     host:     forum.orbitrondev.org
-store:
-    resource: 'store/routing.yml'
-    host:     store.orbitrondev.org
 wiki:
     resource: 'wiki/routing.yml'
     host:     wiki.orbitrondev.org
