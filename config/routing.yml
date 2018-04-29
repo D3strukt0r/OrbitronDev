@@ -19,9 +19,6 @@ account_test:
 account:
     resource: 'account/routing.yml'
     host:     account.orbitrondev.org
-blog:
-    resource: 'blog/routing.yml'
-    host:     blog.orbitrondev.org
 forum:
     resource: 'forum/routing.yml'
     host:     forum.orbitrondev.org
