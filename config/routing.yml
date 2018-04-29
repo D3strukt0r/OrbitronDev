@@ -22,9 +22,6 @@ account:
 blog:
     resource: 'blog/routing.yml'
     host:     blog.orbitrondev.org
-cloud:
-    resource: 'cloud/routing.yml'
-    host:     cloud.orbitrondev.org
 forum:
     resource: 'forum/routing.yml'
     host:     forum.orbitrondev.org
