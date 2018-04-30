@@ -2,9 +2,6 @@
 
 use App\Account\AccountAcp;
 use App\Account\Entity\User;
-use App\Blog\BlogHelper;
-use App\Forum\ForumHelper;
-use App\Store\StoreHelper;
 
 AccountAcp::addMenu(array(
     'parent' => 'root',
@@ -29,8 +26,5 @@ function acp_html_home(Controller $controller)
     return $controller->renderView('account/panel/home.html.twig', array(
         'current_user'    => $user,
         'service_allowed' => in_array('web_service', $user->getSubscription()->getSubscription()->getPermissions()) ? true : false,
-        'blogs'           => BlogHelper::getOwnerBlogList($user),
-        'forums'          => ForumHelper::getOwnerForumList($user),
-        'stores'          => StoreHelper::getOwnerStoreList($user),
     ));
 }

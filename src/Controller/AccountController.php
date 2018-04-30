@@ -16,10 +16,7 @@ use App\Account\Form\ForgotType;
 use App\Account\Form\LoginType;
 use App\Account\Form\RegisterType;
 use App\Account\Form\ResetPasswordType;
-use App\Blog\BlogHelper;
 use App\Core\Token;
-use App\Forum\ForumHelper;
-use App\Store\StoreHelper;
 use OAuth2\GrantType\AuthorizationCode;
 use OAuth2\GrantType\ClientCredentials;
 use OAuth2\GrantType\RefreshToken;
@@ -343,9 +340,6 @@ class AccountController extends \Controller
                 'user_exists'       => true,
                 'current_user'      => $currentUser,
                 'service_allowed'   => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
-                'blogs'             => BlogHelper::getOwnerBlogList($currentUser),
-                'forums'            => ForumHelper::getOwnerForumList($currentUser),
-                'stores'            => StoreHelper::getOwnerStoreList($currentUser),
             ));
         } else {
             return $this->render('account/user.html.twig', array(

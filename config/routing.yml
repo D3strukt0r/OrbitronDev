@@ -15,9 +15,6 @@ app_test:
 account:
     resource: 'account/routing.yml'
     host:     account.orbitrondev.org
-wiki:
-    resource: 'wiki/routing.yml'
-    host:     wiki.orbitrondev.org
 developer:
     resource: 'developer/routing.yml'
     host:     developer.orbitrondev.org
