@@ -101,23 +101,9 @@
 
                         <div class="col g-mt-10 g-mt-0--lg g-px-0">
                             <ul class="list-inline text-uppercase g-font-weight-600 text-lg-right u-header--hidden-element g-line-height-1 g-font-size-12 g-mt-minus-10 g-mx-minus-4 g-mb-20">
-                                {% if current_user is empty or current_user.id == -1 %}
-                                    <li class="list-inline-item g-mx-4 g-mt-10">
-                                        <a href="{{ path('app_account_login', {'redir': app.request.uri}) }}" class="g-color-gray-dark-v2 g-color-primary--hover g-text-underline--none--hover">{{ 'header.account.login'|trans }}</a>
-                                    </li>
-                                    <li class="list-inline-item g-mx-4 g-mt-10">|</li>
-                                    <li class="list-inline-item g-mx-4 g-mt-10">
-                                        <a href="{{ path('app_account_register') }}" class="g-color-gray-dark-v2 g-color-primary--hover g-text-underline--none--hover">{{ 'header.account.register'|trans }}</a>
-                                    </li>
-                                {% else %}
-                                    <li class="list-inline-item g-mx-4 g-mt-10">
-                                        <a href="{{ path('app_account_index') }}" class="g-color-gray-dark-v2 g-color-primary--hover g-text-underline--none--hover">{{ 'header.account.account'|trans }}</a>
-                                    </li>
-                                    <li class="list-inline-item g-mx-4 g-mt-10">|</li>
-                                    <li class="list-inline-item g-mx-4 g-mt-10">
-                                        <a href="{{ path('app_account_logout', {'redir': app.request.uri}) }}" class="g-color-gray-dark-v2 g-color-primary--hover g-text-underline--none--hover">{{ 'header.account.logout'|trans }}</a>
-                                    </li>
-                                {% endif %}
+                                <li class="list-inline-item g-mx-4 g-mt-10">
+                                    <a href="https://service-account.herokuapp.com" class="g-color-gray-dark-v2 g-color-primary--hover g-text-underline--none--hover">{{ 'Account'|trans }}</a>
+                                </li>
                                 <li class="list-inline-item g-mx-4 g-mt-10">|</li>
                                 <li class="list-inline-item g-pos-rel g-mx-4 g-mt-10">
                                     <i class="fa fa-globe g-font-size-14 g-mr-3"></i>

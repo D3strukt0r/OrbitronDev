@@ -220,7 +220,7 @@ function acp_html_profile(Controller $controller)
 
             $controller->getEntityManager()->flush();
 
-            header('Location: '.$controller->generateUrl('app_account_panel', array('page' => 'profile')));
+            header('Location: '.$controller->generateUrl('app_admin_panel', array('page' => 'profile')));
             exit;
         } else {
             $errorMessages['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
@@ -286,7 +286,7 @@ function acp_html_add_address(Controller $controller)
 
             $controller->getEntityManager()->flush();
 
-            header('Location: '.$controller->generateUrl('app_account_panel', array('page' => 'profile')));
+            header('Location: '.$controller->generateUrl('app_admin_panel', array('page' => 'profile')));
             exit;
         } else {
             $errorMessage['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');

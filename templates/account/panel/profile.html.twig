@@ -52,7 +52,7 @@
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label">{{ 'Addresses'|trans }}</label>
                     <div class="col-sm-8">
-                        <a href="{{ path('app_account_panel', {'page': 'add-address'}) }}" class="btn btn-success btn-sm mb-1">{{ 'Add address'|trans }}</a>
+                        <a href="{{ path('app_admin_panel', {'page': 'add-address'}) }}" class="btn btn-success btn-sm mb-1">{{ 'Add address'|trans }}</a>
                         {% for address in current_user.profile.addresses %}
                             <div class="mt-1 p-3 border border-primary">
                                 {{ address.street }} {{ address.housenumber }}<br />
@@ -89,7 +89,7 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div id="profile-picture" class="col-md-4">
-                        <img class="img-thumbnail" src="{{ path('app_account_api', {'function': 'get_img', 'user_id': current_user.id}) }}" />
+                        <img class="img-thumbnail" src="{{ path('app_admin_api', {'function': 'get_img', 'user_id': current_user.id}) }}" />
                     </div>
                 </div>
                 <section>
@@ -139,7 +139,7 @@
     $('#fileupload').fileupload({
         // Uncomment the following to send cross-domain cookies:
         //xhrFields: {withCredentials: true},
-        url: '{{ path('app_account_api', {'function': 'update_profile_pic', 'user_id': current_user.id}) }}',
+        url: '{{ path('app_admin_api', {'function': 'update_profile_pic', 'user_id': current_user.id}) }}',
         dataType: 'json',
         autoUpload: true,
         acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,

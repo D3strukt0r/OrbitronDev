@@ -59,7 +59,7 @@
                         {% else %}
                             <small class="form-text pull-right">
                                 <span class="text-danger">{{ 'Not Verified'|trans }}</span>&nbsp;&nbsp;
-                                <a href="{{ path('app_account_confirm') }}" class="btn btn-warning btn-sm" role="button">{{ 'Activate'|trans }}</a>
+                                <a href="/confirm" class="btn btn-warning btn-sm" role="button">{{ 'Activate'|trans }}</a>
                             </small>
                         {% endif %}
                     </div>
@@ -85,7 +85,7 @@
                     <label class="col-sm-4 col-form-label">{{ 'Credits'|trans }}</label>
                     <div class="col-sm-8">
                         <input type="text" readonly class="form-control-plaintext" value="{{ current_user.credits }}" />
-                        <span class="pull-right"><a href="{{ path('app_account_panel', {'page': 'buy-credits'}) }}" class="btn btn-primary btn-sm">{{ 'Buy credits'|trans }}</a></span>
+                        <span class="pull-right"><a href="{{ path('app_admin_panel', {'page': 'buy-credits'}) }}" class="btn btn-primary btn-sm">{{ 'Buy credits'|trans }}</a></span>
                     </div>
                 </div>
                 <div class="row">
@@ -106,7 +106,7 @@
                             {% set subscription_name = 'Enterprise'|trans %}
                         {% endif %}
                         <input type="text" readonly class="form-control-plaintext" value="{{ subscription_name }}" />
-                        <span class="pull-right"><a href="{{ path('app_account_panel', {'page': 'plans'}) }}" class="btn btn-primary btn-sm">{{ 'Change plan'|trans }}</a></span>
+                        <span class="pull-right"><a href="{{ path('app_admin_panel', {'page': 'plans'}) }}" class="btn btn-primary btn-sm">{{ 'Change plan'|trans }}</a></span>
                     </div>
                 </div>
             </div>

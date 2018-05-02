@@ -313,7 +313,7 @@ class AccountHelper
         $sSuffix = '';
 
         if ($link) {
-            $sPrefix .= '<a href="'.Kernel::getIntent()->get('router')->generate('app_account_user', array('username' => $selectedUser->getUsername())).'">';
+            $sPrefix .= '<a href="'.Kernel::getIntent()->get('router')->generate('app_admin_user', array('username' => $selectedUser->getUsername())).'">';
             $sSuffix .= '</a>';
         }
 

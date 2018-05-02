@@ -21,17 +21,17 @@
                             <tr>
                                 <td><b>{{ 'Username'|trans }}</b></td>
                                 <td>{{ current_user.username }}</td>
-                                <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
+                                <td><a href="{{ path('app_admin_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
                             </tr>
                             <tr>
                                 <td><b>{{ 'Password'|trans }}</b></td>
                                 <td>**********</td>
-                                <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
+                                <td><a href="{{ path('app_admin_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
                             </tr>
                             <tr>
                                 <td><b>{{ 'Email'|trans }}</b></td>
                                 <td>{{ current_user.email }}</td>
-                                <td><a href="{{ path('app_account_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
+                                <td><a href="{{ path('app_admin_panel', {'page': 'account'}) }}" class="btn btn-primary btn-sm">{{ 'Edit'|trans }}</a></td>
                             </tr>
                             <tr>
                                 <td><b>{{ 'Email Activated'|trans }}</b></td>
@@ -42,7 +42,7 @@
                             <tr>
                                 <td><b>{{ 'Credits'|trans }}</b></td>
                                 <td>{{ current_user.credits|number_format(0, '.', '\'') }}</td>
-                                <td><a href="{{ path('app_account_panel', {'page': 'buy-credits'}) }}" class="btn btn-success btn-sm">{{ 'Buy credits'|trans }}</a></td>
+                                <td><a href="{{ path('app_admin_panel', {'page': 'buy-credits'}) }}" class="btn btn-success btn-sm">{{ 'Buy credits'|trans }}</a></td>
                             </tr>
                         </tbody>
                     </table><!-- /.table .table-hover -->

@@ -19,15 +19,7 @@ class DefaultController extends \Controller
 
     public function indexAction()
     {
-        if (is_null(AccountHelper::updateSession())) {
-            return $this->redirectToRoute('app_account_logout');
-        }
-        /** @var \App\Account\Entity\User $currentUser */
-        $currentUser = $this->getEntityManager()->find(User::class, USER_ID);
-
-        return $this->render('default/index.html.twig', array(
-            'current_user' => $currentUser,
-        ));
+        return $this->render('default/index.html.twig');
     }
 
     public function aboutAction()

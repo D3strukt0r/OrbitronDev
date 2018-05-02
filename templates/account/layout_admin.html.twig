@@ -47,7 +47,7 @@
 {% block navigation %}
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-        <a class="navbar-brand" href="{{ path('app_account_panel', {'page': 'home'}) }}">{{ 'Account'|trans }}</a>
+        <a class="navbar-brand" href="{{ path('app_admin_panel', {'page': 'home'}) }}">{{ 'Account'|trans }}</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -69,10 +69,10 @@
                         <span class="d-lg-none">{{ 'User'|trans }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="{{ path('app_account_user', {'username': current_user.username}) }}">{{ 'User Profile'|trans }}</a>
-                        <a class="dropdown-item" href="{{ path('app_account_panel', {'page': 'profile'}) }}">{{ 'Settings'|trans }}</a>
+                        <a class="dropdown-item" href="{{ path('app_admin_user', {'username': current_user.username}) }}">{{ 'User Profile'|trans }}</a>
+                        <a class="dropdown-item" href="{{ path('app_admin_panel', {'page': 'profile'}) }}">{{ 'Settings'|trans }}</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ path('app_account_logout') }}"><i class="fa fa-fw fa-sign-out"></i> {{ 'Logout'|trans }}</a>
+                        <a class="dropdown-item" href="{{ path('app_admin_logout') }}"><i class="fa fa-fw fa-sign-out"></i> {{ 'Logout'|trans }}</a>
                     </div>
                 </li>
             </ul>

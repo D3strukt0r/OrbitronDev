@@ -18,13 +18,13 @@ class AccountController extends \Controller
     public function indexAction()
     {
         if (is_null(AccountHelper::updateSession())) {
-            return $this->redirectToRoute('app_account_logout');
+            return $this->redirectToRoute('app_admin_logout');
         }
 
         if (!LOGGED_IN) {
-            return $this->redirectToRoute('app_account_login');
+            return $this->redirectToRoute('app_admin_login');
         } else {
-            return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
+            return $this->redirectToRoute('app_admin_panel', array('page' => 'home'));
         }
     }
 
@@ -39,7 +39,7 @@ class AccountController extends \Controller
             return $response;
         }
         $request = $this->getRequest();
-        $redirectUrl = strlen($request->query->get('redir')) > 0 ? $request->query->get('redir') : $this->generateUrl('app_account_login');
+        $redirectUrl = strlen($request->query->get('redir')) > 0 ? $request->query->get('redir') : $this->generateUrl('app_admin_login');
 
         return $this->redirect($redirectUrl);
     }
@@ -47,11 +47,11 @@ class AccountController extends \Controller
     public function loginAction()
     {
         if (is_null(AccountHelper::updateSession())) {
-            return $this->redirectToRoute('app_account_logout');
+            return $this->redirectToRoute('app_admin_logout');
         }
 
         if (LOGGED_IN) {
-            return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
+            return $this->redirectToRoute('app_admin_panel', array('page' => 'home'));
         }
 
         $request = $this->getRequest();
@@ -96,11 +96,11 @@ class AccountController extends \Controller
     public function registerAction()
     {
         if (is_null(AccountHelper::updateSession())) {
-            return $this->redirectToRoute('app_account_logout');
+            return $this->redirectToRoute('app_admin_logout');
         }
 
         if (LOGGED_IN) {
-            return $this->redirectToRoute('app_account_panel', array('page' => 'home'));
+            return $this->redirectToRoute('app_admin_panel', array('page' => 'home'));
         }
 
         $request = $this->getRequest();
@@ -155,7 +155,7 @@ class AccountController extends \Controller
                 } else {
                     $this->addFlash('failed', 'Could not send confirmation email. Please send the confirmation mail for you E-Mail address again trough your account settings');
                 }
-                $url = $request->query->has('page') ? urldecode($request->query->get('page')) : $this->generateUrl('app_account_panel', array('page' => 'home'));
+                $url = $request->query->has('page') ? urldecode($request->query->get('page')) : $this->generateUrl('app_admin_panel', array('page' => 'home'));
                 $response = new RedirectResponse($url);
                 AccountHelper::login(
                     $response,
@@ -187,7 +187,7 @@ class AccountController extends \Controller
         $em = $this->getEntityManager();
 
         if (is_null(AccountHelper::updateSession())) {
-            return $this->redirectToRoute('app_account_logout');
+            return $this->redirectToRoute('app_admin_logout');
         }
 
         $params = array();
@@ -196,7 +196,7 @@ class AccountController extends \Controller
         $params['view_navigation'] = '';
 
         if (!LOGGED_IN) {
-            return $this->redirectToRoute('app_account_login');
+            return $this->redirectToRoute('app_admin_login');
         }
 
         AccountAcp::includeLibs();
@@ -205,7 +205,7 @@ class AccountController extends \Controller
 
         foreach (AccountAcp::getAllMenus('root') as $sMenu => $aMenuInfo) {
             $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'active' : '');
-            $url = $this->generateUrl('app_account_panel', array('page' => $aMenuInfo['href']));
+            $url = $this->generateUrl('app_admin_panel', array('page' => $aMenuInfo['href']));
             $params['view_navigation'] .= '<li class="nav-item '.$selected.'" data-toggle="tooltip" data-placement="right" title="'.$aMenuInfo['title'].'">
                     <a class="nav-link" href="'.$url.'">
                         <i class="'.$aMenuInfo['icon'].'"></i>
@@ -245,7 +245,7 @@ class AccountController extends \Controller
 
             foreach (AccountAcp::getAllMenus($aGroupInfo['id']) as $sMenu => $aMenuInfo) {
                 $selected = ($this->parameters['page'] === $aMenuInfo['href'] ? 'active' : '');
-                $url = $this->generateUrl('app_account_panel', array('page' => $aMenuInfo['href']));
+                $url = $this->generateUrl('app_admin_panel', array('page' => $aMenuInfo['href']));
                 $params['view_navigation'] .= '<li class="nav-item '.$selected.'" data-toggle="tooltip" data-placement="right" title="'.strip_tags($aMenuInfo['title']).'">
                     <a class="nav-link" href="'.$url.'">
                         <i class="'.$aMenuInfo['icon'].'"></i>
@@ -278,7 +278,7 @@ class AccountController extends \Controller
         $em = $this->getEntityManager();
 
         if (is_null(AccountHelper::updateSession())) {
-            return $this->redirectToRoute('app_account_logout');
+            return $this->redirectToRoute('app_admin_logout');
         }
 
         $username = $this->parameters['username'];

@@ -12,9 +12,9 @@ app_test:
     path:     /test-page
     defaults: { _controller: 'DefaultController::testAction', 'database': true, 'cron_job': false }
 
-account:
+admin:
     resource: 'account/routing.yml'
-    host:     account.orbitrondev.org
+    host:     admin.orbitrondev.org
 developer:
     resource: 'developer/routing.yml'
     host:     developer.orbitrondev.org

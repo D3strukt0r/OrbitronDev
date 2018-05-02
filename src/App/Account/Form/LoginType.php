@@ -23,7 +23,7 @@ class LoginType extends AbstractType
 
         $builder
             ->add('redirect', HiddenType::class, array(
-                'data' => strlen($request->query->get('redir')) > 0 ? $request->query->get('redir') : $router->generate('app_account_panel', array('page' => 'home')),
+                'data' => strlen($request->query->get('redir')) > 0 ? $request->query->get('redir') : $router->generate('app_admin_panel', array('page' => 'home')),
             ))
             ->add('email', EmailType::class, array(
                 'label'       => 'E-mail:',

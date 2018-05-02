@@ -1,29 +1,29 @@
-app_account_setup:
+app_admin_setup:
     path:     /setup
     defaults: { _controller: 'AccountController::oneTimeSetupAction' }
 
-app_account_index:
+app_admin_index:
     path:     /
     defaults: { _controller: 'AccountController::indexAction' }
 
-app_account_login:
+app_admin_login:
     path:     /login
     defaults: { _controller: 'AccountController::loginAction' }
-app_account_register:
+app_admin_register:
     path:     /register
     defaults: { _controller: 'AccountController::registerAction' }
-app_account_logout:
+app_admin_logout:
     path:     /logout
     defaults: { _controller: 'AccountController::logoutAction' }
 
-app_account_user:
+app_admin_user:
     path:     /user/{username}
     defaults: { _controller: 'AccountController::usersAction' }
 
-app_account_panel:
+app_admin_panel:
     path:     /p/{page}
     defaults: { _controller: 'AccountController::panelAction' }
 
-app_account_api:
+app_admin_api:
     path:     /api/{function}
     defaults: { _controller: 'AccountController::apiAction' }
