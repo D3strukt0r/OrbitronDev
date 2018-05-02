@@ -12,15 +12,9 @@ app_account_login:
 app_account_register:
     path:     /register
     defaults: { _controller: 'AccountController::registerAction' }
-app_account_forgot:
-    path:     /forgot
-    defaults: { _controller: 'AccountController::forgotAction' }
 app_account_logout:
     path:     /logout
     defaults: { _controller: 'AccountController::logoutAction' }
-app_account_confirm:
-    path:     /confirm-email
-    defaults: { _controller: 'AccountController::confirmAction' }
 
 app_account_user:
     path:     /user/{username}
@@ -33,13 +27,3 @@ app_account_panel:
 app_account_api:
     path:     /api/{function}
     defaults: { _controller: 'AccountController::apiAction' }
-
-app_account_oauth_authorize:
-    path:     /oauth/authorize
-    defaults: { _controller: 'AccountController::oauthAuthorizeAction' }
-app_account_oauth_token:
-    path:     /oauth/token
-    defaults: { _controller: 'AccountController::oauthTokenAction' }
-app_account_oauth_resource:
-    path:     /oauth/resource
-    defaults: { _controller: 'AccountController::oauthResourceAction' }
