@@ -331,7 +331,7 @@ class Kernel
             <title>Server ERROR</title>
             <meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
         </head>
         <body class="bg-dark">
         <div class="col-sm-6 col-lg-6 mx-auto mt-5">

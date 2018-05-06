@@ -11,7 +11,7 @@
     <meta name="description" content="{% block description %}The official site of OrbitronDev. Containing all projects and everything about us.{% endblock %}" />
     <meta name="author" content="OrbitronDev" />
     <meta name="publisher" content="OrbitronDev" />
-    <meta name="copyright" content="OrbitronDev &copy; 2013-2017" />
+    <meta name="copyright" content="OrbitronDev &copy; 2013-2018" />
     <meta name="keywords" content="" />
     <meta name="audience" content="Alle" />
     <meta name="robots" content="INDEX,FOLLOW" />
@@ -46,25 +46,26 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans%3A400%2C300%2C500%2C600%2C700" />
 
     <!-- CSS Global Compulsory -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap/offcanvas.css', 'local-theme') }}" />
 
     <!-- CSS Implementing Plugins -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-line-icons@2/css/simple-line-icons.min.css" />
     <link rel="stylesheet" href="{{ asset('vendor/icon-etlinefont/style.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/icon-line-pro/style.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/icon-hs/style.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/dzsparallaxer/dzsparallaxer.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/dzsparallaxer/dzsscroller/scroller.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/dzsparallaxer/advancedscroller/plugin.css', 'local-theme') }}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3/animate.min.css" />
     <link rel="stylesheet" href="{{ asset('vendor/hamburgers/hamburgers.min.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/malihu-scrollbar/jquery.mCustomScrollbar.min.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/slick-carousel/slick/slick.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/fancybox/jquery.fancybox.css', 'local-theme') }}" />
     <link rel="stylesheet" href="{{ asset('vendor/hs-megamenu/src/hs.megamenu.css', 'local-theme') }}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icon-css@3/css/flag-icon.min.css" />
 
     <!-- CSS Unify -->
     <link rel="stylesheet" href="{{ asset('css/unify-core.css', 'local-theme') }}" />
@@ -114,11 +115,11 @@
                                        data-dropdown-type="css-animation" data-dropdown-duration="300" data-dropdown-hide-on-scroll="false" data-dropdown-animation-in="fadeIn" data-dropdown-animation-out="fadeOut">{{ languages[app.request.getLocale()] }}
                                     </a>
                                     <ul id="languages-dropdown-2" class="list-unstyled text-left u-shadow-v23 g-pos-abs g-right-0 g-bg-white g-width-160 g-py-20 g-pb-15 g-mt-5 g-z-index-99" aria-labelledby="languages-dropdown-invoker-2">
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}"><img src="{{ asset('img/flags/United-States-of-America.png') }}" style="height:1em" /> {{ 'header.language.english.long'|trans }}</a></li>
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}"><img src="{{ asset('img/flags/France.png') }}" style="height:1em" /> {{ 'header.language.french.long'|trans }}</a></li>
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}"><img src="{{ asset('img/flags/Germany.png') }}" style="height:1em" /> {{ 'header.language.german.long'|trans }}</a></li>
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}"><img src="{{ asset('img/flags/Italy.png') }}" style="height:1em" /> {{ 'header.language.italian.long'|trans }}</a></li>
-                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}"><img src="{{ asset('img/flags/Spain.png') }}" style="height:1em" /> {{ 'header.language.spanish.long'|trans }}</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'})) }}"><span class="flag-icon flag-icon-us"></span> {{ 'header.language.english.long'|trans }}</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'})) }}"><span class="flag-icon flag-icon-fr"></span> {{ 'header.language.french.long'|trans }}</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'de'})) }}"><span class="flag-icon flag-icon-de"></span> {{ 'header.language.german.long'|trans }}</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'it'})) }}"><span class="flag-icon flag-icon-it"></span> {{ 'header.language.italian.long'|trans }}</a></li>
+                                        <li><a class="d-block g-color-main g-color-primary--hover g-text-underline--none--hover g-py-8 g-px-20" href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'es'})) }}"><span class="flag-icon flag-icon-es"></span> {{ 'header.language.spanish.long'|trans }}</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -395,11 +396,11 @@
 </script>
 
 <!-- JS Global Compulsory -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.0.1/jquery-migrate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-migrate@3/dist/jquery-migrate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.13.0/umd/popper.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js"></script>
 <script src="{{ asset('vendor/bootstrap/offcanvas.js', 'local-theme') }}"></script>
 
 <!-- JS Implementing Plugins -->
@@ -412,7 +413,7 @@
 <script src="{{ asset('vendor/malihu-scrollbar/jquery.mCustomScrollbar.concat.min.js', 'local-theme') }}"></script>
 <script src="{{ asset('vendor/slick-carousel/slick/slick.js', 'local-theme') }}"></script>
 <script src="{{ asset('vendor/fancybox/jquery.fancybox.min.js', 'local-theme') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.4/cookieconsent.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
 
 <!-- JS Unify -->
 <script src="{{ asset('js/hs.core.js', 'local-theme') }}"></script>
@@ -485,50 +486,20 @@
                     "background": "#14a7d0"
                 }
             },
-
-            onInitialise: function (status) {
-                var type = this.options.type;
-                var didConsent = this.hasConsented();
-                if (type === 'opt-in' && didConsent) {
-                    // enable cookies
-                }
-                if (type === 'opt-out' && !didConsent) {
-                    // disable cookies
-                }
-            },
-
-            onStatusChange: function(status, chosenBefore) {
-                var type = this.options.type;
-                var didConsent = this.hasConsented();
-                if (type === 'opt-in' && didConsent) {
-                    // enable cookies
-                }
-                if (type === 'opt-out' && !didConsent) {
-                    // disable cookies
-                }
-            },
-
-            onRevokeChoice: function() {
-                var type = this.options.type;
-                if (type === 'opt-in') {
-                    // disable cookies
-                }
-                if (type === 'opt-out') {
-                    // enable cookies
-                }
-            },
             law: {
                 regionalLaw: false
             },
-            location: true
+            location: {
+                services: ['ipinfo', 'maxmind']
+            }
         });
     });
 </script>
 {% block javascripts %}{% endblock %}
 
 <!--[if lt IE 9]>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/respond.js@1/dest/respond.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5shiv@3/dist/html5shiv-printshiv.min.js"></script>
 <![endif]-->
 </body>
 </html>

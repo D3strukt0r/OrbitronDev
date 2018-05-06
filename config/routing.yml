@@ -15,10 +15,3 @@ app_test:
 admin:
     resource: 'account/routing.yml'
     host:     admin.orbitrondev.org
-developer:
-    resource: 'developer/routing.yml'
-    host:     developer.orbitrondev.org
-cdn:
-    resource: 'cdn/routing.yml'
-    host:     cdn.orbitrondev.org
-

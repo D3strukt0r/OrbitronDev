@@ -23,6 +23,8 @@ app_admin_user:
 app_admin_panel:
     path:     /p/{page}
     defaults: { _controller: 'AccountController::panelAction' }
+    requirements:
+        page: .+
 
 app_admin_api:
     path:     /api/{function}
