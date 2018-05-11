@@ -290,27 +290,12 @@ class AccountController extends \Controller
                 'logged_in_user_id' => USER_ID,
                 'user_exists'       => true,
                 'current_user'      => $currentUser,
-                'service_allowed'   => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
+                //'service_allowed'   => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
             ));
         } else {
             return $this->render('account/user.html.twig', array(
                 'user_exists' => false,
             ));
         }
-    }
-
-    public function oneTimeSetupAction()
-    {
-        if ($this->getRequest()->query->get('key') == $this->get('config')['parameters']['setup_key']) {
-            $text = '';
-            AccountHelper::addDefaultSubscriptionTypes();
-            $text .= 'Subscription types added<br />';
-            AccountHelper::addDefaultScopes();
-            $text .= 'Scopes added<br />';
-
-            return $text;
-        }
-
-        return 'No setup key given, or key not correct.';
     }
 }

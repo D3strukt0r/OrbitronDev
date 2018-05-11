@@ -3,6 +3,7 @@
 namespace App\Account;
 
 use App\Account\Entity\User;
+use App\Core\SimpleImage;
 use Kernel;
 
 class AccountApi

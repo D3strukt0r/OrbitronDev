@@ -2,13 +2,11 @@
 
 namespace App\Account\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
@@ -68,23 +66,6 @@ class UserProfiles
      * @Column(type="string", nullable=true)
      */
     protected $picture;
-
-    /**
-     * @var null|int
-     * @Column(type="integer", nullable=true)
-     */
-    protected $active_address;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     * @OneToMany(targetEntity="UserAddress", mappedBy="userProfile", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    protected $addresses;
-
-    public function __construct()
-    {
-        $this->addresses = new ArrayCollection();
-    }
 
     /**
      * @return int
@@ -235,61 +216,6 @@ class UserProfiles
     }
 
     /**
-     * @return null|int
-     */
-    public function getActiveAddress()
-    {
-        return $this->active_address;
-    }
-
-    /**
-     * @param null|int $activeAddress
-     *
-     * @return $this
-     */
-    public function setActiveAddress($activeAddress)
-    {
-        $this->active_address = $activeAddress;
-
-        return $this;
-    }
-
-    /**
-     * @return \App\Account\Entity\UserAddress[]
-     */
-    public function getAddresses()
-    {
-        return $this->addresses->toArray();
-    }
-
-    /**
-     * @param \App\Account\Entity\UserAddress $address
-     *
-     * @return $this
-     */
-    public function addAddress(UserAddress $address)
-    {
-        $this->addresses->add($address);
-        $address->setUserProfile($this);
-
-        return $this;
-    }
-
-    /**
-     * @param \App\Account\Entity\UserAddress $address
-     *
-     * @return $this
-     */
-    public function removeAddress(UserAddress $address)
-    {
-        if ($this->addresses->contains($address)) {
-            $this->addresses->removeElement($address);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return array
      */
     public function toArray()
@@ -302,8 +228,6 @@ class UserProfiles
             'birthday'       => $this->birthday,
             'website'        => $this->website,
             'picture'        => $this->picture,
-            'active_address' => $this->active_address,
-            'addresses'      => $this->addresses->toArray(),
         );
     }
 }

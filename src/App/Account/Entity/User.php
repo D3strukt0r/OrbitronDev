@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
@@ -89,30 +88,11 @@ class User extends EncryptableFieldEntity
     protected $credits = 0;
 
     /**
-     * @var null|int
-     * @Column(type="integer", nullable=true)
-     */
-    protected $preferred_payment_method;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     * @OneToMany(targetEntity="UserPaymentMethods", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    protected $paymentMethods;
-
-    /**
      * @var \App\Account\Entity\UserProfiles
      * @OneToOne(targetEntity="UserProfiles", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      * @JoinColumn(name="profile_id", referencedColumnName="id")
      */
     protected $profile;
-
-    /**
-     * @var \App\Account\Entity\UserSubscription
-     * @OneToOne(targetEntity="UserSubscription", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
-     * @JoinColumn(name="subscription_id", referencedColumnName="id")
-     */
-    protected $subscription;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -138,7 +118,6 @@ class User extends EncryptableFieldEntity
 
     public function __construct()
     {
-        $this->paymentMethods = new ArrayCollection();
         $this->friendsWithMe = new ArrayCollection();
         $this->myFriends = new ArrayCollection();
     }
@@ -389,61 +368,6 @@ class User extends EncryptableFieldEntity
     }
 
     /**
-     * @return null|int
-     */
-    public function getPreferredPaymentMethod()
-    {
-        return $this->preferred_payment_method;
-    }
-
-    /**
-     * @param null|int $preferredPaymentMethod
-     *
-     * @return $this
-     */
-    public function setPreferredPaymentMethod($preferredPaymentMethod)
-    {
-        $this->preferred_payment_method = $preferredPaymentMethod;
-
-        return $this;
-    }
-
-    /**
-     * @return \App\Account\Entity\UserPaymentMethods[]
-     */
-    public function getPaymentMethods()
-    {
-        return $this->paymentMethods->toArray();
-    }
-
-    /**
-     * @param \App\Account\Entity\UserPaymentMethods $paymentMethod
-     *
-     * @return $this
-     */
-    public function addPaymentMethod(UserPaymentMethods $paymentMethod)
-    {
-        $this->paymentMethods->add($paymentMethod);
-        $paymentMethod->setUser($this);
-
-        return $this;
-    }
-
-    /**
-     * @param \App\Account\Entity\UserPaymentMethods $paymentMethod
-     *
-     * @return $this
-     */
-    public function removePaymentMethod(UserPaymentMethods $paymentMethod)
-    {
-        if ($this->paymentMethods->contains($paymentMethod)) {
-            $this->paymentMethods->removeElement($paymentMethod);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return \App\Account\Entity\UserProfiles
      */
     public function getProfile()
@@ -459,26 +383,6 @@ class User extends EncryptableFieldEntity
     public function setProfile(UserProfiles $profile)
     {
         $this->profile = $profile;
-
-        return $this;
-    }
-
-    /**
-     * @return \App\Account\Entity\UserSubscription
-     */
-    public function getSubscription()
-    {
-        return $this->subscription;
-    }
-
-    /**
-     * @param \App\Account\Entity\UserSubscription $subscription
-     *
-     * @return $this
-     */
-    public function setSubscription(UserSubscription $subscription)
-    {
-        $this->subscription = $subscription;
 
         return $this;
     }
@@ -552,10 +456,7 @@ class User extends EncryptableFieldEntity
             'last_ip'                  => $this->last_ip,
             'developer_status'         => $this->developer_status,
             'credits'                  => $this->credits,
-            'preferred_payment_method' => $this->preferred_payment_method,
-            'payment_methods'          => $this->paymentMethods->toArray(),
             'profile'                  => $this->profile->toArray(),
-            'subscription'             => $this->subscription->toArray(),
             'scope'                    => null,
         );
     }

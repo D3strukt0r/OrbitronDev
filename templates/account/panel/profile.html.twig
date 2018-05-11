@@ -50,20 +50,6 @@
                 </div>
 
                 <div class="form-group row">
-                    <label class="col-sm-4 col-form-label">{{ 'Addresses'|trans }}</label>
-                    <div class="col-sm-8">
-                        <a href="{{ path('app_admin_panel', {'page': 'add-address'}) }}" class="btn btn-success btn-sm mb-1">{{ 'Add address'|trans }}</a>
-                        {% for address in current_user.profile.addresses %}
-                            <div class="mt-1 p-3 border border-primary">
-                                {{ address.street }} {{ address.housenumber }}<br />
-                                {{ address.zipcode }} {{ address.city }}<br />
-                                {{ address.country }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="form-group row">
                     {{ form_label(edit_profile_form.website, null, {'label_attr': {'class': 'col-sm-4 col-form-label'}}) }}
                     <div class="col-sm-8">
                         <div class="input-group mb-2 mb-sm-0">

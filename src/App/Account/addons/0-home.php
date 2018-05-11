@@ -25,6 +25,6 @@ function acp_html_home(Controller $controller)
 
     return $controller->renderView('account/panel/home.html.twig', array(
         'current_user'    => $user,
-        'service_allowed' => in_array('web_service', $user->getSubscription()->getSubscription()->getPermissions()) ? true : false,
+        //'service_allowed' => in_array('web_service', $user->getSubscription()->getSubscription()->getPermissions()) ? true : false,
     ));
 }

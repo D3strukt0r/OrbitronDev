@@ -3,8 +3,6 @@
 use App\Account\AccountAcp;
 use App\Account\AccountHelper;
 use App\Account\Entity\User;
-use App\Account\Entity\UserAddress;
-use App\Account\Form\AddAddressType;
 use App\Account\Form\EditAccountType;
 use App\Account\Form\EditProfileType;
 use Symfony\Component\Form\FormError;
@@ -31,14 +29,6 @@ if (!isset($indirectly)) {
         'title'  => 'Personal information',
         'href'   => 'profile',
         'screen' => 'acp_html_profile',
-    ));
-
-    AccountAcp::addMenu(array(
-        'parent' => 'account',
-        'id'     => 'add_address',
-        'title'  => 'Add new address',
-        'href'   => 'add-address',
-        'screen' => 'acp_html_add_address',
     ));
 }
 
@@ -241,60 +231,5 @@ function acp_html_profile(Controller $controller)
     return $controller->renderView('account/panel/profile.html.twig', array(
         'edit_profile_form' => $editProfileForm->createView(),
         'current_user'      => $currentUser,
-    ));
-}
-
-/**
- * @param \Controller $controller
- *
- * @return string
- */
-function acp_html_add_address(Controller $controller)
-{
-    /** @var \App\Account\Entity\User $currentUser */
-    $currentUser = $controller->getEntityManager()->find(User::class, USER_ID);
-
-    $addAddressForm = $controller->createForm(AddAddressType::class);
-
-    $request = $controller->getRequest();
-    $addAddressForm->handleRequest($request);
-    if ($addAddressForm->isSubmitted()) {
-        $formData = $addAddressForm->getData();
-
-        $errorMessage = array();
-        if (AccountHelper::passwordMatches($currentUser, $formData['password_verify'])) {
-
-            $newAddress = new UserAddress();
-
-            if (strlen($newStreet = $formData['location_street']) > 0) {
-                $newAddress->setStreet($newStreet);
-            }
-            if (strlen($newStreetNumber = $formData['location_street_number']) > 0) {
-                $newAddress->setHouseNumber($newStreetNumber);
-            }
-            if (strlen($newPostalCode = $formData['location_postal_code']) > 0) {
-                $newAddress->setZipCode($newPostalCode);
-            }
-            if (strlen($newCity = $formData['location_city']) > 0) {
-                $newAddress->setCity($newCity);
-            }
-            if (strlen($newCountry = $formData['location_country']) > 0) {
-                $newAddress->setCountry($newCountry);
-            }
-
-            $currentUser->getProfile()->addAddress($newAddress);
-
-            $controller->getEntityManager()->flush();
-
-            header('Location: '.$controller->generateUrl('app_admin_panel', array('page' => 'profile')));
-            exit;
-        } else {
-            $errorMessage['password_verify'] = $controller->get('translator')->trans('Your inserted password is not your current.');
-        }
-    }
-
-    return $controller->renderView('account/panel/add-address.html.twig', array(
-        'add_address_form' => $addAddressForm->createView(),
-        'current_user'     => $currentUser,
     ));
 }

@@ -2,12 +2,8 @@
 
 namespace App\Account;
 
-use App\Account\Entity\OAuthClient;
-use App\Account\Entity\OAuthScope;
-use App\Account\Entity\SubscriptionType;
 use App\Account\Entity\User;
 use App\Account\Entity\UserProfiles;
-use App\Account\Entity\UserSubscription;
 use Container\TranslatingContainer;
 use Kernel;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -116,17 +112,6 @@ class AccountHelper
         $userProfile->setUser($user);
         $user->setProfile($userProfile);
 
-        /** @var SubscriptionType $defaultSubscription */
-        $defaultSubscription = $entityManager->find(SubscriptionType::class, self::$settings['subscription']['default']);
-
-        $userSubscription = new UserSubscription();
-        $userSubscription
-            ->setUser($user)
-            ->setSubscription($defaultSubscription)
-            ->setActivatedAt(new \DateTime())
-            ->setExpiresAt(new \DateTime());
-        $user->setSubscription($userSubscription);
-
         $entityManager->persist($user);
         $entityManager->flush();
 
@@ -138,7 +123,6 @@ class AccountHelper
         // TODO: Removing user function does not work yet
         \Kernel::getIntent()->getEntityManager()->remove($user);
         \Kernel::getIntent()->getEntityManager()->remove($user->getProfile());
-        \Kernel::getIntent()->getEntityManager()->remove($user->getSubscription());
         \Kernel::getIntent()->getEntityManager()->flush();
     }
 
@@ -448,133 +432,5 @@ class AccountHelper
         }
         define('ACCOUNT_SESSION_UPDATED', true);
         return true;
-    }
-
-    /**
-     * @return \App\Account\Entity\OAuthScope[]
-     */
-    public static function getAllScopes()
-    {
-        $em = \Kernel::getIntent()->getEntityManager();
-
-        /** @var \App\Account\Entity\OAuthScope[] $scopes */
-        $scopes = $em->getRepository(OAuthScope::class)->findAll();
-        return $scopes;
-    }
-
-    /**
-     * @param integer $user_id
-     *
-     * @return \App\Account\Entity\OAuthClient
-     */
-    public static function getDeveloperApps($user_id)
-    {
-        $em = \Kernel::getIntent()->getEntityManager();
-        /** @var \App\Account\Entity\OAuthClient $clients */
-        $clients = $em->getRepository(OAuthClient::class)->findBy(array('user_id' => $user_id));
-
-        return $clients;
-    }
-
-    /**
-     * @param integer $clientId
-     *
-     * @return \App\Account\Entity\OAuthClient
-     */
-    public static function getAppInformation($clientId)
-    {
-        $em = \Kernel::getIntent()->getEntityManager();
-        /** @var \App\Account\Entity\OAuthClient $client */
-        $client = $em->getRepository(OAuthClient::class)->findOneBy(array('client_identifier' => $clientId));
-        return $client;
-    }
-
-    /**
-     * @param string $clientName
-     * @param string $clientSecret
-     * @param string $redirectUri
-     * @param array  $scopes
-     * @param int    $userId
-     *
-     * @return string
-     */
-    public static function addApp($clientName, $clientSecret, $redirectUri, $scopes, $userId)
-    {
-        /** @var \App\Account\Entity\User $user */
-        $user = \Kernel::getIntent()->getEntityManager()->find(User::class, $userId);
-        $addClient = new OAuthClient();
-        $addClient
-            ->setClientIdentifier($clientName)
-            ->setClientSecret($clientSecret)
-            ->setRedirectUri($redirectUri)
-            ->setScopes($scopes)
-            ->setUsers($user->getId());
-
-        \Kernel::getIntent()->getEntityManager()->persist($addClient);
-        \Kernel::getIntent()->getEntityManager()->flush();
-
-        return $addClient->getId();
-    }
-
-    public static function addDefaultSubscriptionTypes()
-    {
-        $em = \Kernel::getIntent()->getEntityManager();
-        $subscriptions = [];
-        $subscriptions[] = (new SubscriptionType())
-            ->setTitle('Basic')
-            ->setPrice('0')
-            ->setPermissions([]);
-        $subscriptions[] = (new SubscriptionType())
-            ->setTitle('Premium')
-            ->setPrice('10')
-            ->setPermissions(['web_service', 'support']);
-        $subscriptions[] = (new SubscriptionType())
-            ->setTitle('Enterprise')
-            ->setPrice('30')
-            ->setPermissions(['web_service', 'web_service_multiple', 'support']);
-
-        foreach ($subscriptions as $item) {
-            $em->persist($item);
-        }
-        $em->flush();
-    }
-
-    public static function addDefaultScopes()
-    {
-        $em = \Kernel::getIntent()->getEntityManager();
-        $scope = [];
-        $scope[] = (new OAuthScope())
-            ->setScope('user:id')
-            ->setName('User ID')
-            ->setDefault(true);
-        $scope[] = (new OAuthScope())
-            ->setScope('user:username')
-            ->setName('Username')
-            ->setDefault(false);
-        $scope[] = (new OAuthScope())
-            ->setScope('user:email')
-            ->setName('Email address')
-            ->setDefault(false);
-        $scope[] = (new OAuthScope())
-            ->setScope('user:name')
-            ->setName('First name')
-            ->setDefault(false);
-        $scope[] = (new OAuthScope())
-            ->setScope('user:surname')
-            ->setName('Surname')
-            ->setDefault(false);
-        $scope[] = (new OAuthScope())
-            ->setScope('user:birthday')
-            ->setName('Birthday')
-            ->setDefault(false);
-        $scope[] = (new OAuthScope())
-            ->setScope('user:subscription')
-            ->setName('Subscription')
-            ->setDefault(false);
-
-        foreach ($scope as $item) {
-            $em->persist($item);
-        }
-        $em->flush();
     }
 }
