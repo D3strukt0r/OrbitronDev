@@ -13,5 +13,5 @@ app_test:
     defaults: { _controller: 'DefaultController::testAction', 'database': true, 'cron_job': false }
 
 admin:
-    resource: 'account/routing.yml'
+    resource: 'admin/routing.yml'
     host:     admin.orbitrondev.org

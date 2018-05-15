@@ -1,0 +1,31 @@
+app_admin_setup:
+    path:     /setup
+    defaults: { _controller: 'AdminController::oneTimeSetupAction' }
+
+app_admin_index:
+    path:     /
+    defaults: { _controller: 'AdminController::indexAction' }
+
+app_admin_login:
+    path:     /login
+    defaults: { _controller: 'AdminController::loginAction' }
+app_admin_register:
+    path:     /register
+    defaults: { _controller: 'AdminController::registerAction' }
+app_admin_logout:
+    path:     /logout
+    defaults: { _controller: 'AdminController::logoutAction' }
+
+app_admin_user:
+    path:     /user/{username}
+    defaults: { _controller: 'AdminController::usersAction' }
+
+app_admin_panel:
+    path:     /p/{page}
+    defaults: { _controller: 'AdminController::panelAction' }
+    requirements:
+        page: .+
+
+app_admin_api:
+    path:     /api/{function}
+    defaults: { _controller: 'AdminController::apiAction' }

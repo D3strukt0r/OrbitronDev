@@ -23,7 +23,7 @@ function acp_html_home(Controller $controller)
     /** @var \App\Account\Entity\User $user */
     $user = $controller->getEntityManager()->find(User::class, USER_ID);
 
-    return $controller->renderView('account/panel/home.html.twig', array(
+    return $controller->renderView('admin/panel/home.html.twig', array(
         'current_user'    => $user,
         //'service_allowed' => in_array('web_service', $user->getSubscription()->getSubscription()->getPermissions()) ? true : false,
     ));

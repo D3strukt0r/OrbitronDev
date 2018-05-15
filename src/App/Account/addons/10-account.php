@@ -162,7 +162,7 @@ function acp_html_account(Controller $controller)
         }
     }
 
-    return $controller->renderView('account/panel/account.html.twig', array(
+    return $controller->renderView('admin/panel/account.html.twig', array(
         'edit_account_form' => $editAccountForm->createView(),
         'current_user'      => $currentUser,
     ));
@@ -228,7 +228,7 @@ function acp_html_profile(Controller $controller)
         }
     }
 
-    return $controller->renderView('account/panel/profile.html.twig', array(
+    return $controller->renderView('admin/panel/profile.html.twig', array(
         'edit_profile_form' => $editProfileForm->createView(),
         'current_user'      => $currentUser,
     ));

@@ -16,5 +16,5 @@ AccountAcp::addGroup(array(
  */
 function acp_not_found(Controller $controller)
 {
-    return $controller->renderView('account/panel/not-found.html.twig');
+    return $controller->renderView('admin/panel/not-found.html.twig');
 }

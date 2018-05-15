@@ -13,7 +13,7 @@ use Swift_Message;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class AccountController extends \Controller
+class AdminController extends \Controller
 {
     public function indexAction()
     {
@@ -88,7 +88,7 @@ class AccountController extends \Controller
             }
         }
 
-        return $this->render('account/login.html.twig', array(
+        return $this->render('admin/login.html.twig', array(
             'login_form' => $loginForm->createView(),
         ));
     }
@@ -143,7 +143,7 @@ class AccountController extends \Controller
                     ->setSubject('[Account] Email activation')
                     ->setFrom(array('no-reply-account@orbitrondev.org' => 'OrbitronDev'))
                     ->setTo(array($registerForm->get('email')->getData()))
-                    ->setBody($this->renderView('account/mail/register.html.twig', array(
+                    ->setBody($this->renderView('admin/mail/register.html.twig', array(
                         'username' => $registerForm->get('username')->getData(),
                         'email'    => $registerForm->get('email')->getData(),
                         'token'    => $token,
@@ -177,7 +177,7 @@ class AccountController extends \Controller
             }
         }
 
-        return $this->render('account/register.html.twig', array(
+        return $this->render('admin/register.html.twig', array(
             'register_form' => $registerForm->createView(),
         ));
     }
@@ -270,7 +270,7 @@ class AccountController extends \Controller
             $params['view_body'] = $response;
         }
 
-        return $this->render('account/panel.html.twig', $params);
+        return $this->render('admin/panel.html.twig', $params);
     }
 
     public function usersAction()
@@ -286,14 +286,14 @@ class AccountController extends \Controller
             /** @var \App\Account\Entity\User $currentUser */
             $currentUser = $em->getRepository(User::class)->findOneBy(array('username' => $username));
 
-            return $this->render('account/user.html.twig', array(
+            return $this->render('admin/user.html.twig', array(
                 'logged_in_user_id' => USER_ID,
                 'user_exists'       => true,
                 'current_user'      => $currentUser,
                 //'service_allowed'   => in_array('web_service', $currentUser->getSubscription()->getSubscription()->getPermissions()) ? true : false,
             ));
         } else {
-            return $this->render('account/user.html.twig', array(
+            return $this->render('admin/user.html.twig', array(
                 'user_exists' => false,
             ));
         }
